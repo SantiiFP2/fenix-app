@@ -1010,7 +1010,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- PANTALLA DE LOGIN                                              -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div id="login-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F0F1A 0%,#1A0A2E 50%,#0F1A2E 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;">
+<div id="login-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F0F1A 0%,#1A0A2E 50%,#0F1A2E 100%);align-items:center;justify-content:center;flex-direction:column;">
   <div style="width:100%;max-width:400px;padding:20px;">
 
     <!-- Logo -->
@@ -1053,43 +1053,120 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- MODAL GESTIÓN DE USUARIOS (solo admin/supervisor)             -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div id="modal-usuarios" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:8000;align-items:center;justify-content:center;">
-  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:12px;padding:28px;width:90%;max-width:680px;max-height:85vh;overflow-y:auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+<div id="modal-usuarios" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8000;align-items:center;justify-content:center;overflow-y:auto;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:12px;padding:28px;width:100%;max-width:780px;margin:auto;position:relative;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
       <div style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--texto);">👥 Gestión de Usuarios</div>
-      <button onclick="cerrarModalUsuarios()" style="background:none;border:none;color:var(--texto-dim);cursor:pointer;font-size:20px;">✕</button>
+      <button onclick="cerrarModalUsuarios()" style="background:none;border:none;color:var(--texto-dim);cursor:pointer;font-size:20px;line-height:1;">✕</button>
     </div>
 
-    <!-- Formulario nuevo usuario -->
-    <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:16px;margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#A78BFA;text-transform:uppercase;margin-bottom:12px;">➕ Crear nuevo usuario</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+    <!-- Tabs -->
+    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--gris-linea);padding-bottom:0;">
+      <button id="gu-tab-lista"  onclick="guTab('lista')"  style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border:none;border-bottom:2px solid var(--violeta);background:none;color:var(--texto);cursor:pointer;">Usuarios</button>
+      <button id="gu-tab-nuevo" onclick="guTab('nuevo')"  style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;">➕ Nuevo</button>
+    </div>
+
+    <!-- Panel Lista -->
+    <div id="gu-panel-lista">
+      <div id="usuarios-lista"></div>
+    </div>
+
+    <!-- Panel Nuevo Usuario -->
+    <div id="gu-panel-nuevo" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre</label>
+          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre *</label>
           <input id="nu-nombre" placeholder="Nombre completo" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
         </div>
         <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email</label>
+          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email *</label>
           <input id="nu-email" type="email" placeholder="correo@ejemplo.com" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
         </div>
         <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña</label>
+          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña *</label>
           <input id="nu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
         </div>
         <div>
           <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
-          <select id="nu-rol" style="width:100%;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+          <select id="nu-rol" onchange="guActualizarPermisosDefecto('nu')" style="width:100%;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
             <option value="usuario">Usuario</option>
-            <option value="supervisor">Supervisor</option>
+            <option value="analista">Analista</option>
+            <option value="gerente">Gerente</option>
+            <option value="jefe">Jefe</option>
             <option value="admin">Admin</option>
           </select>
         </div>
       </div>
-      <button onclick="crearUsuario()" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#A78BFA;border-radius:4px;padding:8px 16px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;">Crear Usuario</button>
+      <!-- Módulos -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Módulos con acceso</div>
+        <div id="nu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+      <!-- Permisos -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Permisos</div>
+        <div id="nu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+      </div>
+      <button onclick="crearUsuario()" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#A78BFA;border-radius:4px;padding:10px 20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">✓ Crear Usuario</button>
     </div>
+  </div>
+</div>
 
-    <!-- Lista de usuarios -->
-    <div id="usuarios-lista"></div>
+<!-- MODAL EDITAR USUARIO -->
+<div id="modal-editar-usuario" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8100;align-items:center;justify-content:center;overflow-y:auto;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:12px;padding:28px;width:100%;max-width:700px;margin:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--texto);">✏️ Editar Usuario</div>
+      <button onclick="cerrarEditarUsuario()" style="background:none;border:none;color:var(--texto-dim);cursor:pointer;font-size:20px;line-height:1;">✕</button>
+    </div>
+    <input type="hidden" id="eu-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre</label>
+        <input id="eu-nombre" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email</label>
+        <input id="eu-email" type="email" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nueva contraseña <span style="font-weight:400;text-transform:none;">(dejar vacío para no cambiar)</span></label>
+        <input id="eu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
+        <select id="eu-rol" onchange="guActualizarPermisosDefecto('eu')" style="width:100%;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+          <option value="usuario">Usuario</option>
+          <option value="analista">Analista</option>
+          <option value="gerente">Gerente</option>
+          <option value="jefe">Jefe</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <!-- Estado -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;">Estado:</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--texto);">
+        <input type="checkbox" id="eu-activo" style="width:16px;height:16px;cursor:pointer;accent-color:var(--violeta);">
+        Activo
+      </label>
+    </div>
+    <!-- Módulos -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Módulos con acceso</div>
+      <div id="eu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+    <!-- Permisos agrupados -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Permisos</div>
+      <div id="eu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="guardarEdicionUsuario()" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#A78BFA;border-radius:4px;padding:10px 20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;flex:1;">✓ Guardar Cambios</button>
+      <button onclick="cerrarEditarUsuario()" style="background:none;border:1px solid var(--gris-linea);color:var(--texto-dim);border-radius:4px;padding:10px 16px;font-family:'Inter Tight',sans-serif;font-size:12px;cursor:pointer;">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -1925,9 +2002,11 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   </div><!-- /pi-movil-analisis -->
 
   <div id="pi-sin-datos" style="text-align:center;padding:60px 20px;color:var(--texto-dim);">
-    <div style="font-size:48px;margin-bottom:16px;">📊</div>
-    <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Sin datos cargados</div>
-    <div style="font-size:13px;">Ve a <b style="color:var(--rojo);">📱 Móvil</b>, carga tu archivo Excel y calcula la proyección para ver el análisis aquí.</div>
+    <div id="pi-sin-datos-inner">
+      <div style="font-size:48px;margin-bottom:16px;">📊</div>
+      <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Sin datos cargados</div>
+      <div style="font-size:13px;">Ve a <b style="color:var(--rojo);">📱 Móvil</b>, carga tu archivo Excel y calcula la proyección para ver el análisis aquí.</div>
+    </div>
   </div>
 
 </div><!-- /panel-inicio -->
@@ -6646,6 +6725,64 @@ let _indNuevosPendientes = []; // [{indicador}] a mapear
 const FENIX_API = 'https://fenix-solutions-g6edy.ondigitalocean.app';
 
 // ══════════════════════════════════════════════════════════════
+// PERMISOS Y MÓDULOS
+// ══════════════════════════════════════════════════════════════
+const PERMISOS_DEF = [
+  { key: 'crear_usuarios',       label: 'Crear usuarios',           grupo: 'Usuarios' },
+  { key: 'cargar_archivos',      label: 'Cargar archivos',          grupo: 'Archivos' },
+  { key: 'exportar_excel',       label: 'Exportar Excel',           grupo: 'Archivos' },
+  { key: 'descargar_plantillas', label: 'Descargar plantillas',     grupo: 'Archivos' },
+  { key: 'anadir_metas',         label: 'Añadir metas',             grupo: 'Metas' },
+  { key: 'editar_metas',         label: 'Editar metas',             grupo: 'Metas' },
+  { key: 'vaciar_metas',         label: 'Vaciar metas',             grupo: 'Metas' },
+  { key: 'editar_cvc',           label: 'Editar CVC',               grupo: 'CVC' },
+  { key: 'eliminar_cvc',         label: 'Eliminar CVC',             grupo: 'CVC' },
+  { key: 'anadir_cvc',           label: 'Añadir CVC',               grupo: 'CVC' },
+  { key: 'vaciar_cosechas',      label: 'Vaciar Cosechas Móvil',    grupo: 'Cosechas' },
+];
+const MODULOS_DEF = [
+  { key: 'proyeccion', label: 'Proyección Móvil' },
+  { key: 'cvc',        label: 'CVC' },
+  { key: 'metas',      label: 'Metas' },
+  { key: 'cosechas',   label: 'Cosechas' },
+];
+const ROLES_DEF = [
+  { value: 'admin',      label: 'Admin',     color: '#F97316' },
+  { value: 'jefe',       label: 'Jefe',      color: '#F59E0B' },
+  { value: 'gerente',    label: 'Gerente',   color: '#A78BFA' },
+  { value: 'analista',   label: 'Analista',  color: '#60A5FA' },
+  { value: 'usuario',    label: 'Usuario',   color: '#6EE7B7' },
+];
+// Permisos por defecto según rol
+const PERMISOS_POR_ROL = {
+  admin:   PERMISOS_DEF.map(p => p.key), // todo
+  jefe:    ['cargar_archivos','exportar_excel','descargar_plantillas','anadir_metas','editar_metas','vaciar_metas','editar_cvc','eliminar_cvc','anadir_cvc','vaciar_cosechas'],
+  gerente: ['cargar_archivos','exportar_excel','descargar_plantillas','anadir_metas','editar_metas','editar_cvc','anadir_cvc'],
+  analista:['exportar_excel','descargar_plantillas'],
+  usuario: [],
+};
+
+// ── Helpers de permisos ──
+function tienePerm(perm) {
+  if (!_authUsuario) return false;
+  if (_authUsuario.rol === 'admin') return true;
+  const permisos = _authUsuario.permisos || [];
+  return permisos.includes(perm);
+}
+function tieneModulo(mod) {
+  if (!_authUsuario) return false;
+  if (_authUsuario.rol === 'admin') return true;
+  const modulos = _authUsuario.modulos || ['proyeccion','cvc','metas','cosechas'];
+  return modulos.includes(mod);
+}
+function rolColor(rol) {
+  return (ROLES_DEF.find(r => r.value === rol) || {color:'#6EE7B7'}).color;
+}
+function rolLabel(rol) {
+  return (ROLES_DEF.find(r => r.value === rol) || {label: rol || 'Usuario'}).label;
+}
+
+// ══════════════════════════════════════════════════════════════
 // SISTEMA DE AUTENTICACIÓN
 // ══════════════════════════════════════════════════════════════
 let _authToken   = null;
@@ -6779,11 +6916,59 @@ function mostrarApp() {
   actualizarHeaderUsuario();
   metasCargar();
   cosInicializarStorage();
+  // Siempre abrir en Panel de Inicio al entrar/refrescar
+  mostrarPanelInicio();
+}
+// ══════════════════════════════════════════════════════════════
+// GESTIÓN DE USUARIOS
+// ══════════════════════════════════════════════════════════════
+
+function guTab(tab) {
+  document.getElementById('gu-panel-lista').style.display  = tab === 'lista' ? '' : 'none';
+  document.getElementById('gu-panel-nuevo').style.display  = tab === 'nuevo' ? '' : 'none';
+  document.getElementById('gu-tab-lista').style.borderBottomColor  = tab === 'lista' ? 'var(--violeta)' : 'transparent';
+  document.getElementById('gu-tab-lista').style.color               = tab === 'lista' ? 'var(--texto)' : 'var(--texto-dim)';
+  document.getElementById('gu-tab-nuevo').style.borderBottomColor  = tab === 'nuevo' ? 'var(--violeta)' : 'transparent';
+  document.getElementById('gu-tab-nuevo').style.color               = tab === 'nuevo' ? 'var(--texto)' : 'var(--texto-dim)';
+  if (tab === 'nuevo') guRenderCheckboxes('nu');
 }
 
-// ── Gestión de usuarios ──
+function guRenderCheckboxes(prefix) {
+  const rolVal = (document.getElementById(prefix + '-rol') || {value:'usuario'}).value;
+  const permDefecto = PERMISOS_POR_ROL[rolVal] || [];
+  const mCont = document.getElementById(prefix + '-modulos');
+  if (mCont) {
+    mCont.innerHTML = MODULOS_DEF.map(m => `
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;padding:5px 10px;">
+        <input type="checkbox" name="${prefix}-mod" value="${m.key}" checked style="accent-color:var(--violeta);cursor:pointer;">
+        ${m.label}
+      </label>`).join('');
+  }
+  const pCont = document.getElementById(prefix + '-permisos');
+  if (!pCont) return;
+  const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
+  pCont.innerHTML = grupos.map(g => {
+    const items = PERMISOS_DEF.filter(p => p.grupo === g);
+    return `<div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:10px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">${g}</div>
+      ${items.map(p => `
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);margin-bottom:4px;">
+          <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${permDefecto.includes(p.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
+          ${p.label}
+        </label>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function guActualizarPermisosDefecto(prefix) { guRenderCheckboxes(prefix); }
+
+function guGetChecked(prefix, name) {
+  return [...document.querySelectorAll(`input[name="${prefix}-${name}"]:checked`)].map(i => i.value);
+}
+
 async function abrirModalUsuarios() {
   document.getElementById('modal-usuarios').style.display = 'flex';
+  guTab('lista');
   await cargarListaUsuarios();
 }
 
@@ -6796,21 +6981,39 @@ async function cargarListaUsuarios() {
     const res = await authFetch(`${FENIX_API}/usuarios`).then(r => r.json());
     if (!res.ok) return;
     const cont = document.getElementById('usuarios-lista');
-    const rolBadge = { admin:'#F97316', supervisor:'#A78BFA', usuario:'#6EE7B7' };
-    cont.innerHTML = `
-      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--texto-dim);text-transform:uppercase;margin-bottom:10px;">Usuarios registrados (${res.usuarios.length})</div>
-      ${res.usuarios.map(u => `
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;margin-bottom:6px;">
+    if (!res.usuarios.length) {
+      cont.innerHTML = '<div style="text-align:center;padding:30px;color:var(--texto-dim);font-size:13px;">No hay usuarios registrados</div>';
+      return;
+    }
+    cont.innerHTML = res.usuarios.map(u => {
+      const c = rolColor(u.rol);
+      const mods = (u.modulos || ['proyeccion','cvc','metas','cosechas']).map(m => {
+        const def = MODULOS_DEF.find(d => d.key === m);
+        return `<span style="font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.12);color:var(--texto-dim);">${def ? def.label : m}</span>`;
+      }).join('');
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:8px;margin-bottom:8px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:${c}22;border:1px solid ${c}55;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:14px;color:${c};flex-shrink:0;">${u.nombre.charAt(0).toUpperCase()}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:600;color:var(--blanco);">${u.nombre}</div>
             <div style="font-size:11px;color:var(--texto-dim);">${u.email}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">${mods}</div>
           </div>
-          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;color:${rolBadge[u.rol]};border-color:${rolBadge[u.rol]};background:${rolBadge[u.rol]}22;">${u.rol}</span>
-          <span style="font-size:10px;color:${u.activo?'#34D399':'#F87171'};">${u.activo?'● Activo':'● Inactivo'}</span>
-          ${_authUsuario.rol === 'admin' && u.id !== _authUsuario.id
-            ? `<button onclick="toggleUsuario(${u.id},${!u.activo})" style="background:none;border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto-dim);padding:3px 8px;cursor:pointer;font-size:11px;">${u.activo?'Desactivar':'Activar'}</button>`
-            : ''}
-        </div>`).join('')}`;
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid ${c};color:${c};background:${c}22;">${rolLabel(u.rol)}</span>
+            <span style="font-size:10px;color:${u.activo?'#34D399':'#F87171'};">${u.activo?'● Activo':'● Inactivo'}</span>
+          </div>
+          ${_authUsuario.rol === 'admin' && u.id !== _authUsuario.id ? `
+            <button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>` : ''}
+        </div>`;
+    }).join('');
+    if (_authUsuario.rol === 'admin') {
+      cont.innerHTML += `
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--gris-linea);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#F87171;margin-bottom:10px;">⚠️ Zona Peligrosa</div>
+          <button onclick="vaciarCosechasTodas()" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#F87171;border-radius:4px;padding:8px 16px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">🗑 Vaciar todas las cosechas</button>
+        </div>`;
+    }
   } catch(e) { console.error('Error cargando usuarios:', e); }
 }
 
@@ -6819,30 +7022,110 @@ async function crearUsuario() {
   const email    = document.getElementById('nu-email').value.trim();
   const password = document.getElementById('nu-password').value;
   const rol      = document.getElementById('nu-rol').value;
-  if (!nombre || !email || !password) { alert('Completa todos los campos'); return; }
+  if (!nombre || !email || !password) { alert('Completa todos los campos obligatorios'); return; }
+  const permisos = guGetChecked('nu', 'perm');
+  const modulos  = guGetChecked('nu', 'mod');
   try {
     const res = await authFetch(`${FENIX_API}/usuarios`, {
       method: 'POST',
-      body: JSON.stringify({ nombre, email, password, rol })
+      body: JSON.stringify({ nombre, email, password, rol, permisos, modulos })
     }).then(r => r.json());
     if (!res.ok) { alert('Error: ' + res.error); return; }
-    alert(`✅ Usuario "${nombre}" creado correctamente`);
-    document.getElementById('nu-nombre').value = '';
-    document.getElementById('nu-email').value  = '';
+    document.getElementById('nu-nombre').value   = '';
+    document.getElementById('nu-email').value    = '';
     document.getElementById('nu-password').value = '';
+    guTab('lista');
     await cargarListaUsuarios();
+  } catch(e) { alert('Error de conexión'); }
+}
+
+let _guUsuarioEditando = null;
+
+async function abrirEditarUsuario(id) {
+  try {
+    const res = await authFetch(`${FENIX_API}/usuarios`).then(r => r.json());
+    const u = res.usuarios.find(x => x.id === id);
+    if (!u) return;
+    _guUsuarioEditando = u;
+    document.getElementById('eu-id').value       = u.id;
+    document.getElementById('eu-nombre').value   = u.nombre;
+    document.getElementById('eu-email').value    = u.email;
+    document.getElementById('eu-password').value = '';
+    document.getElementById('eu-rol').value      = u.rol;
+    document.getElementById('eu-activo').checked = u.activo;
+    const modActivos  = u.modulos  || ['proyeccion','cvc','metas','cosechas'];
+    const permActivos = u.permisos || [];
+    document.getElementById('eu-modulos').innerHTML = MODULOS_DEF.map(m => `
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;padding:5px 10px;">
+        <input type="checkbox" name="eu-mod" value="${m.key}" ${modActivos.includes(m.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
+        ${m.label}
+      </label>`).join('');
+    const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
+    document.getElementById('eu-permisos').innerHTML = grupos.map(g => {
+      const items = PERMISOS_DEF.filter(p => p.grupo === g);
+      return `<div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:10px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">${g}</div>
+        ${items.map(p => `
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);margin-bottom:4px;">
+            <input type="checkbox" name="eu-perm" value="${p.key}" ${permActivos.includes(p.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
+            ${p.label}
+          </label>`).join('')}
+      </div>`;
+    }).join('');
+    document.getElementById('modal-editar-usuario').style.display = 'flex';
+  } catch(e) { console.error(e); }
+}
+
+function cerrarEditarUsuario() {
+  document.getElementById('modal-editar-usuario').style.display = 'none';
+  _guUsuarioEditando = null;
+}
+
+async function guardarEdicionUsuario() {
+  const id       = parseInt(document.getElementById('eu-id').value);
+  const nombre   = document.getElementById('eu-nombre').value.trim();
+  const email    = document.getElementById('eu-email').value.trim();
+  const password = document.getElementById('eu-password').value;
+  const rol      = document.getElementById('eu-rol').value;
+  const activo   = document.getElementById('eu-activo').checked;
+  const permisos = guGetChecked('eu', 'perm');
+  const modulos  = guGetChecked('eu', 'mod');
+  const body = { nombre, email, rol, activo, permisos, modulos };
+  if (password) body.password = password;
+  try {
+    const res = await authFetch(`${FENIX_API}/usuarios/${id}`, {
+      method: 'PUT', body: JSON.stringify(body)
+    }).then(r => r.json());
+    if (!res.ok) { alert('Error: ' + res.error); return; }
+    cerrarEditarUsuario();
+    await cargarListaUsuarios();
+  } catch(e) { alert('Error de conexión'); }
+}
+
+async function vaciarCosechasTodas() {
+  if (!confirm('⚠️ ¿Seguro que quieres VACIAR todas las cosechas?\n\nEsta acción eliminará permanentemente todos los archivos R5 y Factura. No se puede deshacer.')) return;
+  if (!confirm('Segunda confirmación: ¿Confirmas que quieres borrar TODAS las cosechas?')) return;
+  try {
+    const res = await authFetch(`${FENIX_API}/cosechas/all`, { method: 'DELETE' }).then(r => r.json());
+    if (!res.ok) { alert('Error: ' + res.error); return; }
+    Object.keys(localStorage).filter(k => k.startsWith('fenix_cos')).forEach(k => localStorage.removeItem(k));
+    cosArchivosR5 = []; cosArchivosFact = []; cosR5Data = null; cosFactData = null;
+    cosRenderHistorial();
+    const tabs = document.getElementById('cos-tabs');
+    if (tabs) tabs.style.display = 'none';
+    const wrap = document.getElementById('cos-tabla-wrap');
+    if (wrap) wrap.innerHTML = '';
+    alert('✅ Cosechas vaciadas correctamente');
   } catch(e) { alert('Error de conexión'); }
 }
 
 async function toggleUsuario(id, activo) {
   try {
-    await authFetch(`${FENIX_API}/usuarios/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ activo })
-    });
+    await authFetch(`${FENIX_API}/usuarios/${id}`, { method: 'PUT', body: JSON.stringify({ activo }) });
     await cargarListaUsuarios();
   } catch(e) { alert('Error'); }
 }
+
 
 function metasGuardar() {
   // Guardar cada mes en la API
@@ -8198,6 +8481,18 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   renderEfectividadCvcLista();
   renderPresupuesto(resultados, mesVenta, mesProyeccion);
   renderBonoCumplimiento(resultados);
+
+  // Si el panel de inicio está visible, actualizarlo con los nuevos datos
+  if (_panelInicioVisible) {
+    const analisis = document.getElementById('pi-movil-analisis');
+    const sinDatos = document.getElementById('pi-sin-datos');
+    const card     = document.getElementById('pi-card-movil');
+    if (analisis) analisis.style.display = '';
+    if (sinDatos) sinDatos.style.display = 'none';
+    if (card)     card.style.borderColor = 'var(--rojo)';
+    renderSedeTabs();
+    renderPanelDesdeCache();
+  }
 
   // CRONOGRAMA — ventas reales ya procesadas
   const cobros={};
