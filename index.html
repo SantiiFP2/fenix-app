@@ -8285,9 +8285,45 @@ function cosConfirmarConceptos() {
 
 // ── Calcular ──
 function cosIntentarCalcular() {
-  if (!cosR5Data || !cosFactData) return;
+  // Verificar si necesitamos cargar datos completos
+  const r5Pendientes   = cosArchivosR5.filter(a => !a._cargado);
+  const factPendientes = cosArchivosFact.filter(a => !a._cargado);
 
-  document.getElementById('cos-tabs').style.display = 'flex';
+  if (r5Pendientes.length > 0 || factPendientes.length > 0) {
+    // Mostrar estado de carga
+    const tabs = document.getElementById('cos-tabs');
+    if (tabs) tabs.style.display = 'none';
+    const wrap = document.getElementById('cos-tabla-wrap');
+    if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--texto-dim);">
+      <div style="font-size:24px;margin-bottom:12px;">⏳</div>
+      <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;">Cargando datos desde la base de datos...</div>
+      <div style="font-size:11px;margin-top:6px;">Esto solo ocurre la primera vez · Los siguientes cálculos serán instantáneos</div>
+    </div>`;
+
+    // Cargar todos los archivos pendientes en paralelo
+    Promise.all([
+      ...r5Pendientes.map(a => cosCargarDatosArchivo(a)),
+      ...factPendientes.map(a => cosCargarDatosArchivo(a))
+    ]).then(() => {
+      cosReconstruirGlobales();
+      if (cosR5Data && cosFactData) {
+        if (tabs) tabs.style.display = 'flex';
+        cosRender();
+      }
+    }).catch(e => {
+      console.error('Error cargando datos:', e);
+      if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:#F87171;">
+        <div style="font-size:24px;margin-bottom:12px;">❌</div>
+        <div>Error al cargar datos: ${e.message}</div>
+      </div>`;
+    });
+    return;
+  }
+
+  // Datos ya cargados — calcular directamente
+  if (!cosR5Data || !cosFactData) return;
+  const tabs = document.getElementById('cos-tabs');
+  if (tabs) tabs.style.display = 'flex';
   cosRender();
 }
 
@@ -8565,16 +8601,36 @@ function cosIDBEliminar(id) {
     .catch(e => console.warn('API eliminar error:', e));
 }
 
-// ── Cargar todos los archivos via API ──
+// ── Cargar solo metadatos desde API (rápido) ──
 function cosIDBCargarTodos() {
-  return Promise.all([
-    fetch(`${FENIX_API}/cosechas/r5`).then(r => r.json()),
-    fetch(`${FENIX_API}/cosechas/factura`).then(r => r.json())
-  ]).then(([r5Res, factRes]) => {
-    const r5   = (r5Res.ok   && r5Res.archivos)   ? r5Res.archivos   : [];
-    const fact = (factRes.ok && factRes.archivos)  ? factRes.archivos : [];
-    return [...r5, ...fact];
-  });
+  return fetch(`${FENIX_API}/cosechas/meta`)
+    .then(r => r.json())
+    .then(res => {
+      if (!res.ok) return [];
+      // Retornar archivos con registros/filas vacíos — se cargan bajo demanda
+      return res.archivos.map(a => ({
+        id: a.id, nombre: a.nombre, fecha: a.fecha, tipo: a.tipo,
+        registros: a.tipo === 'r5' ? null : undefined,  // null = pendiente de cargar
+        filas:     a.tipo === 'factura' ? null : undefined,
+        _cargado:  false,
+        n_registros: a.n_registros
+      }));
+    });
+}
+
+// ── Cargar datos completos de un archivo bajo demanda ──
+async function cosCargarDatosArchivo(archivo) {
+  if (archivo._cargado) return archivo;
+  const endpoint = archivo.tipo === 'r5' ? 'r5' : 'factura';
+  const res = await fetch(`${FENIX_API}/cosechas/${endpoint}/${archivo.id}`).then(r => r.json());
+  if (!res.ok) throw new Error(res.error);
+  if (archivo.tipo === 'r5') {
+    archivo.registros = res.archivo.registros;
+  } else {
+    archivo.filas = res.archivo.filas;
+  }
+  archivo._cargado = true;
+  return archivo;
 }
 
 // ── Guardar metadatos en localStorage (backup) ──
@@ -8598,17 +8654,23 @@ function cosGuardarStorage() {
 
 // ── Inicializar desde API con indicador de carga ──
 function cosInicializarStorage() {
-  // Mostrar estado de carga en las cards
   const statusR5   = document.getElementById('cos-status-r5');
   const statusFact = document.getElementById('cos-status-factura');
-  if (statusR5)   statusR5.textContent   = 'Cargando desde servidor...';
-  if (statusFact) statusFact.textContent = 'Cargando desde servidor...';
+  if (statusR5)   statusR5.textContent   = 'Conectando...';
+  if (statusFact) statusFact.textContent = 'Conectando...';
 
   cosIDBCargarTodos().then(todos => {
     cosArchivosR5   = todos.filter(a => a.tipo === 'r5');
     cosArchivosFact = todos.filter(a => a.tipo === 'factura');
-    cosReconstruirGlobales();
+    // Mostrar metadatos inmediatamente (sin esperar datos completos)
     cosRenderHistorial();
+    // Si hay archivos en BD, mostrar tabs y permitir calcular
+    if (cosArchivosR5.length > 0 && cosArchivosFact.length > 0) {
+      const tabs = document.getElementById('cos-tabs');
+      if (tabs) tabs.style.display = 'flex';
+      // Pre-cargar datos en background para cálculo rápido
+      cosIntentarCalcular();
+    }
   }).catch(e => {
     console.warn('API load cosechas error:', e);
     if (statusR5)   statusR5.textContent   = '0 archivos · 0 registros';
@@ -8619,10 +8681,11 @@ function cosInicializarStorage() {
 
 // ── Reconstruir cosR5Data y cosFactData desde los arrays ──
 function cosReconstruirGlobales() {
-  // R5: merge de todos los archivos (el último gana en caso de co_id duplicado)
+  // R5: solo si los datos ya están cargados
   cosR5Data = {};
   const sedes = new Set(), canales = new Set(), servicios = new Set();
   cosArchivosR5.forEach(arch => {
+    if (!arch.registros) return; // pendiente de cargar
     Object.entries(arch.registros).forEach(([co_id, d]) => {
       cosR5Data[co_id] = d;
       if (d.operacion_op) sedes.add(d.operacion_op);
@@ -8645,19 +8708,15 @@ function cosReconstruirGlobales() {
     }
   }
 
-  // Factura: concat de todos los archivos
-  cosFactData = cosArchivosFact.length > 0
-    ? cosArchivosFact.flatMap(a => a.filas)
+  // Factura: solo si los datos ya están cargados
+  const filasDisponibles = cosArchivosFact.filter(a => a.filas !== null && a.filas !== undefined);
+  cosFactData = filasDisponibles.length > 0
+    ? filasDisponibles.flatMap(a => a.filas)
     : null;
 
-  // Mostrar filtros y tabs si hay datos
+  // Mostrar filtros
   const hayFiltros = document.getElementById('cos-filtros');
   if (hayFiltros) hayFiltros.style.display = cosR5Data ? 'flex' : 'none';
-  if (cosR5Data && cosFactData) {
-    const tabs = document.getElementById('cos-tabs');
-    if (tabs) tabs.style.display = 'flex';
-    cosIntentarCalcular();
-  }
 }
 
 // ── Render historial en las cards ──
@@ -8670,7 +8729,7 @@ function cosRenderHistorial() {
   if (histR5) {
     // Limpiar ítems previos (mantener el empty)
     [...histR5.querySelectorAll('.cos-hist-item')].forEach(el => el.remove());
-    const totalReg = cosArchivosR5.reduce((s,a) => s + Object.keys(a.registros).length, 0);
+    const totalReg = cosArchivosR5.reduce((s,a) => s + (a.registros ? Object.keys(a.registros).length : (a.n_registros||0)), 0);
     if (cosArchivosR5.length === 0) {
       if (emptyR5) emptyR5.style.display = 'block';
       if (statusR5) statusR5.textContent = '0 archivos · 0 registros';
@@ -8946,7 +9005,7 @@ function cosAplicarEstadoCarga() {
   const miniR5   = document.getElementById('cos-mini-r5-txt');
   const miniFact = document.getElementById('cos-mini-fact-txt');
   if (miniR5) {
-    const totR5 = cosArchivosR5.reduce((s,a) => s + Object.keys(a.registros).length, 0);
+    const totR5 = cosArchivosR5.reduce((s,a) => s + (a.registros ? Object.keys(a.registros).length : (a.n_registros||0)), 0);
     miniR5.textContent = cosArchivosR5.length
       ? `R5: ${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totR5.toLocaleString('es-CO')} reg`
       : 'R5: sin cargar';
