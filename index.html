@@ -1468,7 +1468,6 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     </div>
     <div class="cos-toolbar">
       <button class="btn-sm" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.4);color:#A78BFA;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosExportarExcel()">⬇ Exportar Excel</button>
-      <button class="btn-sm" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#F87171;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosLimpiarTodo()">🗑 Limpiar todo</button>
     </div>
   </div>
 
@@ -8597,8 +8596,14 @@ function cosGuardarStorage() {
   Promise.all(promesas).then(() => cosGuardarMeta()).catch(e => console.warn('API save error:', e));
 }
 
-// ── Inicializar desde API al abrir el panel ──
+// ── Inicializar desde API con indicador de carga ──
 function cosInicializarStorage() {
+  // Mostrar estado de carga en las cards
+  const statusR5   = document.getElementById('cos-status-r5');
+  const statusFact = document.getElementById('cos-status-factura');
+  if (statusR5)   statusR5.textContent   = 'Cargando desde servidor...';
+  if (statusFact) statusFact.textContent = 'Cargando desde servidor...';
+
   cosIDBCargarTodos().then(todos => {
     cosArchivosR5   = todos.filter(a => a.tipo === 'r5');
     cosArchivosFact = todos.filter(a => a.tipo === 'factura');
@@ -8606,6 +8611,8 @@ function cosInicializarStorage() {
     cosRenderHistorial();
   }).catch(e => {
     console.warn('API load cosechas error:', e);
+    if (statusR5)   statusR5.textContent   = '0 archivos · 0 registros';
+    if (statusFact) statusFact.textContent = '0 archivos · 0 filas';
     cosRenderHistorial();
   });
 }
@@ -8682,7 +8689,7 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${nReg.toLocaleString('es-CO')} reg · ${fStr}</div>
           </div>
-          <button style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:#F87171;border-radius:3px;padding:2px 7px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;" onclick="cosEliminarR5('${arch.id}')" title="Eliminar este archivo">✕</button>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histR5.appendChild(div);
       });
       if (statusR5) statusR5.textContent = `${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totalReg.toLocaleString('es-CO')} registros`;
@@ -8715,7 +8722,7 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${arch.filas.length.toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
-          <button style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:#F87171;border-radius:3px;padding:2px 7px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;" onclick="cosEliminarFactura('${arch.id}')" title="Eliminar este archivo">✕</button>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histFact.appendChild(div);
       });
       if (statusFact) statusFact.textContent = `${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totalFilas.toLocaleString('es-CO')} filas`;
