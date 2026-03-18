@@ -9057,21 +9057,49 @@ function cosRender() {
 function cosTab(tab, btn) {
   cosTabActual = tab;
   sessionStorage.setItem('fenix_cos_tab', tab);
+
+  // Actualizar visual de tabs
   document.querySelectorAll('.cos-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+
   const resetBtn = document.getElementById('btn-reset-proy');
   if (resetBtn) resetBtn.style.display = tab === 'proyeccion' ? 'block' : 'none';
-  const result = cosCalcular();
-  if (!result) return;
+
+  const wrap = document.getElementById('cos-tabla-wrap');
+  const panelAnalisis = document.getElementById('cos-panel-analisis');
+
+  // Siempre limpiar antes de renderizar
+  if (wrap) wrap.innerHTML = '';
+  if (panelAnalisis) panelAnalisis.style.display = 'none';
+
+  // Obtener datos — primero desde globals, si no desde cache
+  let result = null;
+  if (cosR5Data && cosFactData) {
+    result = cosCalcular();
+  } else {
+    // Intentar desde cache localStorage
+    try {
+      const raw = localStorage.getItem(COS_RESULT_KEY);
+      if (raw) result = JSON.parse(raw).result;
+    } catch(e) {}
+  }
+
+  if (!result) {
+    if (wrap) wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)">Carga un R5 y una Factura para ver los datos.</div>';
+    return;
+  }
+
+  // Renderizar según tab
   if (tab === 'analisis') {
-    document.getElementById('cos-tabla-wrap').innerHTML = '';
-    document.getElementById('cos-panel-analisis').style.display = 'block';
+    if (panelAnalisis) panelAnalisis.style.display = 'block';
     cosRenderAnalytics(result);
   } else if (tab === 'proyeccion') {
-    document.getElementById('cos-panel-analisis').style.display = 'none';
     cosRenderProyeccion(result);
+  } else if (tab === 'power') {
+    cosRenderTabla(result);
+  } else if (tab === 'acelerador') {
+    cosRenderTabla(result);
   } else {
-    document.getElementById('cos-panel-analisis').style.display = 'none';
     cosRenderTabla(result);
   }
 }
@@ -9516,8 +9544,9 @@ function fmtCOP(v) {
 
 function cosRenderTabla({ altasPost, altasPow, postPag, powPag, acelPag }) {
   const wrap = document.getElementById('cos-tabla-wrap');
-  
-  if (cosTabActual === 'postpago') {
+  const tabActivo = cosTabActual;
+
+  if (tabActivo === 'postpago') {
     const meses = [...new Set([...Object.keys(altasPost), ...Object.keys(postPag)])].sort();
     let html = `
       <div class="cos-table-wrap">
@@ -9538,7 +9567,6 @@ function cosRenderTabla({ altasPost, altasPow, postPag, powPag, acelPag }) {
           </tr>
         </thead>
         <tbody>`;
-    
     let totAltas=0, totP1=0,totV1=0, totP2=0,totV2=0, totP3=0,totV3=0;
     meses.forEach(mes => {
       const a  = altasPost[mes] || {n:0,cfm:0};
@@ -9570,7 +9598,7 @@ function cosRenderTabla({ altasPost, altasPow, postPag, powPag, acelPag }) {
       </table></div>`;
     wrap.innerHTML = html;
 
-  } else if (cosTabActual === 'power') {
+  } else if (tabActivo === 'power') {
     const meses = [...new Set([...Object.keys(altasPow), ...Object.keys(powPag)])].sort();
     let html = `
       <div class="cos-table-wrap">
