@@ -8794,8 +8794,18 @@ function cosInit() {
   if (cosConceptos.length === 0) {
     cosConceptos = JSON.parse(JSON.stringify(COS_CONCEPTOS_INIT));
   }
-  // Si DOMContentLoaded ya disparó cosInicializarStorage, solo refrescar UI
-  // Si no hay datos aún (primera vez abriendo el panel), también ya se disparó al cargar
+  // Sincronizar el tab activo visualmente con cosTabActual
+  document.querySelectorAll('.cos-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cos-tab').forEach(t => {
+    const onclick = t.getAttribute('onclick') || '';
+    if (onclick.includes("'" + cosTabActual + "'") || onclick.includes('"' + cosTabActual + '"')) {
+      t.classList.add('active');
+    }
+  });
+  // Mostrar/ocultar botón reset según tab
+  const resetBtn = document.getElementById('btn-reset-proy');
+  if (resetBtn) resetBtn.style.display = cosTabActual === 'proyeccion' ? 'block' : 'none';
+  // Inicializar datos
   cosRenderHistorial();
 }
 
@@ -9873,10 +9883,25 @@ function cosInicializarStorage() {
     }
 
     if (mismoFingerprint && resultCached) {
-      // Archivos no cambiaron → la tabla ya está bien, solo actualizar status
+      // Archivos no cambiaron → datos ya correctos, solo re-renderizar con tab activo
       cosReconstruirGlobales(); // poblar filtros
       cosRenderHistorial();
-      return; // nada más que hacer
+      // Re-renderizar la tabla con el tab que esté activo en este momento
+      const result = cosCalcular();
+      if (result) {
+        if (cosTabActual === 'analisis') {
+          document.getElementById('cos-panel-analisis').style.display = 'block';
+          document.getElementById('cos-tabla-wrap').innerHTML = '';
+          cosRenderAnalytics(result);
+        } else if (cosTabActual === 'proyeccion') {
+          document.getElementById('cos-panel-analisis').style.display = 'none';
+          cosRenderProyeccion(result);
+        } else {
+          document.getElementById('cos-panel-analisis').style.display = 'none';
+          cosRenderTabla(result);
+        }
+      }
+      return;
     }
 
     // Fingerprint cambió (archivos nuevos/diferentes) → necesita recalcular
