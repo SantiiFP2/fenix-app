@@ -9409,11 +9409,9 @@ function cosRenderProyeccion(result) {
 
   const inp = (id, val, cb, color='var(--naranja)', w='50px') => {
     if (!puedeEditarCaidas) {
-      // Solo lectura — mostrar valor sin input
       return `<span style="width:${w};display:inline-block;text-align:center;color:${color};font-size:12px;font-weight:700;">${val}</span>`;
     }
     return `<input type="number" id="${id}" value="${val}" min="0" max="200" step="1"
-      oninput="${cb}" onchange="${cb}"
       style="width:${w};background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;
              padding:3px 4px;color:${color};font-family:'Inter Tight',sans-serif;
              font-size:12px;font-weight:700;text-align:center;outline:none;-moz-appearance:textfield;">`;
@@ -9526,14 +9524,30 @@ function cosRenderProyeccion(result) {
       <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % · Los totales se actualizan al instante
     </div>
   </div>`;
+  // Activar event delegation para capturar cambios en inputs de %
+  proyIniciarDelegation();
 }
 
 let _proyDebounce = null;
+
+// Event delegation: un solo listener en el wrap captura todos los inputs de proyección
+function proyIniciarDelegation() {
+  const wrap = document.getElementById('cos-tabla-wrap');
+  if (!wrap || wrap._proyDelegated) return;
+  wrap._proyDelegated = true;
+  wrap.addEventListener('input', function(e) {
+    const el = e.target;
+    if (!el.id || !el.id.startsWith('pi-')) return;
+    const key = el.id === 'pi-caida-global' ? 'caida_global' : el.id.replace('pi-', '');
+    proySetParam(key, el.value);
+  });
+}
+
 function proySetParam(key, val) {
   const p = proyGetParams();
   p[key] = Number(val);
 
-  // Recalcular inmediatamente y actualizar SOLO los totales sin re-renderizar el DOM
+  // Recalcular y actualizar totales quirúrgicamente sin re-renderizar el DOM
   const result = cosCalcular();
   if (!result) return;
   const proy = proyCalcular(result);
@@ -9547,33 +9561,30 @@ function proySetParam(key, val) {
     return s + '$ ' + Math.round(a).toLocaleString('es-CO');
   };
 
-  // Actualizar header
-  const elGT = document.getElementById('proy-gran-total');
-  if (elGT) elGT.textContent = '$ ' + Math.round(proy.gran_total).toLocaleString('es-CO');
-  const elSL = document.getElementById('proy-subtotal-label');
-  if (elSL) elSL.innerHTML = `Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%`;
-  const elTP = document.getElementById('proy-tot-post');
-  if (elTP) elTP.textContent = fmtCOPM(proy.post.total);
-  const elTPw = document.getElementById('proy-tot-pow');
-  if (elTPw) elTPw.textContent = fmtCOPM(proy.pow.total);
-  const elTA = document.getElementById('proy-tot-acel');
-  if (elTA) elTA.textContent = fmtCOPM(proy.acel.total);
+  const set = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  const setH = (id, html) => { const e = document.getElementById(id); if (e) e.innerHTML = html; };
 
-  // Actualizar totales de cada bloque
+  // Header principal
+  set('proy-gran-total', '$ ' + Math.round(proy.gran_total).toLocaleString('es-CO'));
+  setH('proy-subtotal-label', `Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%`);
+  set('proy-tot-post', fmtCOPM(proy.post.total));
+  set('proy-tot-pow',  fmtCOPM(proy.pow.total));
+  set('proy-tot-acel', fmtCOPM(proy.acel.total));
+
+  // Totales de cada bloque
   ['post','pow','acel'].forEach(seg => {
-    const elBT = document.getElementById(`proy-blk-total-${seg}`);
-    if (elBT) elBT.textContent = fmtCOPM(proy[seg].total);
-    const elBS = document.getElementById(`proy-blk-sub-${seg}`);
-    if (elBS) elBS.textContent = 'sub ' + fmtCOPM(proy[seg].subtotal);
+    set(`proy-blk-total-${seg}`, fmtCOPM(proy[seg].total));
+    set(`proy-blk-sub-${seg}`,   'sub ' + fmtCOPM(proy[seg].subtotal));
   });
 
-  // Re-render completo con debounce solo si cambia una tasa (que afecta las filas)
-  // Para caida_global no hace falta re-render completo
+  // Si cambia una tasa (no caída global), re-render completo con debounce
+  // para actualizar las filas del cálculo
   if (key !== 'caida_global') {
     clearTimeout(_proyDebounce);
     _proyDebounce = setTimeout(() => {
       cosRenderProyeccion(result);
-    }, 600);
+      proyIniciarDelegation();
+    }, 700);
   }
 }
 
@@ -10477,6 +10488,9 @@ function cosRenderAnalytics(result) {
   const altasObj = isPow ? altasPow : altasPost;
   const pagObj   = isPow ? powPag : isAcel ? acelPag : postPag;
 
+  // Asegurar que globals estén listos para el comparativo sede/canal
+  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
+
   const meses = [...new Set([...Object.keys(altasObj), ...Object.keys(pagObj)])].sort();
 
   // ── Totales ──
@@ -10662,20 +10676,19 @@ function cosRenderAnalytics(result) {
 
 
 function cosRenderComparativo() {
-  // Obtener datos — primero de globals, si no del cache
-  let r5 = cosR5Data;
-  let fact = cosFactData;
+  // Si los globals no están listos, intentar reconstruirlos primero
+  if (!cosR5Data || !cosFactData) {
+    // Solo llamar si hay archivos cargados en memoria
+    if (cosArchivosR5.length > 0 || cosArchivosFact.length > 0) {
+      cosReconstruirGlobales();
+    }
+  }
+
+  const r5   = cosR5Data;
+  const fact = cosFactData;
 
   if (!r5 || !fact) {
-    // Intentar reconstruir desde cache
-    try {
-      const raw = localStorage.getItem(COS_RESULT_KEY);
-      if (!raw) return;
-      const entry = JSON.parse(raw);
-      if (!entry || !entry.result) return;
-      // Reconstruir desde el result cacheado no es posible directo,
-      // necesitamos los datos crudos — usar los globals reconstruidos
-    } catch(e) {}
+    // Datos aún no disponibles — salir silenciosamente
     return;
   }
 
