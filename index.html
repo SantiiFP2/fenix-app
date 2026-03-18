@@ -9113,23 +9113,20 @@ let _proyParams = null;
 
 function proyParamsDefault() {
   return {
-    // POSTPAGO PORTABILIDAD
-    post_arpu:  [49989, 33984, 15977],        // P1, P2, P3
-    post_caida: [90, 86, 86],                 // % retención MES1, MES2, MES3
-    // POSTPAGO MIGRACIÓN
-    migr_arpu:  [24944, 11933, 8679],
-    migr_caida: [90, 86, 86],
-    // POWER PORTABILIDAD
-    pow_arpu:   [38597, 18465, 18438, 13461], // P1..P4
-    pow_caida:  [80, 70, 55, 45],
-    // POWER MIGRACIÓN
-    powm_arpu:  [24944, 11933, 8679, 8679],
-    powm_caida: [80, 70, 55, 45],
-    // ACELERADOR (3 pagos iguales, VALOR varía por mes)
-    acel_caida: [90, 83, 82],                 // MES1, MES2, MES3(=MES4)
-    // P4 manual portabilidad (ajuste rezagados)
-    p4_manual_post: 7655967,
-    p4_manual_migr: 0,
+    // ARPUs fijos postpago [P1, P2, P3]
+    post_arpu: [49989, 33984, 15977],
+    // ARPUs fijos power [P1, P2, P3, P4]
+    pow_arpu:  [38597, 18465, 18438, 13461],
+    // Mes1 ParteA: tasa de P1 que llegarán a P2 (caída P2)
+    post_m1a: 86,  pow_m1a: 70,  acel_m1a: 83,
+    // Mes1 ParteB: tasa de P2 que llegarán a P3 (caída P3, mes medio ~40%)
+    post_m1b: 40,  pow_m1b: 40,  acel_m1b: 40,
+    // Mes2/3/4: tasa de P1 que llegarán a P3
+    post_m2: 86,   pow_m2: 70,   acel_m2: 83,
+    post_m3: 86,   pow_m3: 55,   acel_m3: 82,
+    post_m4: 86,   pow_m4: 45,   acel_m4: 82,
+    // Caída global por no tener cierre de mes (%)
+    caida_global: 10,
   };
 }
 
@@ -9227,150 +9224,120 @@ function proyCalcTasasReales(postPag, powPag, acelPag) {
   return tasas;
 }
 
-// Calcular el valor proyectado de cosecha para un mes dado
+// Calcular proyección con la lógica exacta del Excel
+// MES 1 (más reciente con pagos): 
+//   ParteA = (P1_mes1 - P2_mes1) × ARPU_P2         → los que pagaron P1 pero faltan P2
+//   ParteB = (P2_mes1 - P3_mes1) × tasa_m1b% × ARPU_P3  → los que pagaron P2, estima P3
+// MES 2/3/4:
+//   = (P1_mes × tasa_m%) - P3_mes) × ARPU_P3       → faltan P3 del mes
+// TOTAL × (1 - caida_global%)
 function proyCalcular(result) {
   if (!result) return null;
   const { altasPost, altasPow, postPag, powPag, acelPag } = result;
   const p = proyGetParams();
-  
-  // Ordenar meses disponibles
-  const meses = [...new Set([
-    ...Object.keys(altasPost||{}),
-    ...Object.keys(altasPow||{})
-  ])].sort();
-  
-  if (meses.length < 2) return null;
-  
-  // Meses clave para la proyección:
-  // La cosecha del MES SIGUIENTE al último disponible
-  const mesUltimo = meses[meses.length - 1]; // ej: 2026-02
-  
-  // Meses de referencia para cada pago (desplazados hacia atrás)
-  // P1 cosecha = altas del mes último (o ciclo 2 estimado)
-  // P2 cosecha = altas del mes anterior
-  // P3 cosecha = altas de 2 meses atrás
-  // P4 cosecha = altas de 3 meses atrás
-  const getMes = (idx) => meses[meses.length - 1 - idx] || null;
-  const m0 = getMes(0); // más reciente
-  const m1 = getMes(1);
-  const m2 = getMes(2);
-  const m3 = getMes(3);
-  
-  // Calcular mes proyectado (mes siguiente al último)
-  const [yr, mo] = mesUltimo.split('-').map(Number);
+
+  // Meses del R5 ordenados
+  const mesesR5 = [...new Set([...Object.keys(altasPost||{}), ...Object.keys(altasPow||{})])].sort();
+  if (mesesR5.length < 1) return null;
+
+  // El mes más reciente del R5 es el mes de VENTA actual (ej: Feb)
+  // Las cosechas empiezan desde el mes anterior (ej: Ene) hacia atrás
+  // Mes1 = penúltimo del R5, Mes2 = antepenúltimo, etc.
+  const mesVenta = mesesR5[mesesR5.length - 1]; // ej: 2026-02 (feb = mes de venta, no tiene pagos aún)
+
+  // Mes proyectado = mes de factura = mes siguiente al R5 más reciente
+  const [yr, mo] = mesVenta.split('-').map(Number);
   const nextMo = mo === 12 ? 1 : mo + 1;
   const nextYr = mo === 12 ? yr + 1 : yr;
   const mesProy = `${nextYr}-${String(nextMo).padStart(2,'0')}`;
-  
-  // ARPUs reales calculados de los datos históricos
-  const arpuReal = proyCalcArpuReal(postPag, powPag, acelPag);
-  const tasasReal = proyCalcTasasReales(postPag, powPag, acelPag);
-  
-  // Usar ARPUs de params editables (si el usuario los modificó) o el real
-  const arpu_post  = p.post_arpu.map((v,i)  => v || arpuReal.post[i]  || 0);
-  const arpu_pow   = p.pow_arpu.map((v,i)   => v || arpuReal.pow[i]   || 0);
-  const caida_post = p.post_caida;
-  const caida_pow  = p.pow_caida;
-  const caida_acel = p.acel_caida;
-  
-  // Helper: altas de un mes dado para postpago
-  const getAltasPost = (mes) => {
-    if (!mes) return 0;
-    return (altasPost[mes]?.n || 0);
+
+  // Los 4 meses de cosecha (empiezan DESDE el penúltimo del R5)
+  const getM = (idx) => mesesR5[mesesR5.length - 2 - idx] || null; // -2 porque el último es mes de venta
+  const m1 = getM(0); // Mes1: ej Ene (el más reciente con pagos conocidos)
+  const m2 = getM(1); // Mes2: ej Dic
+  const m3 = getM(2); // Mes3: ej Nov
+  const m4 = getM(3); // Mes4: ej Oct
+
+  // Helper: obtener pagos acumulados de facturas
+  const getP = (pag, mes, n) => {
+    if (!mes || !pag[mes]) return 0;
+    const k = String(n);
+    return pag[mes][k]?.n || pag[mes][n]?.n || 0;
   };
-  const getAltasPow = (mes) => {
-    if (!mes) return 0;
-    return (altasPow[mes]?.n || 0);
+  const getV = (pag, mes, n) => {
+    if (!mes || !pag[mes]) return 0;
+    const k = String(n);
+    return pag[mes][k]?.v || pag[mes][n]?.v || 0;
   };
-  // Valor acelerador promedio de un mes dado
-  const getValAcel = (mes) => {
-    if (!mes || !acelPag[mes]) return 0;
-    const p1 = acelPag[mes][1];
-    return (p1 && p1.n > 0) ? Math.round(p1.v / p1.n) : 0;
+  // Valor unitario acelerador por mes
+  const getArpuAcel = (mes) => {
+    const n = getP(acelPag, mes, 1), v = getV(acelPag, mes, 1);
+    return n > 0 ? Math.round(v / n) : 0;
   };
-  
-  // ── POSTPAGO PORTABILIDAD ──
-  // P1: altas del mes más reciente × tasa_caida_1 × ARPU_P1
-  const post_p1_n = Math.round(getAltasPost(m0) * caida_post[0] / 100);
-  const post_p1_v = post_p1_n * arpu_post[0];
-  // P2: altas del mes anterior × tasa_caida_2 × ARPU_P2
-  const post_p2_n = Math.round(getAltasPost(m1) * caida_post[1] / 100);
-  const post_p2_v = post_p2_n * arpu_post[1];
-  // P3: altas de 2 meses atrás × tasa_caida_3 × ARPU_P3
-  const post_p3_n = Math.round(getAltasPost(m2) * caida_post[2] / 100);
-  const post_p3_v = post_p3_n * arpu_post[2];
-  // P4: ajuste manual
-  const post_p4_v = p.p4_manual_post;
-  
-  const post_total = post_p1_v + post_p2_v + post_p3_v + post_p4_v;
-  
-  // ── POWER PORTABILIDAD ──
-  const pow_p1_n = Math.round(getAltasPow(m0) * caida_pow[0] / 100);
-  const pow_p1_v = pow_p1_n * arpu_pow[0];
-  const pow_p2_n = Math.round(getAltasPow(m1) * caida_pow[1] / 100);
-  const pow_p2_v = pow_p2_n * arpu_pow[1];
-  const pow_p3_n = Math.round(getAltasPow(m2) * caida_pow[2] / 100);
-  const pow_p3_v = pow_p3_n * arpu_pow[2];
-  const pow_p4_n = Math.round(getAltasPow(m3) * caida_pow[3] / 100);
-  const pow_p4_v = pow_p4_n * arpu_pow[3];
-  
-  const pow_total = pow_p1_v + pow_p2_v + pow_p3_v + pow_p4_v;
-  
-  // ── ACELERADOR ──
-  // Usa VALOR variable por mes (promedio de lo que pagó ese mes)
-  const acel_v0 = getValAcel(m0); // valor acelerador del mes más reciente
-  const acel_v1 = getValAcel(m1);
-  const acel_v2 = getValAcel(m2);
-  const acel_v3 = getValAcel(m3);
-  
-  const acel_p1_n = Math.round(getAltasPost(m0) * caida_acel[0] / 100);
-  const acel_p1_v = acel_p1_n * acel_v0;
-  const acel_p2_n = Math.round(getAltasPost(m1) * caida_acel[1] / 100);
-  const acel_p2_v = acel_p2_n * acel_v1;
-  const acel_p3_n = Math.round(getAltasPost(m2) * caida_acel[2] / 100);
-  const acel_p3_v = acel_p3_n * acel_v2;
-  // P4 acelerador = P3 de mes más viejo (misma tasa que P3)
-  const acel_p4_n = Math.round(getAltasPost(m3) * caida_acel[2] / 100);
-  const acel_p4_v = acel_p4_n * acel_v3;
-  
-  const acel_total = acel_p1_v + acel_p2_v + acel_p3_v + acel_p4_v;
-  
-  const gran_total = post_total + pow_total + acel_total;
-  
-  // Información de tasas reales vs usadas
-  return {
-    mesProy,
-    meses: { m0, m1, m2, m3 },
-    post: {
+
+  // ══ FUNCIÓN GENÉRICA POR CONCEPTO ══
+  const calcCosecha = (pag, arpu_p2, arpu_p3, tasa_m1a, tasa_m1b, tasa_m2, tasa_m3, tasa_m4, esAcel) => {
+    const p1_m1 = getP(pag, m1, 1);
+    const p2_m1 = getP(pag, m1, 2);
+    const p3_m1 = getP(pag, m1, 3);
+    const arpu2_m1 = esAcel ? getArpuAcel(m1) : arpu_p2;
+    const arpu3_m1 = esAcel ? getArpuAcel(m1) : arpu_p3;
+
+    // Mes1 — ParteA: ((P1 × tasa_P2%) − P2) × ARPU_P2
+    const m1a_n = Math.max(0, Math.round(p1_m1 * tasa_m1a / 100) - p2_m1);
+    const m1a_v = m1a_n * arpu2_m1;
+    // Mes1 — ParteB: ((P2 × tasa_P3%) − P3) × ARPU_P3
+    const m1b_n = Math.max(0, Math.round(p2_m1 * tasa_m1b / 100) - p3_m1);
+    const m1b_v = m1b_n * arpu3_m1;
+    const m1_v  = m1a_v + m1b_v;
+    const m1_n  = m1a_n + m1b_n;
+
+    // Mes2: (P1_m2 × tasa_m2% - P3_m2) × ARPU_P3
+    const p1_m2 = getP(pag, m2, 1);
+    const p3_m2 = getP(pag, m2, 3);
+    const arpu3_m2 = esAcel ? getArpuAcel(m2) : arpu_p3;
+    const m2_n = Math.max(0, Math.round(p1_m2 * tasa_m2 / 100) - p3_m2);
+    const m2_v = m2_n * arpu3_m2;
+
+    // Mes3
+    const p1_m3 = getP(pag, m3, 1);
+    const p3_m3 = getP(pag, m3, 3);
+    const arpu3_m3 = esAcel ? getArpuAcel(m3) : arpu_p3;
+    const m3_n = Math.max(0, Math.round(p1_m3 * tasa_m3 / 100) - p3_m3);
+    const m3_v = m3_n * arpu3_m3;
+
+    // Mes4
+    const p1_m4 = getP(pag, m4, 1);
+    const p3_m4 = getP(pag, m4, 3);
+    const arpu3_m4 = esAcel ? getArpuAcel(m4) : arpu_p3;
+    const m4_n = Math.max(0, Math.round(p1_m4 * tasa_m4 / 100) - p3_m4);
+    const m4_v = m4_n * arpu3_m4;
+
+    const subtotal = m1_v + m2_v + m3_v + m4_v;
+    const total = Math.round(subtotal * (1 - p.caida_global / 100));
+
+    return {
       filas: [
-        { mes:m0, pago:'P1', n:post_p1_n, v:post_p1_v, tasa:caida_post[0], arpu:arpu_post[0] },
-        { mes:m1, pago:'P2', n:post_p2_n, v:post_p2_v, tasa:caida_post[1], arpu:arpu_post[1] },
-        { mes:m2, pago:'P3', n:post_p3_n, v:post_p3_v, tasa:caida_post[2], arpu:arpu_post[2] },
-        { mes:null, pago:'P4', n:0, v:post_p4_v, tasa:0, arpu:0, manual:true },
+        { label: 'Mes 1', mes: m1,
+          parteA: { n: m1a_n, v: m1a_v, base: p1_m1, menos: p2_m1, arpu: arpu2_m1 },
+          parteB: { n: m1b_n, v: m1b_v, base: p2_m1, menos: p3_m1, arpu: arpu3_m1 } },
+        { label: 'Mes 2', mes: m2, n: m2_n, v: m2_v, base: p1_m2, menos: p3_m2, tasa: tasa_m2, arpu: arpu3_m2 },
+        { label: 'Mes 3', mes: m3, n: m3_n, v: m3_v, base: p1_m3, menos: p3_m3, tasa: tasa_m3, arpu: arpu3_m3 },
+        { label: 'Mes 4', mes: m4, n: m4_n, v: m4_v, base: p1_m4, menos: p3_m4, tasa: tasa_m4, arpu: arpu3_m4 },
       ],
-      total: post_total
-    },
-    pow: {
-      filas: [
-        { mes:m0, pago:'P1', n:pow_p1_n, v:pow_p1_v, tasa:caida_pow[0], arpu:arpu_pow[0] },
-        { mes:m1, pago:'P2', n:pow_p2_n, v:pow_p2_v, tasa:caida_pow[1], arpu:arpu_pow[1] },
-        { mes:m2, pago:'P3', n:pow_p3_n, v:pow_p3_v, tasa:caida_pow[2], arpu:arpu_pow[2] },
-        { mes:m3, pago:'P4', n:pow_p4_n, v:pow_p4_v, tasa:caida_pow[3], arpu:arpu_pow[3] },
-      ],
-      total: pow_total
-    },
-    acel: {
-      filas: [
-        { mes:m0, pago:'P1', n:acel_p1_n, v:acel_p1_v, tasa:caida_acel[0], arpu:acel_v0 },
-        { mes:m1, pago:'P2', n:acel_p2_n, v:acel_p2_v, tasa:caida_acel[1], arpu:acel_v1 },
-        { mes:m2, pago:'P3', n:acel_p3_n, v:acel_p3_v, tasa:caida_acel[2], arpu:acel_v2 },
-        { mes:m3, pago:'P4', n:acel_p4_n, v:acel_p4_v, tasa:caida_acel[2], arpu:acel_v3 },
-      ],
-      total: acel_total
-    },
-    gran_total,
-    arpuReal, tasasReal
+      subtotal,
+      total,
+    };
   };
+
+  const post = calcCosecha(postPag,  p.post_arpu[1], p.post_arpu[2], p.post_m1a, p.post_m1b, p.post_m2, p.post_m3, p.post_m4, false);
+  const pow  = calcCosecha(powPag,   p.pow_arpu[1],  p.pow_arpu[2],  p.pow_m1a,  p.pow_m1b,  p.pow_m2,  p.pow_m3,  p.pow_m4,  false);
+  const acel = calcCosecha(acelPag,  0, 0, p.acel_m1a, p.acel_m1b, p.acel_m2, p.acel_m3, p.acel_m4, true);
+
+  const gran_subtotal = post.subtotal + pow.subtotal + acel.subtotal;
+  const gran_total    = Math.round(gran_subtotal * (1 - p.caida_global / 100));
+
+  return { mesProy, mesVenta, m1, m2, m3, m4, post, pow, acel, gran_subtotal, gran_total };
 }
 
 // Nombre legible de mes
@@ -9384,145 +9351,144 @@ function proyMesLabel(mesKey) {
 function cosRenderProyeccion(result) {
   const wrap = document.getElementById('cos-tabla-wrap');
   if (!wrap) return;
-  
   const proy = proyCalcular(result);
   if (!proy) {
-    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--texto-dim)">
-      Carga al menos un R5 y una Factura para calcular la proyección.
-    </div>`;
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--texto-dim)">Carga al menos un R5 y una Factura para calcular la proyección.</div>`;
     return;
   }
-  
   const p = proyGetParams();
-  
-  const fmtM = (v) => {
-    if (!v || v === 0) return '$&nbsp;-';
-    const m = Math.abs(v) / 1e6;
-    return (v<0?'-':'') + '$ ' + m.toFixed(2) + 'M';
+  const fmtCOPM = (v) => {
+    if (!v) return '$ -';
+    const a = Math.abs(v);
+    const s = v < 0 ? '-' : '';
+    if (a >= 1e9) return s + '$ ' + (a/1e9).toFixed(2) + 'B';
+    if (a >= 1e6) return s + '$ ' + (a/1e6).toFixed(1) + 'M';
+    return s + '$ ' + Math.round(a).toLocaleString('es-CO');
   };
-  
-  const renderBloque = (titulo, color, filas, total, tipo) => {
-    const rows = filas.map((f,i) => {
-      const esManual = f.manual;
-      const idTasa = `proy-tasa-${tipo}-${i}`;
-      const idArpu = `proy-arpu-${tipo}-${i}`;
-      const idManual = `proy-manual-${tipo}`;
-      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-        <td style="padding:8px 10px;font-size:12px;font-weight:700;color:${color}">${f.pago}</td>
-        <td style="padding:8px 10px;font-size:11px;color:var(--texto-dim)">${proyMesLabel(f.mes)}${esManual?' <span style="font-size:9px;background:rgba(251,146,60,0.2);color:#FB923C;padding:1px 5px;border-radius:2px;letter-spacing:.5px">MANUAL</span>':''}</td>
-        <td style="padding:8px 10px;font-size:12px;text-align:right;color:var(--texto)">${f.n>0?f.n.toLocaleString('es-CO'):'—'}</td>
-        <td style="padding:8px 10px;text-align:center">
-          ${esManual
-            ? `<span style="font-size:11px;color:var(--texto-dim)">—</span>`
-            : `<div style="display:flex;align-items:center;gap:4px;justify-content:center">
-                <input id="${idTasa}" type="number" min="0" max="100" step="1"
-                  value="${f.tasa}"
-                  onchange="proyUpdateParam('${tipo}','caida',${i},+this.value)"
-                  style="width:52px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;padding:3px 6px;color:var(--naranja);font-size:13px;font-weight:700;text-align:center;outline:none;">
-                <span style="font-size:11px;color:var(--texto-dim)">%</span>
-              </div>`
-          }
-        </td>
-        <td style="padding:8px 10px;text-align:center">
-          ${esManual
-            ? `<input id="${idManual}" type="text"
-                value="${Math.round(f.v/1000)}"
-                onchange="proyUpdateManual('${tipo}',+this.value*1000)"
-                style="width:80px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;padding:3px 6px;color:var(--naranja);font-size:12px;font-weight:700;text-align:center;outline:none;"
-                placeholder="0"> <span style="font-size:9px;color:var(--texto-dim)">×1k</span>`
-            : `<input id="${idArpu}" type="text"
-                value="${Math.round(f.arpu/1000)}"
-                onchange="proyUpdateParam('${tipo}','arpu',${i},+this.value*1000)"
-                style="width:72px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;padding:3px 6px;color:var(--azul);font-size:12px;font-weight:700;text-align:center;outline:none;"
-                placeholder="0"> <span style="font-size:9px;color:var(--texto-dim)">×1k</span>`
-          }
-        </td>
-        <td style="padding:8px 10px;font-size:13px;font-weight:700;text-align:right;color:${f.v>0?'var(--verde)':f.v<0?'#FCA5A5':'var(--texto-dim)'}">${fmtM(f.v)}</td>
-      </tr>`;
-    }).join('');
-    
-    return `<div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;overflow:hidden;margin-bottom:12px">
-      <div style="background:var(--gris-medio);padding:11px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gris-linea)">
-        <span style="font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blanco)">${titulo}</span>
-        <span style="font-size:16px;font-weight:800;color:var(--verde)">${fmtM(total)}</span>
+  const fmtN = (n) => n > 0 ? n.toLocaleString('es-CO') : '—';
+  const inp = (id, val, cb, color='var(--naranja)', w='50px') =>
+    `<input type="number" id="${id}" value="${val}" min="0" max="200" step="1" onchange="${cb}"
+      style="width:${w};background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;
+             padding:3px 4px;color:${color};font-family:'Inter Tight',sans-serif;
+             font-size:12px;font-weight:700;text-align:center;outline:none;-moz-appearance:textfield;">`;
+
+  const renderM1 = (seg, color) => {
+    const f = proy[seg].filas[0];
+    if (!f || !f.mes) return '';
+    const ka = `${seg}_m1a`, kb = `${seg}_m1b`;
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+      <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap">
+        Mes 1<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim)">${proyMesLabel(f.mes)}</span>
+      </td>
+      <td style="padding:7px 10px;font-size:11px;color:var(--texto-dim);line-height:1.9">
+        <div>(<span style="color:var(--texto)">${fmtN(f.parteA.base)}</span> P1 ×
+          ${inp(`pi-${ka}`, p[ka], `proySetParam('${ka}',+this.value)`)}%
+          − <span style="color:var(--texto)">${fmtN(f.parteA.menos)}</span> P2) × ARPU P2
+          = <span style="color:${color};font-weight:700">${fmtCOPM(f.parteA.v)}</span>
+        </div>
+        <div>(<span style="color:var(--texto)">${fmtN(f.parteB.base)}</span> P2 ×
+          ${inp(`pi-${kb}`, p[kb], `proySetParam('${kb}',+this.value)`)}%
+          − <span style="color:var(--texto)">${fmtN(f.parteB.menos)}</span> P3) × ARPU P3
+          = <span style="color:${color};font-weight:700">${fmtCOPM(f.parteB.v)}</span>
+        </div>
+      </td>
+      <td style="padding:7px 10px;text-align:right;font-size:14px;font-weight:700;color:${color}">${fmtCOPM(f.parteA.v + f.parteB.v)}</td>
+    </tr>`;
+  };
+
+  const renderMn = (seg, idx, color) => {
+    const f = proy[seg].filas[idx];
+    if (!f || !f.mes) return '';
+    const k = `${seg}_m${idx+1}`;
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+      <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap">
+        Mes ${idx+1}<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim)">${proyMesLabel(f.mes)}</span>
+      </td>
+      <td style="padding:7px 10px;font-size:11px;color:var(--texto-dim)">
+        (<span style="color:var(--texto)">${fmtN(f.base)}</span> P1 ×
+        ${inp(`pi-${k}`,p[k],`proySetParam('${k}',+this.value)`)}%
+        − <span style="color:var(--texto)">${fmtN(f.menos)}</span> P3) × ARPU P3
+      </td>
+      <td style="padding:7px 10px;text-align:right;font-size:14px;font-weight:700;color:${color}">${fmtCOPM(f.v)}</td>
+    </tr>`;
+  };
+
+  const bloque = (titulo, seg, color) => {
+    const d = proy[seg];
+    return `<div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="background:var(--gris-medio);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gris-linea)">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blanco)">${titulo}</span>
+        <div style="text-align:right">
+          <div style="font-size:17px;font-weight:800;color:${color};line-height:1">${fmtCOPM(d.total)}</div>
+          <div style="font-size:9px;color:var(--texto-dim)">sub ${fmtCOPM(d.subtotal)}</div>
+        </div>
       </div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:1px solid var(--gris-linea)">
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:left">Pago</th>
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:left">Mes de Altas</th>
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:right">Unidades</th>
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:center">% Retención</th>
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:center">ARPU (×1k)</th>
-            <th style="padding:7px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);text-align:right">Valor Proyectado</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-        <tfoot>
-          <tr style="background:rgba(0,0,0,0.2)">
-            <td colspan="5" style="padding:9px 10px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Total ${titulo.split('·')[0]}</td>
-            <td style="padding:9px 10px;font-size:15px;font-weight:800;text-align:right;color:var(--verde)">${fmtM(total)}</td>
-          </tr>
-        </tfoot>
+      <table style="width:100%;border-collapse:collapse;flex:1">
+        <thead><tr style="border-bottom:1px solid var(--gris-linea)">
+          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:left;width:80px">Mes</th>
+          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:left">Cálculo</th>
+          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:right;width:90px">Valor</th>
+        </tr></thead>
+        <tbody>
+          ${renderM1(seg, color)}
+          ${renderMn(seg, 1, color)}
+          ${renderMn(seg, 2, color)}
+          ${renderMn(seg, 3, color)}
+        </tbody>
+        <tfoot><tr style="background:rgba(0,0,0,0.2)">
+          <td colspan="2" style="padding:7px 10px;font-size:10px;font-weight:700;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase">Subtotal antes de caída</td>
+          <td style="padding:7px 10px;text-align:right;font-size:13px;font-weight:700;color:${color}">${fmtCOPM(d.subtotal)}</td>
+        </tr></tfoot>
       </table>
     </div>`;
   };
-  
-  // KPI resumen grande
-  const kpiResumen = `
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
-    <div style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(249,115,22,0.1));border:1px solid var(--gris-linea);border-radius:4px;padding:16px;grid-column:span 4;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px">Proyección Total · ${proyMesLabel(proy.mesProy)}</div>
-        <div style="font-size:32px;font-weight:800;color:var(--verde);line-height:1">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
-        <div style="font-size:12px;color:var(--texto-dim);margin-top:6px">Basado en R5 y Facturas cargadas · Parámetros editables ↓</div>
+
+  wrap.innerHTML = `
+  <div style="padding:2px 0 12px">
+    <!-- Header KPI -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px">
+      <div style="background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(249,115,22,0.1));border:1px solid var(--gris-linea);border-radius:4px;padding:14px 18px;display:flex;align-items:center;gap:24px">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:3px">PROYECCIÓN · ${proyMesLabel(proy.mesProy)}</div>
+          <div style="font-size:34px;font-weight:800;color:var(--verde);line-height:1">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:3px">Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global ${p.caida_global}%</div>
+        </div>
+        <div style="display:flex;gap:20px">
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Postpago</div><div style="font-size:17px;font-weight:700;color:var(--azul)">${fmtCOPM(proy.post.total)}</div></div>
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Power</div><div style="font-size:17px;font-weight:700;color:var(--amarillo)">${fmtCOPM(proy.pow.total)}</div></div>
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Acelerador</div><div style="font-size:17px;font-weight:700;color:var(--morado)">${fmtCOPM(proy.acel.total)}</div></div>
+        </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
-        <div style="font-size:11px;color:var(--texto-dim)">Portabilidad Post <span style="color:var(--azul);font-weight:700">${fmtM(proy.post.total)}</span></div>
-        <div style="font-size:11px;color:var(--texto-dim)">Power <span style="color:var(--amarillo);font-weight:700">${fmtM(proy.pow.total)}</span></div>
-        <div style="font-size:11px;color:var(--texto-dim)">Acelerador <span style="color:var(--morado);font-weight:700">${fmtM(proy.acel.total)}</span></div>
+      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:130px">
+        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;text-align:center">Caída Global<br><span style="font-size:9px">(sin cierre de mes)</span></div>
+        <div style="display:flex;align-items:center;gap:4px">
+          ${inp('pi-caida-global', p.caida_global, `proySetParam('caida_global',+this.value)`, '#FCA5A5', '52px')}
+          <span style="font-size:14px;color:var(--texto-dim)">%</span>
+        </div>
+        <button onclick="proyReset()" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>
       </div>
     </div>
+    <!-- 3 columnas -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      ${bloque('Portabilidad Postpago', 'post', 'var(--azul)')}
+      ${bloque('Power', 'pow', 'var(--amarillo)')}
+      ${bloque('Acelerador', 'acel', 'var(--morado)')}
+    </div>
+    <div style="margin-top:8px;padding:8px 12px;background:rgba(110,231,183,0.06);border:1px solid rgba(110,231,183,0.15);border-radius:3px;font-size:10px;color:var(--verde);line-height:1.6">
+      <strong>Lógica Mes 1:</strong> (P1−P2)×ARPU_P2 + (P2−P3)×tasa%×ARPU_P3 &nbsp;|&nbsp;
+      <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % directamente · Los valores se actualizan al instante
+    </div>
   </div>`;
-  
-  const nota = `<div style="margin-top:10px;padding:10px 14px;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.25);border-radius:3px;font-size:11px;color:#FB923C;line-height:1.6">
-    <strong>Edita en línea:</strong> Modifica % Retención y ARPU directamente en la tabla · El P4 manual ajusta ventas rezagadas · Los cambios se aplican al instante<br>
-    <strong>Nota:</strong> Esta proyección es del mes <strong>${proyMesLabel(proy.mesProy)}</strong> usando las altas de los últimos meses del R5 cargado
-  </div>`;
-  
-  wrap.innerHTML = kpiResumen
-    + renderBloque('Portabilidad Postpago · Comisión', 'var(--azul)', proy.post.filas, proy.post.total, 'post')
-    + renderBloque('Power · Comisión', 'var(--amarillo)', proy.pow.filas, proy.pow.total, 'pow')
-    + renderBloque('Acelerador · 3 Pagos', 'var(--morado)', proy.acel.filas, proy.acel.total, 'acel')
-    + nota;
 }
 
-// Actualizar parámetro editable y recalcular
-function proyUpdateParam(tipo, campo, idx, val) {
+function proySetParam(key, val) {
   const p = proyGetParams();
-  if (tipo === 'post') {
-    if (campo === 'caida') p.post_caida[idx] = val;
-    else if (campo === 'arpu') p.post_arpu[idx] = val;
-  } else if (tipo === 'pow') {
-    if (campo === 'caida') p.pow_caida[idx] = val;
-    else if (campo === 'arpu') p.pow_arpu[idx] = val;
-  } else if (tipo === 'acel') {
-    if (campo === 'caida') p.acel_caida[idx] = val;
-    else if (campo === 'arpu') {} // ARPU acel es variable, no editar globalmente
-  }
+  p[key] = val;
   const result = cosCalcular();
   if (result) cosRenderProyeccion(result);
 }
 
-function proyUpdateManual(tipo, val) {
-  const p = proyGetParams();
-  if (tipo === 'post') p.p4_manual_post = val;
-  else if (tipo === 'migr') p.p4_manual_migr = val;
-  const result = cosCalcular();
-  if (result) cosRenderProyeccion(result);
-}
-
-function proyResetParams() {
+function proyReset() {
   _proyParams = null;
   const result = cosCalcular();
   if (result) cosRenderProyeccion(result);
