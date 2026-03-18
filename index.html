@@ -8779,7 +8779,7 @@ function toggleLncModules(cliente, producto) {
 // ── Estado global ──
 let cosR5Data     = null;   // Map: co_id → {mes, cfm, servicio, operacion_op, origen, is_power}
 let cosFactData   = null;   // Array de filas de factura procesadas
-let cosTabActual  = 'postpago';
+let cosTabActual  = sessionStorage.getItem('fenix_cos_tab') || 'postpago';
 let cosPendientes = [];     // Conceptos sin clasificar
 let cosConceptos  = [];     // Tabla de conceptos (editable en sesión)
 let cosFacturasGuardadas = []; // Todas las facturas cargadas (legacy)
@@ -9056,6 +9056,7 @@ function cosRender() {
 
 function cosTab(tab, btn) {
   cosTabActual = tab;
+  sessionStorage.setItem('fenix_cos_tab', tab);
   document.querySelectorAll('.cos-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   const resetBtn = document.getElementById('btn-reset-proy');
