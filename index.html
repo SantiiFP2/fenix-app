@@ -5617,10 +5617,13 @@ let _panelInicioVisible = false;
 function mostrarPanelInicio() {
   setHeaderModulo('Panel de Inicio');
   _panelInicioVisible = true;
-  document.getElementById('panel-inicio').classList.add('visible');
+  // Ocultar todos los paneles antes de mostrar inicio
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('panel-codigos-cvc').style.display = 'none';
   document.getElementById('panel-metas').style.display = 'none';
+  const pc = document.getElementById('panel-cosechas');
+  if (pc) pc.style.display = 'none';
+  document.getElementById('panel-inicio').classList.add('visible');
   (document.getElementById('sb-metas-btn')||document.createElement('span')).classList.remove('active');
   actualizarPanelInicio();
 
@@ -8800,7 +8803,9 @@ function cosInit() {
 function mostrarPanelCosechas() {
   setHeaderModulo('Cosechas');
   document.getElementById('main-content').style.display = 'none';
-  document.getElementById('panel-inicio') && (document.getElementById('panel-inicio').style.display = 'none');
+  // Usar classList en lugar de style.display para no pisar el estado del panel-inicio
+  const pi = document.getElementById('panel-inicio');
+  if (pi) { pi.classList.remove('visible'); pi.style.display = ''; }
   document.getElementById('panel-codigos-cvc') && (document.getElementById('panel-codigos-cvc').style.display = 'none');
   document.getElementById('panel-metas') && (document.getElementById('panel-metas').style.display = 'none');
   document.getElementById('panel-cosechas').style.display = 'block';
@@ -9811,6 +9816,10 @@ function cosInicializarStorage() {
       const pa = document.getElementById('cos-panel-analisis');
       if (pa) pa.style.display = 'block';
       cosRenderAnalytics(resultCached.result);
+    } else if (cosTabActual === 'proyeccion') {
+      const pa = document.getElementById('cos-panel-analisis');
+      if (pa) pa.style.display = 'none';
+      cosRenderProyeccion(resultCached.result);
     } else {
       const pa = document.getElementById('cos-panel-analisis');
       if (pa) pa.style.display = 'none';
