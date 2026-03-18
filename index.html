@@ -1637,7 +1637,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       <p>ANÁLISIS DE PAGOS POR COSECHA · CLARO COLOMBIA · MÓVIL</p>
     </div>
     <div class="cos-toolbar">
-      <button class="btn-sm" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.4);color:#A78BFA;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosExportarExcel()">⬇ Exportar Excel</button>
+      <button id="btn-exportar-excel-cosechas" class="btn-sm" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.4);color:#A78BFA;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosExportarExcel()">⬇ Exportar Excel</button>
       <button id="btn-vaciar-cosechas" class="btn-sm" style="display:none;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.35);color:#F87171;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarCosechasTodas()">🗑 Vaciar cosechas</button>
     </div>
   </div>
@@ -1671,8 +1671,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
             <span style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#A78BFA;">Informe R5</span>
           </div>
           <div style="display:flex;gap:6px;">
-            <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(124,58,237,0.4);color:#A78BFA;" onclick="cosDescargarPlantillaR5()" title="Descargar plantilla R5">⬇ Plantilla</button>
-            <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-r5').click()" title="Agregar archivo R5">＋ Cargar</button>
+            <button id="btn-cos-plantilla-r5" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(124,58,237,0.4);color:#A78BFA;" onclick="cosDescargarPlantillaR5()" title="Descargar plantilla R5">⬇ Plantilla</button>
+            <button id="btn-cos-cargar-r5" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-r5').click()" title="Agregar archivo R5">＋ Cargar</button>
             <input type="file" id="cos-input-r5" accept=".xlsx,.xls" multiple style="display:none;" onchange="cosCargaR5Multi(this)">
           </div>
         </div>
@@ -1694,8 +1694,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
             <span style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#FCD34D;">Factura</span>
           </div>
           <div style="display:flex;gap:6px;">
-            <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(251,191,36,0.4);color:#FCD34D;" onclick="cosDescargarPlantillaFactura()" title="Descargar plantilla Factura">⬇ Plantilla</button>
-            <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-factura').click()" title="Agregar archivo Factura">＋ Cargar</button>
+            <button id="btn-cos-plantilla-fact" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(251,191,36,0.4);color:#FCD34D;" onclick="cosDescargarPlantillaFactura()" title="Descargar plantilla Factura">⬇ Plantilla</button>
+            <button id="btn-cos-cargar-fact" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-factura').click()" title="Agregar archivo Factura">＋ Cargar</button>
             <input type="file" id="cos-input-factura" accept=".xlsx,.xls" multiple style="display:none;" onchange="cosCargaFacturaMulti(this)">
           </div>
         </div>
@@ -6742,17 +6742,27 @@ const FENIX_API = 'https://fenix-solutions-g6edy.ondigitalocean.app';
 // PERMISOS Y MÓDULOS
 // ══════════════════════════════════════════════════════════════
 const PERMISOS_DEF = [
-  { key: 'crear_usuarios',       label: 'Crear usuarios',           grupo: 'Usuarios' },
-  { key: 'cargar_archivos',      label: 'Cargar archivos',          grupo: 'Archivos' },
-  { key: 'exportar_excel',       label: 'Exportar Excel',           grupo: 'Archivos' },
-  { key: 'descargar_plantillas', label: 'Descargar plantillas',     grupo: 'Archivos' },
-  { key: 'anadir_metas',         label: 'Añadir metas',             grupo: 'Metas' },
-  { key: 'editar_metas',         label: 'Editar metas',             grupo: 'Metas' },
-  { key: 'vaciar_metas',         label: 'Vaciar metas',             grupo: 'Metas' },
-  { key: 'editar_cvc',           label: 'Editar CVC',               grupo: 'CVC' },
-  { key: 'eliminar_cvc',         label: 'Eliminar CVC',             grupo: 'CVC' },
-  { key: 'anadir_cvc',           label: 'Añadir CVC',               grupo: 'CVC' },
-  { key: 'vaciar_cosechas',      label: 'Vaciar Cosechas Móvil',    grupo: 'Cosechas' },
+  // ── Usuarios ──
+  { key: 'crear_usuarios',        label: 'Crear usuarios',            grupo: 'Usuarios' },
+  { key: 'editar_usuarios',       label: 'Editar usuarios',           grupo: 'Usuarios' },
+  { key: 'eliminar_usuarios',     label: 'Eliminar usuarios',         grupo: 'Usuarios' },
+  // ── Metas ──
+  { key: 'anadir_metas',          label: 'Añadir metas',              grupo: 'Metas' },
+  { key: 'editar_metas',          label: 'Editar metas',              grupo: 'Metas' },
+  { key: 'vaciar_metas',          label: 'Vaciar metas',              grupo: 'Metas' },
+  { key: 'cargar_metas',          label: 'Cargar metas',              grupo: 'Metas' },
+  { key: 'exportar_plantilla_metas', label: 'Exportar plantilla',     grupo: 'Metas' },
+  // ── CVC ──
+  { key: 'editar_cvc',            label: 'Editar CVC',                grupo: 'CVC' },
+  { key: 'eliminar_cvc',          label: 'Eliminar CVC',              grupo: 'CVC' },
+  { key: 'anadir_cvc',            label: 'Añadir CVC',                grupo: 'CVC' },
+  // ── Cosechas ──
+  { key: 'cargar_cosechas',       label: 'Cargar Excel',              grupo: 'Cosechas' },
+  { key: 'exportar_plantillas_cosechas', label: 'Exportar plantillas',grupo: 'Cosechas' },
+  { key: 'exportar_excel_cosechas',     label: 'Exportar Excel',      grupo: 'Cosechas' },
+  { key: 'editar_caidas_cosechas',      label: 'Editar caídas',       grupo: 'Cosechas' },
+  { key: 'reset_proyeccion',            label: 'Reset proyección',    grupo: 'Cosechas' },
+  { key: 'vaciar_cosechas',             label: 'Vaciar cosechas',     grupo: 'Cosechas' },
 ];
 const MODULOS_DEF = [
   { key: 'proyeccion', label: 'Proyección Móvil' },
@@ -6770,9 +6780,9 @@ const ROLES_DEF = [
 // Permisos por defecto según rol
 const PERMISOS_POR_ROL = {
   admin:   PERMISOS_DEF.map(p => p.key), // todo
-  jefe:    ['cargar_archivos','exportar_excel','descargar_plantillas','anadir_metas','editar_metas','vaciar_metas','editar_cvc','eliminar_cvc','anadir_cvc','vaciar_cosechas'],
-  gerente: ['cargar_archivos','exportar_excel','descargar_plantillas','anadir_metas','editar_metas','editar_cvc','anadir_cvc'],
-  analista:['exportar_excel','descargar_plantillas'],
+  jefe:    ['crear_usuarios','editar_usuarios','cargar_metas','exportar_plantilla_metas','anadir_metas','editar_metas','vaciar_metas','editar_cvc','eliminar_cvc','anadir_cvc','cargar_cosechas','exportar_plantillas_cosechas','exportar_excel_cosechas','editar_caidas_cosechas','reset_proyeccion','vaciar_cosechas'],
+  gerente: ['editar_usuarios','cargar_metas','exportar_plantilla_metas','anadir_metas','editar_metas','editar_cvc','anadir_cvc','cargar_cosechas','exportar_plantillas_cosechas','exportar_excel_cosechas','editar_caidas_cosechas','reset_proyeccion'],
+  analista:['exportar_excel_cosechas','exportar_plantillas_cosechas'],
   usuario: [],
 };
 
@@ -6846,6 +6856,7 @@ async function loginSubmit() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-wrapper').style.display  = '';
     actualizarHeaderUsuario();
+    aplicarPermisosUI();
     // Cargar datos
     metasCargar();
     cosInicializarStorage();
@@ -6930,14 +6941,42 @@ function mostrarApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-wrapper').style.display  = '';
   actualizarHeaderUsuario();
+  aplicarPermisosUI();
   metasCargar();
   cosInicializarStorage();
   // Siempre abrir en Panel de Inicio al entrar/refrescar
   mostrarPanelInicio();
 }
-// ══════════════════════════════════════════════════════════════
-// GESTIÓN DE USUARIOS
-// ══════════════════════════════════════════════════════════════
+// ── Aplicar permisos a la UI ──
+function aplicarPermisosUI() {
+  const show = (id, perm) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = tienePerm(perm) ? '' : 'none';
+  };
+  const hide = (id, perm) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = tienePerm(perm) ? 'none' : '';
+  };
+
+  // ── Cosechas: Cargar Excel ──
+  show('btn-cos-cargar-r5',    'cargar_cosechas');
+  show('btn-cos-cargar-fact',  'cargar_cosechas');
+  // ── Cosechas: Exportar Plantillas ──
+  show('btn-cos-plantilla-r5',   'exportar_plantillas_cosechas');
+  show('btn-cos-plantilla-fact', 'exportar_plantillas_cosechas');
+  // ── Cosechas: Exportar Excel ──
+  const btnExpExcel = document.getElementById('btn-exportar-excel-cosechas');
+  if (btnExpExcel) btnExpExcel.style.display = tienePerm('exportar_excel_cosechas') ? '' : 'none';
+  // ── Cosechas: Vaciar ──
+  const btnVaciar = document.getElementById('btn-vaciar-cosechas');
+  if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
+  // ── Cosechas: Editar caídas (controla si los inputs de % en proyección son editables) ──
+  window._perm_editar_caidas   = tienePerm('editar_caidas_cosechas');
+  // ── Cosechas: Reset proyección ──
+  window._perm_reset_proyeccion = tienePerm('reset_proyeccion');
+}
+
+
 
 function guTab(tab) {
   document.getElementById('gu-panel-lista').style.display  = tab === 'lista' ? '' : 'none';
@@ -8804,7 +8843,7 @@ function cosInit() {
   });
   // Mostrar/ocultar botón reset según tab
   const resetBtn = document.getElementById('btn-reset-proy');
-  if (resetBtn) resetBtn.style.display = cosTabActual === 'proyeccion' ? 'block' : 'none';
+  if (resetBtn) resetBtn.style.display = (cosTabActual === 'proyeccion' && window._perm_reset_proyeccion !== false) ? 'block' : 'none';
   // Inicializar datos
   cosRenderHistorial();
 }
@@ -8813,13 +8852,12 @@ function cosInit() {
 function mostrarPanelCosechas() {
   setHeaderModulo('Cosechas');
   document.getElementById('main-content').style.display = 'none';
-  // Usar classList en lugar de style.display para no pisar el estado del panel-inicio
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); pi.style.display = ''; }
   document.getElementById('panel-codigos-cvc') && (document.getElementById('panel-codigos-cvc').style.display = 'none');
   document.getElementById('panel-metas') && (document.getElementById('panel-metas').style.display = 'none');
   document.getElementById('panel-cosechas').style.display = 'block';
-  // Mostrar botón vaciar solo si tiene permiso
+  aplicarPermisosUI();
   const btnVaciar = document.getElementById('btn-vaciar-cosechas');
   if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
   cosInit();
@@ -9063,7 +9101,7 @@ function cosTab(tab, btn) {
   btn.classList.add('active');
 
   const resetBtn = document.getElementById('btn-reset-proy');
-  if (resetBtn) resetBtn.style.display = tab === 'proyeccion' ? 'block' : 'none';
+  if (resetBtn) resetBtn.style.display = (tab === 'proyeccion' && window._perm_reset_proyeccion !== false) ? 'block' : 'none';
 
   const wrap = document.getElementById('cos-tabla-wrap');
   const panelAnalisis = document.getElementById('cos-panel-analisis');
@@ -9366,11 +9404,20 @@ function cosRenderProyeccion(result) {
     return s + '$ ' + Math.round(a).toLocaleString('es-CO');
   };
   const fmtN = (n) => n > 0 ? n.toLocaleString('es-CO') : '—';
-  const inp = (id, val, cb, color='var(--naranja)', w='50px') =>
-    `<input type="number" id="${id}" value="${val}" min="0" max="200" step="1" onchange="${cb}"
+  const puedeEditarCaidas   = window._perm_editar_caidas   !== false;
+  const puedeReset          = window._perm_reset_proyeccion !== false;
+
+  const inp = (id, val, cb, color='var(--naranja)', w='50px') => {
+    if (!puedeEditarCaidas) {
+      // Solo lectura — mostrar valor sin input
+      return `<span style="width:${w};display:inline-block;text-align:center;color:${color};font-size:12px;font-weight:700;">${val}</span>`;
+    }
+    return `<input type="number" id="${id}" value="${val}" min="0" max="200" step="1"
+      oninput="${cb}" onchange="${cb}"
       style="width:${w};background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;
              padding:3px 4px;color:${color};font-family:'Inter Tight',sans-serif;
              font-size:12px;font-weight:700;text-align:center;outline:none;-moz-appearance:textfield;">`;
+  };
 
   const renderM1 = (seg, color) => {
     const f = proy[seg].filas[0];
@@ -9419,8 +9466,8 @@ function cosRenderProyeccion(result) {
       <div style="background:var(--gris-medio);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gris-linea)">
         <span style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blanco)">${titulo}</span>
         <div style="text-align:right">
-          <div style="font-size:17px;font-weight:800;color:${color};line-height:1">${fmtCOPM(d.total)}</div>
-          <div style="font-size:9px;color:var(--texto-dim)">sub ${fmtCOPM(d.subtotal)}</div>
+          <div id="proy-blk-total-${seg}" style="font-size:17px;font-weight:800;color:${color};line-height:1">${fmtCOPM(d.total)}</div>
+          <div id="proy-blk-sub-${seg}" style="font-size:9px;color:var(--texto-dim)">sub ${fmtCOPM(d.subtotal)}</div>
         </div>
       </div>
       <table style="width:100%;border-collapse:collapse;flex:1">
@@ -9450,13 +9497,13 @@ function cosRenderProyeccion(result) {
       <div style="background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(249,115,22,0.1));border:1px solid var(--gris-linea);border-radius:4px;padding:14px 18px;display:flex;align-items:center;gap:24px">
         <div>
           <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:3px">PROYECCIÓN · ${proyMesLabel(proy.mesProy)}</div>
-          <div style="font-size:34px;font-weight:800;color:var(--verde);line-height:1">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
-          <div style="font-size:11px;color:var(--texto-dim);margin-top:3px">Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global ${p.caida_global}%</div>
+          <div id="proy-gran-total" style="font-size:34px;font-weight:800;color:var(--verde);line-height:1">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
+          <div id="proy-subtotal-label" style="font-size:11px;color:var(--texto-dim);margin-top:3px">Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%</div>
         </div>
         <div style="display:flex;gap:20px">
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Postpago</div><div style="font-size:17px;font-weight:700;color:var(--azul)">${fmtCOPM(proy.post.total)}</div></div>
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Power</div><div style="font-size:17px;font-weight:700;color:var(--amarillo)">${fmtCOPM(proy.pow.total)}</div></div>
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Acelerador</div><div style="font-size:17px;font-weight:700;color:var(--morado)">${fmtCOPM(proy.acel.total)}</div></div>
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Postpago</div><div id="proy-tot-post" style="font-size:17px;font-weight:700;color:var(--azul)">${fmtCOPM(proy.post.total)}</div></div>
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Power</div><div id="proy-tot-pow" style="font-size:17px;font-weight:700;color:var(--amarillo)">${fmtCOPM(proy.pow.total)}</div></div>
+          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Acelerador</div><div id="proy-tot-acel" style="font-size:17px;font-weight:700;color:var(--morado)">${fmtCOPM(proy.acel.total)}</div></div>
         </div>
       </div>
       <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:130px">
@@ -9465,7 +9512,7 @@ function cosRenderProyeccion(result) {
           ${inp('pi-caida-global', p.caida_global, `proySetParam('caida_global',+this.value)`, '#FCA5A5', '52px')}
           <span style="font-size:14px;color:var(--texto-dim)">%</span>
         </div>
-        <button onclick="proyReset()" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>
+        ${puedeReset ? `<button onclick="proyReset()" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>` : ''}
       </div>
     </div>
     <!-- 3 columnas -->
@@ -9475,17 +9522,59 @@ function cosRenderProyeccion(result) {
       ${bloque('Acelerador', 'acel', 'var(--morado)')}
     </div>
     <div style="margin-top:8px;padding:8px 12px;background:rgba(110,231,183,0.06);border:1px solid rgba(110,231,183,0.15);border-radius:3px;font-size:10px;color:var(--verde);line-height:1.6">
-      <strong>Lógica Mes 1:</strong> (P1−P2)×ARPU_P2 + (P2−P3)×tasa%×ARPU_P3 &nbsp;|&nbsp;
-      <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % directamente · Los valores se actualizan al instante
+      <strong>Lógica Mes 1:</strong> (P1×tasa%−P2)×ARPU_P2 + (P2×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp;
+      <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % · Los totales se actualizan al instante
     </div>
   </div>`;
 }
 
+let _proyDebounce = null;
 function proySetParam(key, val) {
   const p = proyGetParams();
-  p[key] = val;
+  p[key] = Number(val);
+
+  // Recalcular inmediatamente y actualizar SOLO los totales sin re-renderizar el DOM
   const result = cosCalcular();
-  if (result) cosRenderProyeccion(result);
+  if (!result) return;
+  const proy = proyCalcular(result);
+  if (!proy) return;
+
+  const fmtCOPM = (v) => {
+    if (!v) return '$ -';
+    const a = Math.abs(v), s = v < 0 ? '-' : '';
+    if (a >= 1e9) return s + '$ ' + (a/1e9).toFixed(2) + 'B';
+    if (a >= 1e6) return s + '$ ' + (a/1e6).toFixed(1) + 'M';
+    return s + '$ ' + Math.round(a).toLocaleString('es-CO');
+  };
+
+  // Actualizar header
+  const elGT = document.getElementById('proy-gran-total');
+  if (elGT) elGT.textContent = '$ ' + Math.round(proy.gran_total).toLocaleString('es-CO');
+  const elSL = document.getElementById('proy-subtotal-label');
+  if (elSL) elSL.innerHTML = `Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%`;
+  const elTP = document.getElementById('proy-tot-post');
+  if (elTP) elTP.textContent = fmtCOPM(proy.post.total);
+  const elTPw = document.getElementById('proy-tot-pow');
+  if (elTPw) elTPw.textContent = fmtCOPM(proy.pow.total);
+  const elTA = document.getElementById('proy-tot-acel');
+  if (elTA) elTA.textContent = fmtCOPM(proy.acel.total);
+
+  // Actualizar totales de cada bloque
+  ['post','pow','acel'].forEach(seg => {
+    const elBT = document.getElementById(`proy-blk-total-${seg}`);
+    if (elBT) elBT.textContent = fmtCOPM(proy[seg].total);
+    const elBS = document.getElementById(`proy-blk-sub-${seg}`);
+    if (elBS) elBS.textContent = 'sub ' + fmtCOPM(proy[seg].subtotal);
+  });
+
+  // Re-render completo con debounce solo si cambia una tasa (que afecta las filas)
+  // Para caida_global no hace falta re-render completo
+  if (key !== 'caida_global') {
+    clearTimeout(_proyDebounce);
+    _proyDebounce = setTimeout(() => {
+      cosRenderProyeccion(result);
+    }, 600);
+  }
 }
 
 function proyReset() {
@@ -9816,6 +9905,15 @@ function cosInicializarStorage() {
     const wrap = document.getElementById('cos-tabla-wrap');
     if (wrap) wrap.innerHTML = ''; // limpiar spinner si lo había
 
+    // Intentar reconstruir globals desde cache local para que comparativo funcione
+    // (esto es sincrónico y rápido si los datos están en localStorage)
+    if (cosArchivosR5.length === 0) {
+      // Los archivos aún no se cargaron en este punto del PASO 1
+      // El comparativo se llenará en el PASO 2 cuando se reconstruyan los globals
+    } else {
+      cosReconstruirGlobales();
+    }
+
     // Renderizar con el resultado cacheado
     if (cosTabActual === 'analisis') {
       const pa = document.getElementById('cos-panel-analisis');
@@ -9879,7 +9977,7 @@ function cosInicializarStorage() {
 
     if (mismoFingerprint && resultCached) {
       // Archivos no cambiaron → datos ya correctos, solo re-renderizar con tab activo
-      cosReconstruirGlobales(); // poblar filtros
+      cosReconstruirGlobales(); // poblar filtros y globals (cosR5Data, cosFactData)
       cosRenderHistorial();
       // Re-renderizar la tabla con el tab que esté activo en este momento
       const result = cosCalcular();
@@ -9887,13 +9985,17 @@ function cosInicializarStorage() {
         if (cosTabActual === 'analisis') {
           document.getElementById('cos-panel-analisis').style.display = 'block';
           document.getElementById('cos-tabla-wrap').innerHTML = '';
-          cosRenderAnalytics(result);
+          cosRenderAnalytics(result); // incluye cosRenderComparativo() al final
         } else if (cosTabActual === 'proyeccion') {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderProyeccion(result);
+          // Si el análisis estaba visible antes, refrescar el comparativo
+          cosRenderComparativo();
         } else {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderTabla(result);
+          // Refrescar comparativo por si el panel análisis está en background
+          cosRenderComparativo();
         }
       }
       return;
@@ -10560,44 +10662,74 @@ function cosRenderAnalytics(result) {
 
 
 function cosRenderComparativo() {
-  if (!cosR5Data || !cosFactData) return;
+  // Obtener datos — primero de globals, si no del cache
+  let r5 = cosR5Data;
+  let fact = cosFactData;
+
+  if (!r5 || !fact) {
+    // Intentar reconstruir desde cache
+    try {
+      const raw = localStorage.getItem(COS_RESULT_KEY);
+      if (!raw) return;
+      const entry = JSON.parse(raw);
+      if (!entry || !entry.result) return;
+      // Reconstruir desde el result cacheado no es posible directo,
+      // necesitamos los datos crudos — usar los globals reconstruidos
+    } catch(e) {}
+    return;
+  }
+
   const filtros = cosGetFiltros();
 
   // Agrupar P1 por sede y canal
   const porSede  = {};
   const porCanal = {};
 
-  for (const f of cosFactData) {
+  for (const f of fact) {
     if (!f.concepto) continue;
     if (!(f.concepto === 'Comision' && f.tipo === 'Comision')) continue;
     if (f.mes_liq !== '1') continue;
-    const r5 = cosR5Data[f.co_id];
-    if (!r5) continue;
-    if (filtros.canal    && r5.origen       !== filtros.canal)    continue;
-    if (filtros.servicio && r5.servicio     !== filtros.servicio) continue;
-    const sede   = r5.operacion_op || 'Sin sede';
-    const canal  = r5.origen       || 'Sin canal';
+    const r5e = r5[f.co_id];
+    if (!r5e) continue;
+    if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
+    if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
+    if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
+    const sede   = r5e.operacion_op || 'Sin sede';
+    const canal  = r5e.origen       || 'Sin canal';
     if (!porSede[sede])   porSede[sede]  = { p:0, tot:0 };
     if (!porCanal[canal]) porCanal[canal]= { p:0, tot:0 };
     porSede[sede].p++;
     porCanal[canal].p++;
   }
-  // Altas por sede/canal
-  for (const [co_id, d] of Object.entries(cosR5Data)) {
-    if (filtros.canal    && d.origen    !== filtros.canal)    continue;
-    if (filtros.servicio && d.servicio  !== filtros.servicio) continue;
+
+  // Altas totales por sede/canal (del R5 filtrado)
+  for (const [co_id, d] of Object.entries(r5)) {
+    if (filtros.sede     && d.operacion_op !== filtros.sede)     continue;
+    if (filtros.canal    && d.origen       !== filtros.canal)    continue;
+    if (filtros.servicio && d.servicio     !== filtros.servicio) continue;
     const sede  = d.operacion_op || 'Sin sede';
     const canal = d.origen       || 'Sin canal';
     if (porSede[sede])   porSede[sede].tot++;
     if (porCanal[canal]) porCanal[canal].tot++;
   }
 
-  const buildComp = (obj) => {
+  const elSede  = document.getElementById('cos-comp-sede');
+  const elCanal = document.getElementById('cos-comp-canal');
+  if (!elSede || !elCanal) return;
+
+  if (Object.keys(porSede).length === 0) {
+    elSede.innerHTML  = '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos de sede en el R5</div>';
+    elCanal.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos de canal en el R5</div>';
+    return;
+  }
+
+  const buildComp = (obj, labelCol) => {
     const rows = Object.entries(obj)
       .map(([k,v]) => ({ k, pct: v.tot ? v.p/v.tot*100 : 0, p: v.p, tot: v.tot }))
       .sort((a,b) => b.pct - a.pct);
+    if (!rows.length) return '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos</div>';
     return '<table class="cos-comp-table">' +
-      '<tr><th>Sede/Canal</th><th style="text-align:right">% P1</th><th style="text-align:right">Pagadas</th></tr>' +
+      `<tr><th>${labelCol}</th><th style="text-align:right">% P1</th><th style="text-align:right">Altas</th><th style="text-align:right">Pagadas</th></tr>` +
       rows.map(r => {
         const col = r.pct>=80?'#34D399':r.pct>=50?'#FCD34D':'#F87171';
         return `<tr>
@@ -10606,13 +10738,14 @@ function cosRenderComparativo() {
             <div class="cos-prog-bar"><div class="cos-prog-fill" style="width:${Math.min(r.pct,100)}%;background:${col};"></div></div>
           </td>
           <td style="text-align:right;color:${col};font-weight:700;">${r.pct.toFixed(0)}%</td>
+          <td style="text-align:right;color:var(--texto-dim);">${r.tot.toLocaleString('es-CO')}</td>
           <td style="text-align:right;color:var(--texto-dim);">${r.p.toLocaleString('es-CO')}</td>
         </tr>`;
       }).join('') + '</table>';
   };
 
-  document.getElementById('cos-comp-sede').innerHTML  = buildComp(porSede);
-  document.getElementById('cos-comp-canal').innerHTML = buildComp(porCanal);
+  elSede.innerHTML  = buildComp(porSede,  'Sede');
+  elCanal.innerHTML = buildComp(porCanal, 'Canal');
 }
 
 // ══════════════════════════════════════════════════════════════
