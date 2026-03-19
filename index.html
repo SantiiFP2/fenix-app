@@ -1750,44 +1750,55 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <!-- Panel Análisis (visible solo en tab analisis) -->
   <div id="cos-panel-analisis" style="display:none;padding-top:4px;">
 
-    <!-- KPI cards -->
-    <div class="cos-kpi-row" id="cos-kpi-row"></div>
+    <!-- Fila 1: KPI retenciones + Total Cobrado destacado -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px;">
+      <!-- KPIs de retención -->
+      <div class="cos-chart-card" style="padding:14px 16px;">
+        <div class="cos-chart-title" style="margin-bottom:10px;">📊 Indicadores de Retención</div>
+        <div class="cos-kpi-row" id="cos-kpi-row" style="margin-bottom:0;"></div>
+      </div>
+      <!-- Total Cobrado destacado -->
+      <div class="cos-chart-card" style="padding:14px 18px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:180px;gap:6px;">
+        <div class="cos-chart-title">💰 Total Cobrado</div>
+        <div id="cos-kpi-total-cobrado" style="font-size:28px;font-weight:800;color:var(--verde);line-height:1;text-align:center;"></div>
+        <div id="cos-kpi-total-sub" style="font-size:11px;color:var(--texto-dim);text-align:center;"></div>
+      </div>
+    </div>
 
-    <!-- Fila 1: Barras + Línea -->
-    <div class="cos-charts-grid" style="margin-bottom:12px;">
+    <!-- Fila 2: Valor promedio por pago (Postpago + Power) -->
+    <div class="cos-chart-card" style="margin-bottom:10px;">
+      <div class="cos-chart-title" style="margin-bottom:10px;">💵 Valor Promedio por Línea y Pago</div>
+      <div id="cos-arpu-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+    </div>
+
+    <!-- Fila 3: Barras + Tendencia -->
+    <div class="cos-charts-grid" style="margin-bottom:10px;">
       <div class="cos-chart-card">
-        <div class="cos-chart-title">📊 Pagos vs Caídas por Cosecha</div>
+        <div class="cos-chart-title">📊 Pagos vs Caídas por Cosecha (Postpago)</div>
         <canvas id="cos-chart-barras" class="cos-chart-canvas"></canvas>
       </div>
       <div class="cos-chart-card">
-        <div class="cos-chart-title">🍩 Distribución Total (Pagos vs Caídas)</div>
-        <canvas id="cos-chart-dona" class="cos-chart-canvas" style="max-height:200px;"></canvas>
+        <div class="cos-chart-title">📈 Tendencia % de Pago por Cosecha</div>
+        <canvas id="cos-chart-linea" class="cos-chart-canvas" style="max-height:220px;"></canvas>
       </div>
     </div>
 
-    <!-- Fila 2: Línea tendencia -->
-    <div class="cos-chart-card" style="margin-bottom:12px;">
-      <div class="cos-chart-title">📈 Tendencia % de Pago por Cosecha</div>
-      <canvas id="cos-chart-linea" class="cos-chart-canvas" style="max-height:180px;"></canvas>
-    </div>
-
-    <!-- Fila 3: Comparativo sede/canal + Eficiencia CFM -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+    <!-- Fila 4: Comportamiento por Sede y Canal (Postpago) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <div class="cos-chart-card">
-        <div class="cos-chart-title">🏢 % P1 por Sede</div>
-        <div id="cos-comp-sede"></div>
+        <div class="cos-chart-title">🏢 Comportamiento de Pago por Sede</div>
+        <div id="cos-comp-sede" style="overflow-x:auto;"></div>
       </div>
       <div class="cos-chart-card">
-        <div class="cos-chart-title">📡 % P1 por Canal</div>
-        <div id="cos-comp-canal"></div>
+        <div class="cos-chart-title">📡 Comportamiento de Pago por Canal</div>
+        <div id="cos-comp-canal" style="overflow-x:auto;"></div>
       </div>
-
     </div>
 
-    <!-- Fila 4: Semáforo de cosechas -->
+    <!-- Fila 5: Semáforo de Cosechas -->
     <div class="cos-chart-card">
       <div class="cos-chart-title">🚦 Semáforo de Cosechas</div>
-      <div id="cos-semaforo-grid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+      <div id="cos-semaforo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px;"></div>
     </div>
 
   </div>
@@ -10483,42 +10494,48 @@ let cosChartDona   = null;
 
 function cosRenderAnalytics(result) {
   const { altasPost, altasPow, postPag, powPag, acelPag } = result;
-  const isPow  = cosTabActual === 'power';
-  const isAcel = cosTabActual === 'acelerador';
-  const altasObj = isPow ? altasPow : altasPost;
-  const pagObj   = isPow ? powPag : isAcel ? acelPag : postPag;
 
-  // Asegurar que globals estén listos para el comparativo sede/canal
+  // Siempre usar postpago como base del análisis (salvo semáforo que ya es contextual)
+  const altasObj = altasPost;
+  const pagPost  = postPag;
+  const pagPow   = powPag;
+
+  // Asegurar globals para comparativo
   if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
 
-  const meses = [...new Set([...Object.keys(altasObj), ...Object.keys(pagObj)])].sort();
+  const meses = [...new Set([...Object.keys(altasObj), ...Object.keys(pagPost)])].sort();
 
-  // ── Totales ──
-  let totAltas=0, totP1=0,totV1=0, totP2=0,totV2=0, totP3=0,totV3=0, totP4=0,totV4=0;
+  // ── Totales postpago ──
+  let totAltas=0, totP1=0,totV1=0, totP2=0,totV2=0, totP3=0,totV3=0;
   meses.forEach(mes => {
-    const a = altasObj[mes]?.n || 0; totAltas += a;
-    totP1 += pagObj[mes]?.['1']?.n||0; totV1 += pagObj[mes]?.['1']?.v||0;
-    totP2 += pagObj[mes]?.['2']?.n||0; totV2 += pagObj[mes]?.['2']?.v||0;
-    totP3 += pagObj[mes]?.['3']?.n||0; totV3 += pagObj[mes]?.['3']?.v||0;
-    if (isPow){ totP4 += pagObj[mes]?.['4']?.n||0; totV4 += pagObj[mes]?.['4']?.v||0; }
+    totAltas += altasObj[mes]?.n || 0;
+    totP1 += pagPost[mes]?.['1']?.n||0; totV1 += pagPost[mes]?.['1']?.v||0;
+    totP2 += pagPost[mes]?.['2']?.n||0; totV2 += pagPost[mes]?.['2']?.v||0;
+    totP3 += pagPost[mes]?.['3']?.n||0; totV3 += pagPost[mes]?.['3']?.v||0;
   });
 
+  // Totales power
+  const mesPow = [...new Set([...Object.keys(altasPow), ...Object.keys(pagPow)])].sort();
+  let powP1=0,powV1=0, powP2=0,powV2=0, powP3=0,powV3=0, powP4=0,powV4=0;
+  mesPow.forEach(mes => {
+    powP1 += pagPow[mes]?.['1']?.n||0; powV1 += pagPow[mes]?.['1']?.v||0;
+    powP2 += pagPow[mes]?.['2']?.n||0; powV2 += pagPow[mes]?.['2']?.v||0;
+    powP3 += pagPow[mes]?.['3']?.n||0; powV3 += pagPow[mes]?.['3']?.v||0;
+    powP4 += pagPow[mes]?.['4']?.n||0; powV4 += pagPow[mes]?.['4']?.v||0;
+  });
+
+  const totCob = totV1+totV2+totV3;
   const pctP1   = totAltas ? totP1/totAltas*100 : 0;
   const retP1P2 = totP1 ? totP2/totP1*100 : 0;
   const retP2P3 = totP2 ? totP3/totP2*100 : 0;
-  const totCob  = totV1+totV2+totV3+totV4;
-  const totCaid = totAltas - totP1;
+  const retP1P3 = totP1 ? totP3/totP1*100 : 0;
 
   const semColor = v => v>=80?'#34D399':v>=50?'#FCD34D':'#F87171';
   const semClass = v => v>=80?'verde':v>=50?'amarillo':'rojo';
+  const fmtK = v => v >= 1e6 ? '$'+(v/1e6).toFixed(1)+'M' : '$'+Math.round(v).toLocaleString('es-CO');
 
-  // ── KPI cards ──
+  // ── KPI Retenciones ──
   document.getElementById('cos-kpi-row').innerHTML = `
-    <div class="cos-kpi">
-      <div class="cos-kpi-label">Total Altas</div>
-      <div class="cos-kpi-val">${totAltas.toLocaleString('es-CO')}</div>
-      <div class="cos-kpi-sub">${meses.length} cosechas</div>
-    </div>
     <div class="cos-kpi">
       <div class="cos-kpi-label">% Pago 1 prom.</div>
       <div class="cos-kpi-val" style="color:${semColor(pctP1)}">
@@ -10541,37 +10558,64 @@ function cosRenderAnalytics(result) {
       <div class="cos-kpi-sub">${totP3.toLocaleString('es-CO')} llegaron a P3</div>
     </div>
     <div class="cos-kpi">
-      <div class="cos-kpi-label">Total Cobrado</div>
-      <div class="cos-kpi-val" style="font-size:16px;">$${(totCob/1e6).toFixed(1)}M</div>
-      <div class="cos-kpi-sub">P1+P2+P3${isPow?'+P4':''}</div>
+      <div class="cos-kpi-label">Retención P1→P3</div>
+      <div class="cos-kpi-val" style="color:${semColor(retP1P3)}">
+        <span class="cos-semaforo sem-${semClass(retP1P3)}"></span>${retP1P3.toFixed(1)}%
+      </div>
+      <div class="cos-kpi-sub">Retención global</div>
     </div>
     <div class="cos-kpi">
-      <div class="cos-kpi-label">Val. Prom / línea P1</div>
-      <div class="cos-kpi-val" style="font-size:16px;">$${totP1?Math.round(totV1/totP1).toLocaleString('es-CO'):'-'}</div>
-      <div class="cos-kpi-sub">Solo primer pago</div>
-    </div>
-    <div class="cos-kpi">
-      <div class="cos-kpi-label">Val. Prom Total / línea</div>
-      <div class="cos-kpi-val" style="font-size:16px;">$${totP1?Math.round(totCob/totP1).toLocaleString('es-CO'):'-'}</div>
-      <div class="cos-kpi-sub">P1+P2+P3${isPow?'+P4':''} acumulado</div>
-    </div>
-    <div class="cos-kpi">
-      <div class="cos-kpi-label">Caídas P1 Total</div>
-      <div class="cos-kpi-val" style="color:#F87171;font-size:16px;">${totCaid.toLocaleString('es-CO')}</div>
-      <div class="cos-kpi-sub">${totAltas?((totCaid/totAltas)*100).toFixed(1):0}% del total</div>
+      <div class="cos-kpi-label">Total Altas</div>
+      <div class="cos-kpi-val">${totAltas.toLocaleString('es-CO')}</div>
+      <div class="cos-kpi-sub">${meses.length} cosechas</div>
     </div>
   `;
+
+  // ── Total Cobrado grande ──
+  const elTC = document.getElementById('cos-kpi-total-cobrado');
+  const elTS = document.getElementById('cos-kpi-total-sub');
+  if (elTC) elTC.textContent = fmtK(totCob);
+  if (elTS) elTS.textContent = `P1+P2+P3 Postpago`;
+
+  // ── ARPU por pago: Postpago y Power ──
+  const arpuGrid = document.getElementById('cos-arpu-grid');
+  if (arpuGrid) {
+    const arpuRow = (label, p1n, p1v, p2n, p2v, p3n, p3v, p4n, p4v, color) => {
+      const a1 = p1n ? Math.round(p1v/p1n) : 0;
+      const a2 = p2n ? Math.round(p2v/p2n) : 0;
+      const a3 = p3n ? Math.round(p3v/p3n) : 0;
+      const a4 = p4n ? Math.round(p4v/p4n) : 0;
+      const cols = p4n > 0
+        ? `<div class="cos-kpi"><div class="cos-kpi-label">P4 / línea</div><div class="cos-kpi-val" style="font-size:15px;color:${color}">${a4?'$'+a4.toLocaleString('es-CO'):'-'}</div><div class="cos-kpi-sub">${p4n.toLocaleString('es-CO')} líneas</div></div>`
+        : '';
+      return `<div style="border:1px solid var(--gris-linea);border-radius:4px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${color};margin-bottom:10px;">${label}</div>
+        <div style="display:grid;grid-template-columns:repeat(${p4n>0?4:3},1fr);gap:8px;">
+          <div class="cos-kpi"><div class="cos-kpi-label">P1 / línea</div><div class="cos-kpi-val" style="font-size:15px;color:${color}">${a1?'$'+a1.toLocaleString('es-CO'):'-'}</div><div class="cos-kpi-sub">${p1n.toLocaleString('es-CO')} líneas</div></div>
+          <div class="cos-kpi"><div class="cos-kpi-label">P2 / línea</div><div class="cos-kpi-val" style="font-size:15px;color:${color}">${a2?'$'+a2.toLocaleString('es-CO'):'-'}</div><div class="cos-kpi-sub">${p2n.toLocaleString('es-CO')} líneas</div></div>
+          <div class="cos-kpi"><div class="cos-kpi-label">P3 / línea</div><div class="cos-kpi-val" style="font-size:15px;color:${color}">${a3?'$'+a3.toLocaleString('es-CO'):'-'}</div><div class="cos-kpi-sub">${p3n.toLocaleString('es-CO')} líneas</div></div>
+          ${cols}
+        </div>
+      </div>`;
+    };
+    arpuGrid.innerHTML =
+      arpuRow('Postpago', totP1,totV1, totP2,totV2, totP3,totV3, 0,0, 'var(--azul)') +
+      arpuRow('Power', powP1,powV1, powP2,powV2, powP3,powV3, powP4,powV4, 'var(--amarillo)');
+  }
 
   const isDark = !document.body.classList.contains('modo-claro');
   const gridCol = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
   const lblCol  = isDark?'#6B7280':'#9CA3AF';
 
-  // ── Barras apiladas ──
-  const datP1a = meses.map(m => pagObj[m]?.['1']?.n||0);
-  const datP2a = meses.map(m => pagObj[m]?.['2']?.n||0);
-  const datP3a = meses.map(m => pagObj[m]?.['3']?.n||0);
-  const datP4a = isPow ? meses.map(m => pagObj[m]?.['4']?.n||0) : [];
+  // ── Barras Postpago con línea % caída P1→P3 ──
+  const datP1a = meses.map(m => pagPost[m]?.['1']?.n||0);
+  const datP2a = meses.map(m => pagPost[m]?.['2']?.n||0);
+  const datP3a = meses.map(m => pagPost[m]?.['3']?.n||0);
   const datCa  = meses.map((m,i) => Math.max(0,(altasObj[m]?.n||0)-datP1a[i]));
+  const datPctP1P3 = meses.map((m,i) => {
+    const p1 = datP1a[i]; const p3 = datP3a[i];
+    return p1 > 0 ? +(p3/p1*100).toFixed(1) : 0;
+  });
 
   if (cosChartBarras) cosChartBarras.destroy();
   cosChartBarras = new Chart(document.getElementById('cos-chart-barras').getContext('2d'), {
@@ -10579,11 +10623,13 @@ function cosRenderAnalytics(result) {
     data: {
       labels: meses,
       datasets: [
-        { label:'Pago 1', data:datP1a, backgroundColor:'rgba(124,58,237,0.8)', borderRadius:2 },
-        { label:'Pago 2', data:datP2a, backgroundColor:'rgba(59,130,246,0.8)',  borderRadius:2 },
-        { label:'Pago 3', data:datP3a, backgroundColor:'rgba(16,185,129,0.8)',  borderRadius:2 },
-        ...(isPow?[{ label:'Pago 4', data:datP4a, backgroundColor:'rgba(245,158,11,0.8)', borderRadius:2 }]:[]),
-        { label:'Caídas', data:datCa, backgroundColor:'rgba(239,68,68,0.25)', borderRadius:2 },
+        { label:'Pago 1', data:datP1a, backgroundColor:'rgba(124,58,237,0.8)', borderRadius:2, yAxisID:'y' },
+        { label:'Pago 2', data:datP2a, backgroundColor:'rgba(59,130,246,0.8)',  borderRadius:2, yAxisID:'y' },
+        { label:'Pago 3', data:datP3a, backgroundColor:'rgba(16,185,129,0.8)',  borderRadius:2, yAxisID:'y' },
+        { label:'Caídas', data:datCa,  backgroundColor:'rgba(239,68,68,0.2)',   borderRadius:2, yAxisID:'y' },
+        { label:'% P1→P3', data:datPctP1P3, type:'line', borderColor:'#F97316',
+          backgroundColor:'transparent', tension:0.3, pointRadius:4,
+          borderWidth:2, yAxisID:'y2', borderDash:[4,3] },
       ]
     },
     options:{
@@ -10591,36 +10637,15 @@ function cosRenderAnalytics(result) {
       plugins:{ legend:{ labels:{ color:lblCol, font:{ size:10, family:"'Inter Tight'" }, boxWidth:10 }}},
       scales:{
         x:{ stacked:true, ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
-        y:{ stacked:true, ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }}
+        y:{ stacked:true, ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
+        y2:{ position:'right', min:0, max:110,
+             ticks:{ color:'#F97316', font:{ size:9 }, callback:v=>v+'%' },
+             grid:{ drawOnChartArea:false }}
       }
     }
   });
 
-  // ── Dona: distribución total ──
-  const donaData = isPow
-    ? [totP1,totP2,totP3,totP4,totCaid]
-    : [totP1,totP2,totP3,totCaid];
-  const donaLabels = isPow
-    ? ['Pago 1','Pago 2','Pago 3','Pago 4','Caídas P1']
-    : ['Pago 1','Pago 2','Pago 3','Caídas P1'];
-  const donaColors = isPow
-    ? ['rgba(124,58,237,0.85)','rgba(59,130,246,0.85)','rgba(16,185,129,0.85)','rgba(245,158,11,0.85)','rgba(239,68,68,0.4)']
-    : ['rgba(124,58,237,0.85)','rgba(59,130,246,0.85)','rgba(16,185,129,0.85)','rgba(239,68,68,0.4)'];
-
-  if (cosChartDona) cosChartDona.destroy();
-  cosChartDona = new Chart(document.getElementById('cos-chart-dona').getContext('2d'), {
-    type: 'doughnut',
-    data: { labels: donaLabels, datasets:[{ data: donaData, backgroundColor: donaColors, borderWidth:0 }]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{ position:'right', labels:{ color:lblCol, font:{ size:10, family:"'Inter Tight'" }, boxWidth:12 }},
-        tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('es-CO')} (${totAltas?((ctx.parsed/totAltas)*100).toFixed(1):0}%)` }}
-      }
-    }
-  });
-
-  // ── Línea de tendencia ──
+  // ── Línea tendencia (sin cambios) ──
   const pctP1t = meses.map((m,i) => { const a=altasObj[m]?.n||0; return a?+(datP1a[i]/a*100).toFixed(1):0; });
   const pctP2t = meses.map((m,i) => { const a=altasObj[m]?.n||0; return a?+(datP2a[i]/a*100).toFixed(1):0; });
   const pctP3t = meses.map((m,i) => { const a=altasObj[m]?.n||0; return a?+(datP3a[i]/a*100).toFixed(1):0; });
@@ -10646,29 +10671,61 @@ function cosRenderAnalytics(result) {
     }
   });
 
-  // ── Semáforo de cosechas ──
+  // ── Semáforo ampliado (postpago) ──
   const semGrid = document.getElementById('cos-semaforo-grid');
   semGrid.innerHTML = meses.map(mes => {
-    const a  = altasObj[mes]?.n||0;
-    const p1 = pagObj[mes]?.['1']?.n||0;
-    const p2 = pagObj[mes]?.['2']?.n||0;
-    const p3 = pagObj[mes]?.['3']?.n||0;
-    const pc1 = a?p1/a*100:0;
-    const pc2 = a?p2/a*100:0;   // sobre altas, no sobre P1
-    const pc3 = a?p3/a*100:0;   // sobre altas, no sobre P2
+    const a  = altasObj[mes]?.n || 0;
+    const p1 = pagPost[mes]?.['1']?.n||0; const v1 = pagPost[mes]?.['1']?.v||0;
+    const p2 = pagPost[mes]?.['2']?.n||0; const v2 = pagPost[mes]?.['2']?.v||0;
+    const p3 = pagPost[mes]?.['3']?.n||0; const v3 = pagPost[mes]?.['3']?.v||0;
+    const pc1 = a?p1/a*100:0, pc2 = a?p2/a*100:0, pc3 = a?p3/a*100:0;
+    const ret12 = p1?p2/p1*100:0, ret23 = p2?p3/p2*100:0;
+    const totV = v1+v2+v3;
     const col = semColor(pc1);
-    return `<div style="background:var(--gris-medio);border-radius:8px;padding:10px 14px;min-width:130px;border-left:3px solid ${col};">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:700;color:var(--texto-dim);letter-spacing:0.8px;margin-bottom:6px;">${mes}</div>
-      <div style="font-size:12px;display:flex;flex-direction:column;gap:3px;">
-        <span style="color:${semColor(pc1)};font-weight:700;">P1: ${pc1.toFixed(0)}%</span>
-        <span style="color:${semColor(pc2)};font-weight:600;">P2: ${pc2.toFixed(0)}%</span>
-        <span style="color:${semColor(pc3)};font-weight:600;">P3: ${pc3.toFixed(0)}%</span>
+    return `<div style="background:var(--gris-medio);border-radius:6px;padding:12px 14px;border-left:3px solid ${col};">
+      <div style="font-size:11px;font-weight:700;color:var(--blanco);margin-bottom:8px;letter-spacing:.5px;">${mes}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:.8px;text-transform:uppercase;">Altas</div>
+          <div style="font-size:14px;font-weight:700;color:var(--texto)">${a.toLocaleString('es-CO')}</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:.8px;text-transform:uppercase;">Cobrado</div>
+          <div style="font-size:13px;font-weight:700;color:var(--verde)">${fmtK(totV)}</div>
+        </div>
       </div>
-      <div style="font-size:10px;color:var(--texto-dim);margin-top:4px;">${a.toLocaleString('es-CO')} altas</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:10px;color:var(--texto-dim)">P1</span>
+          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
+            <div style="width:${Math.min(pc1,100)}%;height:100%;background:${semColor(pc1)};border-radius:2px;"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${semColor(pc1)};min-width:36px;text-align:right">${pc1.toFixed(0)}%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:10px;color:var(--texto-dim)">P2</span>
+          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
+            <div style="width:${Math.min(pc2,100)}%;height:100%;background:${semColor(pc2)};border-radius:2px;"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${semColor(pc2)};min-width:36px;text-align:right">${pc2.toFixed(0)}%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:10px;color:var(--texto-dim)">P3</span>
+          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
+            <div style="width:${Math.min(pc3,100)}%;height:100%;background:${semColor(pc3)};border-radius:2px;"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${semColor(pc3)};min-width:36px;text-align:right">${pc3.toFixed(0)}%</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;font-size:10px;color:var(--texto-dim);">
+        <span>P1→P2 <strong style="color:${semColor(ret12)}">${ret12.toFixed(0)}%</strong></span>
+        <span>P2→P3 <strong style="color:${semColor(ret23)}">${ret23.toFixed(0)}%</strong></span>
+        <span>${p3.toLocaleString('es-CO')} pag. P3</span>
+      </div>
     </div>`;
   }).join('');
 
-  // ── Comparativo sede/canal + Eficiencia CFM ──
+  // ── Comparativo sede/canal ──
   cosRenderComparativo();
 }
 
@@ -10676,89 +10733,98 @@ function cosRenderAnalytics(result) {
 
 
 function cosRenderComparativo() {
-  // Si los globals no están listos, intentar reconstruirlos primero
-  if (!cosR5Data || !cosFactData) {
-    // Solo llamar si hay archivos cargados en memoria
-    if (cosArchivosR5.length > 0 || cosArchivosFact.length > 0) {
-      cosReconstruirGlobales();
-    }
-  }
-
+  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
   const r5   = cosR5Data;
   const fact = cosFactData;
-
-  if (!r5 || !fact) {
-    // Datos aún no disponibles — salir silenciosamente
-    return;
-  }
+  if (!r5 || !fact) return;
 
   const filtros = cosGetFiltros();
+  const semColor = v => v>=80?'#34D399':v>=50?'#FCD34D':'#F87171';
 
-  // Agrupar P1 por sede y canal
-  const porSede  = {};
-  const porCanal = {};
+  // Acumular por sede y canal: altas + P1/P2/P3 unidades y valores (solo postpago)
+  const bySede  = {};
+  const byCanal = {};
 
-  for (const f of fact) {
-    if (!f.concepto) continue;
-    if (!(f.concepto === 'Comision' && f.tipo === 'Comision')) continue;
-    if (f.mes_liq !== '1') continue;
-    const r5e = r5[f.co_id];
-    if (!r5e) continue;
-    if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
-    if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
-    if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
-    const sede   = r5e.operacion_op || 'Sin sede';
-    const canal  = r5e.origen       || 'Sin canal';
-    if (!porSede[sede])   porSede[sede]  = { p:0, tot:0 };
-    if (!porCanal[canal]) porCanal[canal]= { p:0, tot:0 };
-    porSede[sede].p++;
-    porCanal[canal].p++;
-  }
+  const add = (obj, key, field, n, v) => {
+    if (!obj[key]) obj[key] = { altas:0, p1n:0,p1v:0, p2n:0,p2v:0, p3n:0,p3v:0 };
+    obj[key][field+'n'] = (obj[key][field+'n']||0) + n;
+    obj[key][field+'v'] = (obj[key][field+'v']||0) + v;
+  };
 
-  // Altas totales por sede/canal (del R5 filtrado)
-  for (const [co_id, d] of Object.entries(r5)) {
+  // Altas del R5
+  for (const [, d] of Object.entries(r5)) {
+    if (d.is_power) continue;
     if (filtros.sede     && d.operacion_op !== filtros.sede)     continue;
     if (filtros.canal    && d.origen       !== filtros.canal)    continue;
     if (filtros.servicio && d.servicio     !== filtros.servicio) continue;
     const sede  = d.operacion_op || 'Sin sede';
     const canal = d.origen       || 'Sin canal';
-    if (porSede[sede])   porSede[sede].tot++;
-    if (porCanal[canal]) porCanal[canal].tot++;
+    if (!bySede[sede])   bySede[sede]  = { altas:0, p1n:0,p1v:0, p2n:0,p2v:0, p3n:0,p3v:0 };
+    if (!byCanal[canal]) byCanal[canal]= { altas:0, p1n:0,p1v:0, p2n:0,p2v:0, p3n:0,p3v:0 };
+    bySede[sede].altas++;
+    byCanal[canal].altas++;
   }
+
+  // Pagos de la factura
+  for (const f of fact) {
+    if (!f.concepto || f.concepto !== 'Comision' || f.tipo !== 'Comision') continue;
+    const r5e = r5[f.co_id];
+    if (!r5e || r5e.is_power) continue;
+    if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
+    if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
+    if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
+    const sede  = r5e.operacion_op || 'Sin sede';
+    const canal = r5e.origen       || 'Sin canal';
+    const pn = f.mes_liq;
+    if (!['1','2','3'].includes(String(pn))) continue;
+    const campo = 'p' + pn;
+    if (bySede[sede])   { bySede[sede][campo+'n']  = (bySede[sede][campo+'n'] ||0)+1; bySede[sede][campo+'v']  = (bySede[sede][campo+'v'] ||0)+f.val; }
+    if (byCanal[canal]) { byCanal[canal][campo+'n'] = (byCanal[canal][campo+'n']||0)+1; byCanal[canal][campo+'v'] = (byCanal[canal][campo+'v']||0)+f.val; }
+  }
+
+  const fmtK = v => v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+Math.round(v).toLocaleString('es-CO');
+
+  const buildTable = (obj, labelCol) => {
+    const rows = Object.entries(obj)
+      .map(([k,d]) => ({ k, ...d }))
+      .filter(r => r.altas > 0)
+      .sort((a,b) => b.altas - a.altas);
+    if (!rows.length) return '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos</div>';
+
+    const header = `<table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--gris-linea)">
+          <th style="padding:6px 8px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">${labelCol}</th>
+          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Altas</th>
+          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P1</th>
+          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P2</th>
+          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P3</th>
+          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Cobrado</th>
+        </tr>
+      </thead><tbody>`;
+
+    const rowsHtml = rows.map(r => {
+      const pct1 = r.altas ? r.p1n/r.altas*100 : 0;
+      const pct2 = r.altas ? r.p2n/r.altas*100 : 0;
+      const pct3 = r.altas ? r.p3n/r.altas*100 : 0;
+      const totV = r.p1v + r.p2v + r.p3v;
+      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+        <td style="padding:7px 8px;font-weight:600;color:var(--blanco);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.k}">${r.k}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--texto-dim)">${r.altas.toLocaleString('es-CO')}</td>
+        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct1)}">${pct1.toFixed(0)}%</td>
+        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct2)}">${pct2.toFixed(0)}%</td>
+        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct3)}">${pct3.toFixed(0)}%</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--verde);font-weight:600;">${fmtK(totV)}</td>
+      </tr>`;
+    }).join('');
+
+    return header + rowsHtml + '</tbody></table>';
+  };
 
   const elSede  = document.getElementById('cos-comp-sede');
   const elCanal = document.getElementById('cos-comp-canal');
-  if (!elSede || !elCanal) return;
-
-  if (Object.keys(porSede).length === 0) {
-    elSede.innerHTML  = '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos de sede en el R5</div>';
-    elCanal.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos de canal en el R5</div>';
-    return;
-  }
-
-  const buildComp = (obj, labelCol) => {
-    const rows = Object.entries(obj)
-      .map(([k,v]) => ({ k, pct: v.tot ? v.p/v.tot*100 : 0, p: v.p, tot: v.tot }))
-      .sort((a,b) => b.pct - a.pct);
-    if (!rows.length) return '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos</div>';
-    return '<table class="cos-comp-table">' +
-      `<tr><th>${labelCol}</th><th style="text-align:right">% P1</th><th style="text-align:right">Altas</th><th style="text-align:right">Pagadas</th></tr>` +
-      rows.map(r => {
-        const col = r.pct>=80?'#34D399':r.pct>=50?'#FCD34D':'#F87171';
-        return `<tr>
-          <td>
-            <div style="font-size:11px;font-weight:600;margin-bottom:2px;">${r.k}</div>
-            <div class="cos-prog-bar"><div class="cos-prog-fill" style="width:${Math.min(r.pct,100)}%;background:${col};"></div></div>
-          </td>
-          <td style="text-align:right;color:${col};font-weight:700;">${r.pct.toFixed(0)}%</td>
-          <td style="text-align:right;color:var(--texto-dim);">${r.tot.toLocaleString('es-CO')}</td>
-          <td style="text-align:right;color:var(--texto-dim);">${r.p.toLocaleString('es-CO')}</td>
-        </tr>`;
-      }).join('') + '</table>';
-  };
-
-  elSede.innerHTML  = buildComp(porSede,  'Sede');
-  elCanal.innerHTML = buildComp(porCanal, 'Canal');
+  if (elSede)  elSede.innerHTML  = buildTable(bySede,  'Sede');
+  if (elCanal) elCanal.innerHTML = buildTable(byCanal, 'Canal');
 }
 
 // ══════════════════════════════════════════════════════════════
