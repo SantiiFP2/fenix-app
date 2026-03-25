@@ -1748,57 +1748,57 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div id="cos-tabla-wrap"></div>
 
   <!-- Panel Análisis (visible solo en tab analisis) -->
-  <div id="cos-panel-analisis" style="display:none;padding-top:4px;">
+  <div id="cos-panel-analisis" style="display:none;padding-top:8px;">
 
     <!-- Fila 1: KPI retenciones + Total Cobrado destacado -->
-    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:12px;">
       <!-- KPIs de retención -->
-      <div class="cos-chart-card" style="padding:14px 16px;">
-        <div class="cos-chart-title" style="margin-bottom:10px;">📊 Indicadores de Retención</div>
-        <div class="cos-kpi-row" id="cos-kpi-row" style="margin-bottom:0;"></div>
+      <div class="cos-chart-card" style="padding:18px 20px;">
+        <div class="cos-chart-title" style="margin-bottom:14px;">📊 Indicadores de Retención</div>
+        <div class="cos-kpi-row" id="cos-kpi-row" style="margin-bottom:0;gap:12px;"></div>
       </div>
       <!-- Total Cobrado destacado -->
-      <div class="cos-chart-card" style="padding:14px 18px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:180px;gap:6px;">
+      <div class="cos-chart-card" style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:220px;gap:8px;">
         <div class="cos-chart-title">💰 Total Cobrado</div>
-        <div id="cos-kpi-total-cobrado" style="font-size:28px;font-weight:800;color:var(--verde);line-height:1;text-align:center;"></div>
-        <div id="cos-kpi-total-sub" style="font-size:11px;color:var(--texto-dim);text-align:center;"></div>
+        <div id="cos-kpi-total-cobrado" style="font-size:34px;font-weight:800;color:var(--verde);line-height:1;text-align:center;"></div>
+        <div id="cos-kpi-total-sub" style="font-size:12px;color:var(--texto-dim);text-align:center;"></div>
       </div>
     </div>
 
     <!-- Fila 2: Valor promedio por pago (Postpago + Power) -->
-    <div class="cos-chart-card" style="margin-bottom:10px;">
-      <div class="cos-chart-title" style="margin-bottom:10px;">💵 Valor Promedio por Línea y Pago</div>
-      <div id="cos-arpu-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+    <div class="cos-chart-card" style="margin-bottom:12px;padding:16px 20px;">
+      <div class="cos-chart-title" style="margin-bottom:14px;">💵 Valor Promedio por Línea y Pago</div>
+      <div id="cos-arpu-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
     </div>
 
-    <!-- Fila 3: Barras + Tendencia -->
-    <div class="cos-charts-grid" style="margin-bottom:10px;">
-      <div class="cos-chart-card">
+    <!-- Fila 3: Barras + Tendencia — charts más altos -->
+    <div style="display:grid;grid-template-columns:3fr 2fr;gap:12px;margin-bottom:12px;">
+      <div class="cos-chart-card" style="padding:16px 20px;">
         <div class="cos-chart-title">📊 Pagos vs Caídas por Cosecha (Postpago)</div>
-        <canvas id="cos-chart-barras" class="cos-chart-canvas"></canvas>
+        <canvas id="cos-chart-barras" class="cos-chart-canvas" style="max-height:300px;"></canvas>
       </div>
-      <div class="cos-chart-card">
+      <div class="cos-chart-card" style="padding:16px 20px;">
         <div class="cos-chart-title">📈 Tendencia % de Pago por Cosecha</div>
-        <canvas id="cos-chart-linea" class="cos-chart-canvas" style="max-height:220px;"></canvas>
+        <canvas id="cos-chart-linea" class="cos-chart-canvas" style="max-height:300px;"></canvas>
       </div>
     </div>
 
-    <!-- Fila 4: Comportamiento por Sede y Canal (Postpago) -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-      <div class="cos-chart-card">
-        <div class="cos-chart-title">🏢 Comportamiento de Pago por Sede</div>
-        <div id="cos-comp-sede" style="overflow-x:auto;"></div>
+    <!-- Fila 4: Comportamiento por Sede y Canal (Postpago) — tablas más grandes -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="cos-chart-card" style="padding:16px 20px;">
+        <div class="cos-chart-title" style="margin-bottom:12px;">🏢 Comportamiento de Pago por Sede</div>
+        <div id="cos-comp-sede" style="overflow-x:auto;max-height:420px;overflow-y:auto;"></div>
       </div>
-      <div class="cos-chart-card">
-        <div class="cos-chart-title">📡 Comportamiento de Pago por Canal</div>
-        <div id="cos-comp-canal" style="overflow-x:auto;"></div>
+      <div class="cos-chart-card" style="padding:16px 20px;">
+        <div class="cos-chart-title" style="margin-bottom:12px;">📡 Comportamiento de Pago por Canal</div>
+        <div id="cos-comp-canal" style="overflow-x:auto;max-height:420px;overflow-y:auto;"></div>
       </div>
     </div>
 
-    <!-- Fila 5: Semáforo de Cosechas -->
-    <div class="cos-chart-card">
+    <!-- Fila 5: Semáforo de Cosechas — cards más anchas -->
+    <div class="cos-chart-card" style="padding:16px 20px;">
       <div class="cos-chart-title">🚦 Semáforo de Cosechas</div>
-      <div id="cos-semaforo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px;"></div>
+      <div id="cos-semaforo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:12px;"></div>
     </div>
 
   </div>
@@ -10682,42 +10682,42 @@ function cosRenderAnalytics(result) {
     const ret12 = p1?p2/p1*100:0, ret23 = p2?p3/p2*100:0;
     const totV = v1+v2+v3;
     const col = semColor(pc1);
-    return `<div style="background:var(--gris-medio);border-radius:6px;padding:12px 14px;border-left:3px solid ${col};">
-      <div style="font-size:11px;font-weight:700;color:var(--blanco);margin-bottom:8px;letter-spacing:.5px;">${mes}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+    return `<div style="background:var(--gris-medio);border-radius:8px;padding:14px 16px;border-left:4px solid ${col};">
+      <div style="font-size:12px;font-weight:700;color:var(--blanco);margin-bottom:10px;letter-spacing:.5px;">${mes}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
         <div>
           <div style="font-size:9px;color:var(--texto-dim);letter-spacing:.8px;text-transform:uppercase;">Altas</div>
-          <div style="font-size:14px;font-weight:700;color:var(--texto)">${a.toLocaleString('es-CO')}</div>
+          <div style="font-size:16px;font-weight:700;color:var(--texto)">${a.toLocaleString('es-CO')}</div>
         </div>
         <div>
           <div style="font-size:9px;color:var(--texto-dim);letter-spacing:.8px;text-transform:uppercase;">Cobrado</div>
-          <div style="font-size:13px;font-weight:700;color:var(--verde)">${fmtK(totV)}</div>
+          <div style="font-size:14px;font-weight:700;color:var(--verde)">${fmtK(totV)}</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
+      <div style="display:flex;flex-direction:column;gap:5px;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:10px;color:var(--texto-dim)">P1</span>
-          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
-            <div style="width:${Math.min(pc1,100)}%;height:100%;background:${semColor(pc1)};border-radius:2px;"></div>
+          <span style="font-size:10px;color:var(--texto-dim);min-width:18px;">P1</span>
+          <div style="flex:1;margin:0 10px;height:5px;background:var(--gris-linea);border-radius:3px;overflow:hidden;">
+            <div style="width:${Math.min(pc1,100)}%;height:100%;background:${semColor(pc1)};border-radius:3px;"></div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${semColor(pc1)};min-width:36px;text-align:right">${pc1.toFixed(0)}%</span>
+          <span style="font-size:12px;font-weight:700;color:${semColor(pc1)};min-width:38px;text-align:right">${pc1.toFixed(0)}%</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:10px;color:var(--texto-dim)">P2</span>
-          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
-            <div style="width:${Math.min(pc2,100)}%;height:100%;background:${semColor(pc2)};border-radius:2px;"></div>
+          <span style="font-size:10px;color:var(--texto-dim);min-width:18px;">P2</span>
+          <div style="flex:1;margin:0 10px;height:5px;background:var(--gris-linea);border-radius:3px;overflow:hidden;">
+            <div style="width:${Math.min(pc2,100)}%;height:100%;background:${semColor(pc2)};border-radius:3px;"></div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${semColor(pc2)};min-width:36px;text-align:right">${pc2.toFixed(0)}%</span>
+          <span style="font-size:12px;font-weight:700;color:${semColor(pc2)};min-width:38px;text-align:right">${pc2.toFixed(0)}%</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:10px;color:var(--texto-dim)">P3</span>
-          <div style="flex:1;margin:0 8px;height:4px;background:var(--gris-linea);border-radius:2px;overflow:hidden;">
-            <div style="width:${Math.min(pc3,100)}%;height:100%;background:${semColor(pc3)};border-radius:2px;"></div>
+          <span style="font-size:10px;color:var(--texto-dim);min-width:18px;">P3</span>
+          <div style="flex:1;margin:0 10px;height:5px;background:var(--gris-linea);border-radius:3px;overflow:hidden;">
+            <div style="width:${Math.min(pc3,100)}%;height:100%;background:${semColor(pc3)};border-radius:3px;"></div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${semColor(pc3)};min-width:36px;text-align:right">${pc3.toFixed(0)}%</span>
+          <span style="font-size:12px;font-weight:700;color:${semColor(pc3)};min-width:38px;text-align:right">${pc3.toFixed(0)}%</span>
         </div>
       </div>
-      <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;font-size:10px;color:var(--texto-dim);">
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;font-size:10px;color:var(--texto-dim);">
         <span>P1→P2 <strong style="color:${semColor(ret12)}">${ret12.toFixed(0)}%</strong></span>
         <span>P2→P3 <strong style="color:${semColor(ret23)}">${ret23.toFixed(0)}%</strong></span>
         <span>${p3.toLocaleString('es-CO')} pag. P3</span>
@@ -10765,21 +10765,28 @@ function cosRenderComparativo() {
     byCanal[canal].altas++;
   }
 
-  // Pagos de la factura
+  // Pagos de la factura — se usan solo Comision postpago (mismo criterio que cosCalcular)
   for (const f of fact) {
-    if (!f.concepto || f.concepto !== 'Comision' || f.tipo !== 'Comision') continue;
+    if (!f.concepto || f.concepto !== 'Comision') continue;
     const r5e = r5[f.co_id];
-    if (!r5e || r5e.is_power) continue;
+    if (!r5e) continue;
+    // Excluir power (igual que la lógica principal)
+    const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
+    if (isPow) continue;
     if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
     if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
     if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
     const sede  = r5e.operacion_op || 'Sin sede';
     const canal = r5e.origen       || 'Sin canal';
-    const pn = f.mes_liq;
-    if (!['1','2','3'].includes(String(pn))) continue;
+    const pn = String(f.mes_liq);
+    if (!['1','2','3'].includes(pn)) continue;
     const campo = 'p' + pn;
-    if (bySede[sede])   { bySede[sede][campo+'n']  = (bySede[sede][campo+'n'] ||0)+1; bySede[sede][campo+'v']  = (bySede[sede][campo+'v'] ||0)+f.val; }
-    if (byCanal[canal]) { byCanal[canal][campo+'n'] = (byCanal[canal][campo+'n']||0)+1; byCanal[canal][campo+'v'] = (byCanal[canal][campo+'v']||0)+f.val; }
+    if (!bySede[sede])   bySede[sede]  = { altas:0, p1n:0,p1v:0, p2n:0,p2v:0, p3n:0,p3v:0 };
+    if (!byCanal[canal]) byCanal[canal]= { altas:0, p1n:0,p1v:0, p2n:0,p2v:0, p3n:0,p3v:0 };
+    bySede[sede][campo+'n']  = (bySede[sede][campo+'n'] ||0)+1;
+    bySede[sede][campo+'v']  = (bySede[sede][campo+'v'] ||0)+f.val;
+    byCanal[canal][campo+'n'] = (byCanal[canal][campo+'n']||0)+1;
+    byCanal[canal][campo+'v'] = (byCanal[canal][campo+'v']||0)+f.val;
   }
 
   const fmtK = v => v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+Math.round(v).toLocaleString('es-CO');
@@ -10791,15 +10798,15 @@ function cosRenderComparativo() {
       .sort((a,b) => b.altas - a.altas);
     if (!rows.length) return '<div style="padding:12px;font-size:12px;color:var(--texto-dim)">Sin datos</div>';
 
-    const header = `<table style="width:100%;border-collapse:collapse;font-size:11px;">
+    const header = `<table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead>
         <tr style="border-bottom:1px solid var(--gris-linea)">
-          <th style="padding:6px 8px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">${labelCol}</th>
-          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Altas</th>
-          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P1</th>
-          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P2</th>
-          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P3</th>
-          <th style="padding:6px 8px;text-align:right;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Cobrado</th>
+          <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">${labelCol}</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Altas</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P1</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P2</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">% P3</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim)">Cobrado</th>
         </tr>
       </thead><tbody>`;
 
@@ -10809,12 +10816,12 @@ function cosRenderComparativo() {
       const pct3 = r.altas ? r.p3n/r.altas*100 : 0;
       const totV = r.p1v + r.p2v + r.p3v;
       return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-        <td style="padding:7px 8px;font-weight:600;color:var(--blanco);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.k}">${r.k}</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--texto-dim)">${r.altas.toLocaleString('es-CO')}</td>
-        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct1)}">${pct1.toFixed(0)}%</td>
-        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct2)}">${pct2.toFixed(0)}%</td>
-        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${semColor(pct3)}">${pct3.toFixed(0)}%</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--verde);font-weight:600;">${fmtK(totV)}</td>
+        <td style="padding:9px 10px;font-weight:600;color:var(--blanco);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.k}">${r.k}</td>
+        <td style="padding:9px 10px;text-align:right;color:var(--texto-dim)">${r.altas.toLocaleString('es-CO')}</td>
+        <td style="padding:9px 10px;text-align:right;font-weight:700;color:${semColor(pct1)}">${pct1.toFixed(0)}%</td>
+        <td style="padding:9px 10px;text-align:right;font-weight:700;color:${semColor(pct2)}">${pct2.toFixed(0)}%</td>
+        <td style="padding:9px 10px;text-align:right;font-weight:700;color:${semColor(pct3)}">${pct3.toFixed(0)}%</td>
+        <td style="padding:9px 10px;text-align:right;color:var(--verde);font-weight:600;">${fmtK(totV)}</td>
       </tr>`;
     }).join('');
 
