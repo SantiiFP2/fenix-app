@@ -10075,9 +10075,18 @@ function cosReconstruirGlobales() {
 
   // Factura: solo si los datos ya están cargados
   const filasDisponibles = cosArchivosFact.filter(a => a.filas !== null && a.filas !== undefined);
-  cosFactData = filasDisponibles.length > 0
-    ? filasDisponibles.flatMap(a => a.filas)
-    : null;
+  if (filasDisponibles.length > 0) {
+    cosFactData = filasDisponibles.flatMap(a => a.filas);
+    // Re-clasificar filas del caché que vengan sin concepto/tipo
+    cosFactData.forEach(f => {
+      if (!f.concepto && f.conc_raw) {
+        const info = cosConceptos.find(c => c.raw === f.conc_raw);
+        if (info) { f.concepto = info.concepto; f.tipo = info.tipo; }
+      }
+    });
+  } else {
+    cosFactData = null;
+  }
 
   // Mostrar filtros
   const hayFiltros = document.getElementById('cos-filtros');
