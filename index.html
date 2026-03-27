@@ -9967,23 +9967,6 @@ function cosInicializarStorage() {
     } catch(e) { /* sin meta en localStorage */ }
   }
 
-  // PRE-PASO: precargar metadatos y datos crudos desde localStorage
-  if (cosArchivosR5.length === 0 && cosArchivosFact.length === 0) {
-    try {
-      const metaR5   = JSON.parse(localStorage.getItem(COS_STORAGE_R5)   || '[]');
-      const metaFact = JSON.parse(localStorage.getItem(COS_STORAGE_FACT) || '[]');
-      metaR5.forEach(m => {
-        const cached = cosCacheLeer(m.id, m.fecha);
-        if (cached) cosArchivosR5.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, registros:cached, _cargado:true, _desdeCache:true });
-      });
-      metaFact.forEach(m => {
-        const cached = cosCacheLeer(m.id, m.fecha);
-        if (cached) cosArchivosFact.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, filas:cached, _cargado:true, _desdeCache:true });
-      });
-      if (cosArchivosR5.length > 0 || cosArchivosFact.length > 0) cosReconstruirGlobales();
-    } catch(e) { /* sin meta en localStorage */ }
-  }
-
   // PASO 1: ¿Hay un resultado cacheado? Mostrarlo ANTES de tocar la API
   const resultCached = (() => {
     try { return JSON.parse(localStorage.getItem(COS_RESULT_KEY)); } catch(e) { return null; }
@@ -10133,27 +10116,25 @@ function cosReconstruirGlobales() {
     }
   }
 
-  // Factura: solo si los datos ya están cargados — deduplicar por co_id+mes_liq+conc_raw
+  // Factura: solo si los datos ya están cargados
+  // DEDUP: cada co_id solo puede tener UN pago por número de pago (mes_liq)
+  // Las facturas son acumulativas — el mismo pago aparece en múltiples archivos
   const filasDisponibles = cosArchivosFact.filter(a => a.filas !== null && a.filas !== undefined);
   if (filasDisponibles.length > 0) {
     const todasFilas = filasDisponibles.flatMap(a => a.filas);
-    // Deduplicar: si el mismo co_id tiene el mismo pago (mes_liq) del mismo concepto
-    // en múltiples archivos, quedarse solo con uno (el de mayor valor absoluto)
     const vistos = new Map();
     todasFilas.forEach(f => {
-      const key = `${f.co_id}|${f.mes_liq}|${f.conc_raw}`;
-      const prev = vistos.get(key);
-      if (!prev || Math.abs(f.val) > Math.abs(prev.val)) vistos.set(key, f);
+      const key = `${f.co_id}|${f.mes_liq}`;
+      if (!vistos.has(key)) vistos.set(key, f);
     });
     cosFactData = [...vistos.values()];
-    // Re-clasificar filas que vengan sin concepto/tipo
+    // Re-clasificar filas del caché que vengan sin concepto/tipo
     cosFactData.forEach(f => {
       if (!f.concepto && f.conc_raw) {
         const info = cosConceptos.find(c => c.raw === f.conc_raw);
         if (info) { f.concepto = info.concepto; f.tipo = info.tipo; }
       }
     });
-    console.log(`[Cosechas] Factura: ${todasFilas.length} filas → ${cosFactData.length} únicas (dedup ${todasFilas.length - cosFactData.length})`);
   } else {
     cosFactData = null;
   }
