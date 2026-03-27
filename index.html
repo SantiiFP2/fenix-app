@@ -6417,7 +6417,7 @@ function selectSubmenu(tipo) {
     document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
     const movil = document.querySelector('.sb-product[onclick*="selectProductMovil"]');
     if (movil) movil.classList.add('active');
-    renderTablaCatalogoCvc();
+    cargarCatalogoCvcBD().then(() => { sincronizarCvcs(); renderTablaCatalogoCvc(); });
   }
 }
 
@@ -6652,6 +6652,12 @@ function guardarCvcFull() {
   cerrarModalCvcFull();
   renderTablaCatalogoCvc();
   sincronizarCvcs();
+  // Persistir en BD
+  const hijosParaBD = hijosFinales.map(h => ({ codigo: h.codigo, region: h.region || '' }));
+  authFetch(`${FENIX_API}/cvcs`, {
+    method: 'POST',
+    body: JSON.stringify({ madre: codigo, sede, categoria, hijos: hijosParaBD })
+  }).catch(e => console.warn('Error guardando CVC en BD:', e.message));
 }
 
 function eliminarCvcCatalogo(madre) {
@@ -6680,6 +6686,33 @@ function eliminarCvcCatalogo(madre) {
   if (iConf>=0) cvcConfigs.splice(iConf,1);
   renderTablaCatalogoCvc();
   sincronizarCvcs();
+  // Eliminar de BD
+  authFetch(`${FENIX_API}/cvcs/${encodeURIComponent(madre)}`, { method: 'DELETE' })
+    .catch(e => console.warn('Error eliminando CVC de BD:', e.message));
+}
+
+// ══════════════════════════════════════
+// CARGA CATÁLOGO CVC DESDE BD
+// ══════════════════════════════════════
+async function cargarCatalogoCvcBD() {
+  try {
+    const res = await authFetch(`${FENIX_API}/cvcs`).then(r => r.json());
+    if (!res.ok || !res.cvcs.length) return; // BD vacía → mantener hardcoded
+    // Limpiar catálogo actual y reconstruir desde BD
+    CATALOGO_CVC.length = 0;
+    Object.keys(GRUPOS_MADRE).forEach(k => delete GRUPOS_MADRE[k]);
+    Object.keys(CODIGO_A_MADRE).forEach(k => delete CODIGO_A_MADRE[k]);
+    MADRES_LISTA.length = 0;
+    res.cvcs.forEach(({ madre, sede, categoria, hijos }) => {
+      hijos.forEach(h => {
+        CATALOGO_CVC.push({ codigo: h.codigo, madre, region: h.region || '', categoria, sede });
+        CODIGO_A_MADRE[h.codigo] = madre;
+      });
+      GRUPOS_MADRE[madre] = { madre, sede, categoria, hijos };
+      MADRES_LISTA.push(madre);
+    });
+    MADRES_LISTA.sort();
+  } catch(e) { console.warn('No se pudo cargar catálogo CVC desde BD:', e.message); }
 }
 
 // ══════════════════════════════════════
