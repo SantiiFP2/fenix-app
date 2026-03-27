@@ -7161,6 +7161,33 @@ async function guardarEdicionUsuario() {
   } catch(e) { alert('Error de conexión'); }
 }
 
+async function cosEliminarArchivo(id, tipo) {
+  if (!confirm('¿Eliminar este archivo de la base de datos?')) return;
+  try {
+    const res = await authFetch(`${FENIX_API}/cosechas/${tipo}/${id}`, { method: 'DELETE' }).then(r => r.json());
+    if (!res.ok) { alert('Error: ' + (res.error || 'No se pudo eliminar')); return; }
+    // Quitar del cache local
+    const arr = tipo === 'r5' ? cosArchivosR5 : cosArchivosFact;
+    const arch = arr.find(a => a.id === id);
+    if (arch) {
+      try { localStorage.removeItem(cosCacheKey(arch.id, arch.fecha)); } catch(e) {}
+    }
+    if (tipo === 'r5')      cosArchivosR5   = cosArchivosR5.filter(a => a.id !== id);
+    else                    cosArchivosFact = cosArchivosFact.filter(a => a.id !== id);
+    localStorage.removeItem(COS_RESULT_KEY);
+    cosR5Data = null; cosFactData = null;
+    cosReconstruirGlobales();
+    cosRenderHistorial();
+    if (cosR5Data && cosFactData) cosRender();
+    else {
+      const tabs = document.getElementById('cos-tabs');
+      const wrap = document.getElementById('cos-tabla-wrap');
+      if (tabs) tabs.style.display = 'none';
+      if (wrap) wrap.innerHTML = '';
+    }
+  } catch(e) { alert('Error: ' + (e.message || 'Sin conexión')); }
+}
+
 async function vaciarCosechasTodas() {
   if (!confirm('⚠️ ¿Seguro que quieres VACIAR todas las cosechas?\n\nEsta acción eliminará permanentemente todos los archivos R5 y Factura. No se puede deshacer.')) return;
   if (!confirm('Segunda confirmación: ¿Confirmas que quieres borrar TODAS las cosechas?')) return;
@@ -7184,7 +7211,7 @@ async function vaciarCosechasTodas() {
         <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--texto);margin-bottom:6px;">Cosechas vaciadas</div>
         <div style="font-size:12px;">Carga un nuevo archivo R5 y una Factura para comenzar</div>
       </div>`;
-  } catch(e) { alert('Error de conexión'); }
+  } catch(e) { alert('Error: ' + (e.message || 'Sin conexión con el servidor')); }
 }
 
 
@@ -10138,7 +10165,8 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${nReg.toLocaleString('es-CO')} reg · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosEliminarArchivo('${arch.id}','r5')" title="Eliminar este archivo" style="margin-left:4px;background:none;border:1px solid rgba(248,113,113,0.3);border-radius:3px;color:#F87171;font-size:11px;cursor:pointer;padding:2px 6px;flex-shrink:0;">✕</button>`;
         histR5.appendChild(div);
       });
       if (statusR5) statusR5.textContent = `${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totalReg.toLocaleString('es-CO')} registros`;
@@ -10171,7 +10199,8 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${(arch.filas ? arch.filas.length : (arch.n_registros||0)).toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosEliminarArchivo('${arch.id}','factura')" title="Eliminar este archivo" style="margin-left:4px;background:none;border:1px solid rgba(248,113,113,0.3);border-radius:3px;color:#F87171;font-size:11px;cursor:pointer;padding:2px 6px;flex-shrink:0;">✕</button>`;
         histFact.appendChild(div);
       });
       if (statusFact) statusFact.textContent = `${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totalFilas.toLocaleString('es-CO')} filas`;
