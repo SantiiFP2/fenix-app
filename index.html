@@ -10403,7 +10403,7 @@ function cosAplicarEstadoCarga() {
       : 'R5: sin cargar';
   }
   if (miniFact) {
-    const totFact = cosArchivosFact.reduce((s,a) => s + a.filas.length, 0);
+    const totFact = cosArchivosFact.reduce((s,a) => s + (a.filas ? a.filas.length : (a.n_registros||0)), 0);
     miniFact.textContent = cosArchivosFact.length
       ? `Factura: ${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totFact.toLocaleString('es-CO')} filas`
       : 'Factura: sin cargar';
