@@ -9916,6 +9916,24 @@ function cosInicializarStorage() {
   const statusR5   = document.getElementById('cos-status-r5');
   const statusFact = document.getElementById('cos-status-factura');
 
+  // PRE-PASO: Precargar metadatos y datos crudos desde localStorage
+  // para que cosReconstruirGlobales tenga datos disponibles en el PASO 1
+  if (cosArchivosR5.length === 0 && cosArchivosFact.length === 0) {
+    try {
+      const metaR5   = JSON.parse(localStorage.getItem(COS_STORAGE_R5)   || '[]');
+      const metaFact = JSON.parse(localStorage.getItem(COS_STORAGE_FACT) || '[]');
+      metaR5.forEach(m => {
+        const cached = cosCacheLeer(m.id, m.fecha);
+        if (cached) cosArchivosR5.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, registros:cached, _cargado:true, _desdeCache:true });
+      });
+      metaFact.forEach(m => {
+        const cached = cosCacheLeer(m.id, m.fecha);
+        if (cached) cosArchivosFact.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, filas:cached, _cargado:true, _desdeCache:true });
+      });
+      if (cosArchivosR5.length > 0 || cosArchivosFact.length > 0) cosReconstruirGlobales();
+    } catch(e) { /* sin meta en localStorage */ }
+  }
+
   // PASO 1: ¿Hay un resultado cacheado? Mostrarlo ANTES de tocar la API
   const resultCached = (() => {
     try { return JSON.parse(localStorage.getItem(COS_RESULT_KEY)); } catch(e) { return null; }
@@ -9926,16 +9944,7 @@ function cosInicializarStorage() {
     const tabs = document.getElementById('cos-tabs');
     if (tabs) tabs.style.display = 'flex';
     const wrap = document.getElementById('cos-tabla-wrap');
-    if (wrap) wrap.innerHTML = ''; // limpiar spinner si lo había
-
-    // Intentar reconstruir globals desde cache local para que comparativo funcione
-    // (esto es sincrónico y rápido si los datos están en localStorage)
-    if (cosArchivosR5.length === 0) {
-      // Los archivos aún no se cargaron en este punto del PASO 1
-      // El comparativo se llenará en el PASO 2 cuando se reconstruyan los globals
-    } else {
-      cosReconstruirGlobales();
-    }
+    if (wrap) wrap.innerHTML = '';
 
     // Renderizar con el resultado cacheado
     if (cosTabActual === 'analisis') {
@@ -10138,7 +10147,7 @@ function cosRenderHistorial() {
   const badgeFact  = document.getElementById('cos-badge-factura');
   if (histFact) {
     [...histFact.querySelectorAll('.cos-hist-item')].forEach(el => el.remove());
-    const totalFilas = cosArchivosFact.reduce((s,a) => s + a.filas.length, 0);
+    const totalFilas = cosArchivosFact.reduce((s,a) => s + (a.filas ? a.filas.length : (a.n_registros||0)), 0);
     if (cosArchivosFact.length === 0) {
       if (emptyFact) emptyFact.style.display = 'block';
       if (statusFact) statusFact.textContent = '0 archivos · 0 filas';
@@ -10743,32 +10752,12 @@ function cosRenderAnalytics(result) {
 
 
 function cosRenderComparativo() {
-  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
+  // Intentar reconstruir si faltan datos
+  if ((!cosR5Data || !cosFactData) && (cosArchivosR5.length > 0 || cosArchivosFact.length > 0)) {
+    cosReconstruirGlobales();
+  }
   const r5   = cosR5Data;
   const fact = cosFactData;
-
-  // === DIAGNÓSTICO TEMPORAL ===
-  console.log('=== cosRenderComparativo ===');
-  console.log('r5:', r5 ? Object.keys(r5).length + ' registros' : 'NULL');
-  console.log('fact:', fact ? fact.length + ' filas' : 'NULL');
-  if (r5) {
-    const k = Object.keys(r5)[0];
-    console.log('R5 primer registro key:', k, '| valor:', JSON.stringify(r5[k]));
-  }
-  if (fact && fact.length > 0) {
-    console.log('Fact[0]:', JSON.stringify(fact[0]));
-    console.log('Fact[1]:', JSON.stringify(fact[1]));
-    const concs = [...new Set(fact.map(f=>f.concepto))];
-    console.log('Conceptos únicos:', concs);
-    const coids = fact.slice(0,5).map(f=>f.co_id);
-    console.log('co_ids factura (5):', coids);
-    const r5keys = Object.keys(r5||{}).slice(0,5);
-    console.log('co_ids R5 (5):', r5keys);
-    console.log('Tipo co_id factura:', typeof fact[0].co_id);
-    console.log('Tipo co_id R5 key:', typeof r5keys[0]);
-  }
-  // === FIN DIAGNÓSTICO ===
-
   if (!r5 || !fact) return;
 
 
