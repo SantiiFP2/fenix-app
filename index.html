@@ -7192,7 +7192,9 @@ async function vaciarCosechasTodas() {
   if (!confirm('⚠️ ¿Seguro que quieres VACIAR todas las cosechas?\n\nEsta acción eliminará permanentemente todos los archivos R5 y Factura. No se puede deshacer.')) return;
   if (!confirm('Segunda confirmación: ¿Confirmas que quieres borrar TODAS las cosechas?')) return;
   try {
-    const res = await authFetch(`${FENIX_API}/cosechas/all`, { method: 'DELETE' }).then(r => r.json());
+    const raw = await authFetch(`${FENIX_API}/cosechas/all`, { method: 'DELETE' });
+    if (!raw.ok) { alert('Error HTTP ' + raw.status); return; }
+    const res = await raw.json();
     if (!res.ok) { alert('Error: ' + res.error); return; }
     // Limpiar todo el cache local de cosechas (datos crudos + resultado calculado)
     Object.keys(localStorage).filter(k => k.startsWith('fenix_cos')).forEach(k => localStorage.removeItem(k));
@@ -7211,7 +7213,9 @@ async function vaciarCosechasTodas() {
         <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--texto);margin-bottom:6px;">Cosechas vaciadas</div>
         <div style="font-size:12px;">Carga un nuevo archivo R5 y una Factura para comenzar</div>
       </div>`;
-  } catch(e) { alert('Error: ' + (e.message || 'Sin conexión con el servidor')); }
+  } catch(e) {
+    alert('Error al vaciar: ' + (e.message || 'Sin conexión con el servidor'));
+  }
 }
 
 
