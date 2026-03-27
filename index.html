@@ -1738,6 +1738,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     <button class="cos-tab" onclick="cosTab('acelerador',this)">🚀 Acelerador</button>
     <button class="cos-tab" onclick="cosTab('analisis',this)">📊 Análisis</button>
     <button class="cos-tab" onclick="cosTab('proyeccion',this)">🔮 Proyección</button>
+    <button class="cos-tab" onclick="cosTab('sedes',this)">📍 Por Sede</button>
     <button id="btn-reset-proy" onclick="proyResetParams()" title="Restaurar parámetros a valores históricos"
       style="display:none;margin-left:auto;background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 10px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">
       ↺ Reset
@@ -9202,6 +9203,8 @@ function cosTab(tab, btn) {
     cosRenderAnalytics(result);
   } else if (tab === 'proyeccion') {
     cosRenderProyeccion(result);
+  } else if (tab === 'sedes') {
+    cosRenderSedes(result);
   } else if (tab === 'power') {
     cosRenderTabla(result);
   } else if (tab === 'acelerador') {
@@ -9508,6 +9511,143 @@ function cosProyDesgloseSede(granTotal) {
     </div>
     ${rows}
   </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB "POR SEDE" — Proyección distribuida por sede histórica
+// ══════════════════════════════════════════════════════════════
+function cosRenderSedes(result) {
+  const wrap = document.getElementById('cos-tabla-wrap');
+  if (!wrap) return;
+
+  // Necesitamos los globals para saber el cobrado por sede
+  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
+  const r5   = cosR5Data;
+  const fact = cosFactData;
+
+  // Calcular gran_total de proyección
+  const proy = proyCalcular(result);
+  const granTotal = proy ? proy.gran_total : 0;
+
+  // ── Cobrado histórico por sede ──
+  const bySede = {};
+  if (r5 && fact) {
+    for (const [, d] of Object.entries(r5)) {
+      if (d.is_power) continue;
+      const sede = d.operacion_op || 'Sin sede';
+      if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
+      bySede[sede].altas++;
+    }
+    for (const f of fact) {
+      const r5e = r5[f.co_id];
+      if (!r5e) continue;
+      const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
+      if (isPow) continue;
+      const conc = (f.concepto || '').toLowerCase();
+      if (conc === 'acelerador') continue;
+      const pn = String(f.mes_liq);
+      if (!['1','2','3'].includes(pn)) continue;
+      const sede = r5e.operacion_op || 'Sin sede';
+      if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
+      bySede[sede].cobrado += f.val;
+    }
+  }
+
+  const totalCobrado = Object.values(bySede).reduce((s, d) => s + d.cobrado, 0);
+  const fmtM = v => {
+    if (!v) return '$ -';
+    if (v >= 1e9) return '$ ' + (v/1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$ ' + (v/1e6).toFixed(1) + 'M';
+    return '$ ' + Math.round(v).toLocaleString('es-CO');
+  };
+  const semColor = v => v >= 40 ? '#34D399' : v >= 20 ? '#FCD34D' : '#F87171';
+
+  // ── Filas ordenadas por cobrado ──
+  const filas = Object.entries(bySede)
+    .map(([sede, d]) => ({
+      sede,
+      altas:   d.altas,
+      cobrado: d.cobrado,
+      pct:     totalCobrado > 0 ? d.cobrado / totalCobrado : 0,
+      proyVal: granTotal && totalCobrado > 0 ? Math.round(granTotal * d.cobrado / totalCobrado) : 0
+    }))
+    .filter(r => r.altas > 0)
+    .sort((a, b) => b.cobrado - a.cobrado);
+
+  if (!filas.length) {
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)">Sin datos de sede disponibles.</div>';
+    return;
+  }
+
+  // ── Header KPI ──
+  const headerHtml = `
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
+      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Proyección Total</div>
+      <div style="font-size:28px;font-weight:800;color:var(--verde)">${fmtM(granTotal)}</div>
+      <div style="font-size:10px;color:var(--texto-dim);margin-top:2px;">Distribuido entre ${filas.length} sedes</div>
+    </div>
+    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
+      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Cobrado Histórico Base</div>
+      <div style="font-size:28px;font-weight:800;color:var(--azul)">${fmtM(totalCobrado)}</div>
+      <div style="font-size:10px;color:var(--texto-dim);margin-top:2px;">Fuente del % por sede</div>
+    </div>
+    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
+      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Mayor Sede</div>
+      <div style="font-size:16px;font-weight:800;color:var(--blanco);margin-top:4px;">${filas[0]?.sede || '—'}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--verde);margin-top:2px;">${fmtM(filas[0]?.proyVal || 0)}</div>
+    </div>
+  </div>`;
+
+  // ── Tabla ──
+  const rowsHtml = filas.map(r => `
+    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+      <td style="padding:10px 14px;font-weight:600;color:var(--blanco);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.sede}">${r.sede}</td>
+      <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${r.altas.toLocaleString('es-CO')}</td>
+      <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${fmtM(r.cobrado)}</td>
+      <td style="padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;height:5px;background:var(--gris-linea);border-radius:3px;overflow:hidden;">
+            <div style="width:${Math.min(r.pct*100,100).toFixed(1)}%;height:100%;background:var(--azul);border-radius:3px;"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${semColor(r.pct*100)};min-width:42px;text-align:right;">${(r.pct*100).toFixed(1)}%</span>
+        </div>
+      </td>
+      <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:var(--verde);">${fmtM(r.proyVal)}</td>
+    </tr>`).join('');
+
+  const tablaHtml = `
+  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;overflow:hidden;">
+    <div style="padding:10px 14px;background:var(--gris-medio);border-bottom:1px solid var(--gris-linea);">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">🏢 Desglose por Sede</span>
+      <span style="font-size:9px;color:var(--texto-dim);margin-left:8px;">Proyección = Total × % cobrado histórico por sede</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--gris-linea);">
+            <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Sede</th>
+            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Altas R5</th>
+            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Cobrado Hist.</th>
+            <th style="padding:8px 14px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">% Participación</th>
+            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Proyección</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+        <tfoot>
+          <tr style="background:rgba(0,0,0,0.2);border-top:1px solid var(--gris-linea);">
+            <td style="padding:10px 14px;font-weight:700;color:var(--blanco);">TOTAL</td>
+            <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${filas.reduce((s,r)=>s+r.altas,0).toLocaleString('es-CO')}</td>
+            <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${fmtM(totalCobrado)}</td>
+            <td style="padding:10px 14px;font-size:11px;font-weight:700;color:var(--blanco);">100%</td>
+            <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:var(--verde);">${fmtM(granTotal)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>`;
+
+  wrap.innerHTML = `<div style="padding:2px 0 12px;">${headerHtml}${tablaHtml}</div>`;
 }
 
 function cosRenderProyeccion(result) {
