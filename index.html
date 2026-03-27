@@ -10115,7 +10115,7 @@ function cosRenderHistorial() {
         const div = document.createElement('div');
         div.className = 'cos-hist-item';
         div.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
-        const nReg = Object.keys(arch.registros).length;
+        const nReg = arch.registros ? Object.keys(arch.registros).length : (arch.n_registros || 0);
         const fStr = new Date(arch.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'2-digit'});
         div.innerHTML = `
           <span style="font-size:12px;">📊</span>
@@ -10154,7 +10154,7 @@ function cosRenderHistorial() {
           <span style="font-size:12px;">🧾</span>
           <div style="flex:1;min-width:0;">
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
-            <div style="font-size:10px;color:var(--texto-dim);">${arch.filas.length.toLocaleString('es-CO')} filas · ${fStr}</div>
+            <div style="font-size:10px;color:var(--texto-dim);">${(arch.filas ? arch.filas.length : (arch.n_registros||0)).toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
           <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histFact.appendChild(div);
@@ -10746,6 +10746,29 @@ function cosRenderComparativo() {
   if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
   const r5   = cosR5Data;
   const fact = cosFactData;
+
+  // === DIAGNÓSTICO TEMPORAL ===
+  console.log('=== cosRenderComparativo ===');
+  console.log('r5:', r5 ? Object.keys(r5).length + ' registros' : 'NULL');
+  console.log('fact:', fact ? fact.length + ' filas' : 'NULL');
+  if (r5) {
+    const k = Object.keys(r5)[0];
+    console.log('R5 primer registro key:', k, '| valor:', JSON.stringify(r5[k]));
+  }
+  if (fact && fact.length > 0) {
+    console.log('Fact[0]:', JSON.stringify(fact[0]));
+    console.log('Fact[1]:', JSON.stringify(fact[1]));
+    const concs = [...new Set(fact.map(f=>f.concepto))];
+    console.log('Conceptos únicos:', concs);
+    const coids = fact.slice(0,5).map(f=>f.co_id);
+    console.log('co_ids factura (5):', coids);
+    const r5keys = Object.keys(r5||{}).slice(0,5);
+    console.log('co_ids R5 (5):', r5keys);
+    console.log('Tipo co_id factura:', typeof fact[0].co_id);
+    console.log('Tipo co_id R5 key:', typeof r5keys[0]);
+  }
+  // === FIN DIAGNÓSTICO ===
+
   if (!r5 || !fact) return;
 
 
