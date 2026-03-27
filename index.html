@@ -9065,17 +9065,23 @@ function cosCalcular() {
   };
 
   for (const f of cosFactData) {
-    if (!f.concepto) continue;
     const r5 = r5Filtrado[f.co_id];
-    if (!r5) continue;
+    if (!r5) continue; // solo excluir si el co_id no existe en R5
     const mes = r5.mes;
     const pn  = f.mes_liq;
-    const isPow = r5.is_power || f.conc_raw.toLowerCase().includes('propago');
+    const conc = (f.concepto || '').toLowerCase();
+    const raw  = (f.conc_raw || '').toLowerCase();
+    const isPow = r5.is_power || raw.includes('propago');
 
-    if (f.concepto === 'Comision' && f.tipo === 'Comision') {
-      addPag(isPow ? powPag : postPag, mes, pn, f.val);
-    } else if (f.concepto === 'Acelerador' && f.tipo === 'Acelerador de Cumplimiento') {
+    if (conc === 'acelerador') {
       addPag(acelPag, mes, pn, f.val);
+    } else if (conc === 'descuento') {
+      // Descuentos/reversiones: restar del valor (valor negativo en factura)
+      addPag(isPow ? powPag : postPag, mes, pn, f.val);
+    } else {
+      // Todo lo demás (Comision, Incentivo, Apoyo, Semillero, sin clasificar, etc.)
+      // que tenga co_id en R5 se contabiliza como pago postpago/power
+      addPag(isPow ? powPag : postPag, mes, pn, f.val);
     }
   }
 
@@ -9771,7 +9777,7 @@ function cosRenderTabla({ altasPost, altasPow, postPag, powPag, acelPag }) {
 const COS_STORAGE_R5   = 'fenix_cos_r5_v1';
 const COS_STORAGE_FACT = 'fenix_cos_fact_v1';
 const COS_CACHE_PREFIX  = 'fenix_cos_cache_v2_'; // cache datos crudos por archivo
-const COS_RESULT_KEY    = 'fenix_cos_result_v1';  // cache resultado calculado
+const COS_RESULT_KEY    = 'fenix_cos_result_v3';  // cache resultado calculado
 
 // ── Fingerprint: hash rápido de qué archivos hay en BD ──
 function cosFingerprint(archivos) {
@@ -10788,14 +10794,13 @@ function cosRenderComparativo() {
     byCanal[canal].altas++;
   }
 
-  // Pagos de la factura — se usan solo Comision postpago (mismo criterio que cosCalcular)
+  // Pagos de la factura — incluir todo co_id que exista en R5 (mismo criterio que cosCalcular)
   for (const f of fact) {
-    if (!f.concepto || f.concepto !== 'Comision') continue;
     const r5e = r5[f.co_id];
-    if (!r5e) continue;
-    // Excluir power (igual que la lógica principal)
+    if (!r5e) continue; // solo excluir si co_id no existe en R5
     const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
-    if (isPow) continue;
+    if (isPow) continue; // comparativo solo postpago
+    if ((f.concepto || '').toLowerCase() === 'acelerador') continue; // acelerador va aparte
     if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
     if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
     if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
