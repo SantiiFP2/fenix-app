@@ -7161,11 +7161,40 @@ async function guardarEdicionUsuario() {
   } catch(e) { alert('Error de conexión'); }
 }
 
+async function cosEliminarArchivo(id, tipo) {
+  if (!confirm('¿Eliminar este archivo de la base de datos?')) return;
+  try {
+    const res = await authFetch(`${FENIX_API}/cosechas/${tipo}/${id}`, { method: 'DELETE' }).then(r => r.json());
+    if (!res.ok) { alert('Error: ' + (res.error || 'No se pudo eliminar')); return; }
+    // Quitar del cache local
+    const arr = tipo === 'r5' ? cosArchivosR5 : cosArchivosFact;
+    const arch = arr.find(a => a.id === id);
+    if (arch) {
+      try { localStorage.removeItem(cosCacheKey(arch.id, arch.fecha)); } catch(e) {}
+    }
+    if (tipo === 'r5')      cosArchivosR5   = cosArchivosR5.filter(a => a.id !== id);
+    else                    cosArchivosFact = cosArchivosFact.filter(a => a.id !== id);
+    localStorage.removeItem(COS_RESULT_KEY);
+    cosR5Data = null; cosFactData = null;
+    cosReconstruirGlobales();
+    cosRenderHistorial();
+    if (cosR5Data && cosFactData) cosRender();
+    else {
+      const tabs = document.getElementById('cos-tabs');
+      const wrap = document.getElementById('cos-tabla-wrap');
+      if (tabs) tabs.style.display = 'none';
+      if (wrap) wrap.innerHTML = '';
+    }
+  } catch(e) { alert('Error: ' + (e.message || 'Sin conexión')); }
+}
+
 async function vaciarCosechasTodas() {
   if (!confirm('⚠️ ¿Seguro que quieres VACIAR todas las cosechas?\n\nEsta acción eliminará permanentemente todos los archivos R5 y Factura. No se puede deshacer.')) return;
   if (!confirm('Segunda confirmación: ¿Confirmas que quieres borrar TODAS las cosechas?')) return;
   try {
-    const res = await authFetch(`${FENIX_API}/cosechas/all`, { method: 'DELETE' }).then(r => r.json());
+    const _r = await authFetch(`${FENIX_API}/cosechas/all`, { method: 'DELETE' });
+    if (!_r.ok) { alert('Error HTTP ' + _r.status + ': ' + _r.statusText); return; }
+    const res = await _r.json();
     if (!res.ok) { alert('Error: ' + res.error); return; }
     // Limpiar todo el cache local de cosechas (datos crudos + resultado calculado)
     Object.keys(localStorage).filter(k => k.startsWith('fenix_cos')).forEach(k => localStorage.removeItem(k));
@@ -7184,7 +7213,7 @@ async function vaciarCosechasTodas() {
         <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--texto);margin-bottom:6px;">Cosechas vaciadas</div>
         <div style="font-size:12px;">Carga un nuevo archivo R5 y una Factura para comenzar</div>
       </div>`;
-  } catch(e) { alert('Error de conexión'); }
+  } catch(e) { alert('Error: ' + (e.message || 'Sin conexión con el servidor')); }
 }
 
 
@@ -9065,17 +9094,23 @@ function cosCalcular() {
   };
 
   for (const f of cosFactData) {
-    if (!f.concepto) continue;
     const r5 = r5Filtrado[f.co_id];
-    if (!r5) continue;
+    if (!r5) continue; // solo excluir si el co_id no existe en R5
     const mes = r5.mes;
     const pn  = f.mes_liq;
-    const isPow = r5.is_power || f.conc_raw.toLowerCase().includes('propago');
+    const conc = (f.concepto || '').toLowerCase();
+    const raw  = (f.conc_raw || '').toLowerCase();
+    const isPow = r5.is_power || raw.includes('propago');
 
-    if (f.concepto === 'Comision' && f.tipo === 'Comision') {
-      addPag(isPow ? powPag : postPag, mes, pn, f.val);
-    } else if (f.concepto === 'Acelerador' && f.tipo === 'Acelerador de Cumplimiento') {
+    if (conc === 'acelerador') {
       addPag(acelPag, mes, pn, f.val);
+    } else if (conc === 'descuento') {
+      // Descuentos/reversiones: restar del valor (valor negativo en factura)
+      addPag(isPow ? powPag : postPag, mes, pn, f.val);
+    } else {
+      // Todo lo demás (Comision, Incentivo, Apoyo, Semillero, sin clasificar, etc.)
+      // que tenga co_id en R5 se contabiliza como pago postpago/power
+      addPag(isPow ? powPag : postPag, mes, pn, f.val);
     }
   }
 
@@ -9771,7 +9806,7 @@ function cosRenderTabla({ altasPost, altasPow, postPag, powPag, acelPag }) {
 const COS_STORAGE_R5   = 'fenix_cos_r5_v1';
 const COS_STORAGE_FACT = 'fenix_cos_fact_v1';
 const COS_CACHE_PREFIX  = 'fenix_cos_cache_v2_'; // cache datos crudos por archivo
-const COS_RESULT_KEY    = 'fenix_cos_result_v1';  // cache resultado calculado
+const COS_RESULT_KEY    = 'fenix_cos_result_v3';  // cache resultado calculado
 
 // ── Fingerprint: hash rápido de qué archivos hay en BD ──
 function cosFingerprint(archivos) {
@@ -9916,6 +9951,24 @@ function cosInicializarStorage() {
   const statusR5   = document.getElementById('cos-status-r5');
   const statusFact = document.getElementById('cos-status-factura');
 
+  // PRE-PASO: Precargar metadatos y datos crudos desde localStorage
+  // para que cosReconstruirGlobales tenga datos disponibles en el PASO 1
+  if (cosArchivosR5.length === 0 && cosArchivosFact.length === 0) {
+    try {
+      const metaR5   = JSON.parse(localStorage.getItem(COS_STORAGE_R5)   || '[]');
+      const metaFact = JSON.parse(localStorage.getItem(COS_STORAGE_FACT) || '[]');
+      metaR5.forEach(m => {
+        const cached = cosCacheLeer(m.id, m.fecha);
+        if (cached) cosArchivosR5.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, registros:cached, _cargado:true, _desdeCache:true });
+      });
+      metaFact.forEach(m => {
+        const cached = cosCacheLeer(m.id, m.fecha);
+        if (cached) cosArchivosFact.push({ id:m.id, nombre:m.nombre, fecha:m.fecha, filas:cached, _cargado:true, _desdeCache:true });
+      });
+      if (cosArchivosR5.length > 0 || cosArchivosFact.length > 0) cosReconstruirGlobales();
+    } catch(e) { /* sin meta en localStorage */ }
+  }
+
   // PASO 1: ¿Hay un resultado cacheado? Mostrarlo ANTES de tocar la API
   const resultCached = (() => {
     try { return JSON.parse(localStorage.getItem(COS_RESULT_KEY)); } catch(e) { return null; }
@@ -9926,16 +9979,7 @@ function cosInicializarStorage() {
     const tabs = document.getElementById('cos-tabs');
     if (tabs) tabs.style.display = 'flex';
     const wrap = document.getElementById('cos-tabla-wrap');
-    if (wrap) wrap.innerHTML = ''; // limpiar spinner si lo había
-
-    // Intentar reconstruir globals desde cache local para que comparativo funcione
-    // (esto es sincrónico y rápido si los datos están en localStorage)
-    if (cosArchivosR5.length === 0) {
-      // Los archivos aún no se cargaron en este punto del PASO 1
-      // El comparativo se llenará en el PASO 2 cuando se reconstruyan los globals
-    } else {
-      cosReconstruirGlobales();
-    }
+    if (wrap) wrap.innerHTML = '';
 
     // Renderizar con el resultado cacheado
     if (cosTabActual === 'analisis') {
@@ -10012,14 +10056,15 @@ function cosInicializarStorage() {
         } else if (cosTabActual === 'proyeccion') {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderProyeccion(result);
-          // Si el análisis estaba visible antes, refrescar el comparativo
           cosRenderComparativo();
         } else {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderTabla(result);
-          // Refrescar comparativo por si el panel análisis está en background
           cosRenderComparativo();
         }
+      } else {
+        // Sin resultado calculado pero sí hay datos — refrescar comparativo igualmente
+        cosRenderComparativo();
       }
       return;
     }
@@ -10115,7 +10160,7 @@ function cosRenderHistorial() {
         const div = document.createElement('div');
         div.className = 'cos-hist-item';
         div.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
-        const nReg = Object.keys(arch.registros).length;
+        const nReg = arch.registros ? Object.keys(arch.registros).length : (arch.n_registros || 0);
         const fStr = new Date(arch.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'2-digit'});
         div.innerHTML = `
           <span style="font-size:12px;">📊</span>
@@ -10123,7 +10168,8 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${nReg.toLocaleString('es-CO')} reg · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosEliminarArchivo('${arch.id}','r5')" title="Eliminar este archivo" style="margin-left:4px;background:none;border:1px solid rgba(248,113,113,0.3);border-radius:3px;color:#F87171;font-size:11px;cursor:pointer;padding:2px 6px;flex-shrink:0;">✕</button>`;
         histR5.appendChild(div);
       });
       if (statusR5) statusR5.textContent = `${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totalReg.toLocaleString('es-CO')} registros`;
@@ -10138,7 +10184,7 @@ function cosRenderHistorial() {
   const badgeFact  = document.getElementById('cos-badge-factura');
   if (histFact) {
     [...histFact.querySelectorAll('.cos-hist-item')].forEach(el => el.remove());
-    const totalFilas = cosArchivosFact.reduce((s,a) => s + a.filas.length, 0);
+    const totalFilas = cosArchivosFact.reduce((s,a) => s + (a.filas ? a.filas.length : (a.n_registros||0)), 0);
     if (cosArchivosFact.length === 0) {
       if (emptyFact) emptyFact.style.display = 'block';
       if (statusFact) statusFact.textContent = '0 archivos · 0 filas';
@@ -10154,9 +10200,10 @@ function cosRenderHistorial() {
           <span style="font-size:12px;">🧾</span>
           <div style="flex:1;min-width:0;">
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
-            <div style="font-size:10px;color:var(--texto-dim);">${arch.filas.length.toLocaleString('es-CO')} filas · ${fStr}</div>
+            <div style="font-size:10px;color:var(--texto-dim);">${(arch.filas ? arch.filas.length : (arch.n_registros||0)).toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosEliminarArchivo('${arch.id}','factura')" title="Eliminar este archivo" style="margin-left:4px;background:none;border:1px solid rgba(248,113,113,0.3);border-radius:3px;color:#F87171;font-size:11px;cursor:pointer;padding:2px 6px;flex-shrink:0;">✕</button>`;
         histFact.appendChild(div);
       });
       if (statusFact) statusFact.textContent = `${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totalFilas.toLocaleString('es-CO')} filas`;
@@ -10394,7 +10441,7 @@ function cosAplicarEstadoCarga() {
       : 'R5: sin cargar';
   }
   if (miniFact) {
-    const totFact = cosArchivosFact.reduce((s,a) => s + a.filas.length, 0);
+    const totFact = cosArchivosFact.reduce((s,a) => s + (a.filas ? a.filas.length : (a.n_registros||0)), 0);
     miniFact.textContent = cosArchivosFact.length
       ? `Factura: ${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totFact.toLocaleString('es-CO')} filas`
       : 'Factura: sin cargar';
@@ -10743,7 +10790,10 @@ function cosRenderAnalytics(result) {
 
 
 function cosRenderComparativo() {
-  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
+  // Intentar reconstruir si faltan datos
+  if ((!cosR5Data || !cosFactData) && (cosArchivosR5.length > 0 || cosArchivosFact.length > 0)) {
+    cosReconstruirGlobales();
+  }
   const r5   = cosR5Data;
   const fact = cosFactData;
   if (!r5 || !fact) return;
@@ -10776,14 +10826,13 @@ function cosRenderComparativo() {
     byCanal[canal].altas++;
   }
 
-  // Pagos de la factura — se usan solo Comision postpago (mismo criterio que cosCalcular)
+  // Pagos de la factura — incluir todo co_id que exista en R5 (mismo criterio que cosCalcular)
   for (const f of fact) {
-    if (!f.concepto || f.concepto !== 'Comision') continue;
     const r5e = r5[f.co_id];
-    if (!r5e) continue;
-    // Excluir power (igual que la lógica principal)
+    if (!r5e) continue; // solo excluir si co_id no existe en R5
     const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
-    if (isPow) continue;
+    if (isPow) continue; // comparativo solo postpago
+    if ((f.concepto || '').toLowerCase() === 'acelerador') continue; // acelerador va aparte
     if (filtros.sede     && r5e.operacion_op !== filtros.sede)     continue;
     if (filtros.canal    && r5e.origen       !== filtros.canal)    continue;
     if (filtros.servicio && r5e.servicio     !== filtros.servicio) continue;
