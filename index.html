@@ -2487,6 +2487,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         Registra aquí los pagos pendientes o cosechas de meses anteriores que se cobrarán en este período.
       </div>
 
+      <!-- Botón importar desde módulo Cosechas -->
+      <button onclick="importarProyeccionCosechas()"
+        style="width:100%;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);color:#34D399;padding:8px;font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;"
+        onmouseover="this.style.background='rgba(52,211,153,0.15)'" onmouseout="this.style.background='rgba(52,211,153,0.08)'"
+        id="btn-importar-proy-cosechas">
+        🌾 Importar proyección de Cosechas
+      </button>
+
       <!-- Lista de cosechas -->
       <div id="cosechas-lista" style="display:flex;flex-direction:column;gap:6px;"></div>
 
@@ -4633,6 +4641,22 @@ function getTotalIncentivos() {
 // COSECHAS
 // ══════════════════════════════════════
 let cosechas = []; // [{descripcion, valor}]
+
+function importarProyeccionCosechas() {
+  const total = window._cosProyGranTotal;
+  if (!total || total <= 0) {
+    alert('No hay proyección de cosechas disponible.\n\nVe al módulo Cosechas → pestaña Proyección para calcularla primero.');
+    return;
+  }
+  const mes = window._cosProyMesProy || 'Cosechas';
+  const label = 'Proyección Cosechas (' + mes + ')';
+  // Reemplazar si ya existe, o agregar nueva
+  const idx = cosechas.findIndex(c => c.descripcion.startsWith('Proyección Cosechas'));
+  if (idx >= 0) cosechas[idx] = { descripcion: label, valor: total };
+  else cosechas.push({ descripcion: label, valor: total });
+  renderCosechasLista();
+  actualizarTotalCosechas();
+}
 
 function agregarCosecha() {
   cosechas.push({ descripcion: '', valor: 0 });
@@ -9431,6 +9455,61 @@ function proyMesLabel(mesKey) {
   return `${meses[mo-1]} ${String(yr).slice(2)}`;
 }
 
+// Desglose proporcional del gran_total de proyección por sede
+function cosProyDesgloseSede(granTotal) {
+  if (!cosR5Data || !cosFactData || !granTotal) return '';
+
+  // Calcular cobrado histórico por sede (solo postpago, mismo criterio que comparativo)
+  const bySede = {};
+  for (const [, d] of Object.entries(cosR5Data)) {
+    if (d.is_power) continue;
+    const sede = d.operacion_op || 'Sin sede';
+    if (!bySede[sede]) bySede[sede] = { cobrado: 0 };
+  }
+  for (const f of cosFactData) {
+    if (!f.concepto || f.concepto !== 'Comision') continue;
+    const r5e = cosR5Data[f.co_id];
+    if (!r5e) continue;
+    const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
+    if (isPow) continue;
+    const pn = String(f.mes_liq);
+    if (!['1','2','3'].includes(pn)) continue;
+    const sede = r5e.operacion_op || 'Sin sede';
+    if (!bySede[sede]) bySede[sede] = { cobrado: 0 };
+    bySede[sede].cobrado += f.val;
+  }
+
+  const totalCobrado = Object.values(bySede).reduce((s, d) => s + d.cobrado, 0);
+  if (!totalCobrado) return '';
+
+  const filas = Object.entries(bySede)
+    .map(([sede, d]) => ({ sede, cobrado: d.cobrado, pct: d.cobrado / totalCobrado }))
+    .filter(r => r.cobrado > 0)
+    .sort((a, b) => b.cobrado - a.cobrado);
+
+  const fmtM = v => v >= 1e6 ? '$ ' + (v/1e6).toFixed(1) + 'M' : '$ ' + Math.round(v).toLocaleString('es-CO');
+
+  const rows = filas.map(r => {
+    const proyVal = Math.round(granTotal * r.pct);
+    const bar = `<div style="flex:1;height:4px;background:var(--gris-linea);border-radius:2px;margin:0 8px;overflow:hidden;">
+      <div style="width:${(r.pct*100).toFixed(1)}%;height:100%;background:var(--azul);border-radius:2px;"></div></div>`;
+    return `<div style="display:flex;align-items:center;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div style="font-size:11px;font-weight:600;color:var(--blanco);min-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.sede}">${r.sede}</div>
+      ${bar}
+      <div style="font-size:10px;color:var(--texto-dim);min-width:38px;text-align:right;">${(r.pct*100).toFixed(1)}%</div>
+      <div style="font-size:13px;font-weight:700;color:var(--azul);min-width:90px;text-align:right;">${fmtM(proyVal)}</div>
+    </div>`;
+  }).join('');
+
+  return `<div id="proy-desglose-sede" style="margin-top:10px;background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;overflow:hidden;">
+    <div style="padding:10px 12px;background:var(--gris-medio);border-bottom:1px solid var(--gris-linea);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">🏢 Proyección por Sede</span>
+      <span style="font-size:9px;color:var(--texto-dim);">Proporcional al cobrado histórico</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+
 function cosRenderProyeccion(result) {
   const wrap = document.getElementById('cos-tabla-wrap');
   if (!wrap) return;
@@ -9439,6 +9518,9 @@ function cosRenderProyeccion(result) {
     wrap.innerHTML = `<div style="padding:40px;text-align:center;color:var(--texto-dim)">Carga al menos un R5 y una Factura para calcular la proyección.</div>`;
     return;
   }
+  // Exponer gran_total para que el calculador móvil pueda usarlo
+  window._cosProyGranTotal = proy.gran_total;
+  window._cosProyMesProy   = proy.mesProy;
   const p = proyGetParams();
   const fmtCOPM = (v) => {
     if (!v) return '$ -';
@@ -9568,6 +9650,8 @@ function cosRenderProyeccion(result) {
       <strong>Lógica Mes 1:</strong> (P1×tasa%−P2)×ARPU_P2 + (P2×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp;
       <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % · Los totales se actualizan al instante
     </div>
+    <!-- Desglose por sede -->
+    ${cosProyDesgloseSede(proy.gran_total)}
   </div>`;
   // Activar event delegation para capturar cambios en inputs de %
   proyIniciarDelegation();
@@ -9615,6 +9699,21 @@ function proySetParam(key, val) {
   set('proy-tot-post', fmtCOPM(proy.post.total));
   set('proy-tot-pow',  fmtCOPM(proy.pow.total));
   set('proy-tot-acel', fmtCOPM(proy.acel.total));
+
+  // Actualizar automáticamente en sección 6 si ya fue importado
+  window._cosProyGranTotal = proy.gran_total;
+  window._cosProyMesProy   = proy.mesProy;
+  const idxAuto = cosechas.findIndex(c => c.descripcion.startsWith('Proyección Cosechas'));
+  if (idxAuto >= 0) {
+    cosechas[idxAuto].valor = proy.gran_total;
+    renderCosechasLista();
+    actualizarTotalCosechas();
+  }
+
+  // Actualizar desglose por sede en tiempo real
+  const elDesglose = document.getElementById('proy-desglose-sede');
+  if (elDesglose) elDesglose.outerHTML = cosProyDesgloseSede(proy.gran_total)
+    .replace('<div style="margin-top:10px', '<div id="proy-desglose-sede" style="margin-top:10px');
 
   // Totales de cada bloque
   ['post','pow','acel'].forEach(seg => {
