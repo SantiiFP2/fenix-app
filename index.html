@@ -1807,6 +1807,35 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
 </div>
 
+<!-- MODAL IMPORTAR PROYECCIÓN COSECHAS POR SEDE -->
+<div id="modal-proy-sedes" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:4000;align-items:center;justify-content:center;">
+  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:8px;padding:24px 28px;width:100%;max-width:620px;max-height:85vh;overflow-y:auto;">
+    <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--blanco);margin-bottom:4px;">🌾 Proyección de Cosechas por Sede</div>
+    <div style="font-size:11px;color:var(--texto-dim);margin-bottom:16px;">Revisa el desglose por sede. Si una sede cerró, reasigna su valor a otra sede activa antes de confirmar.</div>
+
+    <!-- Tabla de sedes -->
+    <div id="modal-proy-sedes-tabla" style="margin-bottom:16px;"></div>
+
+    <!-- Total -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:4px;margin-bottom:20px;">
+      <span style="font-size:11px;font-weight:700;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Total Proyectado</span>
+      <span id="modal-proy-sedes-total" style="font-size:18px;font-weight:800;color:var(--verde);font-family:'Inter Tight',sans-serif;"></span>
+    </div>
+
+    <!-- Acciones -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="cerrarModalProySedes()"
+        style="background:none;border:1px solid var(--gris-linea);border-radius:4px;padding:8px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="confirmarProySedes()"
+        style="background:linear-gradient(90deg,#7C3AED,#F97316);border:none;border-radius:4px;padding:8px 20px;color:white;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;">
+        ✓ Confirmar e Importar
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CONCEPTO NUEVO -->
 <div id="cos-modal-concepto">
   <div class="cos-modal-box">
@@ -4644,20 +4673,129 @@ function getTotalIncentivos() {
 // ══════════════════════════════════════
 let cosechas = []; // [{descripcion, valor}]
 
+// Variable para guardar el desglose mientras el modal está abierto
+let _proySedes = [];
+
 function importarProyeccionCosechas() {
   const total = window._cosProyGranTotal;
   if (!total || total <= 0) {
     alert('No hay proyección de cosechas disponible.\n\nVe al módulo Cosechas → pestaña Proyección para calcularla primero.');
     return;
   }
+
+  // Calcular desglose por sede desde cosR5Data/cosFactData
+  _proySedes = [];
+  if (cosR5Data && cosFactData) {
+    const bySede = {};
+    for (const [, d] of Object.entries(cosR5Data)) {
+      if (d.is_power) continue;
+      const sede = d.operacion_op || 'Sin sede';
+      if (!bySede[sede]) bySede[sede] = { cobrado: 0 };
+    }
+    for (const f of cosFactData) {
+      const r5e = cosR5Data[f.co_id];
+      if (!r5e) continue;
+      const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
+      if (isPow) continue;
+      const conc = (f.concepto || '').toLowerCase();
+      if (conc === 'acelerador') continue;
+      const pn = String(f.mes_liq);
+      if (!['1','2','3'].includes(pn)) continue;
+      const sede = r5e.operacion_op || 'Sin sede';
+      if (!bySede[sede]) bySede[sede] = { cobrado: 0 };
+      bySede[sede].cobrado += f.val;
+    }
+    const totalCobrado = Object.values(bySede).reduce((s, d) => s + d.cobrado, 0);
+    if (totalCobrado > 0) {
+      _proySedes = Object.entries(bySede)
+        .filter(([, d]) => d.cobrado > 0)
+        .sort((a, b) => b[1].cobrado - a[1].cobrado)
+        .map(([sede, d]) => ({
+          sede,
+          pct: d.cobrado / totalCobrado,
+          valor: Math.round(total * d.cobrado / totalCobrado),
+          destino: sede  // sede destino (para reasignación)
+        }));
+    }
+  }
+
+  // Si no hay desglose por sede, crear un ítem único
+  if (!_proySedes.length) {
+    const mes = window._cosProyMesProy || 'Cosechas';
+    _proySedes = [{ sede: 'Total', pct: 1, valor: total, destino: 'Total' }];
+  }
+
+  abrirModalProySedes(total);
+}
+
+function abrirModalProySedes(total) {
+  const modal = document.getElementById('modal-proy-sedes');
+  if (!modal) return;
+
+  const sedes = _proySedes.map(s => s.sede);
+  const fmtM = v => v >= 1e6 ? '$ ' + (v/1e6).toFixed(1) + 'M' : '$ ' + Math.round(v).toLocaleString('es-CO');
+
+  // Construir tabla
+  const filas = _proySedes.map((s, i) => `
+    <div style="display:grid;grid-template-columns:1fr auto 140px;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--blanco);">${s.sede}</div>
+        <div style="font-size:10px;color:var(--texto-dim);">${(s.pct*100).toFixed(1)}% del cobrado histórico</div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--verde);text-align:right;white-space:nowrap;">${fmtM(s.valor)}</div>
+      <select id="proy-sede-dest-${i}" onchange="proySedeReasignar(${i},this.value)"
+        style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:11px;padding:4px 6px;width:100%;">
+        ${sedes.map(opt => `<option value="${opt}" ${opt === s.destino ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="__nueva__" ${s.destino === '__nueva__' ? 'selected' : ''}>+ Nueva entrada</option>
+      </select>
+    </div>`).join('');
+
+  document.getElementById('modal-proy-sedes-tabla').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr auto 140px;gap:10px;padding:6px 10px;border-bottom:1px solid var(--gris-linea);margin-bottom:4px;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Sede</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:right;">Valor</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Asignar a</div>
+    </div>
+    ${filas}`;
+
+  document.getElementById('modal-proy-sedes-total').textContent = fmtM(total);
+  modal.style.display = 'flex';
+}
+
+function proySedeReasignar(idx, destino) {
+  _proySedes[idx].destino = destino;
+}
+
+function cerrarModalProySedes() {
+  const modal = document.getElementById('modal-proy-sedes');
+  if (modal) modal.style.display = 'none';
+}
+
+function confirmarProySedes() {
   const mes = window._cosProyMesProy || 'Cosechas';
-  const label = 'Proyección Cosechas (' + mes + ')';
-  // Reemplazar si ya existe, o agregar nueva
-  const idx = cosechas.findIndex(c => c.descripcion.startsWith('Proyección Cosechas'));
-  if (idx >= 0) cosechas[idx] = { descripcion: label, valor: total };
-  else cosechas.push({ descripcion: label, valor: total });
+
+  // Agrupar valores por destino
+  const porDestino = {};
+  _proySedes.forEach(s => {
+    const dest = s.destino === '__nueva__' ? s.sede : s.destino;
+    if (!porDestino[dest]) porDestino[dest] = 0;
+    porDestino[dest] += s.valor;
+  });
+
+  // Eliminar ítems previos de proyección cosechas
+  cosechas = cosechas.filter(c => !c.descripcion.startsWith('Proyección Cosechas'));
+
+  // Agregar un ítem por destino
+  Object.entries(porDestino).forEach(([sede, valor]) => {
+    cosechas.push({
+      descripcion: `Proyección Cosechas (${mes}) · ${sede}`,
+      valor
+    });
+  });
+
   renderCosechasLista();
   actualizarTotalCosechas();
+  cerrarModalProySedes();
 }
 
 function agregarCosecha() {
@@ -9886,9 +10024,21 @@ function proySetParam(key, val) {
   // Actualizar automáticamente en sección 6 si ya fue importado
   window._cosProyGranTotal = proy.gran_total;
   window._cosProyMesProy   = proy.mesProy;
-  const idxAuto = cosechas.findIndex(c => c.descripcion.startsWith('Proyección Cosechas'));
-  if (idxAuto >= 0) {
-    cosechas[idxAuto].valor = proy.gran_total;
+  const hayImportados = cosechas.some(c => c.descripcion.startsWith('Proyección Cosechas'));
+  if (hayImportados && _proySedes && _proySedes.length > 0) {
+    // Recalcular valores proporcionalmente con el nuevo gran_total
+    const mes = proy.mesProy || 'Cosechas';
+    const porDestino = {};
+    _proySedes.forEach(s => {
+      const dest = s.destino === '__nueva__' ? s.sede : s.destino;
+      s.valor = Math.round(proy.gran_total * s.pct);
+      if (!porDestino[dest]) porDestino[dest] = 0;
+      porDestino[dest] += s.valor;
+    });
+    cosechas = cosechas.filter(c => !c.descripcion.startsWith('Proyección Cosechas'));
+    Object.entries(porDestino).forEach(([sede, valor]) => {
+      cosechas.push({ descripcion: `Proyección Cosechas (${mes}) · ${sede}`, valor });
+    });
     renderCosechasLista();
     actualizarTotalCosechas();
   }
