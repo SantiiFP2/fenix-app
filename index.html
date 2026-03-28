@@ -1638,6 +1638,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     </div>
     <div class="cos-toolbar">
       <button id="btn-exportar-excel-cosechas" class="btn-sm" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.4);color:#A78BFA;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosExportarExcel()">⬇ Exportar Excel</button>
+      <button id="btn-actualizar-cosechas" class="btn-sm" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4);color:#93C5FD;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosActualizar()">🔄 Actualizar</button>
       <button id="btn-vaciar-cosechas" class="btn-sm" style="display:none;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.35);color:#F87171;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarCosechasTodas()">🗑 Vaciar cosechas</button>
     </div>
   </div>
@@ -7219,6 +7220,40 @@ async function guardarEdicionUsuario() {
   } catch(e) { alert('Error de conexión'); }
 }
 
+async function cosActualizar() {
+  const btn = document.getElementById('btn-actualizar-cosechas');
+  if (btn) { btn.textContent = '⏳ Actualizando...'; btn.disabled = true; }
+  try {
+    // Limpiar cache local completo
+    localStorage.removeItem(COS_RESULT_KEY);
+    Object.keys(localStorage).filter(k => k.startsWith('fenix_cos_cache')).forEach(k => localStorage.removeItem(k));
+    // Resetear estado en memoria
+    cosArchivosR5 = []; cosArchivosFact = []; cosR5Data = null; cosFactData = null;
+    // Recargar desde API
+    const todos = await cosIDBCargarTodos();
+    cosArchivosR5   = todos.filter(a => a.tipo === 'r5');
+    cosArchivosFact = todos.filter(a => a.tipo === 'factura');
+    if (cosArchivosR5.length === 0 && cosArchivosFact.length === 0) {
+      if (btn) { btn.textContent = '🔄 Actualizar'; btn.disabled = false; }
+      return;
+    }
+    // Descargar datos crudos (guarda en cache automáticamente)
+    await Promise.all([...cosArchivosR5, ...cosArchivosFact].map(a => cosCargarDatosArchivo(a)));
+    cosReconstruirGlobales();
+    cosRenderHistorial();
+    // Recalcular y renderizar
+    if (cosR5Data && cosFactData) {
+      const tabs = document.getElementById('cos-tabs');
+      if (tabs) tabs.style.display = 'flex';
+      cosRender();
+    }
+  } catch(e) {
+    alert('Error al actualizar: ' + (e.message || 'Sin conexión'));
+  } finally {
+    if (btn) { btn.textContent = '🔄 Actualizar'; btn.disabled = false; }
+  }
+}
+
 async function vaciarCosechasTodas() {
   if (!confirm('⚠️ ¿Seguro que quieres VACIAR todas las cosechas?\n\nEsta acción eliminará permanentemente todos los archivos R5 y Factura. No se puede deshacer.')) return;
   if (!confirm('Segunda confirmación: ¿Confirmas que quieres borrar TODAS las cosechas?')) return;
@@ -9519,35 +9554,19 @@ function cosProyDesgloseSede(granTotal) {
 // ══════════════════════════════════════════════════════════════
 // TAB "POR SEDE" — Proyección distribuida por sede histórica
 // ══════════════════════════════════════════════════════════════
-async function cosRenderSedes(result) {
+function cosRenderSedes(result) {
   const wrap = document.getElementById('cos-tabla-wrap');
   if (!wrap) return;
 
-  // Si no hay datos en memoria, intentar cargarlos
+  // Reconstruir globals si no están en memoria
   if ((!cosR5Data || !cosFactData) && (cosArchivosR5.length > 0 || cosArchivosFact.length > 0)) {
     cosReconstruirGlobales();
   }
-
-  // Si aún no hay datos, intentar descargar desde API
-  if (!cosR5Data || !cosFactData) {
-    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)"><div style="font-size:24px;margin-bottom:8px;">⏳</div>Cargando datos de sedes...</div>';
-    try {
-      const todos = await cosIDBCargarTodos();
-      cosArchivosR5   = todos.filter(a => a.tipo === 'r5');
-      cosArchivosFact = todos.filter(a => a.tipo === 'factura');
-      await Promise.all([...cosArchivosR5, ...cosArchivosFact].map(a => cosCargarDatosArchivo(a)));
-      cosReconstruirGlobales();
-    } catch(e) {
-      wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#F87171;">Error cargando datos: ' + e.message + '</div>';
-      return;
-    }
-  }
-
   const r5   = cosR5Data;
   const fact = cosFactData;
 
   if (!r5 || !fact) {
-    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)">Sin datos disponibles. Carga un R5 y una Factura primero.</div>';
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)">Los datos se están cargando. Espera unos segundos y vuelve a esta pestaña.</div>';
     return;
   }
 
@@ -10216,6 +10235,16 @@ function cosInicializarStorage() {
   const resultCached = (() => {
     try { return JSON.parse(localStorage.getItem(COS_RESULT_KEY)); } catch(e) { return null; }
   })();
+
+  // Si el cache tiene más de 8h, invalidarlo para forzar recarga completa
+  const CACHE_MAX_MS = 8 * 60 * 60 * 1000; // 8 horas
+  if (resultCached && resultCached.ts && (Date.now() - resultCached.ts) > CACHE_MAX_MS) {
+    localStorage.removeItem(COS_RESULT_KEY);
+    // También limpiar datos crudos para que se descarguen frescos
+    Object.keys(localStorage).filter(k => k.startsWith('fenix_cos_cache')).forEach(k => localStorage.removeItem(k));
+    cosArchivosR5 = []; cosArchivosFact = []; cosR5Data = null; cosFactData = null;
+    console.log('[Cosechas] Cache expirado (>8h), recargando datos...');
+  }
 
   if (resultCached && resultCached.result) {
     // Mostrar tabla inmediatamente con los datos del cache
