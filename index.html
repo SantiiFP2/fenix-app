@@ -9519,14 +9519,37 @@ function cosProyDesgloseSede(granTotal) {
 // ══════════════════════════════════════════════════════════════
 // TAB "POR SEDE" — Proyección distribuida por sede histórica
 // ══════════════════════════════════════════════════════════════
-function cosRenderSedes(result) {
+async function cosRenderSedes(result) {
   const wrap = document.getElementById('cos-tabla-wrap');
   if (!wrap) return;
 
-  // Necesitamos los globals para saber el cobrado por sede
-  if (!cosR5Data && cosArchivosR5.length > 0) cosReconstruirGlobales();
+  // Si no hay datos en memoria, intentar cargarlos
+  if ((!cosR5Data || !cosFactData) && (cosArchivosR5.length > 0 || cosArchivosFact.length > 0)) {
+    cosReconstruirGlobales();
+  }
+
+  // Si aún no hay datos, intentar descargar desde API
+  if (!cosR5Data || !cosFactData) {
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)"><div style="font-size:24px;margin-bottom:8px;">⏳</div>Cargando datos de sedes...</div>';
+    try {
+      const todos = await cosIDBCargarTodos();
+      cosArchivosR5   = todos.filter(a => a.tipo === 'r5');
+      cosArchivosFact = todos.filter(a => a.tipo === 'factura');
+      await Promise.all([...cosArchivosR5, ...cosArchivosFact].map(a => cosCargarDatosArchivo(a)));
+      cosReconstruirGlobales();
+    } catch(e) {
+      wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#F87171;">Error cargando datos: ' + e.message + '</div>';
+      return;
+    }
+  }
+
   const r5   = cosR5Data;
   const fact = cosFactData;
+
+  if (!r5 || !fact) {
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--texto-dim)">Sin datos disponibles. Carga un R5 y una Factura primero.</div>';
+    return;
+  }
 
   // Calcular gran_total de proyección
   const proy = proyCalcular(result);
@@ -9534,26 +9557,24 @@ function cosRenderSedes(result) {
 
   // ── Cobrado histórico por sede ──
   const bySede = {};
-  if (r5 && fact) {
-    for (const [, d] of Object.entries(r5)) {
-      if (d.is_power) continue;
-      const sede = d.operacion_op || 'Sin sede';
-      if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
-      bySede[sede].altas++;
-    }
-    for (const f of fact) {
-      const r5e = r5[f.co_id];
-      if (!r5e) continue;
-      const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
-      if (isPow) continue;
-      const conc = (f.concepto || '').toLowerCase();
-      if (conc === 'acelerador') continue;
-      const pn = String(f.mes_liq);
-      if (!['1','2','3'].includes(pn)) continue;
-      const sede = r5e.operacion_op || 'Sin sede';
-      if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
-      bySede[sede].cobrado += f.val;
-    }
+  for (const [, d] of Object.entries(r5)) {
+    if (d.is_power) continue;
+    const sede = d.operacion_op || 'Sin sede';
+    if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
+    bySede[sede].altas++;
+  }
+  for (const f of fact) {
+    const r5e = r5[f.co_id];
+    if (!r5e) continue;
+    const isPow = r5e.is_power || (f.conc_raw && f.conc_raw.toLowerCase().includes('propago'));
+    if (isPow) continue;
+    const conc = (f.concepto || '').toLowerCase();
+    if (conc === 'acelerador') continue;
+    const pn = String(f.mes_liq);
+    if (!['1','2','3'].includes(pn)) continue;
+    const sede = r5e.operacion_op || 'Sin sede';
+    if (!bySede[sede]) bySede[sede] = { altas: 0, cobrado: 0 };
+    bySede[sede].cobrado += f.val;
   }
 
   const totalCobrado = Object.values(bySede).reduce((s, d) => s + d.cobrado, 0);
