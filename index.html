@@ -9156,6 +9156,9 @@ function cosRender() {
   } else if (cosTabActual === 'proyeccion') {
     document.getElementById('cos-panel-analisis').style.display = 'none';
     cosRenderProyeccion(result);
+  } else if (cosTabActual === 'sedes') {
+    document.getElementById('cos-panel-analisis').style.display = 'none';
+    cosRenderSedes(result);
   } else {
     document.getElementById('cos-panel-analisis').style.display = 'none';
     cosRenderTabla(result);
@@ -10218,6 +10221,10 @@ function cosInicializarStorage() {
       const pa = document.getElementById('cos-panel-analisis');
       if (pa) pa.style.display = 'none';
       cosRenderProyeccion(resultCached.result);
+    } else if (cosTabActual === 'sedes') {
+      const pa = document.getElementById('cos-panel-analisis');
+      if (pa) pa.style.display = 'none';
+      cosRenderSedes(resultCached.result);
     } else {
       const pa = document.getElementById('cos-panel-analisis');
       if (pa) pa.style.display = 'none';
@@ -10284,12 +10291,13 @@ function cosInicializarStorage() {
         } else if (cosTabActual === 'proyeccion') {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderProyeccion(result);
-          // Si el análisis estaba visible antes, refrescar el comparativo
           cosRenderComparativo();
+        } else if (cosTabActual === 'sedes') {
+          document.getElementById('cos-panel-analisis').style.display = 'none';
+          cosRenderSedes(result);
         } else {
           document.getElementById('cos-panel-analisis').style.display = 'none';
           cosRenderTabla(result);
-          // Refrescar comparativo por si el panel análisis está en background
           cosRenderComparativo();
         }
       }
