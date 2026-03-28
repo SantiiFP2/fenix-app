@@ -7360,7 +7360,8 @@ async function guardarEdicionUsuario() {
 
 async function cosActualizar() {
   const btn = document.getElementById('btn-actualizar-cosechas');
-  if (btn) { btn.textContent = '⏳ Actualizando...'; btn.disabled = true; }
+  const wrap = document.getElementById('cos-tabla-wrap');
+  if (btn) { btn.textContent = '⏳ 0%'; btn.disabled = true; }
   try {
     // Limpiar cache local completo
     localStorage.removeItem(COS_RESULT_KEY);
@@ -7375,8 +7376,31 @@ async function cosActualizar() {
       if (btn) { btn.textContent = '🔄 Actualizar'; btn.disabled = false; }
       return;
     }
-    // Descargar datos crudos (guarda en cache automáticamente)
-    await Promise.all([...cosArchivosR5, ...cosArchivosFact].map(a => cosCargarDatosArchivo(a)));
+    // Descargar con progreso
+    const archivos = [...cosArchivosR5, ...cosArchivosFact];
+    const total = archivos.length;
+    let cargados = 0;
+    // Mostrar progreso en la tab activa y en el botón
+    const mostrarProgreso = (nombre) => {
+      cargados++;
+      const pct = Math.round(cargados / total * 100);
+      if (btn) btn.textContent = `⏳ ${pct}%`;
+      if (wrap && cosTabActual === 'sedes') {
+        wrap.innerHTML = `
+          <div style="padding:40px;text-align:center;color:var(--texto-dim);">
+            <div style="font-size:28px;margin-bottom:12px;">⬇️</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);margin-bottom:6px;">Descargando datos...</div>
+            <div style="font-size:11px;margin-bottom:12px;">${nombre} · ${cargados}/${total}</div>
+            <div style="max-width:240px;margin:0 auto;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+              <div style="height:6px;border-radius:3px;background:var(--azul);width:${pct}%;transition:width 0.3s;"></div>
+            </div>
+            <div style="font-size:11px;color:var(--azul);margin-top:8px;font-weight:700;">${pct}%</div>
+          </div>`;
+      }
+    };
+    await Promise.all(archivos.map(a =>
+      cosCargarDatosArchivo(a).then(arch => { mostrarProgreso(arch.nombre); return arch; })
+    ));
     cosReconstruirGlobales();
     cosRenderHistorial();
     // Recalcular y renderizar
@@ -9201,6 +9225,7 @@ function cosIntentarCalcular() {
     const total = todos.length;
     const actualizarProgreso = (nombre, desdeCache) => {
       cargados++;
+      const pct = Math.round(cargados/total*100);
       if (wrap) wrap.innerHTML = `
         <div style="text-align:center;padding:40px;color:var(--texto-dim);">
           <div style="font-size:24px;margin-bottom:12px;">${hayCache && desdeCache ? '⚡' : '⏳'}</div>
@@ -9211,8 +9236,9 @@ function cosIntentarCalcular() {
             ${nombre} · ${cargados}/${total}
           </div>
           <div style="margin:12px auto;max-width:200px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">
-            <div style="height:4px;border-radius:2px;background:var(--violeta);width:${Math.round(cargados/total*100)}%;transition:width 0.2s;"></div>
+            <div style="height:4px;border-radius:2px;background:var(--violeta);width:${pct}%;transition:width 0.2s;"></div>
           </div>
+          <div style="font-size:12px;font-weight:700;color:var(--violeta);margin-top:4px;">${pct}%</div>
           ${!desdeCache ? '<div style="font-size:10px;margin-top:4px;color:var(--texto-dim);">Se guardará en caché para la próxima vez ⚡</div>' : ''}
         </div>`;
     };
