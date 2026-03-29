@@ -10318,11 +10318,41 @@ function cosIDBGuardar(obj) {
   const body = obj.tipo === 'r5'
     ? { id: obj.id, nombre: obj.nombre, fecha: obj.fecha, registros: obj.registros }
     : { id: obj.id, nombre: obj.nombre, fecha: obj.fecha, filas: obj.filas };
+  // Marcar como "guardando" en el historial
+  cosActualizarEstadoBD(obj.id, 'guardando');
   return authFetch(`${FENIX_API}/cosechas/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
-  }).then(r => r.json());
+  }).then(r => r.json()).then(res => {
+    cosActualizarEstadoBD(obj.id, res.ok ? 'listo' : 'error');
+    return res;
+  }).catch(e => {
+    cosActualizarEstadoBD(obj.id, 'error');
+    throw e;
+  });
+}
+
+// Actualizar el badge de estado BD en el historial
+function cosActualizarEstadoBD(id, estado) {
+  const el = document.getElementById('cos-bd-badge-' + id);
+  if (!el) return;
+  if (estado === 'guardando') {
+    el.style.background = 'rgba(251,191,36,0.12)';
+    el.style.color = '#FCD34D';
+    el.style.borderColor = 'rgba(252,211,77,0.3)';
+    el.textContent = '⏳ Guardando...';
+  } else if (estado === 'listo') {
+    el.style.background = 'rgba(52,211,153,0.12)';
+    el.style.color = '#34D399';
+    el.style.borderColor = 'rgba(52,211,153,0.3)';
+    el.textContent = '✓ BD';
+  } else {
+    el.style.background = 'rgba(248,113,113,0.12)';
+    el.style.color = '#F87171';
+    el.style.borderColor = 'rgba(248,113,113,0.3)';
+    el.textContent = '✗ Error';
+  }
 }
 
 // ── Eliminar un archivo via API ──
@@ -10629,7 +10659,7 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${nReg.toLocaleString('es-CO')} reg · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histR5.appendChild(div);
       });
       if (statusR5) statusR5.textContent = `${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totalReg.toLocaleString('es-CO')} registros`;
@@ -10662,7 +10692,7 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${arch.filas.length.toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
-          <span style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histFact.appendChild(div);
       });
       if (statusFact) statusFact.textContent = `${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totalFilas.toLocaleString('es-CO')} filas`;
