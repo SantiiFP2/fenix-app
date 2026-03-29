@@ -8628,7 +8628,6 @@ function renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio) {
   document.getElementById('kpi-cfm').textContent = fmt(cfmProm);
 
   // Re-renderizar secciones con datos filtrados
-  actualizarKpiTotal();
   initProyeccion();
   if(cpmHabilitado) calcularCpm();
   renderAcelerador(datos);
@@ -8636,6 +8635,10 @@ function renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio) {
   renderEfectividadCvcLista();
   renderPresupuesto(datos, mesVenta, mesProyeccion);
   renderBonoCumplimiento(datos);
+  // renderCronograma escribe proyVentasC1/C2 al dataset y llama actualizarKpiTotal()
+  // Debe ejecutarse ANTES de restaurar _resultadosCache para que el KPI use datos filtrados
+  renderCronograma(datos, mesProyeccion, anio);
+  renderTabla(datos);
 
   // Re-renderizar cards de metas por CVC
   const secCvc = document.getElementById('sec-cvc-metas');
@@ -8653,6 +8656,8 @@ function renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio) {
     secCvc.style.display = 'block';
   }
 
+  // Restaurar cache DESPUÉS de renderCronograma para que actualizarKpiTotal()
+  // (llamado dentro de renderCronograma) use _resultadosCache filtrado
   _resultadosCache = cacheOrig;
 }
 
@@ -8841,8 +8846,12 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   }
 
   // CRONOGRAMA — ventas reales ya procesadas
+  renderCronograma(resultados, mesProyeccion, anio);
+}
+
+function renderCronograma(datos, mesProyeccion, anio) {
   const cobros={};
-  resultados.forEach(r=>{
+  datos.forEach(r=>{
     const isPow = norm(r.tipo).includes('power');
     r.pagosNetos.forEach((p,i)=>{
       const m=r.mesesPago[i];
@@ -8866,7 +8875,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   const caidas=getCaidas();
 
   campanasProy.forEach(camp=>{
-    const ventasCamp = resultados.filter(r=>norm(r.producto)===camp.key);
+    const ventasCamp = datos.filter(r=>norm(r.producto)===camp.key);
     if(!ventasCamp.length) return;
 
     // CFM promedio real del archivo para esta campaña
@@ -8948,7 +8957,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   actualizarKpiTotal();
 
   const maxC=Math.max(...Object.values(cobros).map(c=>c.neto),1);
-  const hasPowerGlobal = resultados.some(r=>norm(r.tipo).includes('power'));
+  const hasPowerGlobal = datos.some(r=>norm(r.tipo).includes('power'));
   document.getElementById('cronograma-cobros').innerHTML=Object.keys(cobros).map(Number).sort((a,b)=>a-b).map(m=>{
     const c=cobros[m]; const esProy=m===mesProyeccion;
     const mesNom=MESES[m%12]+(m>=12?` ${anio+Math.floor(m/12)}`:'');
@@ -8976,7 +8985,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 
   // SEDES
   const sedes={};
-  resultados.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
+  datos.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
   const maxS=Math.max(...Object.values(sedes).map(s=>s.total),1);
   document.getElementById('resumen-sede').innerHTML=Object.entries(sedes).sort((a,b)=>b[1].total-a[1].total).map(([cvc,s])=>`
     <div class="sede-card">
@@ -8985,7 +8994,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
       <div class="sede-stats"><span>📱 ${s.lineas} líneas</span><span>Prom: ${fmt(s.total/s.lineas)}/línea</span></div>
     </div>`).join('');
 
-  const hasPower=resultados.some(r=>r.isPower);
+  const hasPower=datos.some(r=>r.isPower);
   document.getElementById('th-p4b').style.display=hasPower?'':'none';
   document.getElementById('th-p4n').style.display=hasPower?'':'none';
   document.getElementById('th-cobro-mes').textContent=`Cobro Neto ${nomProy}`;
