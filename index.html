@@ -10437,15 +10437,37 @@ async function cosCargarDatosArchivo(archivo) {
 
   // 2. No hay cache → descargar desde API
   const endpoint = archivo.tipo === 'r5' ? 'r5' : 'factura';
-  const res = await authFetch(`${FENIX_API}/cosechas/${endpoint}/${archivo.id}`).then(r => r.json());
-  if (!res.ok) throw new Error(res.error);
-  if (archivo.tipo === 'r5') {
+
+  if (archivo.tipo === 'factura') {
+    // Descargar en páginas de 5000 filas para evitar timeout
+    const LIMIT = 5000;
+    let offset = 0;
+    let todasFilas = [];
+    let hayMas = true;
+    while (hayMas) {
+      const res = await authFetch(
+        `${FENIX_API}/cosechas/factura/${archivo.id}?limit=${LIMIT}&offset=${offset}`
+      ).then(r => r.json());
+      if (!res.ok) throw new Error(res.error);
+      todasFilas = todasFilas.concat(res.archivo.filas);
+      hayMas = res.hay_mas;
+      offset += LIMIT;
+      // Actualizar badge con progreso de descarga
+      if (res.n_total > LIMIT) {
+        const pct = Math.round(Math.min(todasFilas.length / res.n_total * 100, 100));
+        const el = document.getElementById('cos-bd-badge-' + archivo.id);
+        if (el) { el.textContent = `⬇ ${pct}%`; el.style.color = '#93C5FD'; }
+      }
+    }
+    archivo.filas = todasFilas;
+    cosCacheGuardar(archivo.id, archivo.fecha, todasFilas);
+  } else {
+    const res = await authFetch(`${FENIX_API}/cosechas/${endpoint}/${archivo.id}`).then(r => r.json());
+    if (!res.ok) throw new Error(res.error);
     archivo.registros = res.archivo.registros;
     cosCacheGuardar(archivo.id, archivo.fecha, res.archivo.registros);
-  } else {
-    archivo.filas = res.archivo.filas;
-    cosCacheGuardar(archivo.id, archivo.fecha, res.archivo.filas);
   }
+
   archivo._cargado = true;
   return archivo;
 }
@@ -10727,7 +10749,7 @@ function cosRenderHistorial() {
           <span style="font-size:12px;">🧾</span>
           <div style="flex:1;min-width:0;">
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
-            <div style="font-size:10px;color:var(--texto-dim);">${arch.filas.length.toLocaleString('es-CO')} filas · ${fStr}</div>
+            <div style="font-size:10px;color:var(--texto-dim);">${(arch.filas ? arch.filas.length : (arch.n_registros||0)).toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
           <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
         histFact.appendChild(div);
