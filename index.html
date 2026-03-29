@@ -10315,6 +10315,12 @@ function cosResultadoLeer(fingerprint, filtros) {
 // ── Guardar un archivo via API ──
 function cosIDBGuardar(obj) {
   const endpoint = obj.tipo === 'r5' ? 'r5' : 'factura';
+
+  // Para facturas grandes (>3000 filas), enviar en lotes para evitar timeout
+  if (obj.tipo === 'factura' && obj.filas && obj.filas.length > 3000) {
+    return cosIDBGuardarEnLotes(obj);
+  }
+
   const body = obj.tipo === 'r5'
     ? { id: obj.id, nombre: obj.nombre, fecha: obj.fecha, registros: obj.registros }
     : { id: obj.id, nombre: obj.nombre, fecha: obj.fecha, filas: obj.filas };
@@ -10331,6 +10337,37 @@ function cosIDBGuardar(obj) {
     cosActualizarEstadoBD(obj.id, 'error');
     throw e;
   });
+}
+
+async function cosIDBGuardarEnLotes(obj) {
+  const TAM_LOTE = 2000;
+  const filas = obj.filas;
+  const total_lotes = Math.ceil(filas.length / TAM_LOTE);
+  cosActualizarEstadoBD(obj.id, 'guardando');
+  try {
+    for (let i = 0; i < total_lotes; i++) {
+      const lote = filas.slice(i * TAM_LOTE, (i + 1) * TAM_LOTE);
+      const pct = Math.round((i + 1) / total_lotes * 100);
+      // Actualizar badge con progreso
+      const el = document.getElementById('cos-bd-badge-' + obj.id);
+      if (el) el.textContent = `⏳ ${pct}%`;
+      const res = await authFetch(`${FENIX_API}/cosechas/factura/${obj.id}/lote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: obj.nombre, fecha: obj.fecha,
+          filas: lote, lote_num: i,
+          total_lotes, n_total: filas.length
+        })
+      }).then(r => r.json());
+      if (!res.ok) throw new Error(res.error || 'Error en lote ' + i);
+    }
+    cosActualizarEstadoBD(obj.id, 'listo');
+    return { ok: true };
+  } catch(e) {
+    cosActualizarEstadoBD(obj.id, 'error');
+    throw e;
+  }
 }
 
 // Actualizar el badge de estado BD en el historial
