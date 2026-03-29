@@ -3595,6 +3595,7 @@ function renderSedeTabs() {
 // ── Cambiar sede activa y re-renderizar todo ──
 function seleccionarSedeFiltro(madre) {
   _sedeFiltroActual = madre;
+  if (!madre) _ultimosDatosKpi = null; // reset al volver a General
   renderSedeTabs();
   const datos = getDatosFiltrados();
   console.log('[SEDE DEBUG] sedeFiltro:', madre, '| datos.length:', datos.length, '| cvcConfigs.length:', cvcConfigs.length, '| madres en datos:', [...new Set(datos.map(r=>r.cvcMadre||r.cvc).filter(Boolean))]);
@@ -5253,7 +5254,12 @@ function getTotalCpm() {
 // ══════════════════════════════════════
 // KPI TOTAL CENTRALIZADO
 // ══════════════════════════════════════
+let _ultimosDatosKpi = null; // cache del último datosKpi para sede activa
+
 function actualizarKpiTotal(datosKpi) {
+  // Si hay sede activa y no se pasa datosKpi, reusar el último conocido
+  if (_sedeFiltroActual && datosKpi) _ultimosDatosKpi = datosKpi;
+  if (_sedeFiltroActual && !datosKpi && _ultimosDatosKpi) datosKpi = _ultimosDatosKpi;
   // _dk: datos del SITE activo (para calcular PAGOS)
   // _global: todos los datos (para evaluar CUMPLIMIENTO de CVCs)
   const _dk     = datosKpi || _resultadosCache;
