@@ -3606,7 +3606,11 @@ function seleccionarSedeFiltro(madre) {
     const [anio, mesIdx] = periodoVal ? periodoVal.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth()+1];
     const mesVenta = mesIdx - 1;
     const mesProyeccion = mesVenta + 1;
-    renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio);
+    try {
+      renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio);
+    } catch(e) {
+      console.error('[FILTRO ERROR]', e);
+    }
   }
 
   // Re-renderizar panel de inicio si está visible
