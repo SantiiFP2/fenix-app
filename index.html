@@ -3332,7 +3332,8 @@ function calcularProyeccionCvc(cvcMadre, resultadosData) {
   return { ejecutado, proyectado, proyectadoBase, extraMigraPower, totalDias, transDias, campKey };
 }
 
-function calcularAcelerador(resultadosData) {
+function calcularAcelerador(resultadosData, cvcConfigsDk) {
+  const _cvcs = cvcConfigsDk || cvcConfigs;
   // Elegibles: canal TMK Outbound, no Power, Porta/Migra, CFM >= umbral
   const elegibles = resultadosData.filter(r => {
     const canal = norm(r.canal);
@@ -3345,7 +3346,7 @@ function calcularAcelerador(resultadosData) {
 
   // Cumplimiento real y proyectado por CVC
   const cumplPorMadre = {};
-  cvcConfigs.forEach(cvc => {
+  _cvcs.forEach(cvc => {
     const ejecutado = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined)
       ? cvc.ejecutadoOverride
       : getEjecutadoCvcParaMeta(cvc, resultadosData);
@@ -3380,7 +3381,7 @@ function calcularAcelerador(resultadosData) {
 
   // Luego estimar proyectadas para CVCs con cumplimiento proyectado >= 100%
   const cvcsProyectados = []; // CVCs que aplican solo por proyección
-  cvcConfigs.forEach(cvc => {
+  _cvcs.forEach(cvc => {
     const c = cumplPorMadre[cvc.madre];
     if (!c || c.pctProy === null) return;
     if (c.pctProy < 100) return; // no llega al 100% proyectado
@@ -5250,6 +5251,10 @@ function actualizarKpiTotal(datosKpi) {
   if (!_resultadosCache.length) return;
   // datosKpi: datos filtrados por sede (opcional). Si no se pasa, usa _dk global.
   const _dk = datosKpi || _resultadosCache;
+  // cvcConfigs filtrados por sede activa (para Acelerador, Presupuesto P1 y Bono)
+  const _cvcDk = _sedeFiltroActual
+    ? cvcConfigs.filter(c => c.madre === _sedeFiltroActual || (c.sede||'') === _sedeFiltroActual || _dk.some(r => (r.cvcMadre||r.cvc) === c.madre))
+    : cvcConfigs;
   const kpiTotalEl = document.getElementById('kpi-total');
   const kpiSubEl   = document.getElementById('kpi-sub-total');
   if (!kpiTotalEl) return;
@@ -5265,7 +5270,7 @@ function actualizarKpiTotal(datosKpi) {
   const totalSemillerosVal = semillerosHabilitado ? semilleros.reduce((s,x)=>s+x.total,0) : 0;
   const totalCpmVal        = getTotalCpm();
 
-  const _ac = calcularAcelerador(_dk);
+  const _ac = calcularAcelerador(_dk, _cvcDk);
   const totalAceleradorVal = _ac.totalAcelerador || 0;
 
   const totalEfectividadVal = efectividadCvcs.length
@@ -5296,8 +5301,8 @@ function actualizarKpiTotal(datosKpi) {
         return s + unidadesElegProy * cfmProm * (efectividadPct/100);
       },0) : 0;
 
-  const totalPresupuestoP1Val = cvcConfigs.length
-    ? cvcConfigs.reduce((s,cvc)=>{
+  const totalPresupuestoP1Val = _cvcDk.length
+    ? _cvcDk.reduce((s,cvc)=>{
         const lc = getLineasCvcParaMeta(cvc, _dk);
         const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lc.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
@@ -5317,8 +5322,8 @@ function actualizarKpiTotal(datosKpi) {
         return s + tot/3;
       },0) : 0;
 
-  const totalBonoVal = cvcConfigs.length
-    ? cvcConfigs.reduce((s,cvc)=>{
+  const totalBonoVal = _cvcDk.length
+    ? _cvcDk.reduce((s,cvc)=>{
         const lp = getLineasCvcParaMeta(cvc, _dk);
         const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lp.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
