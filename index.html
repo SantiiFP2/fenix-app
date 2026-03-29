@@ -9002,7 +9002,12 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   kpiEl.dataset.proyVentas   = totalVentasProy;
   kpiEl.dataset.proyVentasC1 = totalVentasProyC1;
   kpiEl.dataset.proyVentasC2 = totalVentasProyC2;
-  actualizarKpiTotal(datos);
+  console.log('[CRON DEBUG2] about to call actualizarKpiTotal. datos.length:', datos.length);
+  try {
+    actualizarKpiTotal(datos);
+  } catch(e) {
+    console.error('[KPI ERROR]', e.message, e.stack);
+  }
 
   const maxC=Math.max(...Object.values(cobros).map(c=>c.neto),1);
   const hasPowerGlobal = datos.some(r=>norm(r.tipo).includes('power'));
