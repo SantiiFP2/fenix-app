@@ -3332,9 +3332,12 @@ function calcularProyeccionCvc(cvcMadre, resultadosData) {
   return { ejecutado, proyectado, proyectadoBase, extraMigraPower, totalDias, transDias, campKey };
 }
 
-function calcularAcelerador(resultadosData, cvcConfigsDk) {
+function calcularAcelerador(resultadosData, cvcConfigsDk, datosGlobal) {
   const _cvcs = cvcConfigsDk || cvcConfigs;
-  // Elegibles: canal TMK Outbound, no Power, Porta/Migra, CFM >= umbral
+  // Para cumplimiento usar datos globales; para pago usar datos filtrados por SITE
+  const _datosCumpl = datosGlobal || resultadosData;
+
+  // Elegibles para PAGO: del SITE activo (canal TMK Outbound, no Power, Porta/Migra, CFM >= umbral)
   const elegibles = resultadosData.filter(r => {
     const canal = norm(r.canal);
     const tipo  = norm(r.tipo);
@@ -3344,19 +3347,16 @@ function calcularAcelerador(resultadosData, cvcConfigsDk) {
         && r.cfm >= aceleradorCfmMin;
   });
 
-  // Cumplimiento real y proyectado por CVC
+  // Cumplimiento evaluado con datos GLOBALES
   const cumplPorMadre = {};
   _cvcs.forEach(cvc => {
     const ejecutado = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined)
       ? cvc.ejecutadoOverride
-      : getEjecutadoCvcParaMeta(cvc, resultadosData);
+      : getEjecutadoCvcParaMeta(cvc, _datosCumpl);
     const meta = cvc.meta || 0;
     const pct  = meta > 0 ? (ejecutado / meta * 100) : null;
-
-    // Proyección al cierre para este CVC
-    const proy = calcularProyeccionCvc(cvc.madre, resultadosData);
+    const proy = calcularProyeccionCvc(cvc.madre, _datosCumpl);
     const pctProy = meta > 0 ? (proy.proyectado / meta * 100) : null;
-
     cumplPorMadre[cvc.madre] = { pct, pctProy, ejecutado, proyectado: proy.proyectado, meta,
                                   totalDias: proy.totalDias, transDias: proy.transDias, campKey: proy.campKey };
   });
@@ -3597,6 +3597,7 @@ function seleccionarSedeFiltro(madre) {
   _sedeFiltroActual = madre;
   renderSedeTabs();
   const datos = getDatosFiltrados();
+  console.log('[SEDE DEBUG] sedeFiltro:', madre, '| datos.length:', datos.length, '| cvcConfigs.length:', cvcConfigs.length, '| madres en datos:', [...new Set(datos.map(r=>r.cvcMadre||r.cvc).filter(Boolean))]);
   if (!datos.length) return;
 
   // Re-renderizar proyección móvil si está visible
@@ -5249,15 +5250,15 @@ function getTotalCpm() {
 // ══════════════════════════════════════
 function actualizarKpiTotal(datosKpi) {
   if (!_resultadosCache.length) return;
-  // datosKpi: datos filtrados por sede (opcional). Si no se pasa, usa _dk global.
-  const _dk = datosKpi || _resultadosCache;
-  // cvcConfigs filtrados por sede activa (para Acelerador, Presupuesto P1 y Bono)
-  // Un CVC pertenece al SITE activo si hay líneas de ese CVC en _dk
+  // _dk: datos del SITE activo (para calcular PAGOS)
+  // _global: todos los datos (para evaluar CUMPLIMIENTO de CVCs)
+  const _dk     = datosKpi || _resultadosCache;
+  const _global = _resultadosCache; // siempre el cache completo para cumplimiento
+  // CVCs presentes en el SITE activo
   const _madresDk = _sedeFiltroActual
     ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean))
     : null;
   const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
-  console.log('[KPI DEBUG] sedeFiltro:', _sedeFiltroActual, '| _dk.length:', _dk.length, '| _madresDk:', _madresDk ? [..._madresDk] : 'null', '| _cvcDk.length:', _cvcDk.length, _cvcDk.map(c=>c.madre));
   const kpiTotalEl = document.getElementById('kpi-total');
   const kpiSubEl   = document.getElementById('kpi-sub-total');
   if (!kpiTotalEl) return;
@@ -5273,7 +5274,7 @@ function actualizarKpiTotal(datosKpi) {
   const totalSemillerosVal = semillerosHabilitado ? semilleros.reduce((s,x)=>s+x.total,0) : 0;
   const totalCpmVal        = getTotalCpm();
 
-  const _ac = calcularAcelerador(_dk, _cvcDk);
+  const _ac = calcularAcelerador(_dk, _cvcDk, _global);
   const totalAceleradorVal = _ac.totalAcelerador || 0;
 
   const totalEfectividadVal = efectividadCvcs.length
@@ -5306,40 +5307,46 @@ function actualizarKpiTotal(datosKpi) {
 
   const totalPresupuestoP1Val = _cvcDk.length
     ? _cvcDk.reduce((s,cvc)=>{
-        const lc = getLineasCvcParaMeta(cvc, _dk);
-        const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lc.length;
+        // Cumplimiento con datos GLOBALES
+        const lcGlobal = getLineasCvcParaMeta(cvc, _global);
+        const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lcGlobal.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
-        const proyD = calcularProyeccionCvc(cvc.madre, _dk);
-        // % cumplimiento con MP (para determinar rango)
+        const proyD = calcularProyeccionCvc(cvc.madre, _global);
         const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
         const cpEfectivo = Math.max(cp, cpProy);
+        // CFM y canal del SITE activo
+        const lc = getLineasCvcParaMeta(cvc, _dk);
         const cfmProm = lc.length>0 ? lc.reduce((a,r)=>a+(r.cfm||0),0)/lc.length : 0;
         const contCanal={}; lc.forEach(r=>{const k=norm(r.canal);contCanal[k]=(contCanal[k]||0)+1;});
         const canalPred=Object.entries(contCanal).sort((a,b)=>b[1]-a[1])[0]?.[0]||'tmk outbound';
         const tablaC = tablaPresupuestoPorCanal(canalPred)||tablaPresupuestoPorCanal('tmk outbound');
         const pcEfectivo = tablaC ? getPctPresupuesto(cpEfectivo, tablaC) : 0;
         if(!pcEfectivo) return s;
-        // Pago sobre proyectadoBase (sin MP)
-        const unidadesPago = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado||ej);
+        // Pago proporcional al SITE
+        const fraccion = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
+        const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado||ej);
+        const unidadesPago = Math.round(unidadesPagoGlobal * fraccion);
         const tot = unidadesPago * cfmProm * (pcEfectivo/100);
         return s + tot/3;
       },0) : 0;
 
   const totalBonoVal = _cvcDk.length
     ? _cvcDk.reduce((s,cvc)=>{
-        const lp = getLineasCvcParaMeta(cvc, _dk);
-        const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lp.length;
+        // Cumplimiento con datos GLOBALES
+        const lpGlobal = getLineasCvcParaMeta(cvc, _global);
+        const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lpGlobal.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
-        const proyD = calcularProyeccionCvc(cvc.madre, _dk);
-        // cumplimiento con MP para decidir si aplica el bono
+        const proyD = calcularProyeccionCvc(cvc.madre, _global);
         const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
         const cumpleReal = cp>=100; const cumpleProy = cpProy>=100;
         if(!cumpleReal && !cumpleProy) return s;
-        // pago sobre proyectadoBase (sin MP)
+        // Pago sobre líneas del SITE activo
+        const lp = getLineasCvcParaMeta(cvc, _dk);
+        const fraccion = lpGlobal.length > 0 ? lp.length / lpGlobal.length : 1;
         const baseConMP   = proyD.proyectado     || ej;
         const baseSinMP   = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : baseConMP;
-        const unidadesPago = cumpleReal ? ej : baseSinMP;
-        // Calcular bono usando unidades al cierre y mix real de canales
+        const unidadesPagoGlobal = cumpleReal ? ej : baseSinMP;
+        const unidadesPago = Math.round(unidadesPagoGlobal * fraccion);
         const totalLin = lp.length; if(!totalLin) return s;
         const factor = unidadesPago / totalLin;
         const nInbPorta  = lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
