@@ -8850,7 +8850,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 
   // SEDES
   const sedes={};
-  datos.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
+  resultados.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
   const maxS=Math.max(...Object.values(sedes).map(s=>s.total),1);
   document.getElementById('resumen-sede').innerHTML=Object.entries(sedes).sort((a,b)=>b[1].total-a[1].total).map(([cvc,s])=>`
     <div class="sede-card">
@@ -8859,7 +8859,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
       <div class="sede-stats"><span>📱 ${s.lineas} líneas</span><span>Prom: ${fmt(s.total/s.lineas)}/línea</span></div>
     </div>`).join('');
 
-  const hasPower=datos.some(r=>r.isPower);
+  const hasPower=resultados.some(r=>r.isPower);
   document.getElementById('th-p4b').style.display=hasPower?'':'none';
   document.getElementById('th-p4n').style.display=hasPower?'':'none';
   document.getElementById('th-cobro-mes').textContent=`Cobro Neto ${nomProy}`;
