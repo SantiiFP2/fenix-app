@@ -8847,6 +8847,29 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 
   // CRONOGRAMA — ventas reales ya procesadas
   renderCronograma(resultados, mesProyeccion, anio, mesVenta);
+
+  // SEDES
+  const sedes={};
+  datos.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
+  const maxS=Math.max(...Object.values(sedes).map(s=>s.total),1);
+  document.getElementById('resumen-sede').innerHTML=Object.entries(sedes).sort((a,b)=>b[1].total-a[1].total).map(([cvc,s])=>`
+    <div class="sede-card">
+      <div class="sede-header"><div class="sede-cvc">${cvc}</div><div class="sede-total">${fmt(s.total)}</div></div>
+      <div class="sede-bar"><div class="sede-bar-fill" style="width:${(s.total/maxS*100).toFixed(1)}%"></div></div>
+      <div class="sede-stats"><span>📱 ${s.lineas} líneas</span><span>Prom: ${fmt(s.total/s.lineas)}/línea</span></div>
+    </div>`).join('');
+
+  const hasPower=datos.some(r=>r.isPower);
+  document.getElementById('th-p4b').style.display=hasPower?'':'none';
+  document.getElementById('th-p4n').style.display=hasPower?'':'none';
+  document.getElementById('th-cobro-mes').textContent=`Cobro Neto ${nomProy}`;
+
+  renderTabla(resultados);
+  document.getElementById('conteo-filtro').textContent=`(${resultados.length})`;
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('resultado-content').style.display='block';
+  const btnG = document.getElementById('btn-guardar-proy');
+  if (btnG) btnG.style.display = '';
 }
 
 function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
@@ -8984,29 +9007,6 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
       <div class="mes-cobro-detalle"><span>📱 ${c.lineas.size||'—'} líneas</span><span style="color:var(--verde);">C1: ${fmt(c.c1)}</span><span style="color:var(--morado);">C2: ${fmt(c.c2)}</span></div>
     </div>`;
   }).join('');
-
-  // SEDES
-  const sedes={};
-  datos.forEach(r=>{if(!sedes[r.cvc])sedes[r.cvc]={total:0,lineas:0};sedes[r.cvc].total+=r.pagoNetoEnProyeccion;sedes[r.cvc].lineas++;});
-  const maxS=Math.max(...Object.values(sedes).map(s=>s.total),1);
-  document.getElementById('resumen-sede').innerHTML=Object.entries(sedes).sort((a,b)=>b[1].total-a[1].total).map(([cvc,s])=>`
-    <div class="sede-card">
-      <div class="sede-header"><div class="sede-cvc">${cvc}</div><div class="sede-total">${fmt(s.total)}</div></div>
-      <div class="sede-bar"><div class="sede-bar-fill" style="width:${(s.total/maxS*100).toFixed(1)}%"></div></div>
-      <div class="sede-stats"><span>📱 ${s.lineas} líneas</span><span>Prom: ${fmt(s.total/s.lineas)}/línea</span></div>
-    </div>`).join('');
-
-  const hasPower=datos.some(r=>r.isPower);
-  document.getElementById('th-p4b').style.display=hasPower?'':'none';
-  document.getElementById('th-p4n').style.display=hasPower?'':'none';
-  document.getElementById('th-cobro-mes').textContent=`Cobro Neto ${nomProy}`;
-
-  renderTabla(resultados);
-  document.getElementById('conteo-filtro').textContent=`(${resultados.length})`;
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('resultado-content').style.display='block';
-  const btnG = document.getElementById('btn-guardar-proy');
-  if (btnG) btnG.style.display = '';
 }
 
 function renderTabla(data){
