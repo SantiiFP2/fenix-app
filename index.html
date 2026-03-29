@@ -8637,7 +8637,7 @@ function renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio) {
   renderBonoCumplimiento(datos);
   // renderCronograma escribe proyVentasC1/C2 al dataset y llama actualizarKpiTotal()
   // Debe ejecutarse ANTES de restaurar _resultadosCache para que el KPI use datos filtrados
-  renderCronograma(datos, mesProyeccion, anio);
+  renderCronograma(datos, mesProyeccion, anio, mesVenta);
   renderTabla(datos);
 
   // Re-renderizar cards de metas por CVC
@@ -8846,10 +8846,12 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   }
 
   // CRONOGRAMA — ventas reales ya procesadas
-  renderCronograma(resultados, mesProyeccion, anio);
+  renderCronograma(resultados, mesProyeccion, anio, mesVenta);
 }
 
-function renderCronograma(datos, mesProyeccion, anio) {
+function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
+  // mesVenta puede venir como parámetro o derivarse de mesProyeccion
+  if (mesVenta === undefined) mesVenta = mesProyeccion - 1;
   const cobros={};
   datos.forEach(r=>{
     const isPow = norm(r.tipo).includes('power');
