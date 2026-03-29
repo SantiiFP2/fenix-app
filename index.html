@@ -10340,7 +10340,7 @@ function cosIDBGuardar(obj) {
 }
 
 async function cosIDBGuardarEnLotes(obj) {
-  const TAM_LOTE = 2000;
+  const TAM_LOTE = 500;
   const filas = obj.filas;
   const total_lotes = Math.ceil(filas.length / TAM_LOTE);
   cosActualizarEstadoBD(obj.id, 'guardando');
