@@ -5252,9 +5252,11 @@ function actualizarKpiTotal(datosKpi) {
   // datosKpi: datos filtrados por sede (opcional). Si no se pasa, usa _dk global.
   const _dk = datosKpi || _resultadosCache;
   // cvcConfigs filtrados por sede activa (para Acelerador, Presupuesto P1 y Bono)
-  const _cvcDk = _sedeFiltroActual
-    ? cvcConfigs.filter(c => c.madre === _sedeFiltroActual || (c.sede||'') === _sedeFiltroActual || _dk.some(r => (r.cvcMadre||r.cvc) === c.madre))
-    : cvcConfigs;
+  // Un CVC pertenece al SITE activo si hay líneas de ese CVC en _dk
+  const _madresDk = _sedeFiltroActual
+    ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean))
+    : null;
+  const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
   const kpiTotalEl = document.getElementById('kpi-total');
   const kpiSubEl   = document.getElementById('kpi-sub-total');
   if (!kpiTotalEl) return;
