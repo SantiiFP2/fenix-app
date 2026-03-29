@@ -3550,6 +3550,7 @@ let efectividadPct   = 5;    // % sobre CFM editable
 let efectividadCvcs  = [];   // [{madre, base, meta, ejecutadoOverride}]
 let efectividadEditIdx = null;
 let _resultadosCache = [];   // cache de últimos resultados procesados
+let _resultadosCacheGlobal = []; // SIEMPRE contiene todos los datos sin filtrar (para cumplimiento CVC)
 let _sedeFiltroActual = null; // null = General, string = cvcMadre filtrado
 
 // ── Obtener datos filtrados por sede ──
@@ -3598,7 +3599,6 @@ function seleccionarSedeFiltro(madre) {
   if (!madre) _ultimosDatosKpi = null; // reset al volver a General
   renderSedeTabs();
   const datos = getDatosFiltrados();
-  console.log('[SEDE DEBUG] sedeFiltro:', madre, '| datos.length:', datos.length, '| cvcConfigs.length:', cvcConfigs.length, '| madres en datos:', [...new Set(datos.map(r=>r.cvcMadre||r.cvc).filter(Boolean))]);
   if (!datos.length) return;
 
   // Re-renderizar proyección móvil si está visible
@@ -3608,11 +3608,7 @@ function seleccionarSedeFiltro(madre) {
     const [anio, mesIdx] = periodoVal ? periodoVal.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth()+1];
     const mesVenta = mesIdx - 1;
     const mesProyeccion = mesVenta + 1;
-    try {
-      renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio);
-    } catch(e) {
-      console.error('[FILTRO ERROR]', e);
-    }
+    renderResultadosFiltrados(datos, mesVenta, mesProyeccion, anio);
   }
 
   // Re-renderizar panel de inicio si está visible
@@ -5261,9 +5257,9 @@ function actualizarKpiTotal(datosKpi) {
   if (_sedeFiltroActual && datosKpi) _ultimosDatosKpi = datosKpi;
   if (_sedeFiltroActual && !datosKpi && _ultimosDatosKpi) datosKpi = _ultimosDatosKpi;
   // _dk: datos del SITE activo (para calcular PAGOS)
-  // _global: todos los datos (para evaluar CUMPLIMIENTO de CVCs)
+  // _global: SIEMPRE todos los datos sin filtrar (para evaluar CUMPLIMIENTO de CVCs)
   const _dk     = datosKpi || _resultadosCache;
-  const _global = _resultadosCache; // siempre el cache completo para cumplimiento
+  const _global = _resultadosCacheGlobal.length ? _resultadosCacheGlobal : _resultadosCache;
   if (!_dk.length) return;
   if (!_global.length) return;
   // CVCs presentes en el SITE activo
@@ -8851,6 +8847,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 
   // CACHE y RENDERS DE INDICADORES
   _resultadosCache = resultados;
+  _resultadosCacheGlobal = resultados; // guardar copia permanente sin filtrar
   // KPI total ahora que el cache está listo
   actualizarKpiTotal();
   // Iniciar proyección
@@ -8904,7 +8901,6 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   // mesVenta puede venir como parámetro o derivarse de mesProyeccion
   if (mesVenta === undefined) mesVenta = mesProyeccion - 1;
-  console.log('[CRON DEBUG] renderCronograma called. datos.length:', datos.length, 'mesVenta:', mesVenta, 'sedeFiltro:', _sedeFiltroActual);
   const cobros={};
   datos.forEach(r=>{
     const isPow = norm(r.tipo).includes('power');
@@ -9009,12 +9005,7 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   kpiEl.dataset.proyVentas   = totalVentasProy;
   kpiEl.dataset.proyVentasC1 = totalVentasProyC1;
   kpiEl.dataset.proyVentasC2 = totalVentasProyC2;
-  console.log('[CRON DEBUG2] about to call actualizarKpiTotal. datos.length:', datos.length);
-  try {
-    actualizarKpiTotal(datos);
-  } catch(e) {
-    console.error('[KPI ERROR]', e.message, e.stack);
-  }
+  actualizarKpiTotal(datos);
 
   const maxC=Math.max(...Object.values(cobros).map(c=>c.neto),1);
   const hasPowerGlobal = datos.some(r=>norm(r.tipo).includes('power'));
