@@ -5254,11 +5254,12 @@ function getTotalCpm() {
 // KPI TOTAL CENTRALIZADO
 // ══════════════════════════════════════
 function actualizarKpiTotal(datosKpi) {
-  if (!_resultadosCache.length) return;
   // _dk: datos del SITE activo (para calcular PAGOS)
   // _global: todos los datos (para evaluar CUMPLIMIENTO de CVCs)
   const _dk     = datosKpi || _resultadosCache;
   const _global = _resultadosCache; // siempre el cache completo para cumplimiento
+  if (!_dk.length) return;
+  if (!_global.length) return;
   // CVCs presentes en el SITE activo
   const _madresDk = _sedeFiltroActual
     ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean))
