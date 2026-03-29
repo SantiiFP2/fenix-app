@@ -5257,6 +5257,7 @@ function actualizarKpiTotal(datosKpi) {
     ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean))
     : null;
   const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
+  console.log('[KPI DEBUG] sedeFiltro:', _sedeFiltroActual, '| _dk.length:', _dk.length, '| _madresDk:', _madresDk ? [..._madresDk] : 'null', '| _cvcDk.length:', _cvcDk.length, _cvcDk.map(c=>c.madre));
   const kpiTotalEl = document.getElementById('kpi-total');
   const kpiSubEl   = document.getElementById('kpi-sub-total');
   if (!kpiTotalEl) return;
