@@ -10864,7 +10864,9 @@ function cosCargaR5Multi(input) {
       pendientes--;
       if (pendientes === 0) {
         localStorage.removeItem(COS_RESULT_KEY); // invalidar cache resultado
-        cosGuardarStorage();
+        // Guardar solo el nuevo archivo en BD (no re-guardar todos)
+        cosIDBGuardar({ ...nuevoR5, tipo: 'r5' }).catch(e => console.warn('Error guardando R5:', e));
+        cosGuardarMeta();
         cosReconstruirGlobales();
         cosRenderHistorial();
       }
@@ -10933,7 +10935,12 @@ function cosCargaFacturaMulti(input) {
       pendientes--;
       if (pendientes === 0) {
         localStorage.removeItem(COS_RESULT_KEY); // invalidar cache resultado
-        cosGuardarStorage();
+        // Guardar solo los archivos nuevos en BD (no re-guardar todos)
+        files.forEach(file => {
+          const arch = cosArchivosFact.find(a => a.nombre === file.name);
+          if (arch) cosIDBGuardar({ ...arch, tipo: 'factura' }).catch(e => console.warn('Error guardando factura:', e));
+        });
+        cosGuardarMeta();
         cosReconstruirGlobales();
         cosRenderHistorial();
         // Guardar también en el array legacy para compatibilidad
