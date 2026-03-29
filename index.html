@@ -3554,32 +3554,24 @@ let _sedeFiltroActual = null; // null = General, string = cvcMadre filtrado
 // ── Obtener datos filtrados por sede ──
 function getDatosFiltrados() {
   if (!_sedeFiltroActual) return _resultadosCache;
-  return _resultadosCache.filter(r => (r.cvcMadre||r.cvc||'') === _sedeFiltroActual);
+  // Filtrar por SITE (campo físico del archivo)
+  return _resultadosCache.filter(r => (r.site||'') === _sedeFiltroActual);
 }
 
 // ── Construir tabs de sede ──
 function renderSedeTabs() {
   if (!_resultadosCache.length) return;
-  // Obtener sedes únicas con nombre legible
-  const sedesMap = {};
-  _resultadosCache.forEach(r => {
-    const madre = r.cvcMadre || r.cvc || '';
-    if (!madre) return;
-    if (!sedesMap[madre]) {
-      const g = GRUPOS_MADRE[madre] || {};
-      sedesMap[madre] = (g.sede || madre).replace('ONE CONTACT ', '');
-    }
-  });
-  const sedes = Object.entries(sedesMap).sort((a,b) => a[1].localeCompare(b[1]));
-  const hayMultiples = sedes.length > 1;
+  // Obtener SITES únicos del archivo (campo físico)
+  const sitesUnicos = [...new Set(_resultadosCache.map(r => r.site||'').filter(Boolean))].sort();
+  const hayMultiples = sitesUnicos.length > 1;
 
   // Render en proyección móvil
   const bar    = document.getElementById('sede-tabs-bar');
   const list   = document.getElementById('sede-tabs-list');
   if (bar && list) {
     bar.style.display = hayMultiples ? 'block' : 'none';
-    list.innerHTML = sedes.map(([madre, nombre]) =>
-      `<button class="sede-tab${_sedeFiltroActual===madre?' active':''}" onclick="seleccionarSedeFiltro('${madre}')">${nombre}</button>`
+    list.innerHTML = sitesUnicos.map(site =>
+      `<button class="sede-tab${_sedeFiltroActual===site?' active':''}" onclick="seleccionarSedeFiltro('${site}')">${site}</button>`
     ).join('');
   }
 
@@ -3588,8 +3580,8 @@ function renderSedeTabs() {
   const piList = document.getElementById('pi-sede-tabs-list');
   if (piBar && piList) {
     piBar.style.display = hayMultiples ? 'block' : 'none';
-    piList.innerHTML = sedes.map(([madre, nombre]) =>
-      `<button class="sede-tab${_sedeFiltroActual===madre?' active':''}" onclick="seleccionarSedeFiltro('${madre}')">${nombre}</button>`
+    piList.innerHTML = sitesUnicos.map(site =>
+      `<button class="sede-tab${_sedeFiltroActual===site?' active':''}" onclick="seleccionarSedeFiltro('${site}')">${site}</button>`
     ).join('');
   }
 
@@ -4676,6 +4668,19 @@ let cosechas = []; // [{descripcion, valor}]
 // Variable para guardar el desglose mientras el modal está abierto
 let _proySedes = [];
 
+// Mapeo flexible SITE → operacion_op en cosechas
+// Ej: "MEDELLIN" → busca "medellin" en operacion_op → "One Contact (Medellin)"
+function cosSedeMatchSite(operacionOp, site) {
+  if (!operacionOp || !site) return false;
+  return operacionOp.toLowerCase().includes(site.toLowerCase().split(' ')[0]);
+}
+
+// Obtener sedes únicas del archivo de ventas actual
+function getSitesActuales() {
+  if (!_resultadosCache || !_resultadosCache.length) return [];
+  return [...new Set(_resultadosCache.map(r => r.site||'').filter(Boolean))].sort();
+}
+
 function importarProyeccionCosechas() {
   const total = window._cosProyGranTotal;
   if (!total || total <= 0) {
@@ -4683,7 +4688,7 @@ function importarProyeccionCosechas() {
     return;
   }
 
-  // Calcular desglose por sede desde cosR5Data/cosFactData
+  // Calcular desglose por operacion_op desde cosR5Data/cosFactData
   _proySedes = [];
   if (cosR5Data && cosFactData) {
     const bySede = {};
@@ -4707,15 +4712,21 @@ function importarProyeccionCosechas() {
     }
     const totalCobrado = Object.values(bySede).reduce((s, d) => s + d.cobrado, 0);
     if (totalCobrado > 0) {
+      // Intentar pre-asignar destino según los SITES del archivo actual
+      const sitesActuales = getSitesActuales();
       _proySedes = Object.entries(bySede)
         .filter(([, d]) => d.cobrado > 0)
         .sort((a, b) => b[1].cobrado - a[1].cobrado)
-        .map(([sede, d]) => ({
-          sede,
-          pct: d.cobrado / totalCobrado,
-          valor: Math.round(total * d.cobrado / totalCobrado),
-          destino: sede  // sede destino (para reasignación)
-        }));
+        .map(([sede, d]) => {
+          // Buscar si esta sede de cosechas matchea algún SITE del archivo
+          const siteMatch = sitesActuales.find(s => cosSedeMatchSite(sede, s)) || sede;
+          return {
+            sede,
+            pct: d.cobrado / totalCobrado,
+            valor: Math.round(total * d.cobrado / totalCobrado),
+            destino: siteMatch
+          };
+        });
     }
   }
 
@@ -4732,12 +4743,14 @@ function abrirModalProySedes(total) {
   const modal = document.getElementById('modal-proy-sedes');
   if (!modal) return;
 
-  const sedes = _proySedes.map(s => s.sede);
+  // Opciones de destino: primero los SITEs del archivo, luego opción nueva
+  const sitesArchivo = getSitesActuales();
+  const opcionesDestino = sitesArchivo.length > 0 ? sitesArchivo : _proySedes.map(s => s.sede);
   const fmtM = v => v >= 1e6 ? '$ ' + (v/1e6).toFixed(1) + 'M' : '$ ' + Math.round(v).toLocaleString('es-CO');
 
   // Construir tabla
   const filas = _proySedes.map((s, i) => `
-    <div style="display:grid;grid-template-columns:1fr auto 140px;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div style="display:grid;grid-template-columns:1fr auto 160px;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);">
       <div>
         <div style="font-size:12px;font-weight:600;color:var(--blanco);">${s.sede}</div>
         <div style="font-size:10px;color:var(--texto-dim);">${(s.pct*100).toFixed(1)}% del cobrado histórico</div>
@@ -4745,8 +4758,8 @@ function abrirModalProySedes(total) {
       <div style="font-size:14px;font-weight:700;color:var(--verde);text-align:right;white-space:nowrap;">${fmtM(s.valor)}</div>
       <select id="proy-sede-dest-${i}" onchange="proySedeReasignar(${i},this.value)"
         style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:11px;padding:4px 6px;width:100%;">
-        ${sedes.map(opt => `<option value="${opt}" ${opt === s.destino ? 'selected' : ''}>${opt}</option>`).join('')}
-        <option value="__nueva__" ${s.destino === '__nueva__' ? 'selected' : ''}>+ Nueva entrada</option>
+        ${opcionesDestino.map(opt => `<option value="${opt}" ${opt === s.destino ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="__excluir__" ${s.destino === '__excluir__' ? 'selected' : ''}>— No asignar</option>
       </select>
     </div>`).join('');
 
@@ -4774,10 +4787,11 @@ function cerrarModalProySedes() {
 function confirmarProySedes() {
   const mes = window._cosProyMesProy || 'Cosechas';
 
-  // Agrupar valores por destino
+  // Agrupar valores por destino (ignorar los excluidos)
   const porDestino = {};
   _proySedes.forEach(s => {
-    const dest = s.destino === '__nueva__' ? s.sede : s.destino;
+    if (s.destino === '__excluir__') return;
+    const dest = s.destino || s.sede;
     if (!porDestino[dest]) porDestino[dest] = 0;
     porDestino[dest] += s.valor;
   });
@@ -5240,7 +5254,12 @@ function actualizarKpiTotal() {
   const totalNeto_base = parseFloat(kpiTotalEl.dataset.base || '0');
 
   const totalIncentivosVal  = getTotalIncentivos();
-  const totalCosechasVal   = cosechas.reduce((s,c)=>s+(c.valor||0),0);
+  // Si hay sede activa, solo sumar cosechas asignadas a esa sede
+  const totalCosechasVal = (() => {
+    if (!_sedeFiltroActual) return cosechas.reduce((s,c)=>s+(c.valor||0),0);
+    return cosechas.filter(c => c.descripcion && c.descripcion.includes('· ' + _sedeFiltroActual))
+                   .reduce((s,c)=>s+(c.valor||0),0);
+  })();
   const totalSemillerosVal = semillerosHabilitado ? semilleros.reduce((s,x)=>s+x.total,0) : 0;
   const totalCpmVal        = getTotalCpm();
 
@@ -8459,7 +8478,8 @@ function procesarArchivo(file){
         numero:  findCol(keys,['numero','número','num','msisdn','linea','línea','celular','telefono','teléfono']),
         cfm:     findCol(keys,['cfm','cargo fijo mensual','cargo fijo','plan','valor plan','tarifa']),
         fecha:   findCol(keys,['dia activacion','día activacion','dia de activacion','fecha activacion','activacion','fecha','dia']),
-        cvc:     findCol(keys,['codigo cvc','código cvc','cvc','sede','site','punto','codigo']),
+        cvc:     findCol(keys,['codigo cvc','código cvc','cvc','codigo']),
+        site:    findCol(keys,['site','sede fisica','sede_fisica']),
         producto:findCol(keys,['producto','product','campana','campaña','tipo de producto']),
         tipo:    findCol(keys,['tipo','tipo de plan','plan tipo','modalidad','postpago','prepago']),
         cliente: findCol(keys,['tipo cliente','tipocliente','cliente','tipo_cliente','segmento','todo claro','tipocliente']),
@@ -8472,7 +8492,8 @@ function procesarArchivo(file){
         // Mostrar primeras 3 filas en consola para diagnóstico
         data.slice(0,3).forEach((row,i) => console.log('Fila '+i+':', JSON.stringify(row)));
       }
-      const faltantes=Object.entries(cols).filter(([,v])=>!v).map(([k])=>k);
+      const colsRequeridas = Object.entries(cols).filter(([k]) => k !== 'site');
+      const faltantes=colsRequeridas.filter(([,v])=>!v).map(([k])=>k);
       if(faltantes.length){alert(`⚠️ Columnas no encontradas:\n${faltantes.join(', ')}\n\nColumnas en el archivo:\n${keys.join(', ')}`);return;}
       ventasData=data.map((row,i)=>{
         const cfm=parseFloat(String(row[cols.cfm]||0).replace(/[^0-9.]/g,''))||0;
@@ -8488,8 +8509,9 @@ function procesarArchivo(file){
         const cvcCodigo=String(row[cols.cvc]||'').trim();
         const cvcMadre=CODIGO_A_MADRE[cvcCodigo]||cvcCodigo;
         const infoGrupo=GRUPOS_MADRE[cvcMadre]||{};
+        const siteVal = cols.site ? String(row[cols.site]||'').trim().toUpperCase() : '';
         return{idx:i+1,numero:String(row[cols.numero]||'—'),cfm,fecha:fechaStr,dia,ciclo,
-          cvc:cvcCodigo,cvcMadre,sede:infoGrupo.sede||'—',
+          cvc:cvcCodigo,cvcMadre,sede:infoGrupo.sede||'—',site:siteVal,
           producto:String(row[cols.producto]||'—'),tipo:String(row[cols.tipo]||'—'),
           cliente:String(row[cols.cliente]||'—'),canal:String(row[cols.canal]||'—')};
       });
