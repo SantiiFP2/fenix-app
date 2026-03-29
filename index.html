@@ -5246,8 +5246,10 @@ function getTotalCpm() {
 // ══════════════════════════════════════
 // KPI TOTAL CENTRALIZADO
 // ══════════════════════════════════════
-function actualizarKpiTotal() {
+function actualizarKpiTotal(datosKpi) {
   if (!_resultadosCache.length) return;
+  // datosKpi: datos filtrados por sede (opcional). Si no se pasa, usa _dk global.
+  const _dk = datosKpi || _resultadosCache;
   const kpiTotalEl = document.getElementById('kpi-total');
   const kpiSubEl   = document.getElementById('kpi-sub-total');
   if (!kpiTotalEl) return;
@@ -5263,7 +5265,7 @@ function actualizarKpiTotal() {
   const totalSemillerosVal = semillerosHabilitado ? semilleros.reduce((s,x)=>s+x.total,0) : 0;
   const totalCpmVal        = getTotalCpm();
 
-  const _ac = calcularAcelerador(_resultadosCache);
+  const _ac = calcularAcelerador(_dk);
   const totalAceleradorVal = _ac.totalAcelerador || 0;
 
   const totalEfectividadVal = efectividadCvcs.length
@@ -5274,12 +5276,12 @@ function actualizarKpiTotal() {
         const prodFiltro = getProductoEfectividad(indEfect);
         const token = prodFiltro === 'migracion' ? 'migr' : 'port';
         // Elegibles: para CFM de pago
-        const lineasEleg = _resultadosCache.filter(r=>esElegibleEfectividad(r)&&(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
+        const lineasEleg = _dk.filter(r=>esElegibleEfectividad(r)&&(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
         // Todas las portabilidades: para el numerador del % de efectividad
-        const lineasTodas = _resultadosCache.filter(r=>(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
+        const lineasTodas = _dk.filter(r=>(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
         const unidadesEleg = lineasEleg.length;
         const unidades = lineasTodas.length;
-        const proyD = calcularProyeccionCvc(c.madre, _resultadosCache);
+        const proyD = calcularProyeccionCvc(c.madre, _dk);
         const transDias = Math.max(proyD.transDias||1,1);
         const totalDias = proyD.totalDias||transDias;
         const unidadesElegProy = Math.round((unidadesEleg/transDias)*totalDias);
@@ -5296,10 +5298,10 @@ function actualizarKpiTotal() {
 
   const totalPresupuestoP1Val = cvcConfigs.length
     ? cvcConfigs.reduce((s,cvc)=>{
-        const lc = getLineasCvcParaMeta(cvc, _resultadosCache);
+        const lc = getLineasCvcParaMeta(cvc, _dk);
         const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lc.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
-        const proyD = calcularProyeccionCvc(cvc.madre, _resultadosCache);
+        const proyD = calcularProyeccionCvc(cvc.madre, _dk);
         // % cumplimiento con MP (para determinar rango)
         const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
         const cpEfectivo = Math.max(cp, cpProy);
@@ -5317,10 +5319,10 @@ function actualizarKpiTotal() {
 
   const totalBonoVal = cvcConfigs.length
     ? cvcConfigs.reduce((s,cvc)=>{
-        const lp = getLineasCvcParaMeta(cvc, _resultadosCache);
+        const lp = getLineasCvcParaMeta(cvc, _dk);
         const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lp.length;
         const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
-        const proyD = calcularProyeccionCvc(cvc.madre, _resultadosCache);
+        const proyD = calcularProyeccionCvc(cvc.madre, _dk);
         // cumplimiento con MP para decidir si aplica el bono
         const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
         const cumpleReal = cp>=100; const cumpleProy = cpProy>=100;
@@ -8979,7 +8981,7 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   kpiEl.dataset.proyVentas   = totalVentasProy;
   kpiEl.dataset.proyVentasC1 = totalVentasProyC1;
   kpiEl.dataset.proyVentasC2 = totalVentasProyC2;
-  actualizarKpiTotal();
+  actualizarKpiTotal(datos);
 
   const maxC=Math.max(...Object.values(cobros).map(c=>c.neto),1);
   const hasPowerGlobal = datos.some(r=>norm(r.tipo).includes('power'));
