@@ -5348,27 +5348,27 @@ function actualizarKpiTotal(datosKpi) {
         const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
         const cumpleReal = cp>=100; const cumpleProy = cpProy>=100;
         if(!cumpleReal && !cumpleProy) return s;
-        // Pago sobre líneas del SITE activo
-        const lp = getLineasCvcParaMeta(cvc, _dk);
-        const fraccion = lpGlobal.length > 0 ? lp.length / lpGlobal.length : 1;
+        // Calcular bono GLOBAL con todas las líneas (evita problemas de tramos por SITE)
         const baseConMP   = proyD.proyectado     || ej;
         const baseSinMP   = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : baseConMP;
         const unidadesPagoGlobal = cumpleReal ? ej : baseSinMP;
-        const unidadesPago = Math.round(unidadesPagoGlobal * fraccion);
-        const totalLin = lp.length; if(!totalLin) return s;
-        const factor = unidadesPago / totalLin;
-        const nInbPorta  = lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
-        const nInbMigra  = lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
-        const nDigPorta  = lp.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
-        const outbLin    = lp.filter(r=>norm(r.canal).includes('outbound'));
-        const nOutbP     = outbLin.filter(r=>norm(r.producto).includes('port')).length;
-        const nOutbM     = outbLin.filter(r=>norm(r.producto).includes('migr')).length;
-        let b = Math.round(nInbPorta*factor)*bonoCumplimiento.inbPorta
-               +Math.round(nInbMigra*factor)*bonoCumplimiento.inbMigra
-               +Math.round(nDigPorta*factor)*bonoCumplimiento.digPorta
-               +Math.round(nOutbP*factor)*getBonoOutbound(unidadesPago,'portabilidad')
-               +Math.round(nOutbM*factor)*getBonoOutbound(unidadesPago,'migracion');
-        return s+b;
+        const totalLinGlobal = lpGlobal.length; if(!totalLinGlobal) return s;
+        const factorGlobal = unidadesPagoGlobal / totalLinGlobal;
+        const nInbPortaG  = lpGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
+        const nInbMigraG  = lpGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
+        const nDigPortaG  = lpGlobal.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
+        const outbLinG    = lpGlobal.filter(r=>norm(r.canal).includes('outbound'));
+        const nOutbPG     = outbLinG.filter(r=>norm(r.producto).includes('port')).length;
+        const nOutbMG     = outbLinG.filter(r=>norm(r.producto).includes('migr')).length;
+        const bonoGlobal  = Math.round(nInbPortaG*factorGlobal)*bonoCumplimiento.inbPorta
+                           +Math.round(nInbMigraG*factorGlobal)*bonoCumplimiento.inbMigra
+                           +Math.round(nDigPortaG*factorGlobal)*bonoCumplimiento.digPorta
+                           +Math.round(nOutbPG*factorGlobal)*getBonoOutbound(unidadesPagoGlobal,'portabilidad')
+                           +Math.round(nOutbMG*factorGlobal)*getBonoOutbound(unidadesPagoGlobal,'migracion');
+        // Aplicar fracción del SITE sobre el bono global
+        const lp = getLineasCvcParaMeta(cvc, _dk);
+        const fraccion = lpGlobal.length > 0 ? lp.length / lpGlobal.length : 1;
+        return s + bonoGlobal * fraccion;
       },0) : 0;
 
   const totalVentasProyVal = parseFloat(kpiTotalEl.dataset.proyVentas   || '0');
@@ -8935,10 +8935,6 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
     // Tarifa promedio real (pctBase) del archivo
     const pctProm = ventasCamp.reduce((s,r)=>s+(r.pctBase||0),0) / ventasCamp.length;
 
-    // Unidades reales ya realizadas por ciclo
-    const realesC1 = ventasCamp.filter(r=>r.ciclo===1).length;
-    const realesC2 = ventasCamp.filter(r=>r.ciclo===2).length;
-
     // Calcular días hábiles para esta campaña (igual que en calcularProyeccion)
     const festivos=[...new Set([...getFestivosAnio(anio-1),...getFestivosAnio(anio),...getFestivosAnio(anio+1)])];
     const hoyD=new Date(); hoyD.setHours(12,0,0,0);
@@ -8964,14 +8960,30 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
       return dMes===mesVenta && dDia>=22;
     });
 
-    // Proyección total y por ciclo
-    const proyTotal = Math.round((ventasCamp.length / transDias) * totalDias);
-    const proyC1total = Math.round(proyTotal * diasC1.length / totalDias);
-    const proyC2total = proyTotal - proyC1total;
+    // Unidades reales ya realizadas por ciclo (del SITE activo)
+    const realesC1 = ventasCamp.filter(r=>r.ciclo===1).length;
+    const realesC2 = ventasCamp.filter(r=>r.ciclo===2).length;
 
-    // Unidades PENDIENTES de vender (las que faltan, no las ya hechas)
-    const pendC1 = Math.max(proyC1total - realesC1, 0);
-    const pendC2 = Math.max(proyC2total - realesC2, 0);
+    // Si hay SITE activo, calcular proyección proporcional al global para mantener consistencia
+    // Proyección GLOBAL de la campaña (con todos los datos)
+    const ventasCampGlobal = _resultadosCacheGlobal.length
+      ? _resultadosCacheGlobal.filter(r=>norm(r.producto)===camp.key)
+      : ventasCamp;
+    const realesGlobalC1 = ventasCampGlobal.filter(r=>r.ciclo===1).length;
+    const realesGlobalC2 = ventasCampGlobal.filter(r=>r.ciclo===2).length;
+    const proyTotalGlobal = Math.round((ventasCampGlobal.length / transDias) * totalDias);
+    const proyC1Global = Math.round(proyTotalGlobal * diasC1.length / totalDias);
+    const proyC2Global = proyTotalGlobal - proyC1Global;
+    const pendC1Global = Math.max(proyC1Global - realesGlobalC1, 0);
+    const pendC2Global = Math.max(proyC2Global - realesGlobalC2, 0);
+
+    // Fracción del SITE sobre el global (para C1 y C2 por separado)
+    const fracC1 = realesGlobalC1 > 0 ? realesC1 / realesGlobalC1 : (ventasCampGlobal.length > 0 ? ventasCamp.length / ventasCampGlobal.length : 1);
+    const fracC2 = realesGlobalC2 > 0 ? realesC2 / realesGlobalC2 : (ventasCampGlobal.length > 0 ? ventasCamp.length / ventasCampGlobal.length : 1);
+
+    // Pendientes del SITE = pendientes globales × fracción del SITE
+    const pendC1 = Math.round(pendC1Global * fracC1);
+    const pendC2 = Math.round(pendC2Global * fracC2);
 
     // Para cada ciclo pendiente, calcular pagos usando tarifa y caída promedio
     [[pendC1, 1],[pendC2, 2]].forEach(([unidades, ciclo])=>{
