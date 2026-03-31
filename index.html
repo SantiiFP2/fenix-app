@@ -9011,9 +9011,26 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   // Guardar total ventas proyectadas futuras en el KPI (pago del mes de proyección)
   // El KPI usa el total del mes de proyección: real ya cobrado + ventas futuras estimadas
   const totalVentasProy   = cobros[mesProyeccion] ? (cobros[mesProyeccion].neto||0) : 0;
-  const totalVentasProyC1 = cobros[mesProyeccion] ? (cobros[mesProyeccion].c1||0)   : 0;
-  const totalVentasProyC2 = cobros[mesProyeccion] ? (cobros[mesProyeccion].c2||0)   : 0;
+  let totalVentasProyC1 = cobros[mesProyeccion] ? (cobros[mesProyeccion].c1||0) : 0;
+  let totalVentasProyC2 = cobros[mesProyeccion] ? (cobros[mesProyeccion].c2||0) : 0;
   const kpiEl = document.getElementById('kpi-total');
+
+  if (_sedeFiltroActual && _resultadosCacheGlobal.length) {
+    // Para mantener que BOGOTA + MEDELLIN = GENERAL exacto,
+    // calcular C1/C2 como fracción del global (basada en líneas reales por SITE)
+    const totalGlobalLineas = _resultadosCacheGlobal.length;
+    const totalSiteLineas   = datos.length;
+    const fracSite = totalGlobalLineas > 0 ? totalSiteLineas / totalGlobalLineas : 1;
+    const c1Global = parseFloat(kpiEl.dataset.proyVentasC1Global || '0');
+    const c2Global = parseFloat(kpiEl.dataset.proyVentasC2Global || '0');
+    if (c1Global > 0) totalVentasProyC1 = c1Global * fracSite;
+    if (c2Global > 0) totalVentasProyC2 = c2Global * fracSite;
+  } else {
+    // En General: guardar los valores globales como referencia
+    kpiEl.dataset.proyVentasC1Global = totalVentasProyC1;
+    kpiEl.dataset.proyVentasC2Global = totalVentasProyC2;
+  }
+
   kpiEl.dataset.proyVentas   = totalVentasProy;
   kpiEl.dataset.proyVentasC1 = totalVentasProyC1;
   kpiEl.dataset.proyVentasC2 = totalVentasProyC2;
