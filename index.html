@@ -3325,6 +3325,12 @@ function calcularProyeccionCvc(cvcMadre, resultadosData) {
   const transDias = Math.max(transc.length, 1);
 
   const ejecutado = lineasCvc.length;
+  // Si el mes ya cerró, no proyectar — proyectado = ejecutado real
+  if (mesCerrado(am-1, ay)) {
+    const extraMigraPower = getMigraPowerCvc(cvcMadre);
+    return { ejecutado, proyectado: ejecutado + extraMigraPower, proyectadoBase: ejecutado,
+             extraMigraPower, totalDias: tot.length, transDias, campKey };
+  }
   const proyectadoBase = Math.round((ejecutado / transDias) * totalDias);
   // Sumar unidades Migra Power adicionales (solo afectan cumplimiento, sin pago)
   const extraMigraPower = getMigraPowerCvc(cvcMadre);
@@ -5576,6 +5582,19 @@ function primerDiaHabil(anio, mes, festivos) {
   return d;
 }
 
+// ── Detectar si el mes de venta ya cerró (no proyectar) ──
+// mesVenta: 0-based, anio: año del período
+// Retorna true si el mes de venta ya terminó completamente (estamos en un mes posterior)
+function mesCerrado(mesVenta, anio) {
+  const hoy = new Date();
+  const anioHoy = hoy.getFullYear();
+  const mesHoy  = hoy.getMonth(); // 0-based
+  // El mes cerró si el año/mes de venta es anterior al mes actual
+  if (anio < anioHoy) return true;
+  if (anio === anioHoy && mesVenta < mesHoy) return true;
+  return false;
+}
+
 // ── Calcular períodos según campaña ──
 function getPeriodo(campana, mesVenta, anioVenta) {
   // mesVenta: 0-based
@@ -5608,6 +5627,7 @@ function calcularProyeccion() {
   const mesVenta = parseInt(document.getElementById('mes-venta')?.value || new Date().getMonth());
   const anio = hoy.getFullYear();
   const festivos = [...new Set([...getFestivosAnio(anio-1), ...getFestivosAnio(anio), ...getFestivosAnio(anio+1)])];
+  const _mesCerrado = mesCerrado(mesVenta, anio); // true si el mes de venta ya terminó
 
   const campanas = [
     { key:'portabilidad', label:'Portabilidad', clase:'porta', color:'#3B82F6' },
@@ -5643,9 +5663,10 @@ function calcularProyeccion() {
     // El archivo ya es el corte real; la separación C1/C2 se hace por r.ciclo
     const ventasRealesFinal = ventasCamp.length;
 
-    // Proyección total: (ventas / días transcurridos) * días totales
-    const proyTotal = transDias > 0 ? Math.round((ventasRealesFinal / transDias) * totalDias) : ventasRealesFinal;
-    const proyRestantes = Math.max(proyTotal - ventasRealesFinal, 0);
+    // Proyección total: si el mes cerró, no proyectar (solo reales)
+    const proyTotal = _mesCerrado ? ventasRealesFinal
+      : (transDias > 0 ? Math.round((ventasRealesFinal / transDias) * totalDias) : ventasRealesFinal);
+    const proyRestantes = _mesCerrado ? 0 : Math.max(proyTotal - ventasRealesFinal, 0);
     const avancePct = totalDias > 0 ? Math.min((transDias / totalDias) * 100, 100) : 0;
 
     // ── Desglose C1 / C2 ──
@@ -8926,7 +8947,7 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   });
 
   // ── PROYECCIÓN DE VENTAS FUTURAS AL CRONOGRAMA ──
-  // Usar las unidades proyectadas restantes (C1 y C2) de cada campaña × CFM promedio × tarifa promedio
+  // Solo si el mes de venta está aún en curso (no cerrado)
   const campanasProy = [
     { key:'portabilidad', label:'Portabilidad' },
     { key:'migracion',    label:'Migración'    },
@@ -8936,6 +8957,8 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
   const pw=[+document.getElementById('pow_p1').value/100,+document.getElementById('pow_p2').value/100,+document.getElementById('pow_p3').value/100,+document.getElementById('pow_p4').value/100];
   const caidas=getCaidas();
 
+  // Solo proyectar ventas futuras si el mes aún está en curso
+  if (!mesCerrado(mesVenta, anio)) {
   campanasProy.forEach(camp=>{
     const ventasCamp = datos.filter(r=>norm(r.producto)===camp.key);
     if(!ventasCamp.length) return;
@@ -9019,6 +9042,7 @@ function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
       });
     });
   });
+  } // end if (!mesCerrado)
   // Guardar total ventas proyectadas futuras en el KPI (pago del mes de proyección)
   // El KPI usa el total del mes de proyección: real ya cobrado + ventas futuras estimadas
   const totalVentasProy   = cobros[mesProyeccion] ? (cobros[mesProyeccion].neto||0) : 0;
