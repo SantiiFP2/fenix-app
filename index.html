@@ -3551,6 +3551,7 @@ let efectividadCvcs  = [];   // [{madre, base, meta, ejecutadoOverride}]
 let efectividadEditIdx = null;
 let _resultadosCache = [];   // cache de últimos resultados procesados
 let _resultadosCacheGlobal = []; // SIEMPRE contiene todos los datos sin filtrar (para cumplimiento CVC)
+let _bonoCalculado = {}; // { null: valorGeneral, 'MEDELLIN': valor, 'BOGOTA 2': valor }
 let _sedeFiltroActual = null; // null = General, string = cvcMadre filtrado
 
 // ── Obtener datos filtrados por sede ──
@@ -4451,7 +4452,8 @@ function renderBonoCumplimiento(resultadosData) {
   const cvcsCumplenReal = rows.filter(r => r.cumpleReq).length;
   const cvcsCumplenProy = rows.filter(r => r.cumpleReqProy && !r.cumpleReq).length;
   const hayProyeccion   = totalGlobalProy > 0;
-
+  // Guardar para que actualizarKpiTotal use este valor exacto
+  _bonoCalculado[_sedeFiltroActual || 'general'] = totalGlobal;
   // ── Render HTML ──
   let html_out = '<div style="background:var(--negro);border:1px solid rgba(52,211,153,0.4);border-radius:3px;padding:14px;margin-bottom:14px;">'
     + '<div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Bono de Cumplimiento</div>'
@@ -5349,38 +5351,9 @@ function actualizarKpiTotal(datosKpi) {
         return s + tot/3;
       },0) : 0;
 
-  const totalBonoVal = _cvcDk.length
-    ? _cvcDk.reduce((s,cvc)=>{
-        // Cumplimiento con datos GLOBALES
-        const lpGlobal = getLineasCvcParaMeta(cvc, _global);
-        const ej = (cvc.ejecutadoOverride!==null&&cvc.ejecutadoOverride!==undefined)?cvc.ejecutadoOverride:lpGlobal.length;
-        const mt = cvc.meta||0; const cp = mt>0?(ej/mt*100):0;
-        const proyD = calcularProyeccionCvc(cvc.madre, _global);
-        const cpProy = mt>0 ? ((proyD.proyectado||ej)/mt*100) : 0;
-        const cumpleReal = cp>=100; const cumpleProy = cpProy>=100;
-        if(!cumpleReal && !cumpleProy) return s;
-        // Calcular bono GLOBAL con todas las líneas (evita problemas de tramos por SITE)
-        const baseConMP   = proyD.proyectado     || ej;
-        const baseSinMP   = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : baseConMP;
-        const unidadesPagoGlobal = cumpleReal ? ej : baseSinMP;
-        const totalLinGlobal = lpGlobal.length; if(!totalLinGlobal) return s;
-        const factorGlobal = unidadesPagoGlobal / totalLinGlobal;
-        const nInbPortaG  = lpGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
-        const nInbMigraG  = lpGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
-        const nDigPortaG  = lpGlobal.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
-        const outbLinG    = lpGlobal.filter(r=>norm(r.canal).includes('outbound'));
-        const nOutbPG     = outbLinG.filter(r=>norm(r.producto).includes('port')).length;
-        const nOutbMG     = outbLinG.filter(r=>norm(r.producto).includes('migr')).length;
-        const bonoGlobal  = Math.round(nInbPortaG*factorGlobal)*bonoCumplimiento.inbPorta
-                           +Math.round(nInbMigraG*factorGlobal)*bonoCumplimiento.inbMigra
-                           +Math.round(nDigPortaG*factorGlobal)*bonoCumplimiento.digPorta
-                           +Math.round(nOutbPG*factorGlobal)*getBonoOutbound(unidadesPagoGlobal,'portabilidad')
-                           +Math.round(nOutbMG*factorGlobal)*getBonoOutbound(unidadesPagoGlobal,'migracion');
-        // Aplicar fracción del SITE sobre el bono global
-        const lp = getLineasCvcParaMeta(cvc, _dk);
-        const fraccion = lpGlobal.length > 0 ? lp.length / lpGlobal.length : 1;
-        return s + bonoGlobal * fraccion;
-      },0) : 0;
+  // Bono: usar el valor ya calculado por renderBonoCumplimiento (incluye real + proyectado)
+  const _bonoKey = _sedeFiltroActual || 'general';
+  const totalBonoVal = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
 
   const totalVentasProyVal = parseFloat(kpiTotalEl.dataset.proyVentas   || '0');
   const totalVentasProyC1  = parseFloat(kpiTotalEl.dataset.proyVentasC1 || '0');
@@ -8859,8 +8832,6 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   // CACHE y RENDERS DE INDICADORES
   _resultadosCache = resultados;
   _resultadosCacheGlobal = resultados; // guardar copia permanente sin filtrar
-  // KPI total ahora que el cache está listo
-  actualizarKpiTotal();
   // Iniciar proyección
   initProyeccion();
   if(cpmHabilitado) calcularCpm();
@@ -8869,6 +8840,8 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   renderEfectividadCvcLista();
   renderPresupuesto(resultados, mesVenta, mesProyeccion);
   renderBonoCumplimiento(resultados);
+  // KPI total DESPUÉS de renderBonoCumplimiento para usar _bonoCalculado correcto
+  actualizarKpiTotal();
 
   // Si el panel de inicio está visible, actualizarlo con los nuevos datos
   if (_panelInicioVisible) {
