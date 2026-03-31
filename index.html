@@ -4631,10 +4631,10 @@ function refrescarCumplimientoConMigraPower() {
 
 // INCENTIVOS ADICIONALES (sección 10)
 // ══════════════════════════════════════
-let incentivos = []; // [{descripcion, valor}]
+let incentivos = []; // [{descripcion, valor, sede}]  sede=null → todas las sedes
 
 function agregarIncentivo() {
-  incentivos.push({ descripcion: '', valor: 0 });
+  incentivos.push({ descripcion: '', valor: 0, sede: null });
   renderIncentivosLista();
 }
 
@@ -4652,11 +4652,23 @@ function renderIncentivosLista() {
     actualizarTotalIncentivos();
     return;
   }
+  // Obtener sedes disponibles del archivo cargado
+  const sites = _resultadosCache.length
+    ? [...new Set(_resultadosCache.map(r => r.site||'').filter(Boolean))].sort()
+    : [];
+  const hayMultiSite = sites.length > 1;
+
   lista.innerHTML = incentivos.map((inc, i) => `
-    <div style="display:flex;gap:6px;align-items:center;">
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
       <input type="text" placeholder="Descripción" value="${inc.descripcion}"
-        style="flex:1;min-width:0;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:5px 8px;outline:none;"
+        style="flex:1;min-width:120px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:5px 8px;outline:none;"
         oninput="incentivos[${i}].descripcion=this.value;">
+      ${hayMultiSite ? `
+      <select style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto-dim);font-size:11px;padding:5px 6px;outline:none;cursor:pointer;"
+        onchange="incentivos[${i}].sede=this.value||null;actualizarTotalIncentivos();">
+        <option value="" ${!inc.sede?'selected':''}>🌐 General</option>
+        ${sites.map(s=>`<option value="${s}" ${inc.sede===s?'selected':''}>${s}</option>`).join('')}
+      </select>` : ''}
       <input type="number" placeholder="Valor" value="${inc.valor || ''}" min="0" step="1000"
         style="width:100px;background:var(--negro);border:1px solid rgba(251,191,36,0.4);border-radius:3px;color:var(--amarillo);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-align:right;padding:5px 8px;outline:none;"
         oninput="incentivos[${i}].valor=parseFloat(this.value)||0;actualizarTotalIncentivos();">
@@ -4667,14 +4679,19 @@ function renderIncentivosLista() {
 }
 
 function actualizarTotalIncentivos() {
-  const total = incentivos.reduce((s, inc) => s + (inc.valor || 0), 0);
+  const total = getTotalIncentivos();
   const el = document.getElementById('incentivos-total');
   if (el) el.textContent = '$' + Math.round(total).toLocaleString('es-CO');
   if (_resultadosCache.length) actualizarKpiTotal();
 }
 
 function getTotalIncentivos() {
-  return incentivos.reduce((s, inc) => s + (inc.valor || 0), 0);
+  // En General: suma todos. En SITE activo: suma los de esa sede + los sin sede asignada
+  return incentivos.reduce((s, inc) => {
+    if (!_sedeFiltroActual) return s + (inc.valor || 0); // General: todos
+    if (!inc.sede || inc.sede === _sedeFiltroActual) return s + (inc.valor || 0); // sin sede o de este SITE
+    return s;
+  }, 0);
 }
 
 // COSECHAS
@@ -5363,7 +5380,6 @@ function actualizarKpiTotal(datosKpi) {
 
   // Bono: usar el valor ya calculado por renderBonoCumplimiento (incluye real + proyectado)
   const _bonoKey = _sedeFiltroActual || 'general';
-  console.log('[BONO DEBUG] key:', _bonoKey, '_bonoCalculado:', JSON.stringify(_bonoCalculado));
   const totalBonoVal = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
 
   const totalVentasProyVal = parseFloat(kpiTotalEl.dataset.proyVentas   || '0');
