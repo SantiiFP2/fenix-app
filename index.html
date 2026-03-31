@@ -4337,27 +4337,42 @@ function renderBonoCumplimiento(resultadosData) {
   if (!cvcConfigs.length) { sec.style.display = 'none'; return; }
   sec.style.display = 'block';
 
+  // Para cumplimiento usar datos globales; para pago usar datos del SITE
+  const datosGlobal = _resultadosCacheGlobal.length ? _resultadosCacheGlobal : resultadosData;
+  // Filtrar cvcConfigs a los del SITE activo (si hay filtro)
+  const madresSite = _sedeFiltroActual
+    ? new Set(resultadosData.map(r => r.cvcMadre || r.cvc).filter(Boolean))
+    : null;
+  const cvcsFiltrados = madresSite ? cvcConfigs.filter(c => madresSite.has(c.madre)) : cvcConfigs;
+
   const MESES_N = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const periodoEl = document.getElementById('periodo');
   const [anioV, mesV0] = periodoEl && periodoEl.value ? periodoEl.value.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1];
   const mesPago = ((mesV0) % 12); // índice 0-based del mes siguiente
 
   // Calcular por CVC con proyección
-  const rows = cvcConfigs.map(cvc => {
+  const rows = cvcsFiltrados.map(cvc => {
     const g = GRUPOS_MADRE[cvc.madre] || {};
     const sede = (g.sede || cvc.madre).replace('ONE CONTACT ', '');
 
-    const lineasPostpago = resultadosData.filter(r =>
+    // Cumplimiento con datos GLOBALES
+    const lineasGlobal = datosGlobal.filter(r =>
       (r.cvcMadre || '') === cvc.madre && !norm(r.tipo).includes('power')
     );
     const ejecutado = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined)
-      ? cvc.ejecutadoOverride : lineasPostpago.length;
+      ? cvc.ejecutadoOverride : lineasGlobal.length;
     const meta = cvc.meta || 0;
     const cumplPct = meta > 0 ? (ejecutado / meta * 100) : 0;
     const cumpleReq = cumplPct >= 100;
 
-    // ── Proyección al cierre ──
-    const proyData = calcularProyeccionCvc(cvc.madre, resultadosData);
+    // ── Proyección al cierre con datos GLOBALES ──
+    const proyData = calcularProyeccionCvc(cvc.madre, datosGlobal);
+    // Líneas del SITE para calcular el pago proporcional
+    const lineasPostpago = resultadosData.filter(r =>
+      (r.cvcMadre || '') === cvc.madre && !norm(r.tipo).includes('power')
+    );
+    // Fracción del SITE sobre el global
+    const fracSite = lineasGlobal.length > 0 ? lineasPostpago.length / lineasGlobal.length : 1;
     // proyectado = con MigraPower (para decidir si cumple y accede al bono)
     // proyectadoBase = sin MigraPower (base de unidades sobre las que se paga el bono)
     const proyectado     = proyData.proyectado     || ejecutado;
@@ -4370,41 +4385,41 @@ function renderBonoCumplimiento(resultadosData) {
     let totalBonoReal = 0;
     const desgloseReal = { inbPorta:0, inbMigra:0, digPorta:0, outbound:0 };
     if (cumpleReq) {
-      lineasPostpago.forEach(r => {
+      // Calcular bono con líneas globales, luego aplicar fracción del SITE
+      const bonoOutbPortaReal = getBonoOutbound(ejecutado, 'portabilidad');
+      const bonoOutbMigraReal = getBonoOutbound(ejecutado, 'migracion');
+      lineasGlobal.forEach(r => {
         const cn = norm(r.canal); const pr = norm(r.producto);
         if (cn.includes('inbound')) {
-          if (pr.includes('port')) { desgloseReal.inbPorta += bonoCumplimiento.inbPorta; totalBonoReal += bonoCumplimiento.inbPorta; }
-          else if (pr.includes('migr')) { desgloseReal.inbMigra += bonoCumplimiento.inbMigra; totalBonoReal += bonoCumplimiento.inbMigra; }
+          if (pr.includes('port')) desgloseReal.inbPorta += bonoCumplimiento.inbPorta;
+          else if (pr.includes('migr')) desgloseReal.inbMigra += bonoCumplimiento.inbMigra;
         } else if (cn.includes('digital')||cn.includes('web')||cn.includes('wcb')||cn.includes('autog')) {
-          if (pr.includes('port')) { desgloseReal.digPorta += bonoCumplimiento.digPorta; totalBonoReal += bonoCumplimiento.digPorta; }
+          if (pr.includes('port')) desgloseReal.digPorta += bonoCumplimiento.digPorta;
         } else if (cn.includes('outbound')) {
-          const b = getBonoOutbound(ejecutado, r.producto); desgloseReal.outbound += b; totalBonoReal += b;
+          desgloseReal.outbound += pr.includes('migr') ? bonoOutbMigraReal : bonoOutbPortaReal;
         }
       });
+      const bonoRealGlobal = desgloseReal.inbPorta + desgloseReal.inbMigra + desgloseReal.digPorta + desgloseReal.outbound;
+      // Aplicar fracción del SITE
+      totalBonoReal = bonoRealGlobal * fracSite;
+      desgloseReal.inbPorta *= fracSite; desgloseReal.inbMigra *= fracSite;
+      desgloseReal.digPorta *= fracSite; desgloseReal.outbound *= fracSite;
     }
 
     // ── Bono PROYECTADO ──
-    // Lógica correcta: el bono outbound es por TODAS las unidades del CVC al rango proyectado.
-    // Si aún no cumple en real pero sí en proyección → calcular bono total proyectado (todas las unidades)
-    // Si ya cumple en real → calcular bono adicional de unidades pendientes con nuevo rango
     let totalBonoProy = 0;
     const desgloseProy = { inbPorta:0, inbMigra:0, digPorta:0, outbound:0 };
-    if (lineasPostpago.length > 0 && cumpleReqProy) {
-      const totalLin = lineasPostpago.length;
-      // Conteos por canal/producto
-      const nInbPorta   = lineasPostpago.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
-      const nInbMigra   = lineasPostpago.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
-      const nDigPorta   = lineasPostpago.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
-      const outbLin     = lineasPostpago.filter(r=>norm(r.canal).includes('outbound'));
+    if (lineasGlobal.length > 0 && cumpleReqProy) {
+      const totalLin = lineasGlobal.length;
+      const nInbPorta   = lineasGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
+      const nInbMigra   = lineasGlobal.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
+      const nDigPorta   = lineasGlobal.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
+      const outbLin     = lineasGlobal.filter(r=>norm(r.canal).includes('outbound'));
       const nOutbPorta  = outbLin.filter(r=>norm(r.producto).includes('port')).length;
       const nOutbMigra  = outbLin.filter(r=>norm(r.producto).includes('migr')).length;
-
-      // Ratios del mix real → aplicar a unidades proyectadas SIN MigraPower (base de pago)
       const pendientes = Math.max(proyectadoBase - ejecutado, 0);
 
       if (!cumpleReq) {
-        // Aún no cumple en real → bono proyectado sobre proyectadoBase (sin MP)
-        // El rango se determina por proyectado (con MP) pero el pago es sobre proyectadoBase
         const bonoOutbPortaProy = getBonoOutbound(proyectado, 'portabilidad');
         const bonoOutbMigraProy = getBonoOutbound(proyectado, 'migracion');
         const factor = totalLin > 0 ? proyectadoBase / totalLin : 1;
@@ -4413,17 +4428,12 @@ function renderBonoCumplimiento(resultadosData) {
         desgloseProy.digPorta = Math.round(nDigPorta  * factor) * bonoCumplimiento.digPorta;
         desgloseProy.outbound = Math.round(nOutbPorta * factor) * bonoOutbPortaProy
                               + Math.round(nOutbMigra * factor) * bonoOutbMigraProy;
-        totalBonoProy = desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound;
-        // El bono proyectado reemplaza al real (es el total, no el delta)
-        // totalBonoReal = 0 en este caso, así que totalBono = totalBonoProy directamente
+        totalBonoProy = (desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound) * fracSite;
       } else {
-        // Ya cumple en real → bono adicional de unidades pendientes (sin MP)
-        // El rango nuevo se determina por proyectado (con MP), pero las unidades pagadas son proyectadoBase
         const bonoOutbPortaReal = getBonoOutbound(ejecutado, 'portabilidad');
         const bonoOutbPortaProy = getBonoOutbound(proyectado, 'portabilidad');
         const bonoOutbMigraReal = getBonoOutbound(ejecutado, 'migracion');
         const bonoOutbMigraProy = getBonoOutbound(proyectado, 'migracion');
-        // pendientes = unidades sin MP que faltan por vender
         const ajusteOutbPorta = nOutbPorta * (bonoOutbPortaProy - bonoOutbPortaReal);
         const ajusteOutbMigra = nOutbMigra * (bonoOutbMigraReal - bonoOutbMigraProy);
         desgloseProy.inbPorta = Math.round(pendientes * (nInbPorta/totalLin)) * bonoCumplimiento.inbPorta;
@@ -4432,7 +4442,7 @@ function renderBonoCumplimiento(resultadosData) {
         desgloseProy.outbound = Math.round(pendientes * (nOutbPorta/totalLin)) * bonoOutbPortaProy
                               + Math.round(pendientes * (nOutbMigra/totalLin)) * bonoOutbMigraProy
                               + ajusteOutbPorta + ajusteOutbMigra;
-        totalBonoProy = desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound;
+        totalBonoProy = (desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound) * fracSite;
       }
     }
 
@@ -4442,7 +4452,7 @@ function renderBonoCumplimiento(resultadosData) {
              cumplPct, cumplPctProy, cumpleReq, cumpleReqProy, soloProy,
              totalBono, totalBonoReal, totalBonoProy,
              desgloseReal, desgloseProy,
-             lineas: lineasPostpago.length,
+             lineas: lineasGlobal.length,
              transDias: proyData.transDias, totalDias: proyData.totalDias, campKey: proyData.campKey, g };
   }).filter(r => r.lineas > 0 || r.meta > 0);
 
@@ -5353,6 +5363,7 @@ function actualizarKpiTotal(datosKpi) {
 
   // Bono: usar el valor ya calculado por renderBonoCumplimiento (incluye real + proyectado)
   const _bonoKey = _sedeFiltroActual || 'general';
+  console.log('[BONO DEBUG] key:', _bonoKey, '_bonoCalculado:', JSON.stringify(_bonoCalculado));
   const totalBonoVal = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
 
   const totalVentasProyVal = parseFloat(kpiTotalEl.dataset.proyVentas   || '0');
