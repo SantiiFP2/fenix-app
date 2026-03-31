@@ -5285,32 +5285,43 @@ function actualizarKpiTotal(datosKpi) {
   const _ac = calcularAcelerador(_dk, _cvcDk, _global);
   const totalAceleradorVal = _ac.totalAcelerador || 0;
 
-  const totalEfectividadVal = efectividadCvcs.length
-    ? efectividadCvcs.reduce((s,c)=>{
+  // Efectividad: filtrar a CVCs del SITE activo
+  const _efectivDk = _madresDk
+    ? efectividadCvcs.filter(c => _madresDk.has(c.madre))
+    : efectividadCvcs;
+
+  const totalEfectividadVal = _efectivDk.length
+    ? _efectivDk.reduce((s,c)=>{
         const mesActivoKpi = metasMesKey(document.getElementById('periodo')?.value || '');
         const metaHist = getMetaEfectividadCvc(c.madre, mesActivoKpi);
         const indEfect = metaHist ? metaHist.indicador : 'EFECTIVIDAD PORTA (SOLO OUT)';
         const prodFiltro = getProductoEfectividad(indEfect);
         const token = prodFiltro === 'migracion' ? 'migr' : 'port';
-        // Elegibles: para CFM de pago
-        const lineasEleg = _dk.filter(r=>esElegibleEfectividad(r)&&(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
-        // Todas las portabilidades: para el numerador del % de efectividad
-        const lineasTodas = _dk.filter(r=>(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
-        const unidadesEleg = lineasEleg.length;
-        const unidades = lineasTodas.length;
-        const proyD = calcularProyeccionCvc(c.madre, _dk);
-        const transDias = Math.max(proyD.transDias||1,1);
-        const totalDias = proyD.totalDias||transDias;
-        const unidadesElegProy = Math.round((unidadesEleg/transDias)*totalDias);
-        const unidadesProy     = Math.round((unidades/transDias)*totalDias);
-        const cfmProm = unidadesEleg>0 ? lineasEleg.reduce((a,r)=>a+(r.cfm||0),0)/unidadesEleg : 0;
-        // cumplimiento con todas las portabilidades + MP
-        const unidadesConMP = unidadesProy + getMigraPowerCvc(c.madre);
+        // Cumplimiento con datos GLOBALES
+        const lineasTodasGlobal = _global.filter(r=>(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
+        const proyDGlobal = calcularProyeccionCvc(c.madre, _global);
+        const transDiasG = Math.max(proyDGlobal.transDias||1,1);
+        const totalDiasG = proyDGlobal.totalDias||transDiasG;
+        const unidadesPrGlobal = Math.round((lineasTodasGlobal.length/transDiasG)*totalDiasG);
+        const unidadesConMP = unidadesPrGlobal + getMigraPowerCvc(c.madre);
         const pctConMP = c.base>0?(unidadesConMP/c.base*100):0;
         const metaEfect = metaHist?(metaHist.meta*100):c.meta;
         const cumpl = metaEfect>0?(pctConMP/metaEfect*100):0;
         if(cumpl<100) return s;
-        return s + unidadesElegProy * cfmProm * (efectividadPct/100);
+        // Pago con datos del SITE activo (proporcional)
+        const lineasEleg = _dk.filter(r=>esElegibleEfectividad(r)&&(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
+        const lineasElegGlobal = _global.filter(r=>esElegibleEfectividad(r)&&(r.cvcMadre||'')===c.madre&&!norm(r.tipo).includes('power')&&norm(r.producto).includes(token));
+        const proyD = calcularProyeccionCvc(c.madre, _dk);
+        const transDias = Math.max(proyD.transDias||1,1);
+        const totalDias = proyD.totalDias||transDias;
+        const unidadesElegProy = Math.round((lineasEleg.length/transDias)*totalDias);
+        const cfmProm = lineasEleg.length>0 ? lineasEleg.reduce((a,r)=>a+(r.cfm||0),0)/lineasEleg.length : 0;
+        // Si hay SITE activo, escalar por fracción site/global
+        const fracEfect = lineasElegGlobal.length > 0 ? lineasEleg.length / lineasElegGlobal.length : 1;
+        const unidadesPago = _sedeFiltroActual && lineasElegGlobal.length > 0
+          ? Math.round(unidadesElegProy) // ya viene filtrado por SITE
+          : unidadesElegProy;
+        return s + unidadesPago * cfmProm * (efectividadPct/100);
       },0) : 0;
 
   const totalPresupuestoP1Val = _cvcDk.length
