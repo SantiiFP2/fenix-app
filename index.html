@@ -4758,12 +4758,13 @@ function importarProyeccionCosechas() {
         .sort((a, b) => b[1].cobrado - a[1].cobrado)
         .map(([sede, d]) => {
           // Buscar si esta sede de cosechas matchea algún SITE del archivo
-          const siteMatch = sitesActuales.find(s => cosSedeMatchSite(sede, s)) || sede;
+          const siteMatch = sitesActuales.find(s => cosSedeMatchSite(sede, s));
+          // Si no hay match, forzar al usuario a elegir (no asignar por defecto)
           return {
             sede,
             pct: d.cobrado / totalCobrado,
             valor: Math.round(total * d.cobrado / totalCobrado),
-            destino: siteMatch
+            destino: siteMatch || '__excluir__'
           };
         });
     }
@@ -4826,11 +4827,13 @@ function cerrarModalProySedes() {
 function confirmarProySedes() {
   const mes = window._cosProyMesProy || 'Cosechas';
 
-  // Agrupar valores por destino (ignorar los excluidos)
+  // Agrupar valores por destino (ignorar los excluidos y los sin SITE válido)
+  const sitesValidos = new Set(getSitesActuales());
   const porDestino = {};
   _proySedes.forEach(s => {
     if (s.destino === '__excluir__') return;
-    const dest = s.destino || s.sede;
+    if (!s.destino) return;
+    const dest = s.destino;
     if (!porDestino[dest]) porDestino[dest] = 0;
     porDestino[dest] += s.valor;
   });
@@ -4866,6 +4869,23 @@ function actualizarCosecha(i, campo, val) {
   actualizarTotalCosechas();
 }
 
+// Actualiza solo la parte base de la descripción (antes del · SITE)
+function actualizarCosechaBase(i, baseVal) {
+  const m = cosechas[i].descripcion.match(/·\s*.+$/);
+  const sufijo = m ? ' ' + m[0] : '';
+  cosechas[i].descripcion = baseVal.trim() + sufijo;
+  actualizarTotalCosechas();
+}
+
+// Reasigna la sede de una cosecha desde el dropdown
+function reasignarSedeCosecha(i, nuevaSede) {
+  const desc = cosechas[i].descripcion;
+  const base = desc.replace(/\s*·\s*.+$/, '').trim();
+  cosechas[i].descripcion = nuevaSede ? `${base} · ${nuevaSede}` : base;
+  actualizarTotalCosechas();
+  renderCosechasLista(); // re-render para actualizar color del dropdown
+}
+
 function actualizarTotalCosechas() {
   const total = cosechas.reduce((s, c) => s + (c.valor || 0), 0);
   const rowEl = document.getElementById('cosechas-total-row');
@@ -4884,13 +4904,36 @@ function renderCosechasLista() {
     actualizarTotalCosechas();
     return;
   }
-  cont.innerHTML = cosechas.map((c, i) => `
+  const sites = getSitesActuales();
+  const hayMultiSite = sites.length > 1;
+
+  // Extraer sede actual de la descripción (formato "... · SITE")
+  function parsearSede(descripcion) {
+    const m = descripcion.match(/·\s*(.+)$/);
+    return m ? m[1].trim() : null;
+  }
+  function baseDesc(descripcion) {
+    return descripcion.replace(/\s*·\s*.+$/, '').trim();
+  }
+
+  cont.innerHTML = cosechas.map((c, i) => {
+    const sedeActual = parsearSede(c.descripcion);
+    const base = baseDesc(c.descripcion);
+    const sedeDropdown = hayMultiSite ? `
+      <select onchange="reasignarSedeCosecha(${i}, this.value)"
+        style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:${sedeActual && sites.includes(sedeActual) ? 'var(--verde)' : 'var(--amarillo)'};font-size:10px;padding:3px 5px;outline:none;cursor:pointer;max-width:120px;">
+        <option value="" ${!sedeActual || !sites.includes(sedeActual) ? 'selected' : ''}>🌐 Sin sede</option>
+        ${sites.map(s => `<option value="${s}" ${sedeActual === s ? 'selected' : ''}>${s}</option>`).join('')}
+      </select>` : '';
+    return `
     <div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;">
       <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;">
-        <input type="text" placeholder="Descripción (ej: P2 Enero 2025 — Portabilidad)"
-          value="${c.descripcion}"
-          oninput="actualizarCosecha(${i},'descripcion',this.value)"
-          style="background:transparent;border:none;border-bottom:1px solid var(--gris-linea);color:var(--texto);font-size:12px;padding:2px 0;outline:none;width:100%;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <input type="text" placeholder="Descripción" value="${base}"
+            oninput="actualizarCosechaBase(${i}, this.value)"
+            style="background:transparent;border:none;border-bottom:1px solid var(--gris-linea);color:var(--texto);font-size:12px;padding:2px 0;outline:none;flex:1;min-width:120px;">
+          ${sedeDropdown}
+        </div>
         <div style="display:flex;align-items:center;gap:4px;">
           <span style="font-size:11px;color:var(--texto-dim);">$</span>
           <input type="number" placeholder="0" value="${c.valor || ''}" min="0" step="1000"
@@ -4902,7 +4945,8 @@ function renderCosechasLista() {
       <button onclick="eliminarCosecha(${i})"
         style="background:none;border:1px solid var(--gris-linea);border-radius:2px;color:var(--texto-dim);padding:4px 7px;font-size:13px;cursor:pointer;flex-shrink:0;"
         onmouseover="this.style.borderColor='#FCA5A5';this.style.color='#FCA5A5'" onmouseout="this.style.borderColor='var(--gris-linea)';this.style.color='var(--texto-dim)'">🗑</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   actualizarTotalCosechas();
 }
 
