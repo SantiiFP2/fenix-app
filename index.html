@@ -9492,7 +9492,9 @@ function cosCalcular() {
     if (!f.concepto) continue;
     const r5 = r5Filtrado[f.co_id];
     if (!r5) continue;
-    const mes = r5.mes;
+    // Usar FECHADEACTIVACION de la factura como mes de agrupación (fuente de verdad por pago).
+    // Fallback a r5.mes solo si la factura no trae fecha_act.
+    const mes = (f.fecha_act && f.fecha_act.length === 7) ? f.fecha_act : r5.mes;
     const pn  = f.mes_liq;
     const isPow = r5.is_power || f.conc_raw.toLowerCase().includes('propago');
 
@@ -11056,11 +11058,12 @@ function cosCargaFacturaMulti(input) {
     }
 
     const headers = rows[0].map(h => String(h || '').trim().toUpperCase());
-    const iCoid   = headers.indexOf('COID');
-    const iConc   = headers.indexOf('CONCEPTODECOMISION80');
-    const iPag80  = headers.indexOf('COMISIONPAGADAPOR80');
-    const iPag20  = headers.indexOf('COMISIONPAGADAPOR20');
-    const iMesLiq = headers.indexOf('MES_LIQUIDACION');
+    const iCoid      = headers.indexOf('COID');
+    const iConc      = headers.indexOf('CONCEPTODECOMISION80');
+    const iPag80     = headers.indexOf('COMISIONPAGADAPOR80');
+    const iPag20     = headers.indexOf('COMISIONPAGADAPOR20');
+    const iMesLiq    = headers.indexOf('MES_LIQUIDACION');
+    const iFechaAct  = headers.indexOf('FECHADEACTIVACION');
 
     const filas = [];
     const sinClasificar = new Set();
@@ -11074,7 +11077,20 @@ function cosCargaFacturaMulti(input) {
       const val      = (parseFloat(r[iPag80]) || 0) + (parseFloat(r[iPag20]) || 0);
       const info     = cosConceptos.find(c => c.raw === conc_raw);
       if (!info && conc_raw) sinClasificar.add(conc_raw);
-      filas.push({ co_id, conc_raw, val, mes_liq,
+      // Parsear FECHADEACTIVACION → "YYYY-MM" para agrupar pagos por mes real de activación
+      let fecha_act = '';
+      if (iFechaAct >= 0 && r[iFechaAct]) {
+        const fa = r[iFechaAct];
+        if (fa instanceof Date) {
+          fecha_act = fa.toISOString().substring(0, 7);
+        } else if (typeof fa === 'number') {
+          const d = new Date(Math.round((fa - 25569) * 86400 * 1000));
+          fecha_act = d.toISOString().substring(0, 7);
+        } else if (typeof fa === 'string') {
+          fecha_act = fa.substring(0, 7);
+        }
+      }
+      filas.push({ co_id, conc_raw, val, mes_liq, fecha_act,
         concepto: info?.concepto || '', tipo: info?.tipo || '' });
     }
 
