@@ -1974,32 +1974,86 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- Bloque Facturas Móvil (financiera + operativa) + histórico -->
   <div id="pi-facturas-wrap" style="display:none;margin-bottom:24px;">
-    <!-- Selector de historial -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Ver proyección de:</span>
-      <select id="pi-hist-mes" onchange="piCargarDiasMes()" style="width:auto;padding:5px 10px;font-size:12px;border-radius:3px;background:var(--gris-medio);border:1px solid var(--gris-linea);color:var(--texto);">
-        <option value="">— Mes —</option>
-      </select>
-      <select id="pi-hist-dia" onchange="piMostrarProyeccionHistorica()" style="width:auto;padding:5px 10px;font-size:12px;border-radius:3px;background:var(--gris-medio);border:1px solid var(--gris-linea);color:var(--texto);">
-        <option value="">— Día —</option>
-      </select>
-      <span id="pi-hist-badge" style="font-size:10px;color:var(--texto-dim);"></span>
+
+    <!-- Selector de historial — diseño pill/chip -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);white-space:nowrap;">Ver proyección de:</span>
+
+      <!-- Selector MES -->
+      <div style="position:relative;display:inline-flex;align-items:center;">
+        <select id="pi-hist-mes" onchange="piCargarDiasMes()"
+          style="appearance:none;-webkit-appearance:none;padding:7px 32px 7px 14px;font-size:13px;font-weight:700;font-family:'Inter Tight',sans-serif;border-radius:20px;background:rgba(218,0,0,0.12);border:1px solid rgba(218,0,0,0.4);color:var(--rojo-light);cursor:pointer;outline:none;letter-spacing:0.3px;">
+          <option value="">— Mes —</option>
+        </select>
+        <span style="position:absolute;right:10px;pointer-events:none;font-size:9px;color:var(--rojo-light);">▼</span>
+      </div>
+
+      <!-- Selector DÍA -->
+      <div style="position:relative;display:inline-flex;align-items:center;">
+        <select id="pi-hist-dia" onchange="piMostrarProyeccionHistorica()"
+          style="appearance:none;-webkit-appearance:none;padding:7px 32px 7px 14px;font-size:13px;font-weight:700;font-family:'Inter Tight',sans-serif;border-radius:20px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;cursor:pointer;outline:none;letter-spacing:0.3px;">
+          <option value="">— Día —</option>
+        </select>
+        <span style="position:absolute;right:10px;pointer-events:none;font-size:9px;color:#a78bfa;">▼</span>
+      </div>
+
+      <!-- Badge de timestamp -->
+      <span id="pi-hist-badge" style="font-size:11px;color:var(--texto-dim);background:var(--gris-medio);padding:4px 10px;border-radius:20px;border:1px solid var(--gris-linea);"></span>
     </div>
+
     <!-- Cards financiera + operativa -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
       <!-- Financiera -->
-      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:16px;border-top:3px solid var(--rojo);">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px;">💰 Factura Financiera</div>
-        <div id="pi-fact-fin-total" style="font-size:26px;font-weight:900;color:var(--rojo-light);line-height:1;">$0</div>
-        <div id="pi-fact-fin-sub" style="font-size:10px;color:var(--texto-dim);margin-top:6px;line-height:1.7;">—</div>
+      <div style="background:var(--gris-oscuro);border:1px solid rgba(218,0,0,0.25);border-radius:8px;padding:20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rojo),rgba(218,0,0,0.3));"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--rojo-light);margin-bottom:8px;opacity:0.8;">💰 Factura Financiera</div>
+        <div id="pi-fact-fin-total" style="font-size:28px;font-weight:900;color:var(--rojo-light);line-height:1;margin-bottom:10px;">$0</div>
+        <div id="pi-fact-fin-sub" style="font-size:11px;color:var(--texto-dim);line-height:1.8;">—</div>
       </div>
       <!-- Operativa -->
-      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:16px;border-top:3px solid #a78bfa;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px;">⚙️ Factura Operativa</div>
-        <div id="pi-fact-op-total" style="font-size:26px;font-weight:900;color:#a78bfa;line-height:1;">$0</div>
-        <div id="pi-fact-op-sub" style="font-size:10px;color:var(--texto-dim);margin-top:6px;line-height:1.7;">—</div>
+      <div style="background:var(--gris-oscuro);border:1px solid rgba(167,139,250,0.25);border-radius:8px;padding:20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a78bfa,rgba(167,139,250,0.3));"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a78bfa;margin-bottom:8px;opacity:0.8;">⚙️ Factura Operativa</div>
+        <div id="pi-fact-op-total" style="font-size:28px;font-weight:900;color:#a78bfa;line-height:1;margin-bottom:10px;">$0</div>
+        <div id="pi-fact-op-sub" style="font-size:11px;color:var(--texto-dim);line-height:1.8;">—</div>
       </div>
     </div>
+
+    <!-- Análisis completo de la proyección histórica -->
+    <div id="pi-hist-analisis" style="display:none;">
+      <div class="pi-detalle" style="margin-bottom:16px;">
+        <div class="pi-detalle-title">💰 Desglose del Cobro Proyectado</div>
+        <div class="pi-desglose-grid" id="pi-hist-desglose-grid"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="pi-detalle">
+          <div class="pi-detalle-title">📊 Composición del Pago</div>
+          <div class="pi-barras" id="pi-hist-barras-composicion"></div>
+        </div>
+        <div class="pi-detalle">
+          <div class="pi-detalle-title">📦 Líneas por Producto</div>
+          <div class="pi-barras" id="pi-hist-barras-producto"></div>
+        </div>
+      </div>
+      <div class="pi-detalle">
+        <div class="pi-detalle-title">🏢 Detalle por CVC</div>
+        <div style="overflow-x:auto;">
+          <table class="pi-tabla-detalle" id="pi-hist-tabla-cvc">
+            <thead><tr>
+              <th>CVC Madre</th>
+              <th style="text-align:right;">Líneas</th>
+              <th style="text-align:right;">CFM Prom.</th>
+              <th style="text-align:right;">Proy. Cierre</th>
+              <th style="text-align:right;">% Cumpl.</th>
+              <th style="text-align:right;">C1</th>
+              <th style="text-align:right;">C2</th>
+            </tr></thead>
+            <tbody id="pi-hist-tbody-cvc"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Análisis detallado Móvil -->
@@ -6435,46 +6489,145 @@ function piMostrarProyeccionHistorica() {
   const row  = rows.find(r => r.fecha_corte && String(r.fecha_corte).substring(0,10) === dia);
   if (!row) return;
 
-  const fmt = v => '$' + Math.round(v||0).toLocaleString('es-CO');
+  const fmt  = v => '$' + Math.round(v||0).toLocaleString('es-CO');
+  const fmtn = v => Math.round(v||0).toLocaleString('es-CO');
+  const pct  = (v,t) => t>0 ? Math.round(v/t*100) : 0;
+
+  // ── Mostrar el bloque ──
   const wrap = document.getElementById('pi-facturas-wrap');
   if (wrap) wrap.style.display = '';
 
-  // Badge con hora de guardado
+  // ── Badge con hora de guardado ──
   const badge = document.getElementById('pi-hist-badge');
   if (badge) {
     const ts = new Date(row.guardado_en);
     badge.textContent = 'Guardado: ' + ts.toLocaleString('es-CO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
   }
 
-  // Financiera
+  // ── Tarjeta Móvil: mostrar el total financiero de la proyección histórica ──
+  const kpiCard = document.getElementById('pi-movil-kpi');
+  const kpiSub  = document.getElementById('pi-movil-kpi-sub');
+  if (kpiCard && !_resultadosCache.length) {
+    kpiCard.className = 'pi-product-kpi';
+    kpiCard.textContent = fmt(row.total_financiero);
+  }
+  if (kpiSub && !_resultadosCache.length) {
+    kpiSub.textContent = piMesLabel(mes) + ' · ' + (row.total_lineas||0).toLocaleString('es-CO') + ' líneas';
+  }
+
+  // ── Factura Financiera ──
   const finTotal = document.getElementById('pi-fact-fin-total');
   const finSub   = document.getElementById('pi-fact-fin-sub');
   if (finTotal) finTotal.textContent = fmt(row.total_financiero);
   if (finSub) {
     const partes = [];
-    if (row.ventas_val>0)      partes.push('Ventas: '+fmt(row.ventas_val));
-    if (row.cosechas_val>0)    partes.push('Cosechas: '+fmt(row.cosechas_val));
-    if (row.cpm_val>0)         partes.push('Próx.Mes: '+fmt(row.cpm_val));
-    if (row.acelerador_val>0)  partes.push('Acel.CFM: '+fmt(row.acelerador_val));
-    if (row.presupuesto_val>0) partes.push('Ind.Cumpl: '+fmt(row.presupuesto_val));
-    if (row.bono_val>0)        partes.push('Bono: '+fmt(row.bono_val));
-    if (row.incentivos_val>0)  partes.push('Incentivos: '+fmt(row.incentivos_val));
+    if (row.ventas_val>0)      partes.push('Ventas: '       + fmt(row.ventas_val));
+    if (row.cosechas_val>0)    partes.push('Cosechas: '     + fmt(row.cosechas_val));
+    if (row.cpm_val>0)         partes.push('Próx.Mes: '     + fmt(row.cpm_val));
+    if (row.acelerador_val>0)  partes.push('Acel.CFM: '     + fmt(row.acelerador_val));
+    if (row.presupuesto_val>0) partes.push('Ind.Cumpl: '    + fmt(row.presupuesto_val));
+    if (row.bono_val>0)        partes.push('Bono: '         + fmt(row.bono_val));
+    if (row.incentivos_val>0)  partes.push('Incentivos: '   + fmt(row.incentivos_val));
     finSub.textContent = partes.join(' · ') || '—';
   }
 
-  // Operativa
+  // ── Factura Operativa ──
   const opTotal = document.getElementById('pi-fact-op-total');
   const opSub   = document.getElementById('pi-fact-op-sub');
   if (opTotal) opTotal.textContent = fmt(row.total_operativo);
   if (opSub) {
     const partes = [];
-    if (row.comision_val>0)       partes.push('Comisión: '+fmt(row.comision_val));
-    if (row.bono_op_val>0)        partes.push('Bono: '+fmt(row.bono_op_val));
-    if (row.acel_op_val>0)        partes.push('Acelerador: '+fmt(row.acel_op_val));
-    if (row.presupuesto_op_val>0) partes.push('Ind.Cumpl: '+fmt(row.presupuesto_op_val));
-    if (row.incentivos_op_val>0)  partes.push('Incentivos: '+fmt(row.incentivos_op_val));
+    if (row.comision_val>0)       partes.push('Comisión: '   + fmt(row.comision_val));
+    if (row.bono_op_val>0)        partes.push('Bono: '       + fmt(row.bono_op_val));
+    if (row.acel_op_val>0)        partes.push('Acelerador: ' + fmt(row.acel_op_val));
+    if (row.presupuesto_op_val>0) partes.push('Ind.Cumpl: '  + fmt(row.presupuesto_op_val));
+    if (row.incentivos_op_val>0)  partes.push('Incentivos: ' + fmt(row.incentivos_op_val));
     opSub.textContent = partes.join(' · ') || '—';
   }
+
+  // ── Análisis completo desde snapshot ──
+  const snap = row.snapshot || {};
+  const analisisEl = document.getElementById('pi-hist-analisis');
+  if (!analisisEl) return;
+
+  // Desglose grid
+  const stats = [
+    {label:'Total Proyectado', val:fmt(row.total_financiero), sub:'Cobro neto — '+piMesLabel(mes), color:'var(--rojo)', big:true},
+    {label:'Líneas Totales',   val:fmtn(row.total_lineas),   sub:'C%1: '+row.pct_c1+'%',           color:'var(--texto)'},
+    {label:'CFM Promedio',     val:fmt(row.cfm_promedio),    sub:'por línea',                       color:'var(--texto)'},
+  ];
+  if(row.ventas_val>0)      stats.push({label:'Vtas. Proyectadas',  val:fmt(row.ventas_val),      sub:`C1: ${fmt(row.ventas_val)} · Pct: ${row.pct_c1}%`, color:'var(--texto)'});
+  if(row.cpm_val>0)         stats.push({label:'CPM Próx. Mes',      val:fmt(row.cpm_val),         sub:'C1 · P1 mes siguiente', color:'#38BDF8'});
+  if(row.cosechas_val>0)    stats.push({label:'Cosechas',           val:fmt(row.cosechas_val),    sub:'Histórico cobrado',     color:'var(--amarillo)'});
+  if(row.acelerador_val>0)  stats.push({label:'Acelerador CFM',     val:fmt(row.acelerador_val),  sub:'TMK Outbound',         color:'#4ADE80'});
+  if(row.presupuesto_val>0) stats.push({label:'Presupuesto P1',     val:fmt(row.presupuesto_val), sub:'Por cumplimiento',      color:'#C084FC'});
+  if(row.bono_val>0)        stats.push({label:'Bono Cumplimiento',  val:fmt(row.bono_val),        sub:'CVCs ≥ 100%',          color:'#FB923C'});
+  if(row.incentivos_val>0)  stats.push({label:'Incentivos',         val:fmt(row.incentivos_val),  sub:'Adicionales',          color:'var(--amarillo)'});
+  if(row.semilleros_val>0)  stats.push({label:'Semilleros',         val:fmt(row.semilleros_val),  sub:'Proyectados',          color:'#38BDF8'});
+
+  const desgloseEl = document.getElementById('pi-hist-desglose-grid');
+  if (desgloseEl) desgloseEl.innerHTML = stats.map(st =>
+    `<div class="pi-stat" style="${st.big?'border-color:rgba(218,0,0,0.3);background:rgba(218,0,0,0.05);':''}">
+      <div class="pi-stat-label">${st.label}</div>
+      <div class="pi-stat-val" style="color:${st.color};${st.big?'font-size:clamp(16px,2vw,26px);':''}">${st.val}</div>
+      <div class="pi-stat-sub">${st.sub}</div>
+    </div>`
+  ).join('');
+
+  // Barras composición
+  const comps = [
+    {label:'Ventas',        val:row.ventas_val,      color:'var(--rojo)'},
+    {label:'CPM',           val:row.cpm_val,         color:'#38BDF8'},
+    {label:'Cosechas',      val:row.cosechas_val,    color:'var(--amarillo)'},
+    {label:'Acelerador',    val:row.acelerador_val,  color:'#4ADE80'},
+    {label:'Presupuesto P1',val:row.presupuesto_val, color:'#C084FC'},
+    {label:'Bono',          val:row.bono_val,        color:'#FB923C'},
+    {label:'Incentivos',    val:row.incentivos_val,  color:'#FCD34D'},
+    {label:'Semilleros',    val:row.semilleros_val,  color:'#67E8F9'},
+  ].filter(c=>c.val>0);
+  const maxC = Math.max(...comps.map(c=>c.val),1);
+  const barrasCompEl = document.getElementById('pi-hist-barras-composicion');
+  if (barrasCompEl) barrasCompEl.innerHTML = comps.map(c =>
+    `<div class="pi-barra-row">
+      <div class="pi-barra-label">${c.label}</div>
+      <div class="pi-barra-track"><div class="pi-barra-fill" style="width:${pct(c.val,maxC)}%;background:${c.color};"></div></div>
+      <div class="pi-barra-val" style="color:${c.color};">${fmt(c.val)}</div>
+    </div>`
+  ).join('') || '<div style="color:var(--texto-dim);font-size:12px;">Sin componentes</div>';
+
+  // Barras producto (desde snapshot)
+  const prodColors = {'portabilidad':'#EF4444','migracion':'#3B82F6','linea nueva':'#10B981'};
+  const prodLabels = {'portabilidad':'Portabilidad','migracion':'Migración','linea nueva':'Línea Nueva'};
+  const prodsMap   = snap.prodsMap || {};
+  const prods      = Object.entries(prodsMap).sort((a,b)=>b[1]-a[1]);
+  const maxP       = prods[0]?.[1]||1;
+  const barrasProdEl = document.getElementById('pi-hist-barras-producto');
+  if (barrasProdEl) barrasProdEl.innerHTML = prods.length
+    ? prods.map(([p,n]) =>
+      `<div class="pi-barra-row">
+        <div class="pi-barra-label">${prodLabels[p]||p}</div>
+        <div class="pi-barra-track"><div class="pi-barra-fill" style="width:${pct(n,maxP)}%;background:${prodColors[p]||'#94A3B8'};"></div></div>
+        <div class="pi-barra-val" style="color:${prodColors[p]||'#94A3B8'};">${fmtn(n)}</div>
+      </div>`).join('')
+    : '<div style="color:var(--texto-dim);font-size:12px;">Sin datos de producto</div>';
+
+  // Tabla CVCs desde snapshot
+  const filasEvc = snap.filasEvc || [];
+  const tbodyEl  = document.getElementById('pi-hist-tbody-cvc');
+  if (tbodyEl) tbodyEl.innerHTML = filasEvc.length
+    ? filasEvc.map(f =>
+      `<tr>
+        <td>${f.madre||'—'}</td>
+        <td style="text-align:right;">${fmtn(f.count)}</td>
+        <td style="text-align:right;">${fmt(f.cfmP)}</td>
+        <td style="text-align:right;">${fmtn(f.proyectado)}</td>
+        <td style="text-align:right;">${f.cumplProy!=null?f.cumplProy+'%':'—'}</td>
+        <td style="text-align:right;">${fmtn(f.lC1c)}</td>
+        <td style="text-align:right;">${fmtn(f.lC2c)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--texto-dim);">Sin datos de CVC guardados</td></tr>';
+
+  analisisEl.style.display = '';
 }
 
 // ── Label legible para un mes YYYY-MM ──
