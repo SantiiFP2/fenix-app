@@ -6318,88 +6318,61 @@ async function piGuardarProyeccionBD(snap) {
   try {
     const periodoVal = document.getElementById('periodo')?.value || '';
     if (!periodoVal) return;
-    const mesVenta  = periodoVal; // 'YYYY-MM'
+    const mesVenta   = periodoVal;
     const fechaCorte = piGetFechaCorte(mesVenta);
 
-    // Leer valores operativos del KPI operativo
-    const opTotal  = parseInt((document.getElementById('kpi-op-total')?.textContent||'').replace(/[^0-9]/g,''))||0;
-    const opSubTxt = document.getElementById('kpi-op-sub')?.textContent || '';
-    const parseOpVal = (label) => {
-      const m = opSubTxt.match(new RegExp(label + '[^$]*\\$([\\d.]+)'));
-      return m ? parseInt(m[1].replace(/\./g,'')) : 0;
+    // Leer los valores del card operativo ya renderizado
+    const opEl     = document.getElementById('kpi-op-total');
+    const opSubEl  = document.getElementById('kpi-op-sub');
+    const totalOp  = parseInt((opEl?.textContent || '').replace(/[^0-9]/g, '')) || 0;
+    const subTxt   = opSubEl?.textContent || '';
+    const parseSub = (label) => {
+      const m = subTxt.match(new RegExp(label + ':\\s*\\$([\\d.]+)'));
+      return m ? parseInt(m[1].replace(/\./g, '')) : 0;
     };
-
-    // Leer valores operativos del card (más confiable que parsear texto)
-    const _dk     = (_sedeFiltroActual && _ultimosDatosKpi) ? _ultimosDatosKpi : _resultadosCache;
-    const kpiEl   = document.getElementById('kpi-total');
-    const totalVentasProyVal = parseFloat(kpiEl?.dataset.proyVentas||'0');
-    const totalNeto_base     = parseFloat(kpiEl?.dataset.base||'0');
-    const factorProy = (totalVentasProyVal > 0 && totalNeto_base > 0) ? totalVentasProyVal / totalNeto_base : 1;
-    const comisionBase = _dk.reduce((s,r)=>s+(r.valorBase||0),0);
-    const comisionProy = Math.round(comisionBase * factorProy);
-    const _bonoKey = _sedeFiltroActual || 'general';
-    const bonoOp   = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
-    const _madresDk = _sedeFiltroActual ? new Set(_dk.map(r=>r.cvcMadre||r.cvc).filter(Boolean)) : null;
-    const _cvcDk    = _madresDk ? cvcConfigs.filter(c=>_madresDk.has(c.madre)) : cvcConfigs;
-    const acelOp    = (calcularAcelerador(_dk,_cvcDk,_global||_resultadosCache)||{}).totalAcelerador||0;
-    const incentOp  = getTotalIncentivos();
-    // Presupuesto completo (sin /3)
-    const presOp = _cvcDk.reduce((s,cvc)=>{
-      const lcG=getLineasCvcParaMeta(cvc,_resultadosCacheGlobal.length?_resultadosCacheGlobal:_resultadosCache);
-      const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lcG.length;
-      const mt=cvc.meta||0;
-      const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCacheGlobal.length?_resultadosCacheGlobal:_resultadosCache);
-      const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
-      const cpEf=Math.max(mt>0?(ej/mt*100):0,cpProy);
-      const lc=getLineasCvcParaMeta(cvc,_dk);
-      const cfmP=lc.length>0?lc.reduce((a,r)=>a+(r.cfm||0),0)/lc.length:0;
-      const contC={};lc.forEach(r=>{const k=norm(r.canal);contC[k]=(contC[k]||0)+1;});
-      const canalP=Object.entries(contC).sort((a,b)=>b[1]-a[1])[0]?.[0]||'tmk outbound';
-      const tabC=tablaPresupuestoPorCanal(canalP)||tablaPresupuestoPorCanal('tmk outbound');
-      const pc=tabC?getPctPresupuesto(cpEf,tabC):0;
-      if(!pc)return s;
-      const fraccion=lcG.length>0?lc.length/lcG.length:1;
-      const uPago=proyD.proyectadoBase!==undefined?proyD.proyectadoBase:(proyD.proyectado||ej);
-      return s+Math.round(uPago*fraccion)*cfmP*(pc/100);
-    },0);
-    const totalOp = comisionProy + bonoOp + acelOp + incentOp + presOp;
+    const comOp    = parseSub('Comisi\u00f3n');
+    const bonoOp   = parseSub('Bono');
+    const acelOp   = parseSub('Acelerador');
+    const presOp   = parseSub('Ind\\. Cumpl\\.');
+    const incentOp = parseSub('Incentivos');
 
     const body = {
-      mes_venta:   mesVenta,
-      fecha_corte: fechaCorte,
+      mes_venta:    mesVenta,
+      fecha_corte:  fechaCorte,
       total_lineas: snap.totalLineas || 0,
       cfm_promedio: Math.round(snap.cfmPromedio || 0),
       pct_c1:       snap.pctC1 || 100,
       financiero: {
-        total:       Math.round(snap.total||0),
-        ventas:      Math.round(snap.ventasVal||0),
-        cosechas:    Math.round(snap.cosechasVal||0),
-        cpm:         Math.round(snap.cpmVal||0),
-        acelerador:  Math.round(snap.aceleradorVal||0),
-        incentivos:  Math.round(snap.incentivosVal||0),
-        presupuesto: Math.round(snap.presupuestoVal||0),
-        bono:        Math.round(snap.bonoVal||0),
-        semilleros:  Math.round(snap.semillerosVal||0),
+        total:       Math.round(snap.total        || 0),
+        ventas:      Math.round(snap.ventasVal    || 0),
+        cosechas:    Math.round(snap.cosechasVal  || 0),
+        cpm:         Math.round(snap.cpmVal       || 0),
+        acelerador:  Math.round(snap.aceleradorVal   || 0),
+        incentivos:  Math.round(snap.incentivosVal   || 0),
+        presupuesto: Math.round(snap.presupuestoVal  || 0),
+        bono:        Math.round(snap.bonoVal         || 0),
+        semilleros:  Math.round(snap.semillerosVal   || 0),
       },
       operativo: {
-        total:       Math.round(totalOp),
-        comision:    comisionProy,
-        acelerador:  Math.round(acelOp),
-        efectividad: 0, // se puede ampliar luego
-        presupuesto: Math.round(presOp),
-        incentivos:  Math.round(incentOp),
-        bono:        Math.round(bonoOp),
+        total:       totalOp,
+        comision:    comOp,
+        acelerador:  acelOp,
+        efectividad: 0,
+        presupuesto: presOp,
+        incentivos:  incentOp,
+        bono:        bonoOp,
       },
       snapshot: { canalesMap: snap.canalesMap, prodsMap: snap.prodsMap, filasEvc: snap.filasEvc }
     };
 
-    await authFetch(`${FENIX_API}/proyecciones`, { method: 'POST', body: JSON.stringify(body) });
-    // Invalidar cache local para este mes
+    const res = await authFetch(`${FENIX_API}/proyecciones`, {
+      method: 'POST', body: JSON.stringify(body)
+    });
+    if (!res.ok) { console.warn('\u26a0\ufe0f Error guardando proyeccion:', await res.text()); return; }
     delete _piHistCache[mesVenta];
-    // Recargar el selector de meses
     piCargarMeses();
   } catch (e) {
-    console.warn('⚠️ No se pudo guardar proyección en BD:', e.message);
+    console.warn('\u26a0\ufe0f piGuardarProyeccionBD:', e.message);
   }
 }
 
