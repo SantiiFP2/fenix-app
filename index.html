@@ -2770,6 +2770,17 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
 
 
+      <!-- FACTURA OPERATIVA -->
+      <div id="kpi-operativo-wrap" style="display:none;padding:16px 20px;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">
+          Factura Operativa — <span id="kpi-op-mes-label" style="color:#a78bfa;"></span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+          <div id="kpi-op-total" style="font-size:32px;font-weight:800;color:#a78bfa;line-height:1;">$0</div>
+        </div>
+        <div id="kpi-op-sub" style="font-size:11px;color:var(--texto-dim);margin-top:6px;line-height:1.6;">—</div>
+      </div>
+
       <!-- PROYECCIÓN DE UNIDADES -->
       <div id="sec-proyeccion" class="proy-section" style="display:none;">
         <div class="proy-header">
@@ -5500,6 +5511,137 @@ function actualizarKpiTotal(datosKpi) {
       cpmCard.style.display = 'none';
     }
   }
+  // Actualizar factura operativa con los mismos datos
+  actualizarKpiOperativo();
+}
+
+// ══════════════════════════════════════════════════════════════
+// FACTURA OPERATIVA
+// Muestra el valor bruto de comisiones (valorBase proyectado)
+// más los indicadores completos sin dividir en cortes de pago.
+// Lee los mismos valores ya calculados por actualizarKpiTotal —
+// nunca recalcula ni modifica la lógica existente.
+// ══════════════════════════════════════════════════════════════
+function actualizarKpiOperativo() {
+  const wrap   = document.getElementById('kpi-operativo-wrap');
+  const totEl  = document.getElementById('kpi-op-total');
+  const subEl  = document.getElementById('kpi-op-sub');
+  const mesEl  = document.getElementById('kpi-op-mes-label');
+  if (!wrap || !totEl) return;
+
+  const kpiEl = document.getElementById('kpi-total');
+  if (!kpiEl || !_resultadosCache.length) { wrap.style.display = 'none'; return; }
+
+  // Reusar la misma lógica de _dk / _global que actualizarKpiTotal
+  const _dk     = (_sedeFiltroActual && _ultimosDatosKpi) ? _ultimosDatosKpi : _resultadosCache;
+  const _global = _resultadosCacheGlobal.length ? _resultadosCacheGlobal : _resultadosCache;
+  if (!_dk.length) { wrap.style.display = 'none'; return; }
+
+  const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+
+  // ── Mes label ──
+  const periodoVal = document.getElementById('periodo')?.value || '';
+  const MESES_NOM = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  if (periodoVal && mesEl) {
+    const [ay, am] = periodoVal.split('-').map(Number);
+    mesEl.textContent = (MESES_NOM[am - 1] || '') + ' ' + ay;
+  }
+
+  // ── 1. COMISIÓN: suma de valorBase proyectada ──
+  // Factor de proyección = mismo ratio que usa la proyección de ventas financiera
+  const totalVentasProyVal = parseFloat(kpiEl.dataset.proyVentas || '0');
+  const totalNeto_base     = parseFloat(kpiEl.dataset.base       || '0');
+  const factorProy = (totalVentasProyVal > 0 && totalNeto_base > 0)
+    ? totalVentasProyVal / totalNeto_base
+    : 1;
+  const comisionBase = _dk.reduce((s, r) => s + (r.valorBase || 0), 0);
+  const comisionProy = Math.round(comisionBase * factorProy);
+
+  // ── 2. BONO DE CUMPLIMIENTO (total, ya calculado) ──
+  const _bonoKey  = _sedeFiltroActual || 'general';
+  const bonoVal   = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
+
+  // ── 3. ACELERADOR COMPLETO (sin dividir en pagos) ──
+  const _madresDk = _sedeFiltroActual
+    ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean))
+    : null;
+  const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
+  const aceleradorVal = (calcularAcelerador(_dk, _cvcDk, _global) || {}).totalAcelerador || 0;
+
+  // ── 4. EFECTIVIDAD COMPLETA (sin dividir — ya está completa en actualizarKpiTotal) ──
+  const _madresDkSet = _madresDk;
+  const _efectivDk = _madresDkSet
+    ? efectividadCvcs.filter(c => _madresDkSet.has(c.madre))
+    : efectividadCvcs;
+  const mesActivoKpi = (() => {
+    const periodoEl = document.getElementById('periodo');
+    return periodoEl?.value || '';
+  })();
+  const efectividadVal = _efectivDk.length ? _efectivDk.reduce((s, c) => {
+    const metaHist   = getMetaEfectividadCvc(c.madre, mesActivoKpi);
+    const indEfect   = metaHist ? metaHist.indicador : 'EFECTIVIDAD PORTA (SOLO OUT)';
+    const prodFiltro = getProductoEfectividad(indEfect);
+    const token      = prodFiltro === 'migracion' ? 'migr' : 'port';
+    const lineasTodasGlobal = _global.filter(r => (r.cvcMadre || '') === c.madre && !norm(r.tipo).includes('power') && norm(r.producto).includes(token));
+    const proyDGlobal   = calcularProyeccionCvc(c.madre, _global);
+    const transDiasG    = Math.max(proyDGlobal.transDias || 1, 1);
+    const totalDiasG    = proyDGlobal.totalDias || transDiasG;
+    const unidadesPrGlobal = Math.round((lineasTodasGlobal.length / transDiasG) * totalDiasG);
+    const unidadesConMP    = unidadesPrGlobal + getMigraPowerCvc(c.madre);
+    const pctConMP  = c.base > 0 ? (unidadesConMP / c.base * 100) : 0;
+    const metaEfect = metaHist ? (metaHist.meta * 100) : c.meta;
+    const cumpl     = metaEfect > 0 ? (pctConMP / metaEfect * 100) : 0;
+    if (cumpl < 100) return s;
+    const lineasEleg       = _dk.filter(r => esElegibleEfectividad(r) && (r.cvcMadre || '') === c.madre && !norm(r.tipo).includes('power') && norm(r.producto).includes(token));
+    const lineasElegGlobal = _global.filter(r => esElegibleEfectividad(r) && (r.cvcMadre || '') === c.madre && !norm(r.tipo).includes('power') && norm(r.producto).includes(token));
+    const proyD     = calcularProyeccionCvc(c.madre, _dk);
+    const transDias = Math.max(proyD.transDias || 1, 1);
+    const totalDias = proyD.totalDias || transDias;
+    const unidadesElegProy = Math.round((lineasEleg.length / transDias) * totalDias);
+    const cfmProm   = lineasEleg.length > 0 ? lineasEleg.reduce((a, r) => a + (r.cfm || 0), 0) / lineasEleg.length : 0;
+    const unidadesPago = unidadesElegProy;
+    return s + unidadesPago * cfmProm * (efectividadPct / 100);
+  }, 0) : 0;
+
+  // ── 5. PRESUPUESTO (INDICADORES DE CUMPLIMIENTO) COMPLETO — sin /3 ──
+  const presupuestoVal = _cvcDk.length ? _cvcDk.reduce((s, cvc) => {
+    const lcGlobal = getLineasCvcParaMeta(cvc, _global);
+    const ej = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined) ? cvc.ejecutadoOverride : lcGlobal.length;
+    const mt = cvc.meta || 0;
+    const proyD     = calcularProyeccionCvc(cvc.madre, _global);
+    const cpProy    = mt > 0 ? ((proyD.proyectado || ej) / mt * 100) : 0;
+    const cpEfectivo = Math.max(mt > 0 ? (ej / mt * 100) : 0, cpProy);
+    const lc        = getLineasCvcParaMeta(cvc, _dk);
+    const cfmProm   = lc.length > 0 ? lc.reduce((a, r) => a + (r.cfm || 0), 0) / lc.length : 0;
+    const contCanal = {}; lc.forEach(r => { const k = norm(r.canal); contCanal[k] = (contCanal[k] || 0) + 1; });
+    const canalPred = Object.entries(contCanal).sort((a, b) => b[1] - a[1])[0]?.[0] || 'tmk outbound';
+    const tablaC    = tablaPresupuestoPorCanal(canalPred) || tablaPresupuestoPorCanal('tmk outbound');
+    const pcEfectivo = tablaC ? getPctPresupuesto(cpEfectivo, tablaC) : 0;
+    if (!pcEfectivo) return s;
+    const fraccion  = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
+    const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado || ej);
+    const unidadesPago = Math.round(unidadesPagoGlobal * fraccion);
+    return s + unidadesPago * cfmProm * (pcEfectivo / 100); // SIN /3
+  }, 0) : 0;
+
+  // ── 6. INCENTIVOS ADICIONALES ──
+  const incentivosVal = getTotalIncentivos();
+
+  // ── TOTAL OPERATIVO ──
+  const totalOp = comisionProy + bonoVal + aceleradorVal + efectividadVal + presupuestoVal + incentivosVal;
+
+  // Render
+  wrap.style.display = '';
+  totEl.textContent  = fmt(totalOp);
+
+  const partes = [];
+  if (comisionProy   > 0) partes.push('Comisión: '    + fmt(comisionProy));
+  if (bonoVal        > 0) partes.push('Bono: '         + fmt(bonoVal));
+  if (aceleradorVal  > 0) partes.push('Acelerador: '   + fmt(aceleradorVal));
+  if (efectividadVal > 0) partes.push('Efectividad: '  + fmt(efectividadVal));
+  if (presupuestoVal > 0) partes.push('Ind. Cumpl.: '  + fmt(presupuestoVal));
+  if (incentivosVal  > 0) partes.push('Incentivos: '   + fmt(incentivosVal));
+  if (subEl) subEl.textContent = partes.join(' · ') || '—';
 }
 
 // ══════════════════════════════════════════════════════════════
