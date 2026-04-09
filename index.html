@@ -6407,16 +6407,19 @@ async function piGuardarProyeccionBD(snap) {
 async function piCargarMeses() {
   try {
     const r = await authFetch(`${FENIX_API}/proyecciones/meses`).then(x => x.json());
-    if (!r.ok) return;
+    if (!r.ok || !r.meses || !r.meses.length) return;
     const sel = document.getElementById('pi-hist-mes');
     if (!sel) return;
     const actual = sel.value;
     sel.innerHTML = '<option value="">— Mes —</option>' +
       r.meses.map(m => `<option value="${m}"${m===actual?' selected':''}>${piMesLabel(m)}</option>`).join('');
-    if (r.meses.length > 0 && !actual) {
-      sel.value = r.meses[0];
-      piCargarDiasMes();
-    }
+    // Mostrar el bloque de facturas ya que hay datos en BD
+    const wrap = document.getElementById('pi-facturas-wrap');
+    if (wrap) wrap.style.display = '';
+    // Auto-seleccionar el mes más reciente si no hay selección
+    const mesASeleccionar = actual || r.meses[0];
+    sel.value = mesASeleccionar;
+    await piCargarDiasMes();
   } catch(e) { console.warn('piCargarMeses:', e.message); }
 }
 
@@ -6439,13 +6442,14 @@ async function piCargarDiasMes() {
     selDia.innerHTML = '<option value="">Sin datos</option>';
     return;
   }
-  // Mostrar el más reciente por defecto
+  // Normalizar fecha_corte a YYYY-MM-DD
   selDia.innerHTML = rows.map(row => {
-    const d = new Date(row.fecha_corte + 'T12:00:00');
+    const fechaNorm = String(row.fecha_corte).substring(0, 10);
+    const d = new Date(fechaNorm + 'T12:00:00');
     const label = d.toLocaleDateString('es-CO', { day:'2-digit', month:'short' });
-    return `<option value="${row.fecha_corte}">${label}</option>`;
+    return `<option value="${fechaNorm}">${label}</option>`;
   }).join('');
-  selDia.value = rows[rows.length - 1].fecha_corte;
+  selDia.value = String(rows[rows.length - 1].fecha_corte).substring(0, 10);
   piMostrarProyeccionHistorica();
 }
 
@@ -6455,7 +6459,7 @@ function piMostrarProyeccionHistorica() {
   const dia = document.getElementById('pi-hist-dia')?.value;
   if (!mes || !dia) return;
   const rows = _piHistCache[mes] || [];
-  const row  = rows.find(r => r.fecha_corte && r.fecha_corte.substring(0,10) === dia);
+  const row  = rows.find(r => r.fecha_corte && String(r.fecha_corte).substring(0,10) === dia);
   if (!row) return;
 
   const fmt = v => '$' + Math.round(v||0).toLocaleString('es-CO');
