@@ -1972,6 +1972,36 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     </div>
   </div>
 
+  <!-- Bloque Facturas Móvil (financiera + operativa) + histórico -->
+  <div id="pi-facturas-wrap" style="display:none;margin-bottom:24px;">
+    <!-- Selector de historial -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Ver proyección de:</span>
+      <select id="pi-hist-mes" onchange="piCargarDiasMes()" style="width:auto;padding:5px 10px;font-size:12px;border-radius:3px;background:var(--gris-medio);border:1px solid var(--gris-linea);color:var(--texto);">
+        <option value="">— Mes —</option>
+      </select>
+      <select id="pi-hist-dia" onchange="piMostrarProyeccionHistorica()" style="width:auto;padding:5px 10px;font-size:12px;border-radius:3px;background:var(--gris-medio);border:1px solid var(--gris-linea);color:var(--texto);">
+        <option value="">— Día —</option>
+      </select>
+      <span id="pi-hist-badge" style="font-size:10px;color:var(--texto-dim);"></span>
+    </div>
+    <!-- Cards financiera + operativa -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <!-- Financiera -->
+      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:16px;border-top:3px solid var(--rojo);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px;">💰 Factura Financiera</div>
+        <div id="pi-fact-fin-total" style="font-size:26px;font-weight:900;color:var(--rojo-light);line-height:1;">$0</div>
+        <div id="pi-fact-fin-sub" style="font-size:10px;color:var(--texto-dim);margin-top:6px;line-height:1.7;">—</div>
+      </div>
+      <!-- Operativa -->
+      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:16px;border-top:3px solid #a78bfa;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px;">⚙️ Factura Operativa</div>
+        <div id="pi-fact-op-total" style="font-size:26px;font-weight:900;color:#a78bfa;line-height:1;">$0</div>
+        <div id="pi-fact-op-sub" style="font-size:10px;color:var(--texto-dim);margin-top:6px;line-height:1.7;">—</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Análisis detallado Móvil -->
   <div id="pi-movil-analisis" style="display:none;">
 
@@ -6065,6 +6095,9 @@ function mostrarPanelInicio() {
   (document.getElementById('sb-metas-btn')||document.createElement('span')).classList.remove('active');
   actualizarPanelInicio();
 
+  // Cargar historial de meses disponibles
+  piCargarMeses();
+
   // Si hay datos calculados, mostrar el análisis de Móvil directamente
   if (_resultadosCache.length > 0) {
     const analisis = document.getElementById('pi-movil-analisis');
@@ -6229,6 +6262,9 @@ function guardarProyeccion() {
     cosechasItems: [...cosechas],
   };
 
+  // ── Persistir en BD ──
+  piGuardarProyeccionBD(_proyeccionGuardada);
+
   // Actualizar tarjeta Móvil en panel
   const kpiCard = document.getElementById('pi-movil-kpi');
   const kpiSub  = document.getElementById('pi-movil-kpi-sub');
@@ -6251,6 +6287,224 @@ function guardarProyeccion() {
     btn.style.borderColor = '#4ADE80';
     setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; }, 2500);
   }
+}
+
+// ══════════════════════════════════════════════════════════════
+// PANEL INICIO — FACTURAS + HISTÓRICO BD
+// ══════════════════════════════════════════════════════════════
+
+// Cache local de proyecciones históricas { 'YYYY-MM': [ rowBD, ... ] }
+let _piHistCache = {};
+
+// ── Calcular fecha_corte según regla de negocio ──
+// Si el mes de venta ya cerró (estamos en un mes posterior), usa el último día del mes de venta.
+// Si es el mes actual, usa hoy.
+function piGetFechaCorte(mesVentaISO) {
+  // mesVentaISO = 'YYYY-MM'
+  const [anio, mes] = mesVentaISO.split('-').map(Number);
+  const hoy = new Date();
+  const esActual = (anio === hoy.getFullYear() && mes === (hoy.getMonth() + 1));
+  if (esActual) {
+    return hoy.toISOString().substring(0, 10); // YYYY-MM-DD
+  } else {
+    // Último día del mes de venta
+    const ultimoDia = new Date(anio, mes, 0); // día 0 del mes siguiente = último día del mes
+    return ultimoDia.toISOString().substring(0, 10);
+  }
+}
+
+// ── Persistir proyección en BD ──
+async function piGuardarProyeccionBD(snap) {
+  try {
+    const periodoVal = document.getElementById('periodo')?.value || '';
+    if (!periodoVal) return;
+    const mesVenta  = periodoVal; // 'YYYY-MM'
+    const fechaCorte = piGetFechaCorte(mesVenta);
+
+    // Leer valores operativos del KPI operativo
+    const opTotal  = parseInt((document.getElementById('kpi-op-total')?.textContent||'').replace(/[^0-9]/g,''))||0;
+    const opSubTxt = document.getElementById('kpi-op-sub')?.textContent || '';
+    const parseOpVal = (label) => {
+      const m = opSubTxt.match(new RegExp(label + '[^$]*\\$([\\d.]+)'));
+      return m ? parseInt(m[1].replace(/\./g,'')) : 0;
+    };
+
+    // Leer valores operativos del card (más confiable que parsear texto)
+    const _dk     = (_sedeFiltroActual && _ultimosDatosKpi) ? _ultimosDatosKpi : _resultadosCache;
+    const kpiEl   = document.getElementById('kpi-total');
+    const totalVentasProyVal = parseFloat(kpiEl?.dataset.proyVentas||'0');
+    const totalNeto_base     = parseFloat(kpiEl?.dataset.base||'0');
+    const factorProy = (totalVentasProyVal > 0 && totalNeto_base > 0) ? totalVentasProyVal / totalNeto_base : 1;
+    const comisionBase = _dk.reduce((s,r)=>s+(r.valorBase||0),0);
+    const comisionProy = Math.round(comisionBase * factorProy);
+    const _bonoKey = _sedeFiltroActual || 'general';
+    const bonoOp   = _bonoCalculado[_bonoKey] !== undefined ? _bonoCalculado[_bonoKey] : 0;
+    const _madresDk = _sedeFiltroActual ? new Set(_dk.map(r=>r.cvcMadre||r.cvc).filter(Boolean)) : null;
+    const _cvcDk    = _madresDk ? cvcConfigs.filter(c=>_madresDk.has(c.madre)) : cvcConfigs;
+    const acelOp    = (calcularAcelerador(_dk,_cvcDk,_global||_resultadosCache)||{}).totalAcelerador||0;
+    const incentOp  = getTotalIncentivos();
+    // Presupuesto completo (sin /3)
+    const presOp = _cvcDk.reduce((s,cvc)=>{
+      const lcG=getLineasCvcParaMeta(cvc,_resultadosCacheGlobal.length?_resultadosCacheGlobal:_resultadosCache);
+      const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lcG.length;
+      const mt=cvc.meta||0;
+      const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCacheGlobal.length?_resultadosCacheGlobal:_resultadosCache);
+      const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
+      const cpEf=Math.max(mt>0?(ej/mt*100):0,cpProy);
+      const lc=getLineasCvcParaMeta(cvc,_dk);
+      const cfmP=lc.length>0?lc.reduce((a,r)=>a+(r.cfm||0),0)/lc.length:0;
+      const contC={};lc.forEach(r=>{const k=norm(r.canal);contC[k]=(contC[k]||0)+1;});
+      const canalP=Object.entries(contC).sort((a,b)=>b[1]-a[1])[0]?.[0]||'tmk outbound';
+      const tabC=tablaPresupuestoPorCanal(canalP)||tablaPresupuestoPorCanal('tmk outbound');
+      const pc=tabC?getPctPresupuesto(cpEf,tabC):0;
+      if(!pc)return s;
+      const fraccion=lcG.length>0?lc.length/lcG.length:1;
+      const uPago=proyD.proyectadoBase!==undefined?proyD.proyectadoBase:(proyD.proyectado||ej);
+      return s+Math.round(uPago*fraccion)*cfmP*(pc/100);
+    },0);
+    const totalOp = comisionProy + bonoOp + acelOp + incentOp + presOp;
+
+    const body = {
+      mes_venta:   mesVenta,
+      fecha_corte: fechaCorte,
+      total_lineas: snap.totalLineas || 0,
+      cfm_promedio: Math.round(snap.cfmPromedio || 0),
+      pct_c1:       snap.pctC1 || 100,
+      financiero: {
+        total:       Math.round(snap.total||0),
+        ventas:      Math.round(snap.ventasVal||0),
+        cosechas:    Math.round(snap.cosechasVal||0),
+        cpm:         Math.round(snap.cpmVal||0),
+        acelerador:  Math.round(snap.aceleradorVal||0),
+        incentivos:  Math.round(snap.incentivosVal||0),
+        presupuesto: Math.round(snap.presupuestoVal||0),
+        bono:        Math.round(snap.bonoVal||0),
+        semilleros:  Math.round(snap.semillerosVal||0),
+      },
+      operativo: {
+        total:       Math.round(totalOp),
+        comision:    comisionProy,
+        acelerador:  Math.round(acelOp),
+        efectividad: 0, // se puede ampliar luego
+        presupuesto: Math.round(presOp),
+        incentivos:  Math.round(incentOp),
+        bono:        Math.round(bonoOp),
+      },
+      snapshot: { canalesMap: snap.canalesMap, prodsMap: snap.prodsMap, filasEvc: snap.filasEvc }
+    };
+
+    await authFetch(`${FENIX_API}/proyecciones`, { method: 'POST', body: JSON.stringify(body) });
+    // Invalidar cache local para este mes
+    delete _piHistCache[mesVenta];
+    // Recargar el selector de meses
+    piCargarMeses();
+  } catch (e) {
+    console.warn('⚠️ No se pudo guardar proyección en BD:', e.message);
+  }
+}
+
+// ── Cargar lista de meses disponibles en el selector ──
+async function piCargarMeses() {
+  try {
+    const r = await authFetch(`${FENIX_API}/proyecciones/meses`).then(x => x.json());
+    if (!r.ok) return;
+    const sel = document.getElementById('pi-hist-mes');
+    if (!sel) return;
+    const actual = sel.value;
+    sel.innerHTML = '<option value="">— Mes —</option>' +
+      r.meses.map(m => `<option value="${m}"${m===actual?' selected':''}>${piMesLabel(m)}</option>`).join('');
+    if (r.meses.length > 0 && !actual) {
+      sel.value = r.meses[0];
+      piCargarDiasMes();
+    }
+  } catch(e) { console.warn('piCargarMeses:', e.message); }
+}
+
+// ── Cargar días disponibles para el mes seleccionado ──
+async function piCargarDiasMes() {
+  const mes = document.getElementById('pi-hist-mes')?.value;
+  const selDia = document.getElementById('pi-hist-dia');
+  if (!mes || !selDia) return;
+  selDia.innerHTML = '<option value="">Cargando…</option>';
+
+  if (!_piHistCache[mes]) {
+    try {
+      const r = await authFetch(`${FENIX_API}/proyecciones?mes=${mes}`).then(x => x.json());
+      if (r.ok) _piHistCache[mes] = r.rows;
+    } catch(e) { console.warn('piCargarDiasMes:', e.message); }
+  }
+
+  const rows = _piHistCache[mes] || [];
+  if (!rows.length) {
+    selDia.innerHTML = '<option value="">Sin datos</option>';
+    return;
+  }
+  // Mostrar el más reciente por defecto
+  selDia.innerHTML = rows.map(row => {
+    const d = new Date(row.fecha_corte + 'T12:00:00');
+    const label = d.toLocaleDateString('es-CO', { day:'2-digit', month:'short' });
+    return `<option value="${row.fecha_corte}">${label}</option>`;
+  }).join('');
+  selDia.value = rows[rows.length - 1].fecha_corte;
+  piMostrarProyeccionHistorica();
+}
+
+// ── Mostrar la proyección del día seleccionado ──
+function piMostrarProyeccionHistorica() {
+  const mes = document.getElementById('pi-hist-mes')?.value;
+  const dia = document.getElementById('pi-hist-dia')?.value;
+  if (!mes || !dia) return;
+  const rows = _piHistCache[mes] || [];
+  const row  = rows.find(r => r.fecha_corte && r.fecha_corte.substring(0,10) === dia);
+  if (!row) return;
+
+  const fmt = v => '$' + Math.round(v||0).toLocaleString('es-CO');
+  const wrap = document.getElementById('pi-facturas-wrap');
+  if (wrap) wrap.style.display = '';
+
+  // Badge con hora de guardado
+  const badge = document.getElementById('pi-hist-badge');
+  if (badge) {
+    const ts = new Date(row.guardado_en);
+    badge.textContent = 'Guardado: ' + ts.toLocaleString('es-CO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  // Financiera
+  const finTotal = document.getElementById('pi-fact-fin-total');
+  const finSub   = document.getElementById('pi-fact-fin-sub');
+  if (finTotal) finTotal.textContent = fmt(row.total_financiero);
+  if (finSub) {
+    const partes = [];
+    if (row.ventas_val>0)      partes.push('Ventas: '+fmt(row.ventas_val));
+    if (row.cosechas_val>0)    partes.push('Cosechas: '+fmt(row.cosechas_val));
+    if (row.cpm_val>0)         partes.push('Próx.Mes: '+fmt(row.cpm_val));
+    if (row.acelerador_val>0)  partes.push('Acel.CFM: '+fmt(row.acelerador_val));
+    if (row.presupuesto_val>0) partes.push('Ind.Cumpl: '+fmt(row.presupuesto_val));
+    if (row.bono_val>0)        partes.push('Bono: '+fmt(row.bono_val));
+    if (row.incentivos_val>0)  partes.push('Incentivos: '+fmt(row.incentivos_val));
+    finSub.textContent = partes.join(' · ') || '—';
+  }
+
+  // Operativa
+  const opTotal = document.getElementById('pi-fact-op-total');
+  const opSub   = document.getElementById('pi-fact-op-sub');
+  if (opTotal) opTotal.textContent = fmt(row.total_operativo);
+  if (opSub) {
+    const partes = [];
+    if (row.comision_val>0)       partes.push('Comisión: '+fmt(row.comision_val));
+    if (row.bono_op_val>0)        partes.push('Bono: '+fmt(row.bono_op_val));
+    if (row.acel_op_val>0)        partes.push('Acelerador: '+fmt(row.acel_op_val));
+    if (row.presupuesto_op_val>0) partes.push('Ind.Cumpl: '+fmt(row.presupuesto_op_val));
+    if (row.incentivos_op_val>0)  partes.push('Incentivos: '+fmt(row.incentivos_op_val));
+    opSub.textContent = partes.join(' · ') || '—';
+  }
+}
+
+// ── Label legible para un mes YYYY-MM ──
+function piMesLabel(iso) {
+  const MESES_N = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y,m] = iso.split('-').map(Number);
+  return (MESES_N[m-1]||iso) + ' ' + y;
 }
 
 function renderPanelDesdeCache() {
