@@ -1,0 +1,5 @@
+.DS_Store
+*.PNG
+*.png
+.claude/
+CLAUDE.md
