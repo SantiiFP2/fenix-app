@@ -1469,12 +1469,12 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     <!-- Modo -->
     <button id="btn-tema" onclick="toggleTema()" title="Modo Oscuro"
       style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
-      <span id="btn-tema-icon">🌙</span>
+      <span id="btn-tema-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg></span>
     </button>
     <!-- Gestión de usuarios (solo admin/supervisor) -->
     <button id="btn-gestion-usuarios" onclick="abrirModalUsuarios()" title="Gestionar usuarios"
       style="display:none;width:38px;height:38px;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
-      👥
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
     </button>
     <!-- Usuario -->
     <div id="header-usuario"></div>
@@ -9003,13 +9003,13 @@ function toggleTema() {
   const btn   = document.getElementById('btn-tema');
   const icon  = document.getElementById('btn-tema-icon');
   if (modoClaro) {
-    icon.textContent  = '🌙';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>';
     if(btn) btn.title = 'Modo Oscuro';
     btn.style.background = '#E8EBF0';
     btn.style.borderColor = '#D0D5DD';
     btn.style.color = '#1A1A2E';
   } else {
-    icon.textContent  = '☀️';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
     if(btn) btn.title = 'Modo Claro';
     btn.style.background = '';
     btn.style.borderColor = '';
@@ -12324,7 +12324,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelCosechas();">
-          <div class="lnc-icon" style="background:linear-gradient(135deg,#065F46,#34D399);">🌾</div>
+          <div class="lnc-icon li-cos" style="background:linear-gradient(135deg,#065F46,#34D399);"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 22V12"/><path d="M12 12C12 7 8 4 4 4c0 4 2.5 7.5 8 8z"/><path d="M12 12C12 7 16 4 20 4c0 4-2.5 7.5-8 8z"/><path d="M12 17C12 13 9 11 6 11"/><path d="M12 17C12 13 15 11 18 11"/></svg></div>
           <div class="lnc-label">Cosechas</div>
         </button>
 
