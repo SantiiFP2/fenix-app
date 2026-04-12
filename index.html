@@ -2810,8 +2810,10 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <button class="btn-calcular" onclick="calcular()">⚡ Calcular Proyección</button>
   <button id="btn-guardar-proy" onclick="guardarProyeccion()"
-    style="display:none;width:100%;margin-top:8px;background:rgba(74,222,128,0.1);color:#4ADE80;border:1px solid rgba(74,222,128,0.4);padding:12px;font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all 0.2s;">
-    💾 Guardar Proyección en Panel
+    style="display:none;width:100%;margin-top:8px;background:#22C55E;color:#fff;border:none;padding:14px;font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:28px;transition:all 0.35s ease;box-shadow:0 4px 18px rgba(34,197,94,0.35);align-items:center;justify-content:center;gap:10px;"
+    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 26px rgba(34,197,94,0.5)';"
+    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 18px rgba(34,197,94,0.35)';">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Proyección en Panel
   </button>
 </div>
 
@@ -9575,7 +9577,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   document.getElementById('empty-state').style.display='none';
   document.getElementById('resultado-content').style.display='block';
   const btnG = document.getElementById('btn-guardar-proy');
-  if (btnG) btnG.style.display = '';
+  if (btnG) btnG.style.display = 'flex';
 }
 
 function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
