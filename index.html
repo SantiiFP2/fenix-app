@@ -2220,7 +2220,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:start;">
+<div style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start;">
 
   <!-- ══ LEFT: CONFIGURACIÓN ══ -->
   <div class="panel-config">
@@ -2334,14 +2334,40 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       <!-- Site filter dinámico -->
       <div class="hog-site-filter" id="hog-site-filter" style="display:none;padding:14px 20px 0;"></div>
 
-      <!-- KPI grid (oculto — valores se muestran en las cards de proyección) -->
-      <div id="hog-kpi-grid" style="display:none;">
-        <span id="hog-kpi-ots"></span><span id="hog-kpi-ots-sub"></span>
-        <span id="hog-kpi-total"></span><span id="hog-kpi-total-sub"></span>
-        <span id="hog-kpi-int"></span><span id="hog-kpi-int-sub"></span>
-        <span id="hog-kpi-tv"></span><span id="hog-kpi-tv-sub"></span>
-        <span id="hog-kpi-voz"></span><span id="hog-kpi-voz-sub"></span>
-        <span id="hog-kpi-ott"></span><span id="hog-kpi-ott-sub"></span>
+      <!-- KPI grid: cobro proyectado + ARPUs -->
+      <div id="hog-kpi-grid" style="display:none;padding:14px 20px;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);">
+        <div class="kpi-grid">
+          <div class="kpi-card total" style="border-color:rgba(109,40,217,0.4);">
+            <div class="kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
+            <div class="kpi-value" id="hog-kpi-total" style="color:#A78BFA;font-size:26px;">—</div>
+            <div class="kpi-sub" id="hog-kpi-total-sub"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total OTs</div>
+            <div class="kpi-value" id="hog-kpi-ots">—</div>
+            <div class="kpi-sub" id="hog-kpi-ots-sub"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label" style="color:#60A5FA;">ARPU Internet (@)</div>
+            <div class="kpi-value" id="hog-kpi-int" style="color:#60A5FA;font-size:22px;">—</div>
+            <div class="kpi-sub" id="hog-kpi-int-sub"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label" style="color:#34D399;">ARPU TV</div>
+            <div class="kpi-value" id="hog-kpi-tv" style="color:#34D399;font-size:22px;">—</div>
+            <div class="kpi-sub" id="hog-kpi-tv-sub"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label" style="color:#FCD34D;">ARPU Voz</div>
+            <div class="kpi-value" id="hog-kpi-voz" style="color:#FCD34D;font-size:22px;">—</div>
+            <div class="kpi-sub" id="hog-kpi-voz-sub"></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label" style="color:#F97316;">OTT</div>
+            <div class="kpi-value" id="hog-kpi-ott" style="color:#F97316;">—</div>
+            <div class="kpi-sub" id="hog-kpi-ott-sub"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Proyección al cierre del mes -->
@@ -10271,16 +10297,10 @@ function hogRecalcularProyeccion() {
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
   const fmtN = n => n.toLocaleString('es-CO');
 
-  // Actualizar KPIs con valor proyectado
+  // Actualizar solo el cobro proyectado en el KPI (los ARPUs los pone hogRenderKPIs)
   const se2 = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   se2('hog-kpi-total',     fmt(totalProy));
   se2('hog-kpi-total-sub', `proyectado · real: ${fmt(totalReal)}`);
-  se2('hog-kpi-int',       fmtN(intProy) + ' OTs');
-  se2('hog-kpi-int-sub',   `real: ${fmtN(intOTs)}`);
-  se2('hog-kpi-tv',        fmtN(tvProy)  + ' OTs');
-  se2('hog-kpi-tv-sub',    `real: ${fmtN(tvOTs)}`);
-  se2('hog-kpi-voz',       fmtN(vozProy) + ' OTs');
-  se2('hog-kpi-voz-sub',   `real: ${fmtN(vozOTs)}`);
 
   // Render cards proyección
   const grid = document.getElementById('hog-proy-grid');
@@ -10568,18 +10588,19 @@ function hogRenderKPIs(datos) {
   const avgTV  = tvDatos.length  ? tvDatos.reduce((s,r)=>s+r.rentaTV,0)/tvDatos.length   : 0;
   const avgVoz = vozDatos.length ? vozDatos.reduce((s,r)=>s+r.rentaVoz,0)/vozDatos.length : 0;
 
-  // hog-kpi-grid está oculto permanentemente (los valores se muestran en las cards de proyección)
+  const g = document.getElementById('hog-kpi-grid');
+  if (g) g.style.display = '';
   const se = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   se('hog-kpi-ots',       fmtN(totalOTs));
   se('hog-kpi-ots-sub',   'cuentas activas');
   se('hog-kpi-total',     fmt(totalComis));
   se('hog-kpi-total-sub', 'comisión real acumulada');
-  se('hog-kpi-int',       fmtN(intDatos.length) + ' OTs');
-  se('hog-kpi-int-sub',   'ARPU prom: ' + fmt(avgInt));
-  se('hog-kpi-tv',        fmtN(tvDatos.length) + ' OTs');
-  se('hog-kpi-tv-sub',    'ARPU prom: ' + fmt(avgTV));
-  se('hog-kpi-voz',       fmtN(vozDatos.length) + ' OTs');
-  se('hog-kpi-voz-sub',   'ARPU prom: ' + fmt(avgVoz));
+  se('hog-kpi-int',       fmt(avgInt));
+  se('hog-kpi-int-sub',   fmtN(intDatos.length) + ' OTs con internet');
+  se('hog-kpi-tv',        fmt(avgTV));
+  se('hog-kpi-tv-sub',    fmtN(tvDatos.length) + ' OTs con TV');
+  se('hog-kpi-voz',       fmt(avgVoz));
+  se('hog-kpi-voz-sub',   fmtN(vozDatos.length) + ' OTs con voz');
   se('hog-kpi-ott',       fmtN(totalOTT));
   se('hog-kpi-ott-sub',   'servicios OTT activos');
 }
