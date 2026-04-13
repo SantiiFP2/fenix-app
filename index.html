@@ -10133,15 +10133,16 @@ const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
 function hogToggleLncPanel(btn) {
   const panel = document.getElementById('lnc-mod-hogar');
   const arrow = document.getElementById('lnc-arr-hogar');
-  const isOpen = panel.style.display !== 'none';
-  // Cerrar submenu de Móvil si estaba abierto
-  const movPanel = document.getElementById('lnc-mod-claro-movil');
-  if (movPanel) movPanel.style.display = 'none';
-  const movArr = document.getElementById('lnc-arr-claro-movil');
-  if (movArr) movArr.style.transform = '';
+  const isOpen = panel.classList.contains('open');
+  // Cerrar todos los submenús primero (mismo patrón que toggleLncModules)
+  document.querySelectorAll('.lnc-modules-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.lnc-product.active-prod').forEach(b => b.classList.remove('active-prod'));
+  document.querySelectorAll('.lnc-arrow').forEach(a => a.style.transform = '');
   // Toggle Hogar
-  panel.style.display = isOpen ? 'none' : '';
-  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (!isOpen) {
+    panel.classList.add('open');
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+  }
 }
 
 // ── Mostrar panel ──
@@ -12851,7 +12852,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- MÓDULOS DE HOGAR -->
-    <div class="lnc-modules-panel" id="lnc-mod-hogar" style="display:none;">
+    <div class="lnc-modules-panel" id="lnc-mod-hogar">
       <div class="lnc-subsection-label lnc-mod-label" style="color:#6D28D9;">
         <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;margin-right:4px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
         Módulos Hogar
