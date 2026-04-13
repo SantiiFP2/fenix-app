@@ -2220,7 +2220,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start;">
+<div style="max-width:100%;margin:0 auto;padding:16px 12px;display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;">
 
   <!-- ══ LEFT: CONFIGURACIÓN ══ -->
   <div class="panel-config">
@@ -10305,6 +10305,7 @@ function hogRecalcularProyeccion() {
   // Render cards proyección
   const grid = document.getElementById('hog-proy-grid');
   if (!grid) return;
+  grid.style.gridTemplateColumns = 'repeat(3,1fr)';
 
   const cardColor = '#6D28D9';
   grid.innerHTML = `
@@ -10312,7 +10313,7 @@ function hogRecalcularProyeccion() {
       <div class="proy-card-titulo">📅 Días Hábiles del Mes</div>
       <div class="proy-stat-row">
         <div class="proy-stat"><div class="proy-stat-val">${totalDias}</div><div class="proy-stat-lbl">Total</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${transDias}</div><div class="proy-stat-lbl">Transcurridos</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${transDias}</div><div class="proy-stat-lbl">Transcurr.</div></div>
         <div class="proy-stat"><div class="proy-stat-val" style="color:#F97316;">${restDias}</div><div class="proy-stat-lbl">Restantes</div></div>
       </div>
       <div class="proy-progress"><div class="proy-progress-fill" style="width:${avancePct.toFixed(1)}%;background:${cardColor};"></div></div>
@@ -10321,19 +10322,19 @@ function hogRecalcularProyeccion() {
     <div class="proy-card" style="border-top:3px solid #A78BFA;">
       <div class="proy-card-titulo">💰 Comisión Proyectada</div>
       <div class="proy-stat-row">
-        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:18px;">${fmt(totalProy)}</div><div class="proy-stat-lbl">Proyectado cierre</div></div>
+        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:16px;">${fmt(totalProy)}</div><div class="proy-stat-lbl">Proyect. cierre</div></div>
       </div>
       <div class="proy-stat-row">
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmt(totalReal)}</div><div class="proy-stat-lbl">Real acumulado</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;color:#F97316;">${fmt(Math.max(totalProy-totalReal,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;">${fmt(totalReal)}</div><div class="proy-stat-lbl">Real acum.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;color:#F97316;">${fmt(Math.max(totalProy-totalReal,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
       </div>
     </div>
     <div class="proy-card" style="border-top:3px solid #60A5FA;">
       <div class="proy-card-titulo">🌐 Internet · TV · Voz</div>
       <div class="proy-stat-row">
         <div class="proy-stat"><div class="proy-stat-val" style="color:#60A5FA;">${fmtN(intProy)}</div><div class="proy-stat-lbl">@ Proyect.</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${fmtN(tvProy)}</div><div class="proy-stat-lbl">TV Proyect.</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="color:#FCD34D;">${fmtN(vozProy)}</div><div class="proy-stat-lbl">Voz Proyect.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${fmtN(tvProy)}</div><div class="proy-stat-lbl">TV Proy.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#FCD34D;">${fmtN(vozProy)}</div><div class="proy-stat-lbl">Voz Proy.</div></div>
       </div>
       <div class="proy-stat-row">
         <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmtN(intOTs)}</div><div class="proy-stat-lbl">@ Real</div></div>
