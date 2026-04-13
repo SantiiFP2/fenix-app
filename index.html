@@ -387,8 +387,8 @@ body.modo-claro .pago-item{background:#F1F3F4;border-radius:var(--g-radius-sm);}
 
 #main-content{flex:1;min-width:0;overflow-x:hidden;transition:margin-left 0.25s cubic-bezier(.4,0,.2,1);margin-left:0;}
 #main-content.full{margin-left:0;}
-#panel-inicio,#panel-codigos-cvc,#panel-metas,#panel-cosechas{position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;transition:left 0.25s cubic-bezier(.4,0,.2,1);z-index:10;background:var(--negro);}
-#panel-inicio.full,#panel-codigos-cvc.full,#panel-metas.full,#panel-cosechas.full{left:0;}
+#panel-inicio,#panel-codigos-cvc,#panel-metas,#panel-cosechas,#panel-hogar{position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;transition:left 0.25s cubic-bezier(.4,0,.2,1);z-index:10;background:var(--negro);}
+#panel-inicio.full,#panel-codigos-cvc.full,#panel-metas.full,#panel-cosechas.full,#panel-hogar.full{left:0;}
 
 /* Toggle button */
 #sidebar-toggle{display:none!important;;padding:0;
@@ -2021,9 +2021,6 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       <div class="pi-product-kpi vacio" id="pi-hogar-kpi">Sin datos</div>
       <div class="pi-product-kpi-sub" id="pi-hogar-kpi-sub">Carga un archivo para ver la proyección</div>
     </div>
-      <div class="pi-product-kpi vacio">—</div>
-      <div class="pi-product-kpi-sub">Próximamente disponible</div>
-    </div>
     <div class="pi-product-card pronto">
       <span class="pi-badge">Próximo</span>
       <div class="pi-product-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
@@ -2222,8 +2219,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 <!-- ══════════════════════════════════════════════════════════════
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
-<div id="panel-hogar" style="display:none;position:fixed;top:64px;left:240px;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);padding:28px 32px;">
-
+<div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
+<div style="max-width:1400px;margin:0 auto;padding:28px 32px;">
   <!-- Header -->
   <div class="pi-header" style="margin-bottom:20px;">
     <h1 style="font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:700;color:var(--g-on-surface);margin:0 0 4px;display:flex;align-items:center;gap:10px;">
@@ -2381,7 +2378,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       Carga un archivo en la pestaña Proyección para ver los servicios
     </div>
   </div><!-- /tab servicios -->
-
+</div><!-- /inner-hogar -->
 </div><!-- /panel-hogar -->
 
 
@@ -10131,6 +10128,22 @@ let _hogTasasVisible = false;
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
 
+
+// ── Toggle submenu Hogar en launcher ──
+function hogToggleLncPanel(btn) {
+  const panel = document.getElementById('lnc-mod-hogar');
+  const arrow = document.getElementById('lnc-arr-hogar');
+  const isOpen = panel.style.display !== 'none';
+  // Cerrar submenu de Móvil si estaba abierto
+  const movPanel = document.getElementById('lnc-mod-claro-movil');
+  if (movPanel) movPanel.style.display = 'none';
+  const movArr = document.getElementById('lnc-arr-claro-movil');
+  if (movArr) movArr.style.transform = '';
+  // Toggle Hogar
+  panel.style.display = isOpen ? 'none' : '';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
 // ── Mostrar panel ──
 function mostrarPanelHogar() {
   setHeaderModulo('Hogares');
@@ -12816,10 +12829,37 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="lnc-arrow" id="lnc-arr-claro-movil">▾</div>
       </button>
 
-      <button class="launcher-item lnc-item" onclick="closeLauncher();mostrarPanelHogar();">
+      <button class="launcher-item lnc-item" onclick="hogToggleLncPanel(this)">
         <div class="lnc-icon li-hogar"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
         <div class="lnc-label">Hogares</div>
+        <div class="lnc-arrow" id="lnc-arr-hogar">▾</div>
       </button>
+
+    </div>
+
+    <!-- MÓDULOS DE HOGAR -->
+    <div class="lnc-modules-panel" id="lnc-mod-hogar" style="display:none;">
+      <div class="lnc-subsection-label lnc-mod-label" style="color:#6D28D9;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;margin-right:4px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+        Módulos Hogar
+      </div>
+      <div class="lnc-grid">
+        <button class="launcher-item lnc-item"
+                onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
+          <div class="lnc-icon li-proy"><svg viewBox="0 0 24 24" fill="none" stroke="#137333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+          <div class="lnc-label">Proyección</div>
+        </button>
+        <button class="launcher-item lnc-item"
+                onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
+          <div class="lnc-icon" style="background:#E8EAED;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </div>
+          <div class="lnc-label">Servicios</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="lnc-product-list">
 
       <button class="launcher-item lnc-item disabled">
         <div class="lnc-icon li-tt"><svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
