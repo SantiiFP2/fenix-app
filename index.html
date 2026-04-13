@@ -2263,45 +2263,60 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         <div class="card-title">Tasas de Comisión</div>
         <span id="hog-tasas-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
       </div>
-      <div id="hog-tasas-body" style="display:none;padding:0 16px 14px;">
-        <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:11px;">
+      <div id="hog-tasas-body" style="display:none;padding:0 14px 14px;">
+        <!-- Tabla principal: @ OTT / @ S/OTT / TV / Voz -->
+        <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:11px;margin-bottom:10px;">
           <thead>
             <tr>
-              <th style="text-align:left;padding:6px 4px 4px;color:var(--texto-dim);font-weight:600;font-size:10px;letter-spacing:0.5px;border-bottom:1px solid var(--g-outline);">Canal</th>
-              <th style="text-align:center;padding:6px 2px 4px;color:#60A5FA;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">@ OTT</th>
-              <th style="text-align:center;padding:6px 2px 4px;color:#60A5FA;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">@ s/OTT</th>
-              <th style="text-align:center;padding:6px 2px 4px;color:#34D399;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">TV</th>
-              <th style="text-align:center;padding:6px 2px 4px;color:#FCD34D;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">Voz</th>
-              <th style="text-align:center;padding:6px 2px 4px;color:#F97316;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">DTH</th>
+              <th style="text-align:left;padding:5px 4px 4px;color:var(--texto-dim);font-weight:600;font-size:10px;letter-spacing:0.5px;border-bottom:1px solid var(--g-outline);">Canal</th>
+              <th style="text-align:center;padding:5px 3px 4px;color:#60A5FA;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">@ OTT</th>
+              <th style="text-align:center;padding:5px 3px 4px;color:#60A5FA;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">@ S/OTT</th>
+              <th style="text-align:center;padding:5px 3px 4px;color:#34D399;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">TV</th>
+              <th style="text-align:center;padding:5px 3px 4px;color:#FCD34D;font-weight:700;font-size:10px;border-bottom:1px solid var(--g-outline);">Voz</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding:5px 4px;color:#A78BFA;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Outbound</td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-out-int-ott"  value="520" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-out-int-nott" value="420" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-out-tv"        value="195" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-out-voz"       value="100" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-out-dth"       value="120" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
+              <td style="padding:4px 4px;color:#A78BFA;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Outbound</td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-out-int-ott"  value="520" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-out-int-nott" value="420" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-out-tv"        value="195" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-out-voz"       value="100" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
             </tr>
             <tr>
-              <td style="padding:5px 4px;color:#60A5FA;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Inbound</td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-in-int-ott"   value="120" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-in-int-nott"  value="120" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-in-tv"         value="30"  type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-in-voz"        value="50"  type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-in-dth"        value="60"  type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
+              <td style="padding:4px 4px;color:#60A5FA;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Inbound</td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-in-int-ott"   value="120" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-in-int-nott"  value="120" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-in-tv"         value="30"  type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-in-voz"        value="50"  type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
             </tr>
             <tr>
-              <td style="padding:5px 4px;color:#34D399;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Autogen.</td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-auto-int-ott"  value="360" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-auto-int-nott" value="360" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-auto-tv"        value="190" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-auto-voz"       value="240" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
-              <td style="padding:3px 2px;"><input class="hog-tasa-input" id="hog-t-auto-dth"       value="145" type="number" min="0" style="width:100%;padding:4px 3px;font-size:12px;text-align:center;"></td>
+              <td style="padding:4px 4px;color:#34D399;font-weight:700;font-size:10px;letter-spacing:0.5px;white-space:nowrap;">Autogen.</td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-auto-int-ott"  value="360" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-auto-int-nott" value="360" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-auto-tv"        value="190" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
+              <td style="padding:3px;"><input class="hog-tasa-input" id="hog-t-auto-voz"       value="240" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;"></td>
             </tr>
           </tbody>
         </table>
+        <!-- Fila DTH separada -->
+        <div style="border-top:1px solid var(--g-outline);padding-top:8px;">
+          <div style="font-size:10px;font-weight:700;color:#F97316;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px;">DTH / Satelital</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div style="text-align:center;">
+              <div style="font-size:9px;color:#A78BFA;font-weight:600;margin-bottom:3px;">Outbound</div>
+              <input class="hog-tasa-input" id="hog-t-out-dth" value="120" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:9px;color:#60A5FA;font-weight:600;margin-bottom:3px;">Inbound</div>
+              <input class="hog-tasa-input" id="hog-t-in-dth" value="60" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:9px;color:#34D399;font-weight:600;margin-bottom:3px;">Autogen.</div>
+              <input class="hog-tasa-input" id="hog-t-auto-dth" value="145" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
