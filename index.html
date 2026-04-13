@@ -2220,165 +2220,218 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="max-width:1400px;margin:0 auto;padding:28px 32px;">
-  <!-- Header -->
-  <div class="pi-header" style="margin-bottom:20px;">
-    <h1 style="font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:700;color:var(--g-on-surface);margin:0 0 4px;display:flex;align-items:center;gap:10px;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;flex-shrink:0;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
-      Hogares
-    </h1>
-    <p style="font-size:12px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin:0;">Proyección · Internet · TV · Voz · Claro Colombia</p>
-  </div>
+<div style="max-width:1400px;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;">
 
-  <!-- Tabs -->
-  <div class="hog-tabs">
-    <button class="hog-tab active" id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')">Proyección</button>
-    <button class="hog-tab" id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')">Servicios</button>
-  </div>
+  <!-- ══ LEFT: CONFIGURACIÓN ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:20px;">
 
-  <!-- ── TAB: PROYECCIÓN ── -->
-  <div id="hog-tab-proyeccion">
-
-    <!-- Zona de carga -->
-    <div class="hog-upload-zone" id="hog-upload-zone"
-         onclick="document.getElementById('hog-file-input').click()"
-         ondragover="event.preventDefault();this.classList.add('dragover')"
-         ondragleave="this.classList.remove('dragover')"
-         ondrop="event.preventDefault();this.classList.remove('dragover');hogCargarArchivo(event.dataTransfer.files[0])">
-      <div class="hog-upload-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <!-- Card 1: Período + Archivo -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-num">1</div>
+        <div class="card-title">Período de Ventas</div>
       </div>
-      <div class="hog-upload-label" id="hog-upload-label">Cargar archivo de Hogares (.xlsx)</div>
-      <div class="hog-upload-sub">Arrastra o haz clic · Columnas: Cuenta, Ot, Producto, Renta, Tipo, Paquete, TipoRed, Site, Campaña</div>
-      <input type="file" id="hog-file-input" accept=".xlsx,.xls" style="display:none" onchange="hogCargarArchivo(this.files[0])">
+      <div class="card-body">
+        <div>
+          <label>Mes en que se realizaron las ventas</label>
+          <input type="month" id="hog-periodo" style="width:100%;background:var(--g-surface-variant);border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;padding:8px 10px;outline:none;">
+        </div>
+        <div>
+          <label>Archivo de Hogares</label>
+          <div id="hog-upload-zone" class="hog-upload-zone" style="padding:12px 14px;margin-top:4px;"
+               onclick="document.getElementById('hog-file-input').click()"
+               ondragover="event.preventDefault();this.classList.add('dragover')"
+               ondragleave="this.classList.remove('dragover')"
+               ondrop="event.preventDefault();this.classList.remove('dragover');hogCargarArchivo(event.dataTransfer.files[0])">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div style="min-width:0;">
+                <div class="hog-upload-label" id="hog-upload-label" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Cargar archivo (.xlsx)</div>
+                <div class="hog-upload-sub" style="font-size:10px;margin-top:1px;">Arrastra o haz clic · .xlsx</div>
+              </div>
+            </div>
+            <input type="file" id="hog-file-input" accept=".xlsx,.xls" style="display:none" onchange="hogCargarArchivo(this.files[0])">
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Tasas configurables -->
-    <div class="hog-tasas-panel">
-      <div class="hog-tasas-title" onclick="hogToggleTasas()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
-        Tasas Comisión (modificables)
-        <span id="hog-tasas-arrow" style="margin-left:auto;transition:transform 0.2s;">▾</span>
+    <!-- Card 2: Tasas de Comisión -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleTasas()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">2</div>
+        <div class="card-title">Tasas de Comisión</div>
+        <span id="hog-tasas-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
       </div>
-      <div id="hog-tasas-body">
-        <!-- Outbound -->
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#A78BFA;margin-bottom:10px;margin-top:4px;">TMK Outbound</div>
-        <div class="hog-tasas-grid" style="margin-bottom:16px;">
+      <div id="hog-tasas-body" class="card-body" style="display:none;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#A78BFA;margin-bottom:8px;">TMK Outbound</div>
+        <div class="hog-tasas-grid" style="margin-bottom:14px;">
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-out-int-ott" value="520" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-out-int-nott" value="420" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-out-tv" value="195" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-out-voz" value="100" type="number" min="0"></div>
-          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-out-dth" value="120" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH</span><input class="hog-tasa-input" id="hog-t-out-dth" value="120" type="number" min="0"></div>
         </div>
-        <!-- Inbound / Digital -->
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#60A5FA;margin-bottom:10px;">Inbound / Digital</div>
-        <div class="hog-tasas-grid" style="margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#60A5FA;margin-bottom:8px;">Inbound / Digital</div>
+        <div class="hog-tasas-grid" style="margin-bottom:14px;">
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-in-int-ott" value="120" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-in-int-nott" value="120" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-in-tv" value="30" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-in-voz" value="50" type="number" min="0"></div>
-          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-in-dth" value="60" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH</span><input class="hog-tasa-input" id="hog-t-in-dth" value="60" type="number" min="0"></div>
         </div>
-        <!-- Autogeneración -->
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#34D399;margin-bottom:10px;">Digital (Autogeneración)</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#34D399;margin-bottom:8px;">Digital (Autogeneración)</div>
         <div class="hog-tasas-grid">
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-auto-int-ott" value="360" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-auto-int-nott" value="360" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-auto-tv" value="190" type="number" min="0"></div>
           <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-auto-voz" value="240" type="number" min="0"></div>
-          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-auto-dth" value="145" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH</span><input class="hog-tasa-input" id="hog-t-auto-dth" value="145" type="number" min="0"></div>
         </div>
       </div>
     </div>
 
-    <!-- Filtro de Site -->
-    <div class="hog-site-filter" id="hog-site-filter" style="display:none;">
-      <button class="hog-site-btn active" onclick="hogFiltroSite(this,'GENERAL')">General</button>
-      <button class="hog-site-btn" onclick="hogFiltroSite(this,'BOGOTA 2')">Bogotá 2</button>
-      <button class="hog-site-btn" onclick="hogFiltroSite(this,'MEDELLIN')">Medellín</button>
+    <!-- Calcular button (mismo estilo que Móvil) -->
+    <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
+
+  </div><!-- /left config -->
+
+  <!-- ══ RIGHT: RESULTADOS ══ -->
+  <div>
+
+    <!-- Header -->
+    <div style="margin-bottom:16px;">
+      <h1 style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:700;color:var(--g-on-surface);margin:0 0 4px;display:flex;align-items:center;gap:10px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;flex-shrink:0;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+        Hogares
+      </h1>
+      <p style="font-size:11px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin:0;">Proyección · Internet · TV · Voz · Claro Colombia</p>
     </div>
 
-    <!-- KPIs -->
-    <div class="hog-kpi-grid" id="hog-kpi-grid" style="display:none;">
-      <div class="hog-kpi-card">
-        <div class="hog-kpi-label">Total OTs</div>
-        <div class="hog-kpi-value" id="hog-kpi-ots">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-ots-sub"></div>
-      </div>
-      <div class="hog-kpi-card" style="border-color:rgba(109,40,217,0.4);">
-        <div class="hog-kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
-        <div class="hog-kpi-value" style="color:#A78BFA;" id="hog-kpi-total">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-total-sub"></div>
-      </div>
-      <div class="hog-kpi-card">
-        <div class="hog-kpi-label" style="color:#60A5FA;">Internet (@)</div>
-        <div class="hog-kpi-value" style="color:#60A5FA;" id="hog-kpi-int">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-int-sub"></div>
-      </div>
-      <div class="hog-kpi-card">
-        <div class="hog-kpi-label" style="color:#34D399;">TV</div>
-        <div class="hog-kpi-value" style="color:#34D399;" id="hog-kpi-tv">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-tv-sub"></div>
-      </div>
-      <div class="hog-kpi-card">
-        <div class="hog-kpi-label" style="color:#FCD34D;">Voz</div>
-        <div class="hog-kpi-value" style="color:#FCD34D;" id="hog-kpi-voz">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-voz-sub"></div>
-      </div>
-      <div class="hog-kpi-card">
-        <div class="hog-kpi-label" style="color:#F97316;">OTT</div>
-        <div class="hog-kpi-value" style="color:#F97316;" id="hog-kpi-ott">—</div>
-        <div class="hog-kpi-sub" id="hog-kpi-ott-sub"></div>
-      </div>
+    <!-- Tabs -->
+    <div class="hog-tabs">
+      <button class="hog-tab active" id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')">Proyección</button>
+      <button class="hog-tab" id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')">Servicios</button>
     </div>
 
-    <!-- Tabla detalle proyección -->
-    <div id="hog-proy-wrap" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Detalle por OT <span id="hog-proy-count" style="color:var(--texto);"></span></div>
-        <button onclick="hogExportarExcel()" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:6px;border:1px solid rgba(109,40,217,0.4);background:rgba(109,40,217,0.1);color:#A78BFA;cursor:pointer;">↓ Exportar Excel</button>
-      </div>
-      <div class="hog-table-wrap">
-        <table class="hog-table">
-          <thead>
-            <tr>
-              <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
-              <th>Campaña</th><th>Paquete</th><th>OTT</th>
-              <th class="num">Renta @</th><th class="num">Renta TV</th><th class="num">Renta Voz</th>
-              <th class="num">Comisión</th>
-            </tr>
-          </thead>
-          <tbody id="hog-proy-tbody"></tbody>
-        </table>
-      </div>
-    </div>
+    <!-- ── TAB: PROYECCIÓN ── -->
+    <div id="hog-tab-proyeccion">
 
-  </div><!-- /tab proyección -->
+      <!-- Empty state -->
+      <div id="hog-empty-state" style="text-align:center;padding:80px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:0.25;display:block;margin:0 auto 16px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+        <div style="font-size:16px;font-weight:600;margin-bottom:6px;">Sin proyección aún</div>
+        <div style="font-size:13px;">Configura el mes, carga el archivo y presiona Calcular</div>
+      </div>
 
-  <!-- ── TAB: SERVICIOS ── -->
-  <div id="hog-tab-servicios" style="display:none;">
-    <div id="hog-serv-wrap">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Servicios por OT <span id="hog-serv-count"></span></div>
+      <!-- Site filter dinámico -->
+      <div class="hog-site-filter" id="hog-site-filter" style="display:none;"></div>
+
+      <!-- KPI grid -->
+      <div class="hog-kpi-grid" id="hog-kpi-grid" style="display:none;">
+        <div class="hog-kpi-card">
+          <div class="hog-kpi-label">Total OTs</div>
+          <div class="hog-kpi-value" id="hog-kpi-ots">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-ots-sub"></div>
+        </div>
+        <div class="hog-kpi-card" style="border-color:rgba(109,40,217,0.4);">
+          <div class="hog-kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
+          <div class="hog-kpi-value" style="color:#A78BFA;" id="hog-kpi-total">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-total-sub"></div>
+        </div>
+        <div class="hog-kpi-card">
+          <div class="hog-kpi-label" style="color:#60A5FA;">Internet (@)</div>
+          <div class="hog-kpi-value" style="color:#60A5FA;" id="hog-kpi-int">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-int-sub"></div>
+        </div>
+        <div class="hog-kpi-card">
+          <div class="hog-kpi-label" style="color:#34D399;">TV</div>
+          <div class="hog-kpi-value" style="color:#34D399;" id="hog-kpi-tv">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-tv-sub"></div>
+        </div>
+        <div class="hog-kpi-card">
+          <div class="hog-kpi-label" style="color:#FCD34D;">Voz</div>
+          <div class="hog-kpi-value" style="color:#FCD34D;" id="hog-kpi-voz">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-voz-sub"></div>
+        </div>
+        <div class="hog-kpi-card">
+          <div class="hog-kpi-label" style="color:#F97316;">OTT</div>
+          <div class="hog-kpi-value" style="color:#F97316;" id="hog-kpi-ott">—</div>
+          <div class="hog-kpi-sub" id="hog-kpi-ott-sub"></div>
+        </div>
       </div>
-      <div class="hog-table-wrap">
-        <table class="hog-table">
-          <thead>
-            <tr>
-              <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
-              <th>Canal</th><th>Paquete</th><th class="num"># Ppales</th><th class="num"># OTT</th>
-              <th class="num">Renta Ppales</th><th class="num">Renta OTT</th><th class="num">Comisión</th>
-            </tr>
-          </thead>
-          <tbody id="hog-serv-tbody"></tbody>
-        </table>
+
+      <!-- Proyección al cierre del mes -->
+      <div id="hog-proy-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">📈 Proyección al Cierre del Mes</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;">HOY:</span>
+            <input type="date" id="hog-proy-fecha-hoy"
+              style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:4px 8px;outline:none;width:145px;"
+              onchange="hogRecalcularProyeccion()">
+            <button onclick="hogToggleFestivos()"
+              style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:3px;padding:4px 10px;color:var(--texto-dim);font-size:11px;cursor:pointer;letter-spacing:0.5px;">
+              📅 Festivos
+            </button>
+          </div>
+        </div>
+        <div class="proy-grid" id="hog-proy-grid"></div>
+        <!-- Panel festivos editable -->
+        <div id="hog-panel-festivos" class="festivos-panel" style="display:none;margin-top:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">
+                Festivos Colombia <span id="hog-festivos-anio-label" style="color:var(--rojo-light);"></span>
+              </div>
+              <button onclick="hogActualizarFestivosAnio()"
+                style="background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:3px;color:var(--texto-dim);font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;letter-spacing:0.5px;">
+                ↺ Actualizar año
+              </button>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <input type="date" id="hog-festivo-nuevo-input"
+                style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:11px;padding:3px 7px;outline:none;">
+              <button onclick="hogAgregarFestivo()"
+                style="background:var(--rojo);border:none;border-radius:3px;color:white;font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;">
+                ＋ Añadir
+              </button>
+            </div>
+          </div>
+          <div id="hog-festivos-chips"></div>
+        </div>
       </div>
-    </div>
-    <div id="hog-serv-empty" style="text-align:center;padding:60px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:14px;">
-      Carga un archivo en la pestaña Proyección para ver los servicios
-    </div>
-  </div><!-- /tab servicios -->
-</div><!-- /inner-hogar -->
+
+    </div><!-- /tab proyección -->
+
+    <!-- ── TAB: SERVICIOS ── -->
+    <div id="hog-tab-servicios" style="display:none;">
+      <div id="hog-serv-wrap" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Detalle por OT <span id="hog-serv-count" style="color:var(--texto);"></span></div>
+          <button onclick="hogExportarExcel()" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:6px;border:1px solid rgba(109,40,217,0.4);background:rgba(109,40,217,0.1);color:#A78BFA;cursor:pointer;">↓ Exportar Excel</button>
+        </div>
+        <div class="hog-table-wrap">
+          <table class="hog-table">
+            <thead>
+              <tr>
+                <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
+                <th>Canal</th><th>Paquete</th><th class="num"># Ppales</th><th class="num"># OTT</th>
+                <th class="num">Renta Ppales</th><th class="num">Renta OTT</th><th class="num">Comisión</th>
+              </tr>
+            </thead>
+            <tbody id="hog-serv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="hog-serv-empty" style="text-align:center;padding:80px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:14px;">
+        Carga un archivo y presiona Calcular para ver los servicios
+      </div>
+    </div><!-- /tab servicios -->
+
+  </div><!-- /right results -->
+
+</div><!-- /grid -->
 </div><!-- /panel-hogar -->
 
 
@@ -10119,15 +10172,171 @@ function cosInit() {
 // MÓDULO HOGAR
 // ══════════════════════════════════════════════════════════════════
 
-// ── Estado global ──
-let _hogDatos        = [];   // Todas las filas del archivo cargado
-let _hogResultados   = [];   // Resultados por OT (sin filtrar)
-let _hogSiteFiltro   = 'GENERAL';
-let _hogTasasVisible = false;
+// ── Estado global Hogar ──
+let _hogDatos          = [];        // Todas las filas del archivo cargado
+let _hogResultados     = [];        // Resultados por OT (sin filtrar)
+let _hogSiteFiltro     = 'GENERAL';
+let _hogTasasVisible   = false;
+let _hogFestivosExtra  = [];        // Festivos añadidos manualmente
+let _hogFestivosRemove = [];        // Festivos eliminados manualmente
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
 
+
+// ── Helpers festivos Hogar (independiente de Móvil) ──
+function hogGetFestivos(anio) {
+  const base = getFestivosAnio(anio);
+  const todos = base.filter(f => !_hogFestivosRemove.includes(f));
+  _hogFestivosExtra.forEach(f => { if (!todos.includes(f)) todos.push(f); });
+  todos.sort();
+  return todos;
+}
+function hogGetFestivosRango(anio) {
+  return [...new Set([...hogGetFestivos(anio-1),...hogGetFestivos(anio),...hogGetFestivos(anio+1)])];
+}
+function hogRenderFestivosChips() {
+  const periodoVal = document.getElementById('hog-periodo').value;
+  if (!periodoVal) return;
+  const [ay] = periodoVal.split('-').map(Number);
+  const label = document.getElementById('hog-festivos-anio-label');
+  if (label) label.textContent = ay;
+  const festivos = hogGetFestivos(ay);
+  const chips = document.getElementById('hog-festivos-chips');
+  if (!chips) return;
+  chips.innerHTML = festivos.map(f => {
+    const parts = f.split('-');
+    const disp = parts[2]+'/'+parts[1];
+    return `<span class="festivo-chip">${disp}<button onclick="hogEliminarFestivo('${f}')">×</button></span>`;
+  }).join('');
+}
+function hogToggleFestivos() {
+  const p = document.getElementById('hog-panel-festivos');
+  if (!p) return;
+  const visible = p.style.display !== 'none';
+  p.style.display = visible ? 'none' : '';
+  if (!visible) hogRenderFestivosChips();
+}
+function hogAgregarFestivo() {
+  const inp = document.getElementById('hog-festivo-nuevo-input');
+  if (!inp || !inp.value) return;
+  const f = inp.value;
+  _hogFestivosRemove = _hogFestivosRemove.filter(r => r !== f);
+  if (!_hogFestivosExtra.includes(f)) _hogFestivosExtra.push(f);
+  inp.value = '';
+  hogRenderFestivosChips();
+  hogRecalcularProyeccion();
+}
+function hogEliminarFestivo(f) {
+  _hogFestivosExtra = _hogFestivosExtra.filter(e => e !== f);
+  if (!_hogFestivosRemove.includes(f)) _hogFestivosRemove.push(f);
+  hogRenderFestivosChips();
+  hogRecalcularProyeccion();
+}
+function hogActualizarFestivosAnio() {
+  _hogFestivosExtra = [];
+  _hogFestivosRemove = [];
+  hogRenderFestivosChips();
+  hogRecalcularProyeccion();
+}
+
+// ── Proyección de OTs al cierre con días hábiles ──
+function hogRecalcularProyeccion() {
+  if (!_hogResultados.length) return;
+  const periodoVal = document.getElementById('hog-periodo').value;
+  const fechaHoyEl = document.getElementById('hog-proy-fecha-hoy');
+  if (!periodoVal || !fechaHoyEl || !fechaHoyEl.value) return;
+
+  const [anio, mesIdx] = periodoVal.split('-').map(Number);
+  const mes = mesIdx - 1; // 0-based
+  const hoy = new Date(fechaHoyEl.value + 'T12:00:00');
+  const festivos = hogGetFestivosRango(anio);
+
+  // Primer y último día hábil del mes
+  const desde  = primerDiaHabil(anio, mes, festivos);
+  const hasta  = ultimoDiaHabil(anio, mes, festivos);
+
+  const toISO = d => { const y=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0'); return `${y}-${mo}-${dy}`; };
+
+  const ayer = new Date(hoy); ayer.setDate(ayer.getDate()-1);
+  const isoAyer = toISO(ayer);
+
+  const diasTotales       = diasHabiles(desde, hasta, festivos);
+  const diasTranscurridos = diasTotales.filter(d => d <= isoAyer);
+
+  const totalDias = diasTotales.length;
+  const transDias = Math.max(diasTranscurridos.length, 1);
+  const restDias  = diasTotales.filter(d => d > isoAyer).length;
+  const avancePct = totalDias > 0 ? Math.min((transDias/totalDias)*100,100) : 0;
+
+  const datos = _hogSiteFiltro === 'GENERAL'
+    ? _hogResultados
+    : _hogResultados.filter(r => r.site === _hogSiteFiltro);
+
+  // Proyección por servicio: (unidades / diasTrans) * diasTotal * ticketComision
+  const totalOTs  = datos.length;
+  const totalReal = datos.reduce((s,r) => s+r.comision, 0);
+  const totalProy = transDias > 0 ? Math.round((totalReal / transDias) * totalDias) : totalReal;
+
+  const intOTs  = datos.filter(r => r.cntInt  > 0).length;
+  const tvOTs   = datos.filter(r => r.cntTV   > 0).length;
+  const vozOTs  = datos.filter(r => r.cntVoz  > 0).length;
+  const intProy = transDias > 0 ? Math.round((intOTs  / transDias) * totalDias) : intOTs;
+  const tvProy  = transDias > 0 ? Math.round((tvOTs   / transDias) * totalDias) : tvOTs;
+  const vozProy = transDias > 0 ? Math.round((vozOTs  / transDias) * totalDias) : vozOTs;
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  // Actualizar KPI "Cobro Proyectado" con valor proyectado
+  document.getElementById('hog-kpi-total').textContent      = fmt(totalProy);
+  document.getElementById('hog-kpi-total-sub').textContent  = `proyectado (real: ${fmt(totalReal)})`;
+  document.getElementById('hog-kpi-int').textContent        = fmtN(intProy) + ' OTs';
+  document.getElementById('hog-kpi-tv').textContent         = fmtN(tvProy)  + ' OTs';
+  document.getElementById('hog-kpi-voz').textContent        = fmtN(vozProy) + ' OTs';
+
+  // Render cards proyección
+  const grid = document.getElementById('hog-proy-grid');
+  if (!grid) return;
+
+  const cardColor = '#6D28D9';
+  grid.innerHTML = `
+    <div class="proy-card" style="border-top:3px solid ${cardColor};">
+      <div class="proy-card-titulo">📅 Días Hábiles del Mes</div>
+      <div class="proy-stat-row">
+        <div class="proy-stat"><div class="proy-stat-val">${totalDias}</div><div class="proy-stat-lbl">Total</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${transDias}</div><div class="proy-stat-lbl">Transcurridos</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#F97316;">${restDias}</div><div class="proy-stat-lbl">Restantes</div></div>
+      </div>
+      <div class="proy-progress"><div class="proy-progress-fill" style="width:${avancePct.toFixed(1)}%;background:${cardColor};"></div></div>
+      <div style="font-size:10px;color:var(--texto-dim);text-align:right;">${avancePct.toFixed(1)}% del mes</div>
+    </div>
+    <div class="proy-card" style="border-top:3px solid #A78BFA;">
+      <div class="proy-card-titulo">💰 Comisión Proyectada</div>
+      <div class="proy-stat-row">
+        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:18px;">${fmt(totalProy)}</div><div class="proy-stat-lbl">Proyectado cierre</div></div>
+      </div>
+      <div class="proy-stat-row">
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmt(totalReal)}</div><div class="proy-stat-lbl">Real acumulado</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;color:#F97316;">${fmt(Math.max(totalProy-totalReal,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
+      </div>
+    </div>
+    <div class="proy-card" style="border-top:3px solid #60A5FA;">
+      <div class="proy-card-titulo">🌐 Internet · TV · Voz</div>
+      <div class="proy-stat-row">
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#60A5FA;">${fmtN(intProy)}</div><div class="proy-stat-lbl">@ Proyect.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#34D399;">${fmtN(tvProy)}</div><div class="proy-stat-lbl">TV Proyect.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="color:#FCD34D;">${fmtN(vozProy)}</div><div class="proy-stat-lbl">Voz Proyect.</div></div>
+      </div>
+      <div class="proy-stat-row">
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmtN(intOTs)}</div><div class="proy-stat-lbl">@ Real</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmtN(tvOTs)}</div><div class="proy-stat-lbl">TV Real</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:14px;">${fmtN(vozOTs)}</div><div class="proy-stat-lbl">Voz Real</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('hog-proy-section').style.display = '';
+}
 
 // ── Toggle submenu Hogar en launcher ──
 function hogToggleLncPanel(btn) {
@@ -10167,9 +10376,6 @@ function hogTabSwitch(tab) {
 }
 
 // ── Toggle tasas ──
-// Inicializar: tasas ocultas por defecto
-document.addEventListener('DOMContentLoaded', () => { const tb = document.getElementById('hog-tasas-body'); if(tb) tb.style.display='none'; });
-
 function hogToggleTasas() {
   _hogTasasVisible = !_hogTasasVisible;
   document.getElementById('hog-tasas-body').style.display = _hogTasasVisible ? '' : 'none';
@@ -10219,11 +10425,11 @@ function hogCargarArchivo(file) {
         Campaña: String(r[idx['Campaña']] || '').trim()
       }));
 
-      label.textContent = '✓ ' + file.name + ' — ' + _hogDatos.length + ' filas cargadas';
+      const shortName = file.name.length > 28 ? file.name.substring(0,26)+'…' : file.name;
+      label.textContent = '✓ ' + shortName + ' · ' + _hogDatos.length + ' filas';
       document.getElementById('hog-upload-zone').style.borderColor = '#34D399';
-      hogCalcular();
     } catch(err) {
-      label.textContent = 'Error leyendo archivo: ' + err.message;
+      label.textContent = 'Error: ' + err.message;
       console.error(err);
     }
   };
@@ -10232,7 +10438,7 @@ function hogCargarArchivo(file) {
 
 // ── Cálculo principal ──
 function hogCalcular() {
-  if (!_hogDatos.length) return;
+  if (!_hogDatos.length) { alert('Carga primero el archivo de Hogares'); return; }
   const tasas = hogGetTasas();
 
   // Agrupar por OT
@@ -10251,24 +10457,19 @@ function hogCalcular() {
     // Seleccionar tabla de tasas según campaña
     let tbl;
     const campU = campaña.toUpperCase();
-    if      (campU.includes('OUTBOUND'))       tbl = tasas.outbound;
-    else if (campU.includes('AUTO'))            tbl = tasas.auto;
-    else                                        tbl = tasas.inbound;
+    if      (campU.includes('OUTBOUND'))  tbl = tasas.outbound;
+    else if (campU.includes('AUTO'))      tbl = tasas.auto;
+    else                                  tbl = tasas.inbound;
 
     // Detectar OTT en Servicios Adicionales
     const adicionales = filas.filter(f => f.Tipo === 'Servicios Adicionales');
-    const hasOTT = adicionales.some(f => {
+    const ottFilas = adicionales.filter(f => {
       const p = f.Producto.toUpperCase();
       return HOG_OTT_KW.some(k => p.includes(k));
     });
-    const countOTT   = adicionales.filter(f => {
-      const p = f.Producto.toUpperCase();
-      return HOG_OTT_KW.some(k => p.includes(k));
-    }).length;
-    const rentaOTT   = adicionales.filter(f => {
-      const p = f.Producto.toUpperCase();
-      return HOG_OTT_KW.some(k => p.includes(k));
-    }).reduce((s, f) => s + f.Renta, 0);
+    const hasOTT   = ottFilas.length > 0;
+    const countOTT = ottFilas.length;
+    const rentaOTT = ottFilas.reduce((s, f) => s + f.Renta, 0);
 
     // Calcular comisión por Servicios Principales
     let comision = 0, rentaInt = 0, rentaTV = 0, rentaVoz = 0;
@@ -10306,9 +10507,38 @@ function hogCalcular() {
     };
   });
 
-  // Mostrar filtros y renderizar
-  document.getElementById('hog-site-filter').style.display = '';
+  // Sedes dinámicas: solo las que aparecen en el archivo
+  const sitesEnArchivo = [...new Set(_hogResultados.map(r => r.site).filter(Boolean))].sort();
+  hogRenderSiteFilter(sitesEnArchivo);
+
+  // Fecha de hoy por defecto
+  const fechaEl = document.getElementById('hog-proy-fecha-hoy');
+  if (fechaEl && !fechaEl.value) {
+    const hoy = new Date();
+    const iso = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+    fechaEl.value = iso;
+  }
+
+  // Ocultar empty state
+  const empty = document.getElementById('hog-empty-state');
+  if (empty) empty.style.display = 'none';
+
   hogRenderizar();
+}
+
+// ── Sedes dinámicas ──
+function hogRenderSiteFilter(sites) {
+  const container = document.getElementById('hog-site-filter');
+  if (!container) return;
+  // Siempre General + las sedes del archivo
+  const botones = ['GENERAL', ...sites];
+  container.innerHTML = botones.map(s => {
+    const label = s === 'GENERAL' ? 'General'
+      : s.charAt(0) + s.slice(1).toLowerCase().replace(' ', ' ');
+    const active = (s === _hogSiteFiltro) ? ' active' : '';
+    return `<button class="hog-site-btn${active}" onclick="hogFiltroSite(this,'${s}')">${label}</button>`;
+  }).join('');
+  container.style.display = '';
 }
 
 // ── Filtro de site ──
@@ -10326,75 +10556,43 @@ function hogRenderizar() {
     : _hogResultados.filter(r => r.site === _hogSiteFiltro);
 
   hogRenderKPIs(datos);
-  hogRenderTablaProyeccion(datos);
   hogRenderTablaServicios(datos);
+  hogRecalcularProyeccion();
 }
 
-// ── KPIs ──
+// ── KPIs (valores reales del archivo) ──
 function hogRenderKPIs(datos) {
   const fmt  = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
   const fmtN = n => n.toLocaleString('es-CO');
 
-  const totalOTs    = datos.length;
-  const totalComis  = datos.reduce((s, r) => s + r.comision, 0);
-  const totalOTT    = datos.reduce((s, r) => s + r.countOTT, 0);
+  const totalOTs   = datos.length;
+  const totalComis = datos.reduce((s, r) => s + r.comision, 0);
+  const totalOTT   = datos.reduce((s, r) => s + r.countOTT, 0);
 
   const intDatos = datos.filter(r => r.cntInt > 0);
   const tvDatos  = datos.filter(r => r.cntTV  > 0);
   const vozDatos = datos.filter(r => r.cntVoz > 0);
 
   const avgInt = intDatos.length ? intDatos.reduce((s,r)=>s+r.rentaInt,0)/intDatos.length : 0;
-  const avgTV  = tvDatos.length  ? tvDatos.reduce((s,r)=>s+r.rentaTV,0) /tvDatos.length  : 0;
-  const avgVoz = vozDatos.length ? vozDatos.reduce((s,r)=>s+r.rentaVoz,0)/vozDatos.length: 0;
-
-  const comisInt = datos.reduce((s,r) => s + (r.isDTH ? 0 : r.comision * (r.rentaInt/(r.rentaInt+r.rentaTV+r.rentaVoz||1))), 0);
+  const avgTV  = tvDatos.length  ? tvDatos.reduce((s,r)=>s+r.rentaTV,0)/tvDatos.length   : 0;
+  const avgVoz = vozDatos.length ? vozDatos.reduce((s,r)=>s+r.rentaVoz,0)/vozDatos.length : 0;
 
   document.getElementById('hog-kpi-grid').style.display = '';
-  document.getElementById('hog-kpi-ots').textContent     = fmtN(totalOTs);
-  document.getElementById('hog-kpi-ots-sub').textContent  = 'cuentas activas';
-  document.getElementById('hog-kpi-total').textContent   = fmt(totalComis);
-  document.getElementById('hog-kpi-total-sub').textContent = 'cobro proyectado mes';
-  document.getElementById('hog-kpi-int').textContent     = fmtN(intDatos.length) + ' OTs';
-  document.getElementById('hog-kpi-int-sub').textContent  = 'ARPU prom: ' + fmt(avgInt);
-  document.getElementById('hog-kpi-tv').textContent      = fmtN(tvDatos.length) + ' OTs';
-  document.getElementById('hog-kpi-tv-sub').textContent   = 'ARPU prom: ' + fmt(avgTV);
-  document.getElementById('hog-kpi-voz').textContent     = fmtN(vozDatos.length) + ' OTs';
-  document.getElementById('hog-kpi-voz-sub').textContent  = 'ARPU prom: ' + fmt(avgVoz);
-  document.getElementById('hog-kpi-ott').textContent     = fmtN(totalOTT);
-  document.getElementById('hog-kpi-ott-sub').textContent  = 'servicios OTT activos';
+  document.getElementById('hog-kpi-ots').textContent      = fmtN(totalOTs);
+  document.getElementById('hog-kpi-ots-sub').textContent   = 'cuentas activas';
+  document.getElementById('hog-kpi-total').textContent    = fmt(totalComis);
+  document.getElementById('hog-kpi-total-sub').textContent = 'comisión real acumulada';
+  document.getElementById('hog-kpi-int').textContent      = fmtN(intDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-int-sub').textContent   = 'ARPU prom: ' + fmt(avgInt);
+  document.getElementById('hog-kpi-tv').textContent       = fmtN(tvDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-tv-sub').textContent    = 'ARPU prom: ' + fmt(avgTV);
+  document.getElementById('hog-kpi-voz').textContent      = fmtN(vozDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-voz-sub').textContent   = 'ARPU prom: ' + fmt(avgVoz);
+  document.getElementById('hog-kpi-ott').textContent      = fmtN(totalOTT);
+  document.getElementById('hog-kpi-ott-sub').textContent   = 'servicios OTT activos';
 }
 
-// ── Tabla Proyección ──
-function hogRenderTablaProyeccion(datos) {
-  const fmt = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
-  const pillRed = r => {
-    if (r.isDTH) return '<span class="hog-pill hog-pill-dth">DTH</span>';
-    if (r.tipoRed === 'FTT') return '<span class="hog-pill hog-pill-ftt">FTT</span>';
-    return '<span class="hog-pill hog-pill-bidir">BIDIR</span>';
-  };
-
-  const tbody = datos.map((r, i) => `
-    <tr>
-      <td style="color:var(--texto-dim);">${i+1}</td>
-      <td style="font-weight:700;">${r.ot}</td>
-      <td style="color:var(--texto-dim);">${r.cuenta}</td>
-      <td>${r.site}</td>
-      <td>${pillRed(r)}</td>
-      <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
-      <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
-      <td>${r.hasOTT ? '<span class="hog-ott-badge">✓ OTT</span>' : '<span style="color:var(--texto-dim);font-size:11px;">—</span>'}</td>
-      <td class="num">${r.rentaInt ? fmt(r.rentaInt) : '—'}</td>
-      <td class="num">${r.rentaTV  ? fmt(r.rentaTV)  : '—'}</td>
-      <td class="num">${r.rentaVoz ? fmt(r.rentaVoz) : '—'}</td>
-      <td class="num" style="font-weight:700;color:#A78BFA;">${fmt(r.comision)}</td>
-    </tr>`).join('');
-
-  document.getElementById('hog-proy-tbody').innerHTML = tbody;
-  document.getElementById('hog-proy-count').textContent = '(' + datos.length + ')';
-  document.getElementById('hog-proy-wrap').style.display = '';
-}
-
-// ── Tabla Servicios ──
+// ── Tabla Servicios (tab Servicios) ──
 function hogRenderTablaServicios(datos) {
   const fmt = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
   const pillRed = r => {
@@ -10413,15 +10611,18 @@ function hogRenderTablaServicios(datos) {
       <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
       <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
       <td class="num">${r.cntInt + r.cntTV + r.cntVoz}</td>
-      <td class="num">${r.countOTT ? '<span class="hog-ott-badge">' + r.countOTT + ' OTT</span>' : '—'}</td>
+      <td class="num">${r.countOTT ? '<span class="hog-ott-badge">'+r.countOTT+' OTT</span>' : '—'}</td>
       <td class="num">${fmt(r.rentaInt + r.rentaTV + r.rentaVoz)}</td>
       <td class="num">${r.rentaOTT ? fmt(r.rentaOTT) : '—'}</td>
       <td class="num" style="font-weight:700;color:#A78BFA;">${fmt(r.comision)}</td>
     </tr>`).join('');
 
-  document.getElementById('hog-serv-tbody').innerHTML   = tbody;
-  document.getElementById('hog-serv-count').textContent = '(' + datos.length + ')';
-  document.getElementById('hog-serv-empty').style.display = datos.length ? 'none' : '';
+  document.getElementById('hog-serv-tbody').innerHTML    = tbody;
+  document.getElementById('hog-serv-count').textContent  = '(' + datos.length + ')';
+  const wrap  = document.getElementById('hog-serv-wrap');
+  const empty = document.getElementById('hog-serv-empty');
+  if (wrap)  wrap.style.display  = datos.length ? '' : 'none';
+  if (empty) empty.style.display = datos.length ? 'none' : '';
 }
 
 // ── Exportar Excel ──
