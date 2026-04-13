@@ -1013,6 +1013,62 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 /* Tabla más ancha */
 .cos-table-wrap{min-width:0;}
 #panel-cosechas .cos-table-wrap{border-radius:6px;}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL HOGAR
+   ══════════════════════════════════════════════════════════════ */
+#panel-hogar{display:none;padding:28px 32px;max-width:1400px;margin:0 auto;}
+#panel-hogar.full{left:0;}
+
+/* Tabs */
+.hog-tabs{display:flex;gap:4px;background:var(--gris-medio);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;}
+.hog-tab{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.5px;padding:8px 20px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--texto-dim);transition:all 0.2s;}
+.hog-tab.active{background:var(--negro);color:var(--blanco);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+
+/* Upload zone */
+.hog-upload-zone{border:2px dashed var(--gris-linea);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:20px;}
+.hog-upload-zone:hover{border-color:#6D28D9;background:rgba(109,40,217,0.04);}
+.hog-upload-zone.dragover{border-color:#6D28D9;background:rgba(109,40,217,0.08);}
+.hog-upload-icon{font-size:32px;margin-bottom:8px;}
+.hog-upload-label{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:600;color:var(--texto);margin-bottom:4px;}
+.hog-upload-sub{font-size:12px;color:var(--texto-dim);}
+
+/* Tasas configurables */
+.hog-tasas-panel{background:var(--gris-medio);border-radius:12px;padding:20px;margin-bottom:20px;}
+.hog-tasas-title{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.hog-tasas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.hog-tasa-item{display:flex;flex-direction:column;gap:4px;}
+.hog-tasa-label{font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:500;}
+.hog-tasa-input{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--blanco);background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:6px 10px;width:100%;text-align:right;}
+.hog-tasa-input:focus{outline:none;border-color:#6D28D9;}
+
+/* Site filter */
+.hog-site-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.hog-site-btn{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;padding:6px 16px;border-radius:20px;border:1px solid var(--gris-linea);background:transparent;color:var(--texto-dim);cursor:pointer;transition:all 0.2s;}
+.hog-site-btn.active{background:#6D28D9;border-color:#6D28D9;color:#fff;}
+
+/* KPI cards */
+.hog-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.hog-kpi-card{background:var(--gris-medio);border-radius:12px;padding:16px 20px;border:1px solid var(--gris-linea);}
+.hog-kpi-label{font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.hog-kpi-value{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--blanco);}
+.hog-kpi-sub{font-size:11px;color:var(--texto-dim);margin-top:3px;font-family:'Inter Tight',sans-serif;}
+
+/* Tabla resultados */
+.hog-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--gris-linea);}
+.hog-table{width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:13px;}
+.hog-table thead th{background:var(--gris-medio);color:var(--texto-dim);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:10px 14px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:1px solid var(--gris-linea);}
+.hog-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
+.hog-table tbody tr:hover{background:rgba(109,40,217,0.06);}
+.hog-table tbody td{padding:10px 14px;color:var(--texto);vertical-align:middle;}
+.hog-table .num{text-align:right;font-variant-numeric:tabular-nums;}
+.hog-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.hog-pill-bidir{background:rgba(96,165,250,0.15);color:#60A5FA;}
+.hog-pill-ftt{background:rgba(52,211,153,0.15);color:#34D399;}
+.hog-pill-dth{background:rgba(251,191,36,0.15);color:#FCD34D;}
+.hog-pill-out{background:rgba(109,40,217,0.15);color:#A78BFA;}
+.hog-ott-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#F97316;background:rgba(249,115,22,0.12);border-radius:4px;padding:2px 6px;}
+
 @keyframes loginBtnGradient{
   0%{background-position:0% 50%;}
   50%{background-position:100% 50%;}
@@ -1957,11 +2013,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       <div class="pi-product-kpi vacio" id="pi-movil-kpi">Sin datos</div>
       <div class="pi-product-kpi-sub" id="pi-movil-kpi-sub">Carga un archivo para ver la proyección</div>
     </div>
-    <div class="pi-product-card pronto">
-      <span class="pi-badge">Próximo</span>
-      <div class="pi-product-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
+        <div class="pi-product-card activo" id="pi-card-hogar" onclick="mostrarPanelHogar()">
+      <span class="pi-badge">✓ Activo</span>
+      <div class="pi-product-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
       <div class="pi-product-name">Hogares</div>
       <div class="pi-product-sub">Internet · TV · Telefonía fija</div>
+      <div class="pi-product-kpi vacio" id="pi-hogar-kpi">Sin datos</div>
+      <div class="pi-product-kpi-sub" id="pi-hogar-kpi-sub">Carga un archivo para ver la proyección</div>
+    </div>
       <div class="pi-product-kpi vacio">—</div>
       <div class="pi-product-kpi-sub">Próximamente disponible</div>
     </div>
@@ -2159,6 +2218,172 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   </div>
 
 </div><!-- /panel-inicio -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     PANEL HOGAR
+     ══════════════════════════════════════════════════════════════ -->
+<div id="panel-hogar" style="display:none;position:fixed;top:64px;left:240px;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);padding:28px 32px;">
+
+  <!-- Header -->
+  <div class="pi-header" style="margin-bottom:20px;">
+    <h1 style="font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:700;color:var(--g-on-surface);margin:0 0 4px;display:flex;align-items:center;gap:10px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;flex-shrink:0;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+      Hogares
+    </h1>
+    <p style="font-size:12px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin:0;">Proyección · Internet · TV · Voz · Claro Colombia</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="hog-tabs">
+    <button class="hog-tab active" id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')">Proyección</button>
+    <button class="hog-tab" id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')">Servicios</button>
+  </div>
+
+  <!-- ── TAB: PROYECCIÓN ── -->
+  <div id="hog-tab-proyeccion">
+
+    <!-- Zona de carga -->
+    <div class="hog-upload-zone" id="hog-upload-zone"
+         onclick="document.getElementById('hog-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('dragover')"
+         ondragleave="this.classList.remove('dragover')"
+         ondrop="event.preventDefault();this.classList.remove('dragover');hogCargarArchivo(event.dataTransfer.files[0])">
+      <div class="hog-upload-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="hog-upload-label" id="hog-upload-label">Cargar archivo de Hogares (.xlsx)</div>
+      <div class="hog-upload-sub">Arrastra o haz clic · Columnas: Cuenta, Ot, Producto, Renta, Tipo, Paquete, TipoRed, Site, Campaña</div>
+      <input type="file" id="hog-file-input" accept=".xlsx,.xls" style="display:none" onchange="hogCargarArchivo(this.files[0])">
+    </div>
+
+    <!-- Tasas configurables -->
+    <div class="hog-tasas-panel">
+      <div class="hog-tasas-title" onclick="hogToggleTasas()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Tasas Comisión (modificables)
+        <span id="hog-tasas-arrow" style="margin-left:auto;transition:transform 0.2s;">▾</span>
+      </div>
+      <div id="hog-tasas-body">
+        <!-- Outbound -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#A78BFA;margin-bottom:10px;margin-top:4px;">TMK Outbound</div>
+        <div class="hog-tasas-grid" style="margin-bottom:16px;">
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-out-int-ott" value="520" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-out-int-nott" value="420" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-out-tv" value="195" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-out-voz" value="100" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-out-dth" value="120" type="number" min="0"></div>
+        </div>
+        <!-- Inbound / Digital -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#60A5FA;margin-bottom:10px;">Inbound / Digital</div>
+        <div class="hog-tasas-grid" style="margin-bottom:16px;">
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-in-int-ott" value="120" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-in-int-nott" value="120" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-in-tv" value="30" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-in-voz" value="50" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-in-dth" value="60" type="number" min="0"></div>
+        </div>
+        <!-- Autogeneración -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#34D399;margin-bottom:10px;">Digital (Autogeneración)</div>
+        <div class="hog-tasas-grid">
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ con OTT</span><input class="hog-tasa-input" id="hog-t-auto-int-ott" value="360" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">@ sin OTT</span><input class="hog-tasa-input" id="hog-t-auto-int-nott" value="360" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">TV</span><input class="hog-tasa-input" id="hog-t-auto-tv" value="190" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">Voz</span><input class="hog-tasa-input" id="hog-t-auto-voz" value="240" type="number" min="0"></div>
+          <div class="hog-tasa-item"><span class="hog-tasa-label">DTH / Satelital</span><input class="hog-tasa-input" id="hog-t-auto-dth" value="145" type="number" min="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtro de Site -->
+    <div class="hog-site-filter" id="hog-site-filter" style="display:none;">
+      <button class="hog-site-btn active" onclick="hogFiltroSite(this,'GENERAL')">General</button>
+      <button class="hog-site-btn" onclick="hogFiltroSite(this,'BOGOTA 2')">Bogotá 2</button>
+      <button class="hog-site-btn" onclick="hogFiltroSite(this,'MEDELLIN')">Medellín</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="hog-kpi-grid" id="hog-kpi-grid" style="display:none;">
+      <div class="hog-kpi-card">
+        <div class="hog-kpi-label">Total OTs</div>
+        <div class="hog-kpi-value" id="hog-kpi-ots">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-ots-sub"></div>
+      </div>
+      <div class="hog-kpi-card" style="border-color:rgba(109,40,217,0.4);">
+        <div class="hog-kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
+        <div class="hog-kpi-value" style="color:#A78BFA;" id="hog-kpi-total">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-total-sub"></div>
+      </div>
+      <div class="hog-kpi-card">
+        <div class="hog-kpi-label" style="color:#60A5FA;">Internet (@)</div>
+        <div class="hog-kpi-value" style="color:#60A5FA;" id="hog-kpi-int">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-int-sub"></div>
+      </div>
+      <div class="hog-kpi-card">
+        <div class="hog-kpi-label" style="color:#34D399;">TV</div>
+        <div class="hog-kpi-value" style="color:#34D399;" id="hog-kpi-tv">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-tv-sub"></div>
+      </div>
+      <div class="hog-kpi-card">
+        <div class="hog-kpi-label" style="color:#FCD34D;">Voz</div>
+        <div class="hog-kpi-value" style="color:#FCD34D;" id="hog-kpi-voz">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-voz-sub"></div>
+      </div>
+      <div class="hog-kpi-card">
+        <div class="hog-kpi-label" style="color:#F97316;">OTT</div>
+        <div class="hog-kpi-value" style="color:#F97316;" id="hog-kpi-ott">—</div>
+        <div class="hog-kpi-sub" id="hog-kpi-ott-sub"></div>
+      </div>
+    </div>
+
+    <!-- Tabla detalle proyección -->
+    <div id="hog-proy-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Detalle por OT <span id="hog-proy-count" style="color:var(--texto);"></span></div>
+        <button onclick="hogExportarExcel()" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:6px;border:1px solid rgba(109,40,217,0.4);background:rgba(109,40,217,0.1);color:#A78BFA;cursor:pointer;">↓ Exportar Excel</button>
+      </div>
+      <div class="hog-table-wrap">
+        <table class="hog-table">
+          <thead>
+            <tr>
+              <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
+              <th>Campaña</th><th>Paquete</th><th>OTT</th>
+              <th class="num">Renta @</th><th class="num">Renta TV</th><th class="num">Renta Voz</th>
+              <th class="num">Comisión</th>
+            </tr>
+          </thead>
+          <tbody id="hog-proy-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /tab proyección -->
+
+  <!-- ── TAB: SERVICIOS ── -->
+  <div id="hog-tab-servicios" style="display:none;">
+    <div id="hog-serv-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">Servicios por OT <span id="hog-serv-count"></span></div>
+      </div>
+      <div class="hog-table-wrap">
+        <table class="hog-table">
+          <thead>
+            <tr>
+              <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
+              <th>Canal</th><th>Paquete</th><th class="num"># Ppales</th><th class="num"># OTT</th>
+              <th class="num">Renta Ppales</th><th class="num">Renta OTT</th><th class="num">Comisión</th>
+            </tr>
+          </thead>
+          <tbody id="hog-serv-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="hog-serv-empty" style="text-align:center;padding:60px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:14px;">
+      Carga un archivo en la pestaña Proyección para ver los servicios
+    </div>
+  </div><!-- /tab servicios -->
+
+</div><!-- /panel-hogar -->
+
 
 <div id="main-content">
 <div class="container">
@@ -6156,6 +6381,7 @@ function mostrarPanelInicio() {
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('panel-codigos-cvc').style.display = 'none';
   document.getElementById('panel-metas').style.display = 'none';
+  const _ph = document.getElementById('panel-hogar'); if(_ph) _ph.style.display = 'none';
   const pc = document.getElementById('panel-cosechas');
   if (pc) pc.style.display = 'none';
   document.getElementById('panel-inicio').classList.add('visible');
@@ -7227,6 +7453,7 @@ function selectSubmenu(tipo) {
   ocultarPanelCvcFull();
   ocultarPanelInicio();
   ocultarPanelMetasFn();
+  const _phSub = document.getElementById('panel-hogar'); if(_phSub) _phSub.style.display = 'none';
 
   if (tipo === 'proyeccion') {
     document.getElementById('main-content').style.display = '';
@@ -8265,6 +8492,7 @@ function selectProductMetas(el) {
   el.classList.add('active');
   const esFull = !sidebarVisible;
   document.getElementById('panel-metas').classList.toggle('full', esFull);
+  const _phMet = document.getElementById('panel-hogar'); if(_phMet) _phMet.style.display = 'none';
   document.getElementById('panel-metas').style.display = 'block';
   poblarSelectorMesMetas();
   const periodoEl = document.getElementById('periodo');
@@ -9889,6 +10117,312 @@ function cosInit() {
 }
 
 // ── Navegación ──
+
+// ══════════════════════════════════════════════════════════════════
+// MÓDULO HOGAR
+// ══════════════════════════════════════════════════════════════════
+
+// ── Estado global ──
+let _hogDatos        = [];   // Todas las filas del archivo cargado
+let _hogResultados   = [];   // Resultados por OT (sin filtrar)
+let _hogSiteFiltro   = 'GENERAL';
+let _hogTasasVisible = false;
+
+// Keywords OTT (busca coincidencia parcial en Producto)
+const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
+
+// ── Mostrar panel ──
+function mostrarPanelHogar() {
+  setHeaderModulo('Hogares');
+  document.getElementById('main-content').style.display = 'none';
+  const pi = document.getElementById('panel-inicio');
+  if (pi) { pi.classList.remove('visible'); }
+  document.getElementById('panel-codigos-cvc') && (document.getElementById('panel-codigos-cvc').style.display = 'none');
+  document.getElementById('panel-metas')       && (document.getElementById('panel-metas').style.display = 'none');
+  const pc = document.getElementById('panel-cosechas');
+  if (pc) pc.style.display = 'none';
+  document.getElementById('panel-hogar').style.display = 'block';
+}
+
+// ── Tabs ──
+function hogTabSwitch(tab) {
+  ['proyeccion','servicios'].forEach(t => {
+    document.getElementById('hog-tab-' + t).style.display = t === tab ? '' : 'none';
+    document.getElementById('hog-tab-btn-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+// ── Toggle tasas ──
+// Inicializar: tasas ocultas por defecto
+document.addEventListener('DOMContentLoaded', () => { const tb = document.getElementById('hog-tasas-body'); if(tb) tb.style.display='none'; });
+
+function hogToggleTasas() {
+  _hogTasasVisible = !_hogTasasVisible;
+  document.getElementById('hog-tasas-body').style.display = _hogTasasVisible ? '' : 'none';
+  document.getElementById('hog-tasas-arrow').style.transform = _hogTasasVisible ? 'rotate(180deg)' : '';
+}
+
+// ── Leer tasas configuradas ──
+function hogGetTasas() {
+  const v = id => parseFloat(document.getElementById(id).value) / 100 || 0;
+  return {
+    outbound:  { intOtt: v('hog-t-out-int-ott'),  intNott: v('hog-t-out-int-nott'),  tv: v('hog-t-out-tv'),  voz: v('hog-t-out-voz'),  dth: v('hog-t-out-dth')  },
+    inbound:   { intOtt: v('hog-t-in-int-ott'),   intNott: v('hog-t-in-int-nott'),   tv: v('hog-t-in-tv'),   voz: v('hog-t-in-voz'),   dth: v('hog-t-in-dth')   },
+    auto:      { intOtt: v('hog-t-auto-int-ott'),  intNott: v('hog-t-auto-int-nott'),  tv: v('hog-t-auto-tv'),  voz: v('hog-t-auto-voz'),  dth: v('hog-t-auto-dth')  }
+  };
+}
+
+// ── Cargar archivo ──
+function hogCargarArchivo(file) {
+  if (!file) return;
+  const label = document.getElementById('hog-upload-label');
+  label.textContent = 'Leyendo ' + file.name + '…';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb   = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null });
+      if (rows.length < 2) { label.textContent = 'Archivo vacío'; return; }
+
+      // Detectar cabecera
+      const hdr = rows[0].map(c => String(c || '').trim());
+      const idx = {};
+      ['Cuenta','Ot','Producto','Renta','Tipo','Paquete','TipoRed','Site','Campaña'].forEach(col => {
+        const i = hdr.findIndex(h => h.toLowerCase() === col.toLowerCase());
+        idx[col] = i;
+      });
+
+      _hogDatos = rows.slice(1).filter(r => r.some(c => c !== null && c !== '')).map(r => ({
+        Cuenta:  String(r[idx['Cuenta']]  || '').trim(),
+        Ot:      String(r[idx['Ot']]      || '').trim(),
+        Producto:String(r[idx['Producto']]|| '').trim(),
+        Renta:   parseFloat(r[idx['Renta']]) || 0,
+        Tipo:    String(r[idx['Tipo']]    || '').trim(),
+        Paquete: String(r[idx['Paquete']] || '').trim(),
+        TipoRed: String(r[idx['TipoRed']]|| '').trim().toUpperCase(),
+        Site:    String(r[idx['Site']]    || '').trim().toUpperCase(),
+        Campaña: String(r[idx['Campaña']] || '').trim()
+      }));
+
+      label.textContent = '✓ ' + file.name + ' — ' + _hogDatos.length + ' filas cargadas';
+      document.getElementById('hog-upload-zone').style.borderColor = '#34D399';
+      hogCalcular();
+    } catch(err) {
+      label.textContent = 'Error leyendo archivo: ' + err.message;
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── Cálculo principal ──
+function hogCalcular() {
+  if (!_hogDatos.length) return;
+  const tasas = hogGetTasas();
+
+  // Agrupar por OT
+  const porOT = {};
+  _hogDatos.forEach(r => {
+    if (!porOT[r.Ot]) porOT[r.Ot] = [];
+    porOT[r.Ot].push(r);
+  });
+
+  _hogResultados = Object.entries(porOT).map(([ot, filas]) => {
+    const base    = filas[0];
+    const tipoRed = base.TipoRed;
+    const campaña = base.Campaña;
+    const isDTH   = ['DTH','SATELITAL'].includes(tipoRed);
+
+    // Seleccionar tabla de tasas según campaña
+    let tbl;
+    const campU = campaña.toUpperCase();
+    if      (campU.includes('OUTBOUND'))       tbl = tasas.outbound;
+    else if (campU.includes('AUTO'))            tbl = tasas.auto;
+    else                                        tbl = tasas.inbound;
+
+    // Detectar OTT en Servicios Adicionales
+    const adicionales = filas.filter(f => f.Tipo === 'Servicios Adicionales');
+    const hasOTT = adicionales.some(f => {
+      const p = f.Producto.toUpperCase();
+      return HOG_OTT_KW.some(k => p.includes(k));
+    });
+    const countOTT   = adicionales.filter(f => {
+      const p = f.Producto.toUpperCase();
+      return HOG_OTT_KW.some(k => p.includes(k));
+    }).length;
+    const rentaOTT   = adicionales.filter(f => {
+      const p = f.Producto.toUpperCase();
+      return HOG_OTT_KW.some(k => p.includes(k));
+    }).reduce((s, f) => s + f.Renta, 0);
+
+    // Calcular comisión por Servicios Principales
+    let comision = 0, rentaInt = 0, rentaTV = 0, rentaVoz = 0;
+    let cntInt = 0, cntTV = 0, cntVoz = 0;
+
+    filas.filter(f => f.Tipo === 'Servicios Principales').forEach(f => {
+      const p = f.Producto.toUpperCase();
+      let tasa = 0;
+      if (isDTH) {
+        tasa = tbl.dth;
+        if      (p.includes('@'))   { rentaInt += f.Renta; cntInt++; }
+        else if (p.includes('TV'))  { rentaTV  += f.Renta; cntTV++;  }
+        else if (p.includes('VOZ')) { rentaVoz += f.Renta; cntVoz++; }
+      } else {
+        if (p.includes('@')) {
+          tasa = hasOTT ? tbl.intOtt : tbl.intNott;
+          rentaInt += f.Renta; cntInt++;
+        } else if (p.includes('TV')) {
+          tasa = tbl.tv;
+          rentaTV += f.Renta; cntTV++;
+        } else if (p.includes('VOZ')) {
+          tasa = tbl.voz;
+          rentaVoz += f.Renta; cntVoz++;
+        }
+      }
+      comision += f.Renta * tasa;
+    });
+
+    return {
+      ot, cuenta: base.Cuenta, site: base.Site, campaña, tipoRed,
+      paquete: base.Paquete, isDTH, hasOTT,
+      cntInt, cntTV, cntVoz, countOTT,
+      rentaInt, rentaTV, rentaVoz, rentaOTT,
+      comision
+    };
+  });
+
+  // Mostrar filtros y renderizar
+  document.getElementById('hog-site-filter').style.display = '';
+  hogRenderizar();
+}
+
+// ── Filtro de site ──
+function hogFiltroSite(btn, site) {
+  _hogSiteFiltro = site;
+  document.querySelectorAll('.hog-site-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  hogRenderizar();
+}
+
+// ── Renderizar KPIs + tablas ──
+function hogRenderizar() {
+  const datos = _hogSiteFiltro === 'GENERAL'
+    ? _hogResultados
+    : _hogResultados.filter(r => r.site === _hogSiteFiltro);
+
+  hogRenderKPIs(datos);
+  hogRenderTablaProyeccion(datos);
+  hogRenderTablaServicios(datos);
+}
+
+// ── KPIs ──
+function hogRenderKPIs(datos) {
+  const fmt  = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  const totalOTs    = datos.length;
+  const totalComis  = datos.reduce((s, r) => s + r.comision, 0);
+  const totalOTT    = datos.reduce((s, r) => s + r.countOTT, 0);
+
+  const intDatos = datos.filter(r => r.cntInt > 0);
+  const tvDatos  = datos.filter(r => r.cntTV  > 0);
+  const vozDatos = datos.filter(r => r.cntVoz > 0);
+
+  const avgInt = intDatos.length ? intDatos.reduce((s,r)=>s+r.rentaInt,0)/intDatos.length : 0;
+  const avgTV  = tvDatos.length  ? tvDatos.reduce((s,r)=>s+r.rentaTV,0) /tvDatos.length  : 0;
+  const avgVoz = vozDatos.length ? vozDatos.reduce((s,r)=>s+r.rentaVoz,0)/vozDatos.length: 0;
+
+  const comisInt = datos.reduce((s,r) => s + (r.isDTH ? 0 : r.comision * (r.rentaInt/(r.rentaInt+r.rentaTV+r.rentaVoz||1))), 0);
+
+  document.getElementById('hog-kpi-grid').style.display = '';
+  document.getElementById('hog-kpi-ots').textContent     = fmtN(totalOTs);
+  document.getElementById('hog-kpi-ots-sub').textContent  = 'cuentas activas';
+  document.getElementById('hog-kpi-total').textContent   = fmt(totalComis);
+  document.getElementById('hog-kpi-total-sub').textContent = 'cobro proyectado mes';
+  document.getElementById('hog-kpi-int').textContent     = fmtN(intDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-int-sub').textContent  = 'ARPU prom: ' + fmt(avgInt);
+  document.getElementById('hog-kpi-tv').textContent      = fmtN(tvDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-tv-sub').textContent   = 'ARPU prom: ' + fmt(avgTV);
+  document.getElementById('hog-kpi-voz').textContent     = fmtN(vozDatos.length) + ' OTs';
+  document.getElementById('hog-kpi-voz-sub').textContent  = 'ARPU prom: ' + fmt(avgVoz);
+  document.getElementById('hog-kpi-ott').textContent     = fmtN(totalOTT);
+  document.getElementById('hog-kpi-ott-sub').textContent  = 'servicios OTT activos';
+}
+
+// ── Tabla Proyección ──
+function hogRenderTablaProyeccion(datos) {
+  const fmt = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
+  const pillRed = r => {
+    if (r.isDTH) return '<span class="hog-pill hog-pill-dth">DTH</span>';
+    if (r.tipoRed === 'FTT') return '<span class="hog-pill hog-pill-ftt">FTT</span>';
+    return '<span class="hog-pill hog-pill-bidir">BIDIR</span>';
+  };
+
+  const tbody = datos.map((r, i) => `
+    <tr>
+      <td style="color:var(--texto-dim);">${i+1}</td>
+      <td style="font-weight:700;">${r.ot}</td>
+      <td style="color:var(--texto-dim);">${r.cuenta}</td>
+      <td>${r.site}</td>
+      <td>${pillRed(r)}</td>
+      <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
+      <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
+      <td>${r.hasOTT ? '<span class="hog-ott-badge">✓ OTT</span>' : '<span style="color:var(--texto-dim);font-size:11px;">—</span>'}</td>
+      <td class="num">${r.rentaInt ? fmt(r.rentaInt) : '—'}</td>
+      <td class="num">${r.rentaTV  ? fmt(r.rentaTV)  : '—'}</td>
+      <td class="num">${r.rentaVoz ? fmt(r.rentaVoz) : '—'}</td>
+      <td class="num" style="font-weight:700;color:#A78BFA;">${fmt(r.comision)}</td>
+    </tr>`).join('');
+
+  document.getElementById('hog-proy-tbody').innerHTML = tbody;
+  document.getElementById('hog-proy-count').textContent = '(' + datos.length + ')';
+  document.getElementById('hog-proy-wrap').style.display = '';
+}
+
+// ── Tabla Servicios ──
+function hogRenderTablaServicios(datos) {
+  const fmt = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
+  const pillRed = r => {
+    if (r.isDTH) return '<span class="hog-pill hog-pill-dth">DTH</span>';
+    if (r.tipoRed === 'FTT') return '<span class="hog-pill hog-pill-ftt">FTT</span>';
+    return '<span class="hog-pill hog-pill-bidir">BIDIR</span>';
+  };
+
+  const tbody = datos.map((r, i) => `
+    <tr>
+      <td style="color:var(--texto-dim);">${i+1}</td>
+      <td style="font-weight:700;">${r.ot}</td>
+      <td style="color:var(--texto-dim);">${r.cuenta}</td>
+      <td>${r.site}</td>
+      <td>${pillRed(r)}</td>
+      <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
+      <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
+      <td class="num">${r.cntInt + r.cntTV + r.cntVoz}</td>
+      <td class="num">${r.countOTT ? '<span class="hog-ott-badge">' + r.countOTT + ' OTT</span>' : '—'}</td>
+      <td class="num">${fmt(r.rentaInt + r.rentaTV + r.rentaVoz)}</td>
+      <td class="num">${r.rentaOTT ? fmt(r.rentaOTT) : '—'}</td>
+      <td class="num" style="font-weight:700;color:#A78BFA;">${fmt(r.comision)}</td>
+    </tr>`).join('');
+
+  document.getElementById('hog-serv-tbody').innerHTML   = tbody;
+  document.getElementById('hog-serv-count').textContent = '(' + datos.length + ')';
+  document.getElementById('hog-serv-empty').style.display = datos.length ? 'none' : '';
+}
+
+// ── Exportar Excel ──
+function hogExportarExcel() {
+  if (!_hogResultados.length) return;
+  const datos = _hogSiteFiltro === 'GENERAL' ? _hogResultados : _hogResultados.filter(r => r.site === _hogSiteFiltro);
+  const fmt = n => Math.round(n);
+  const rows = [['OT','Cuenta','Site','TipoRed','Campaña','Paquete','Con OTT','# OTT','Renta @','Renta TV','Renta Voz','Renta OTT','Comisión']];
+  datos.forEach(r => rows.push([r.ot, r.cuenta, r.site, r.tipoRed, r.campaña, r.paquete, r.hasOTT?'Sí':'No', r.countOTT, fmt(r.rentaInt), fmt(r.rentaTV), fmt(r.rentaVoz), fmt(r.rentaOTT), fmt(r.comision)]));
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Proyección Hogar');
+  XLSX.writeFile(wb, 'proyeccion_hogar.xlsx');
+}
+
 function mostrarPanelCosechas() {
   setHeaderModulo('Cosechas');
   document.getElementById('main-content').style.display = 'none';
@@ -9896,6 +10430,7 @@ function mostrarPanelCosechas() {
   if (pi) { pi.classList.remove('visible'); pi.style.display = ''; }
   document.getElementById('panel-codigos-cvc') && (document.getElementById('panel-codigos-cvc').style.display = 'none');
   document.getElementById('panel-metas') && (document.getElementById('panel-metas').style.display = 'none');
+  const _phCos = document.getElementById('panel-hogar'); if(_phCos) _phCos.style.display = 'none';
   document.getElementById('panel-cosechas').style.display = 'block';
   aplicarPermisosUI();
   const btnVaciar = document.getElementById('btn-vaciar-cosechas');
@@ -12281,10 +12816,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="lnc-arrow" id="lnc-arr-claro-movil">▾</div>
       </button>
 
-      <button class="launcher-item lnc-item disabled">
-        <div class="lnc-icon li-hogar"><svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
+      <button class="launcher-item lnc-item" onclick="closeLauncher();mostrarPanelHogar();">
+        <div class="lnc-icon li-hogar"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
         <div class="lnc-label">Hogares</div>
-        <div class="lnc-badge">Pronto</div>
       </button>
 
       <button class="launcher-item lnc-item disabled">
