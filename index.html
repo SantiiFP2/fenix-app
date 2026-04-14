@@ -2320,6 +2320,32 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 3: Tasas Adicionales -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleTasasAdic()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">3</div>
+        <div class="card-title">Tasas Adicionales</div>
+        <span id="hog-tasasadic-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-tasasadic-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:8px;line-height:1.5;">% sobre la renta del servicio adicional comisionable</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div style="text-align:center;">
+            <div style="font-size:9px;color:#60A5FA;font-weight:600;margin-bottom:3px;">Inbound / Digital</div>
+            <input class="hog-tasa-input" id="hog-t-adic-in" value="60" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:9px;color:#A78BFA;font-weight:600;margin-bottom:3px;">Outbound</div>
+            <input class="hog-tasa-input" id="hog-t-adic-out" value="160" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:9px;color:#34D399;font-weight:600;margin-bottom:3px;">Autogen.</div>
+            <input class="hog-tasa-input" id="hog-t-adic-auto" value="130" type="number" min="0" style="width:100%;padding:4px 2px;font-size:12px;text-align:center;">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2334,6 +2360,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
       <button id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')"
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Servicios</button>
+      <button id="hog-tab-btn-adicionales" onclick="hogTabSwitch('adicionales')"
+        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Adicionales</button>
     </div>
 
     <!-- ── TAB: PROYECCIÓN ── -->
@@ -2457,9 +2485,60 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div><!-- /tab servicios -->
 
+    <!-- ── TAB: ADICIONALES ── -->
+    <div id="hog-tab-adicionales" style="display:none;">
+      <div style="padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">
+            Gestión de Servicios Adicionales
+          </div>
+          <div style="font-size:11px;color:var(--texto-dim);">Los cambios se guardan automáticamente en el servidor</div>
+        </div>
+        <!-- Estado vacío -->
+        <div id="hog-adic-empty" style="text-align:center;padding:60px 20px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:14px;">
+          Carga un archivo y presiona Calcular para ver los servicios adicionales detectados
+        </div>
+        <!-- Tabla de adicionales -->
+        <div id="hog-adic-wrap" style="display:none;">
+          <div class="hog-table-wrap">
+            <table class="hog-table">
+              <thead>
+                <tr>
+                  <th>Producto / Servicio</th>
+                  <th style="text-align:center;">Estado</th>
+                  <th style="text-align:center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="hog-adic-tbody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:12px;font-size:11px;color:var(--texto-dim);line-height:1.6;">
+            ✓ <b style="color:#34D399;">Comisionable</b> — entra en el cálculo según las tasas configuradas (Inbound/Digital, Outbound, Autogeneración).<br>
+            ✗ <b style="color:#F87171;">No comisionable</b> — se muestra pero no suma a la comisión.
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab adicionales -->
+
   </div><!-- /right card -->
 
 </div><!-- /container -->
+
+<!-- Modal: nuevos servicios adicionales detectados -->
+<div id="modal-hog-adic" class="modal-bg" style="z-index:5000;">
+  <div class="modal modal-sm">
+    <div class="modal-top">
+      <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Nuevos Servicios Adicionales</div>
+      <button onclick="hogAdicCerrarModal()" style="background:none;border:none;color:var(--texto-dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--texto-dim);margin-top:-8px;">Se encontraron productos nuevos en Servicios Adicionales. Indica si generan comisión.</div>
+    <div id="hog-adic-modal-lista" style="display:flex;flex-direction:column;gap:10px;margin-top:4px;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+      <button onclick="hogAdicConfirmarModal()" style="background:#6D28D9;border:none;color:white;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 20px;border-radius:6px;cursor:pointer;letter-spacing:0.5px;">✓ Confirmar y Guardar</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /panel-hogar -->
 
 
@@ -10205,8 +10284,11 @@ let _hogDatos          = [];        // Todas las filas del archivo cargado
 let _hogResultados     = [];        // Resultados por OT (sin filtrar)
 let _hogSiteFiltro     = 'GENERAL';
 let _hogTasasVisible   = false;
+let _hogTasasAdicVisible = false;
 let _hogFestivosExtra  = [];        // Festivos añadidos manualmente
 let _hogFestivosRemove = [];        // Festivos eliminados manualmente
+let _hogAdicConfig     = [];        // [{producto: string, comisionable: boolean}]
+let _hogAdicPendientes = [];        // Productos nuevos esperando clasificación
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -10390,11 +10472,12 @@ function mostrarPanelHogar() {
   const pc = document.getElementById('panel-cosechas');
   if (pc) pc.style.display = 'none';
   document.getElementById('panel-hogar').style.display = 'block';
+  hogCargarAdicConfig();
 }
 
 // ── Tabs ──
 function hogTabSwitch(tab) {
-  ['proyeccion','servicios'].forEach(t => {
+  ['proyeccion','servicios','adicionales'].forEach(t => {
     document.getElementById('hog-tab-' + t).style.display = t === tab ? '' : 'none';
     const btn = document.getElementById('hog-tab-btn-' + t);
     if (btn) {
@@ -10402,6 +10485,7 @@ function hogTabSwitch(tab) {
       btn.style.color = t === tab ? '#6D28D9' : 'var(--texto-dim)';
     }
   });
+  if (tab === 'adicionales') hogRenderAdicionales();
 }
 
 // ── Toggle tasas ──
@@ -10468,7 +10552,8 @@ function hogCargarArchivo(file) {
 // ── Cálculo principal ──
 function hogCalcular() {
   if (!_hogDatos.length) { alert('Carga primero el archivo de Hogares'); return; }
-  const tasas = hogGetTasas();
+  const tasas     = hogGetTasas();
+  const tasasAdic = hogGetTasasAdic();
 
   // Agrupar por OT
   const porOT = {};
@@ -10477,6 +10562,18 @@ function hogCalcular() {
     porOT[r.Ot].push(r);
   });
 
+  // Recolectar todos los productos adicionales únicos del archivo
+  const productosEnArchivo = new Set();
+  _hogDatos.forEach(r => {
+    if (r.Tipo === 'Servicios Adicionales' && r.Producto) {
+      productosEnArchivo.add(r.Producto.trim());
+    }
+  });
+
+  // Detectar productos nuevos no clasificados aún
+  const productosConocidos = new Set(_hogAdicConfig.map(c => c.producto));
+  _hogAdicPendientes = [...productosEnArchivo].filter(p => !productosConocidos.has(p));
+
   _hogResultados = Object.entries(porOT).map(([ot, filas]) => {
     const base    = filas[0];
     const tipoRed = base.TipoRed;
@@ -10484,11 +10581,11 @@ function hogCalcular() {
     const isDTH   = ['DTH','SATELITAL'].includes(tipoRed);
 
     // Seleccionar tabla de tasas según campaña
-    let tbl;
+    let tbl, tasaAdicCanal;
     const campU = campaña.toUpperCase();
-    if      (campU.includes('OUTBOUND'))  tbl = tasas.outbound;
-    else if (campU.includes('AUTO'))      tbl = tasas.auto;
-    else                                  tbl = tasas.inbound;
+    if      (campU.includes('OUTBOUND'))  { tbl = tasas.outbound; tasaAdicCanal = tasasAdic.outbound; }
+    else if (campU.includes('AUTO'))      { tbl = tasas.auto;     tasaAdicCanal = tasasAdic.auto;     }
+    else                                  { tbl = tasas.inbound;  tasaAdicCanal = tasasAdic.inbound;  }
 
     // Detectar OTT en Servicios Adicionales
     const adicionales = filas.filter(f => f.Tipo === 'Servicios Adicionales');
@@ -10527,12 +10624,23 @@ function hogCalcular() {
       comision += f.Renta * tasa;
     });
 
+    // Calcular comisión por Servicios Adicionales comisionables
+    let comisionAdic = 0;
+    const adicDetalle = adicionales.map(f => {
+      const cfg = _hogAdicConfig.find(c => c.producto === f.Producto.trim());
+      const comisionable = cfg ? cfg.comisionable : false;
+      const comAportada = comisionable ? f.Renta * tasaAdicCanal : 0;
+      comisionAdic += comAportada;
+      return { producto: f.Producto.trim(), renta: f.Renta, comisionable, comAportada };
+    });
+    comision += comisionAdic;
+
     return {
       ot, cuenta: base.Cuenta, site: base.Site, campaña, tipoRed,
       paquete: base.Paquete, isDTH, hasOTT,
       cntInt, cntTV, cntVoz, countOTT,
       rentaInt, rentaTV, rentaVoz, rentaOTT,
-      comision
+      comision, comisionAdic, adicDetalle
     };
   });
 
@@ -10553,6 +10661,11 @@ function hogCalcular() {
   if (empty) empty.style.display = 'none';
 
   hogRenderizar();
+
+  // Mostrar popup si hay productos adicionales nuevos sin clasificar
+  if (_hogAdicPendientes.length > 0) {
+    hogAdicAbrirModal();
+  }
 }
 
 // ── Sedes dinámicas ──
@@ -10654,6 +10767,168 @@ function hogRenderTablaServicios(datos) {
   const empty = document.getElementById('hog-serv-empty');
   if (wrap)  wrap.style.display  = datos.length ? '' : 'none';
   if (empty) empty.style.display = datos.length ? 'none' : '';
+}
+
+// ── Tasas Adicionales ──
+function hogToggleTasasAdic() {
+  _hogTasasAdicVisible = !_hogTasasAdicVisible;
+  document.getElementById('hog-tasasadic-body').style.display = _hogTasasAdicVisible ? '' : 'none';
+  document.getElementById('hog-tasasadic-arrow').style.transform = _hogTasasAdicVisible ? 'rotate(180deg)' : '';
+}
+
+function hogGetTasasAdic() {
+  const v = id => parseFloat(document.getElementById(id).value) / 100 || 0;
+  return {
+    inbound:  v('hog-t-adic-in'),
+    outbound: v('hog-t-adic-out'),
+    auto:     v('hog-t-adic-auto')
+  };
+}
+
+// ── Persistencia de config adicionales en servidor ──
+async function hogCargarAdicConfig() {
+  try {
+    const res = await authFetch(`${FENIX_API}/hog-adicionales`).then(r => r.json());
+    if (res.ok && Array.isArray(res.config)) {
+      _hogAdicConfig = res.config;
+    }
+  } catch(e) {
+    console.warn('hogCargarAdicConfig:', e.message);
+  }
+}
+
+async function hogGuardarAdicConfig() {
+  try {
+    await authFetch(`${FENIX_API}/hog-adicionales`, {
+      method: 'POST',
+      body: JSON.stringify({ config: _hogAdicConfig })
+    });
+  } catch(e) {
+    console.warn('hogGuardarAdicConfig:', e.message);
+  }
+}
+
+// ── Modal nuevos productos adicionales ──
+function hogAdicAbrirModal() {
+  const lista = document.getElementById('hog-adic-modal-lista');
+  lista.innerHTML = _hogAdicPendientes.map(prod => `
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border-radius:6px;padding:10px 14px;gap:12px;">
+      <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${prod}">${prod}</span>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button id="hog-adic-si-${CSS.escape(prod)}" onclick="hogAdicModalSelect('${prod.replace(/'/g,"\\'")}',true)"
+          style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid rgba(52,211,153,0.4);background:rgba(52,211,153,0.1);color:#34D399;cursor:pointer;letter-spacing:0.5px;">
+          ✓ Comisionable
+        </button>
+        <button id="hog-adic-no-${CSS.escape(prod)}" onclick="hogAdicModalSelect('${prod.replace(/'/g,"\\'")}',false)"
+          style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);color:#F87171;cursor:pointer;letter-spacing:0.5px;">
+          ✗ No comisionable
+        </button>
+      </div>
+    </div>`).join('');
+  // Estado inicial: todos marcados como no comisionable por defecto
+  _hogAdicPendientes.forEach(prod => hogAdicModalSelect(prod, false));
+  document.getElementById('modal-hog-adic').classList.add('open');
+}
+
+function hogAdicModalSelect(prod, comisionable) {
+  const key = CSS.escape(prod);
+  const btnSi = document.getElementById('hog-adic-si-' + key);
+  const btnNo = document.getElementById('hog-adic-no-' + key);
+  if (!btnSi || !btnNo) return;
+  if (comisionable) {
+    btnSi.style.background = 'rgba(52,211,153,0.35)';
+    btnSi.style.borderColor = '#34D399';
+    btnNo.style.background = 'rgba(248,113,113,0.1)';
+    btnNo.style.borderColor = 'rgba(248,113,113,0.4)';
+  } else {
+    btnNo.style.background = 'rgba(248,113,113,0.35)';
+    btnNo.style.borderColor = '#F87171';
+    btnSi.style.background = 'rgba(52,211,153,0.1)';
+    btnSi.style.borderColor = 'rgba(52,211,153,0.4)';
+  }
+  // Guardar selección temporal en dataset
+  btnSi.dataset.selected = comisionable ? '1' : '0';
+  btnNo.dataset.selected = comisionable ? '0' : '1';
+}
+
+function hogAdicCerrarModal() {
+  document.getElementById('modal-hog-adic').classList.remove('open');
+}
+
+async function hogAdicConfirmarModal() {
+  // Leer selección de cada producto pendiente
+  _hogAdicPendientes.forEach(prod => {
+    const key = CSS.escape(prod);
+    const btnSi = document.getElementById('hog-adic-si-' + key);
+    const comisionable = btnSi ? btnSi.dataset.selected === '1' : false;
+    const existe = _hogAdicConfig.find(c => c.producto === prod);
+    if (existe) {
+      existe.comisionable = comisionable;
+    } else {
+      _hogAdicConfig.push({ producto: prod, comisionable });
+    }
+  });
+  _hogAdicPendientes = [];
+  hogAdicCerrarModal();
+  await hogGuardarAdicConfig();
+  // Recalcular con la nueva config
+  hogCalcular();
+}
+
+// ── Toggle comisionable desde la tabla de Adicionales ──
+async function hogAdicToggle(prod) {
+  const cfg = _hogAdicConfig.find(c => c.producto === prod);
+  if (cfg) {
+    cfg.comisionable = !cfg.comisionable;
+  } else {
+    _hogAdicConfig.push({ producto: prod, comisionable: true });
+  }
+  await hogGuardarAdicConfig();
+  hogRenderAdicionales();
+  // Si ya hay resultados, recalcular
+  if (_hogResultados.length) hogCalcular();
+}
+
+// ── Render tab Adicionales ──
+function hogRenderAdicionales() {
+  const wrap  = document.getElementById('hog-adic-wrap');
+  const empty = document.getElementById('hog-adic-empty');
+  const tbody = document.getElementById('hog-adic-tbody');
+  if (!wrap || !empty || !tbody) return;
+
+  if (!_hogAdicConfig.length) {
+    wrap.style.display  = 'none';
+    empty.style.display = '';
+    return;
+  }
+
+  wrap.style.display  = '';
+  empty.style.display = 'none';
+
+  tbody.innerHTML = _hogAdicConfig.map(cfg => {
+    const pillColor  = cfg.comisionable ? '#34D399' : '#F87171';
+    const pillBg     = cfg.comisionable ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)';
+    const pillBorder = cfg.comisionable ? 'rgba(52,211,153,0.35)' : 'rgba(248,113,113,0.35)';
+    const pillLabel  = cfg.comisionable ? '✓ Comisionable' : '✗ No comisionable';
+    const btnLabel   = cfg.comisionable ? 'Marcar No comisionable' : 'Marcar Comisionable';
+    const btnColor   = cfg.comisionable ? '#F87171' : '#34D399';
+    const btnBg      = cfg.comisionable ? 'rgba(248,113,113,0.1)' : 'rgba(52,211,153,0.1)';
+    const btnBorder  = cfg.comisionable ? 'rgba(248,113,113,0.35)' : 'rgba(52,211,153,0.35)';
+    const prodEsc    = cfg.producto.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `
+      <tr>
+        <td style="font-weight:600;">${cfg.producto}</td>
+        <td style="text-align:center;">
+          <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:${pillBg};color:${pillColor};border:1px solid ${pillBorder};">${pillLabel}</span>
+        </td>
+        <td style="text-align:center;">
+          <button onclick="hogAdicToggle('${prodEsc}')"
+            style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid ${btnBorder};background:${btnBg};color:${btnColor};cursor:pointer;letter-spacing:0.3px;">
+            ${btnLabel}
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
 }
 
 // ── Exportar Excel ──
