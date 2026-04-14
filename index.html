@@ -2382,7 +2382,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
             <div class="kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
             <div class="kpi-value" id="hog-kpi-total" style="color:#A78BFA;font-size:26px;">—</div>
             <div class="kpi-sub" id="hog-kpi-total-sub"></div>
-            <div id="hog-kpi-total-desglose" style="display:none;margin-top:5px;font-family:'Inter Tight',sans-serif;font-size:10px;color:#C4B5FD;background:rgba(109,40,217,0.12);border-radius:4px;padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="hog-kpi-total-desglose" style="display:none;margin-top:4px;font-family:'Inter Tight',sans-serif;font-size:10px;color:var(--texto-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Total OTs</div>
@@ -2455,6 +2455,22 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           </div>
           <div id="hog-festivos-chips"></div>
         </div>
+      </div>
+
+      <!-- Sección: Comisión Ppales Proyectada -->
+      <div id="hog-com-ppal-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">💰 Comisión Ppales Proyectada</div>
+        </div>
+        <div id="hog-com-ppal-content"></div>
+      </div>
+
+      <!-- Sección: Servicios Adicionales -->
+      <div id="hog-adic-pago-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">⭐ Servicios Adicionales</div>
+        </div>
+        <div id="hog-adic-pago-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -10424,7 +10440,7 @@ function hogRecalcularProyeccion() {
     }
   }
 
-  // Render cards proyección (2 columnas × 2 filas)
+  // Grid principal: solo Días Hábiles + Internet·TV·Voz
   const grid = document.getElementById('hog-proy-grid');
   if (!grid) return;
   grid.style.gridTemplateColumns = 'repeat(2,1fr)';
@@ -10441,16 +10457,6 @@ function hogRecalcularProyeccion() {
       <div class="proy-progress"><div class="proy-progress-fill" style="width:${avancePct.toFixed(1)}%;background:${cardColor};"></div></div>
       <div style="font-size:10px;color:var(--texto-dim);text-align:right;">${avancePct.toFixed(1)}% del mes</div>
     </div>
-    <div class="proy-card" style="border-top:3px solid #A78BFA;">
-      <div class="proy-card-titulo">💰 Comisión Ppales Proyectada</div>
-      <div class="proy-stat-row">
-        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:16px;">${fmt(totalProyPpales)}</div><div class="proy-stat-lbl">Proyect. cierre</div></div>
-      </div>
-      <div class="proy-stat-row">
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;">${fmt(totalRealPpales)}</div><div class="proy-stat-lbl">Real acum.</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;color:#F97316;">${fmt(Math.max(totalProyPpales-totalRealPpales,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
-      </div>
-    </div>
     <div class="proy-card" style="border-top:3px solid #60A5FA;">
       <div class="proy-card-titulo">🌐 Internet · TV · Voz</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:6px;">
@@ -10461,31 +10467,73 @@ function hogRecalcularProyeccion() {
         <div class="proy-stat"><div class="proy-stat-val" style="font-size:15px;">${fmtN(tvOTs)}</div><div class="proy-stat-lbl">TV Real</div></div>
         <div class="proy-stat"><div class="proy-stat-val" style="font-size:15px;">${fmtN(vozOTs)}</div><div class="proy-stat-lbl">Voz Real</div></div>
       </div>
-    </div>
-    ${totalAdicReal > 0 ? `
-    <div class="proy-card" style="border-top:3px solid #F59E0B;">
-      <div class="proy-card-titulo">⭐ Servicios Adicionales</div>
-      <div class="proy-stat-row">
-        <div class="proy-stat" style="flex:2;">
-          <div class="proy-stat-val" style="color:#F59E0B;font-size:16px;">${fmt(adicProy)}</div>
-          <div class="proy-stat-lbl">Total proy. cierre</div>
+    </div>`;
+
+  // Sección separada: Comisión Ppales
+  const comSec = document.getElementById('hog-com-ppal-section');
+  const comCont = document.getElementById('hog-com-ppal-content');
+  if (comSec && comCont) {
+    comSec.style.display = '';
+    comCont.innerHTML = `
+      <div style="background:var(--negro);border:1px solid rgba(167,139,250,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+        <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+          <div>
+            <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Comisión Ppales</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#A78BFA;line-height:1;">${fmt(totalProyPpales)}</div>
+            <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Real acum.: <b style="color:#A78BFA;">${fmt(totalRealPpales)}</b></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
+              <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Proyect. cierre</div>
+              <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalProyPpales)}</div>
+            </div>
+            <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
+              <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Real acum.</div>
+              <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalRealPpales)}</div>
+            </div>
+            <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
+              <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Pendiente</div>
+              <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#F97316;">${fmt(Math.max(totalProyPpales-totalRealPpales,0))}</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(245,158,11,0.1);border-radius:4px;padding:5px 8px;">
-          <span style="font-size:10px;font-weight:700;color:#F59E0B;letter-spacing:0.5px;">P1 · Mes vencido · 50%</span>
-          <span style="font-size:13px;font-weight:800;color:#F59E0B;font-family:'Inter Tight',sans-serif;">${fmt(adicP1)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:4px;padding:5px 8px;">
-          <span style="font-size:10px;font-weight:600;color:var(--texto-dim);letter-spacing:0.5px;">P2 · Mes 4 · 30% <span style="color:#6B7280;font-style:italic;">(info)</span></span>
-          <span style="font-size:12px;font-weight:700;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;">${fmt(adicP4)}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:4px;padding:5px 8px;">
-          <span style="font-size:10px;font-weight:600;color:var(--texto-dim);letter-spacing:0.5px;">P3 · Mes 6 · 20% <span style="color:#6B7280;font-style:italic;">(info)</span></span>
-          <span style="font-size:12px;font-weight:700;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;">${fmt(adicP6)}</span>
-        </div>
-      </div>
-    </div>` : ''}`;
+      </div>`;
+  }
+
+  // Sección separada: Servicios Adicionales
+  const adicSec = document.getElementById('hog-adic-pago-section');
+  const adicCont = document.getElementById('hog-adic-pago-content');
+  if (adicSec && adicCont) {
+    if (totalAdicReal > 0) {
+      adicSec.style.display = '';
+      adicCont.innerHTML = `
+        <div style="background:var(--negro);border:1px solid rgba(245,158,11,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+            <div>
+              <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Adicionales (3 pagos)</div>
+              <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#F59E0B;line-height:1;">${fmt(adicProy)}</div>
+              <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Suma al cobro proyectado: <b style="color:#F59E0B;">${fmt(adicP1)}</b></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:3px;padding:8px 14px;text-align:center;">
+                <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">P1 · Mes vencido</div>
+                <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#F59E0B;">${fmt(adicP1)}</div>
+              </div>
+              <div style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.12);border-radius:3px;padding:8px 14px;text-align:center;">
+                <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">P2 · Mes 4 <span style="font-style:italic;">(info)</span></div>
+                <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:var(--texto-dim);">${fmt(adicP4)}</div>
+              </div>
+              <div style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.12);border-radius:3px;padding:8px 14px;text-align:center;">
+                <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">P3 · Mes 6 <span style="font-style:italic;">(info)</span></div>
+                <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:var(--texto-dim);">${fmt(adicP6)}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      adicSec.style.display = 'none';
+    }
+  }
 
 
   document.getElementById('hog-proy-section').style.display = '';
