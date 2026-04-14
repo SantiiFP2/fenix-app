@@ -2378,35 +2378,54 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       <!-- KPI grid: cobro proyectado + Total OTs + ARPUs unificados -->
       <div id="hog-kpi-grid" style="display:none;padding:14px 20px;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);">
         <div class="kpi-grid">
+          <!-- Cobro Proyectado -->
           <div class="kpi-card total" style="border-color:rgba(109,40,217,0.4);">
             <div class="kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
-            <div class="kpi-value" id="hog-kpi-total" style="color:#A78BFA;font-size:26px;">—</div>
-            <div class="kpi-sub" id="hog-kpi-total-sub"></div>
-            <div id="hog-kpi-total-desglose" style="display:none;margin-top:4px;font-family:'Inter Tight',sans-serif;font-size:10px;color:var(--texto-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div class="kpi-value" id="hog-kpi-total" style="color:#A78BFA;font-size:28px;font-weight:900;">—</div>
+            <span id="hog-kpi-total-sub" style="display:none;"></span>
+            <div id="hog-kpi-total-desglose" style="display:none;margin-top:5px;font-family:'Inter Tight',sans-serif;font-size:10px;color:var(--texto-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
           </div>
+          <!-- OTs Activas -->
           <div class="kpi-card">
-            <div class="kpi-label">Total OTs</div>
-            <div class="kpi-value" id="hog-kpi-ots">—</div>
-            <div class="kpi-sub" id="hog-kpi-ots-sub"></div>
+            <div class="kpi-label">OTs Activas</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+              <div style="display:flex;align-items:baseline;gap:6px;">
+                <span id="hog-kpi-ots" style="font-family:'Inter Tight',sans-serif;font-size:28px;font-weight:900;color:var(--texto);">—</span>
+                <span style="font-size:11px;color:var(--texto-dim);font-weight:500;">real</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;background:rgba(167,139,250,0.06);border-radius:5px;padding:4px 8px;">
+                <span style="font-size:10px;color:var(--texto-dim);">Proy. cierre:</span>
+                <span id="hog-kpi-ots-proy" style="font-size:14px;font-weight:800;color:#A78BFA;font-family:'Inter Tight',sans-serif;">—</span>
+              </div>
+            </div>
+            <span id="hog-kpi-ots-sub" style="display:none;"></span>
           </div>
-          <!-- Card unificado de ARPUs -->
+          <!-- ARPUs Promedio -->
           <div class="kpi-card" style="grid-column:span 1;">
             <div class="kpi-label" style="margin-bottom:10px;">ARPUs Promedio</div>
             <div style="display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-size:11px;color:#60A5FA;font-weight:600;letter-spacing:0.3px;">@ Internet</span>
-                <span id="hog-kpi-int" style="font-size:16px;font-weight:700;color:#60A5FA;font-family:'Inter Tight',sans-serif;">—</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(96,165,250,0.07);border-radius:6px;padding:6px 8px;">
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div style="width:3px;height:14px;border-radius:2px;background:#60A5FA;flex-shrink:0;"></div>
+                  <span style="font-size:11px;color:#60A5FA;font-weight:600;">@ Internet</span>
+                </div>
+                <span id="hog-kpi-int" style="font-size:15px;font-weight:800;color:#60A5FA;font-family:'Inter Tight',sans-serif;">—</span>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-size:11px;color:#34D399;font-weight:600;letter-spacing:0.3px;">TV</span>
-                <span id="hog-kpi-tv" style="font-size:16px;font-weight:700;color:#34D399;font-family:'Inter Tight',sans-serif;">—</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(52,211,153,0.07);border-radius:6px;padding:6px 8px;">
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div style="width:3px;height:14px;border-radius:2px;background:#34D399;flex-shrink:0;"></div>
+                  <span style="font-size:11px;color:#34D399;font-weight:600;">TV</span>
+                </div>
+                <span id="hog-kpi-tv" style="font-size:15px;font-weight:800;color:#34D399;font-family:'Inter Tight',sans-serif;">—</span>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="font-size:11px;color:#FCD34D;font-weight:600;letter-spacing:0.3px;">Voz</span>
-                <span id="hog-kpi-voz" style="font-size:16px;font-weight:700;color:#FCD34D;font-family:'Inter Tight',sans-serif;">—</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(252,211,77,0.07);border-radius:6px;padding:6px 8px;">
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div style="width:3px;height:14px;border-radius:2px;background:#FCD34D;flex-shrink:0;"></div>
+                  <span style="font-size:11px;color:#FCD34D;font-weight:600;">Voz</span>
+                </div>
+                <span id="hog-kpi-voz" style="font-size:15px;font-weight:800;color:#FCD34D;font-family:'Inter Tight',sans-serif;">—</span>
               </div>
             </div>
-            <!-- spans ocultos para compatibilidad con hogRenderKPIs -->
             <span id="hog-kpi-int-sub" style="display:none;"></span>
             <span id="hog-kpi-tv-sub" style="display:none;"></span>
             <span id="hog-kpi-voz-sub" style="display:none;"></span>
@@ -10405,6 +10424,8 @@ function hogRecalcularProyeccion() {
   const totalProyPpales = transDias > 0 ? Math.round((totalRealPpales / transDias) * totalDias) : totalRealPpales;
 
   // Adicionales: ticket proyectado → 3 pagos
+  const totalAdicServReal = datos.reduce((s,r) => s + (r.adicDetalle||[]).filter(a => a.comisionable).length, 0);
+  const adicServProy = transDias > 0 ? Math.round((totalAdicServReal / transDias) * totalDias) : totalAdicServReal;
   const adicProy = transDias > 0 ? Math.round((totalAdicReal / transDias) * totalDias) : totalAdicReal;
   const adicP1   = Math.round(adicProy * 0.50); // mes vencido — suma al cobro proyectado
   const adicP4   = Math.round(adicProy * 0.30); // mes 4 — informativo
@@ -10426,8 +10447,8 @@ function hogRecalcularProyeccion() {
 
   // Actualizar KPI cobro proyectado
   const se2 = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
-  se2('hog-kpi-total',     fmt(totalCobroProy));
-  se2('hog-kpi-total-sub', `proyectado · real: ${fmt(totalRealTotal)}`);
+  se2('hog-kpi-total',    fmt(totalCobroProy));
+  se2('hog-kpi-ots-proy', fmtN(Math.round((totalOTs / transDias) * totalDias)));
 
   // Desglose Comisión + Adicionales bajo el KPI
   const desgloseEl = document.getElementById('hog-kpi-total-desglose');
@@ -10484,10 +10505,6 @@ function hogRecalcularProyeccion() {
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
-              <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Proyect. cierre</div>
-              <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalProyPpales)}</div>
-            </div>
-            <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
               <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Real acum.</div>
               <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalRealPpales)}</div>
             </div>
@@ -10513,6 +10530,14 @@ function hogRecalcularProyeccion() {
               <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Adicionales (3 pagos)</div>
               <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#F59E0B;line-height:1;">${fmt(adicProy)}</div>
               <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Suma al cobro proyectado: <b style="color:#F59E0B;">${fmt(adicP1)}</b></div>
+              <div style="display:flex;gap:10px;margin-top:6px;">
+                <span style="font-size:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:4px;padding:2px 8px;color:#F59E0B;">
+                  <b>${fmtN(totalAdicServReal)}</b> servicios real
+                </span>
+                <span style="font-size:10px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:2px 8px;color:var(--texto-dim);">
+                  <b style="color:#F59E0B;">${fmtN(adicServProy)}</b> a proy.
+                </span>
+              </div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:3px;padding:8px 14px;text-align:center;">
