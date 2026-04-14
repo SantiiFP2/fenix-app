@@ -2360,8 +2360,6 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
       <button id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')"
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Servicios</button>
-      <button id="hog-tab-btn-adicionales" onclick="hogTabSwitch('adicionales')"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Adicionales</button>
     </div>
 
     <!-- ── TAB: PROYECCIÓN ── -->
@@ -13376,6 +13374,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           </div>
           <div class="lnc-label">Servicios</div>
+        </button>
+        <button class="launcher-item lnc-item"
+                onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
+          <div class="lnc-icon" style="background:#EDE9FE;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          </div>
+          <div class="lnc-label">Adicionales</div>
         </button>
       </div>
     </div>
