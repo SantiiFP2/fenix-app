@@ -10809,29 +10809,28 @@ async function hogGuardarAdicConfig() {
 // ── Modal nuevos productos adicionales ──
 function hogAdicAbrirModal() {
   const lista = document.getElementById('hog-adic-modal-lista');
-  lista.innerHTML = _hogAdicPendientes.map(prod => `
+  lista.innerHTML = _hogAdicPendientes.map((prod, idx) => `
     <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border-radius:6px;padding:10px 14px;gap:12px;">
       <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${prod}">${prod}</span>
       <div style="display:flex;gap:6px;flex-shrink:0;">
-        <button id="hog-adic-si-${CSS.escape(prod)}" onclick="hogAdicModalSelect('${prod.replace(/'/g,"\\'")}',true)"
+        <button id="hog-adic-si-${idx}" onclick="hogAdicModalSelect(${idx},true)"
           style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid rgba(52,211,153,0.4);background:rgba(52,211,153,0.1);color:#34D399;cursor:pointer;letter-spacing:0.5px;">
           ✓ Comisionable
         </button>
-        <button id="hog-adic-no-${CSS.escape(prod)}" onclick="hogAdicModalSelect('${prod.replace(/'/g,"\\'")}',false)"
+        <button id="hog-adic-no-${idx}" onclick="hogAdicModalSelect(${idx},false)"
           style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);color:#F87171;cursor:pointer;letter-spacing:0.5px;">
           ✗ No comisionable
         </button>
       </div>
     </div>`).join('');
-  // Estado inicial: todos marcados como no comisionable por defecto
-  _hogAdicPendientes.forEach(prod => hogAdicModalSelect(prod, false));
+  // Estado inicial: todos marcados como no comisionable
+  _hogAdicPendientes.forEach((_, idx) => hogAdicModalSelect(idx, false));
   document.getElementById('modal-hog-adic').classList.add('open');
 }
 
-function hogAdicModalSelect(prod, comisionable) {
-  const key = CSS.escape(prod);
-  const btnSi = document.getElementById('hog-adic-si-' + key);
-  const btnNo = document.getElementById('hog-adic-no-' + key);
+function hogAdicModalSelect(idx, comisionable) {
+  const btnSi = document.getElementById('hog-adic-si-' + idx);
+  const btnNo = document.getElementById('hog-adic-no-' + idx);
   if (!btnSi || !btnNo) return;
   if (comisionable) {
     btnSi.style.background = 'rgba(52,211,153,0.35)';
@@ -10844,9 +10843,7 @@ function hogAdicModalSelect(prod, comisionable) {
     btnSi.style.background = 'rgba(52,211,153,0.1)';
     btnSi.style.borderColor = 'rgba(52,211,153,0.4)';
   }
-  // Guardar selección temporal en dataset
   btnSi.dataset.selected = comisionable ? '1' : '0';
-  btnNo.dataset.selected = comisionable ? '0' : '1';
 }
 
 function hogAdicCerrarModal() {
@@ -10854,10 +10851,8 @@ function hogAdicCerrarModal() {
 }
 
 async function hogAdicConfirmarModal() {
-  // Leer selección de cada producto pendiente
-  _hogAdicPendientes.forEach(prod => {
-    const key = CSS.escape(prod);
-    const btnSi = document.getElementById('hog-adic-si-' + key);
+  _hogAdicPendientes.forEach((prod, idx) => {
+    const btnSi = document.getElementById('hog-adic-si-' + idx);
     const comisionable = btnSi ? btnSi.dataset.selected === '1' : false;
     const existe = _hogAdicConfig.find(c => c.producto === prod);
     if (existe) {
@@ -10869,7 +10864,6 @@ async function hogAdicConfirmarModal() {
   _hogAdicPendientes = [];
   hogAdicCerrarModal();
   await hogGuardarAdicConfig();
-  // Recalcular con la nueva config
   hogCalcular();
 }
 
