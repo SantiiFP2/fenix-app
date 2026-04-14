@@ -2382,6 +2382,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
             <div class="kpi-label" style="color:#A78BFA;">Cobro Proyectado</div>
             <div class="kpi-value" id="hog-kpi-total" style="color:#A78BFA;font-size:26px;">—</div>
             <div class="kpi-sub" id="hog-kpi-total-sub"></div>
+            <div id="hog-kpi-total-desglose" style="display:none;margin-top:5px;font-family:'Inter Tight',sans-serif;font-size:10px;color:#C4B5FD;background:rgba(109,40,217,0.12);border-radius:4px;padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Total OTs</div>
@@ -10381,10 +10382,21 @@ function hogRecalcularProyeccion() {
     ? _hogResultados
     : _hogResultados.filter(r => r.site === _hogSiteFiltro);
 
-  // Proyección por servicio: (unidades / diasTrans) * diasTotal * ticketComision
-  const totalOTs  = datos.length;
-  const totalReal = datos.reduce((s,r) => s+r.comision, 0);
-  const totalProy = transDias > 0 ? Math.round((totalReal / transDias) * totalDias) : totalReal;
+  // Proyección ppales y adicionales por separado
+  const totalOTs       = datos.length;
+  const totalAdicReal  = datos.reduce((s,r) => s + (r.comisionAdic||0), 0);
+  const totalRealPpales = datos.reduce((s,r) => s + r.comision, 0) - totalAdicReal;
+  const totalProyPpales = transDias > 0 ? Math.round((totalRealPpales / transDias) * totalDias) : totalRealPpales;
+
+  // Adicionales: ticket proyectado → 3 pagos
+  const adicProy = transDias > 0 ? Math.round((totalAdicReal / transDias) * totalDias) : totalAdicReal;
+  const adicP1   = Math.round(adicProy * 0.50); // mes vencido — suma al cobro proyectado
+  const adicP4   = Math.round(adicProy * 0.30); // mes 4 — informativo
+  const adicP6   = Math.round(adicProy * 0.20); // mes 6 — informativo
+
+  // Cobro Proyectado total = ppales + P1 adicionales
+  const totalCobroProy = totalProyPpales + adicP1;
+  const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const intOTs  = datos.filter(r => r.cntInt  > 0).length;
   const tvOTs   = datos.filter(r => r.cntTV   > 0).length;
@@ -10396,15 +10408,26 @@ function hogRecalcularProyeccion() {
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
   const fmtN = n => n.toLocaleString('es-CO');
 
-  // Actualizar solo el cobro proyectado en el KPI (los ARPUs los pone hogRenderKPIs)
+  // Actualizar KPI cobro proyectado
   const se2 = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
-  se2('hog-kpi-total',     fmt(totalProy));
-  se2('hog-kpi-total-sub', `proyectado · real: ${fmt(totalReal)}`);
+  se2('hog-kpi-total',     fmt(totalCobroProy));
+  se2('hog-kpi-total-sub', `proyectado · real: ${fmt(totalRealTotal)}`);
 
-  // Render cards proyección
+  // Desglose Comisión + Adicionales bajo el KPI
+  const desgloseEl = document.getElementById('hog-kpi-total-desglose');
+  if (desgloseEl) {
+    if (totalAdicReal > 0) {
+      desgloseEl.style.display = '';
+      desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · Adicionales ${fmt(adicP1)}`;
+    } else {
+      desgloseEl.style.display = 'none';
+    }
+  }
+
+  // Render cards proyección (2 columnas × 2 filas)
   const grid = document.getElementById('hog-proy-grid');
   if (!grid) return;
-  grid.style.gridTemplateColumns = 'repeat(3,1fr)';
+  grid.style.gridTemplateColumns = 'repeat(2,1fr)';
 
   const cardColor = '#6D28D9';
   grid.innerHTML = `
@@ -10419,13 +10442,13 @@ function hogRecalcularProyeccion() {
       <div style="font-size:10px;color:var(--texto-dim);text-align:right;">${avancePct.toFixed(1)}% del mes</div>
     </div>
     <div class="proy-card" style="border-top:3px solid #A78BFA;">
-      <div class="proy-card-titulo">💰 Comisión Proyectada</div>
+      <div class="proy-card-titulo">💰 Comisión Ppales Proyectada</div>
       <div class="proy-stat-row">
-        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:16px;">${fmt(totalProy)}</div><div class="proy-stat-lbl">Proyect. cierre</div></div>
+        <div class="proy-stat" style="flex:2;"><div class="proy-stat-val" style="color:#A78BFA;font-size:16px;">${fmt(totalProyPpales)}</div><div class="proy-stat-lbl">Proyect. cierre</div></div>
       </div>
       <div class="proy-stat-row">
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;">${fmt(totalReal)}</div><div class="proy-stat-lbl">Real acum.</div></div>
-        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;color:#F97316;">${fmt(Math.max(totalProy-totalReal,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;">${fmt(totalRealPpales)}</div><div class="proy-stat-lbl">Real acum.</div></div>
+        <div class="proy-stat"><div class="proy-stat-val" style="font-size:13px;color:#F97316;">${fmt(Math.max(totalProyPpales-totalRealPpales,0))}</div><div class="proy-stat-lbl">Pendiente</div></div>
       </div>
     </div>
     <div class="proy-card" style="border-top:3px solid #60A5FA;">
@@ -10438,7 +10461,32 @@ function hogRecalcularProyeccion() {
         <div class="proy-stat"><div class="proy-stat-val" style="font-size:15px;">${fmtN(tvOTs)}</div><div class="proy-stat-lbl">TV Real</div></div>
         <div class="proy-stat"><div class="proy-stat-val" style="font-size:15px;">${fmtN(vozOTs)}</div><div class="proy-stat-lbl">Voz Real</div></div>
       </div>
-    </div>`;
+    </div>
+    ${totalAdicReal > 0 ? `
+    <div class="proy-card" style="border-top:3px solid #F59E0B;">
+      <div class="proy-card-titulo">⭐ Servicios Adicionales</div>
+      <div class="proy-stat-row">
+        <div class="proy-stat" style="flex:2;">
+          <div class="proy-stat-val" style="color:#F59E0B;font-size:16px;">${fmt(adicProy)}</div>
+          <div class="proy-stat-lbl">Total proy. cierre</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(245,158,11,0.1);border-radius:4px;padding:5px 8px;">
+          <span style="font-size:10px;font-weight:700;color:#F59E0B;letter-spacing:0.5px;">P1 · Mes vencido · 50%</span>
+          <span style="font-size:13px;font-weight:800;color:#F59E0B;font-family:'Inter Tight',sans-serif;">${fmt(adicP1)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:4px;padding:5px 8px;">
+          <span style="font-size:10px;font-weight:600;color:var(--texto-dim);letter-spacing:0.5px;">P2 · Mes 4 · 30% <span style="color:#6B7280;font-style:italic;">(info)</span></span>
+          <span style="font-size:12px;font-weight:700;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;">${fmt(adicP4)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:4px;padding:5px 8px;">
+          <span style="font-size:10px;font-weight:600;color:var(--texto-dim);letter-spacing:0.5px;">P3 · Mes 6 · 20% <span style="color:#6B7280;font-style:italic;">(info)</span></span>
+          <span style="font-size:12px;font-weight:700;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;">${fmt(adicP6)}</span>
+        </div>
+      </div>
+    </div>` : ''}`;
+
 
   document.getElementById('hog-proy-section').style.display = '';
 }
