@@ -2355,7 +2355,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div class="card" style="overflow:hidden;min-height:460px;">
 
     <!-- Tabs (dentro del card, arriba) -->
-    <div style="display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g-outline);padding:0 20px;">
+    <div id="hog-tabs-bar" style="display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g-outline);padding:0 20px;">
       <button id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')"
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
       <button id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')"
@@ -10483,6 +10483,8 @@ function hogTabSwitch(tab) {
       btn.style.color = t === tab ? '#6D28D9' : 'var(--texto-dim)';
     }
   });
+  const bar = document.getElementById('hog-tabs-bar');
+  if (bar) bar.style.display = tab === 'adicionales' ? 'none' : '';
   if (tab === 'adicionales') hogRenderAdicionales();
 }
 
