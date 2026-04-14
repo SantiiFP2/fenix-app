@@ -2220,10 +2220,10 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;">
+<div id="hog-grid" style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;">
 
   <!-- ══ LEFT: CONFIGURACIÓN ══ -->
-  <div class="panel-config">
+  <div id="hog-left-panel" class="panel-config">
 
     <!-- Card 1: Período + Archivo -->
     <div class="card">
@@ -10483,9 +10483,14 @@ function hogTabSwitch(tab) {
       btn.style.color = t === tab ? '#6D28D9' : 'var(--texto-dim)';
     }
   });
-  const bar = document.getElementById('hog-tabs-bar');
-  if (bar) bar.style.display = tab === 'adicionales' ? 'none' : '';
-  if (tab === 'adicionales') hogRenderAdicionales();
+  const bar      = document.getElementById('hog-tabs-bar');
+  const leftPanel = document.getElementById('hog-left-panel');
+  const grid      = document.getElementById('hog-grid');
+  const isAdic    = tab === 'adicionales';
+  if (bar)       bar.style.display        = isAdic ? 'none' : '';
+  if (leftPanel) leftPanel.style.display  = isAdic ? 'none' : '';
+  if (grid)      grid.style.gridTemplateColumns = isAdic ? '1fr' : '340px 1fr';
+  if (isAdic) hogRenderAdicionales();
 }
 
 // ── Toggle tasas ──
