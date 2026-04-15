@@ -8295,7 +8295,13 @@ function mostrarApp() {
   document.getElementById('app-wrapper').style.display  = '';
   actualizarHeaderUsuario();
   aplicarPermisosUI();
-  metasCargar();
+  // Cargar catálogo CVC primero (incluye CVCs personalizados y CODIGO_A_MADRE)
+  // Luego cargar metas para que el remap de cvcMadre funcione correctamente
+  cargarCatalogoCvcBD().finally(() => {
+    sincronizarCvcs();
+    renderTablaCatalogoCvc();
+    metasCargar();
+  });
   cosInicializarStorage();
   // Siempre abrir en Panel de Inicio al entrar/refrescar
   mostrarPanelInicio();
