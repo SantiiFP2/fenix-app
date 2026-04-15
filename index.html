@@ -7951,6 +7951,7 @@ async function cargarCatalogoCvcBD() {
         CODIGO_A_MADRE[h.codigo] = madre;
       });
       GRUPOS_MADRE[madre] = { madre, sede, categoria, hijos };
+      CODIGO_A_MADRE[madre] = madre; // auto-referencia para que resolverMadre funcione
       MADRES_LISTA.push(madre);
     });
     MADRES_LISTA.sort();
@@ -9278,10 +9279,20 @@ function aplicarMetasAProyeccion(mesKey) {
   // Solo metas MÓVIL PRIMARIAS afectan cvcConfigs
   const metasMovilPrimarias = filas.filter(f => f.producto==='MOVIL' && f.tipo==='PRIMARIA');
 
-  // Agrupar por CVC Madre + Indicador → suma de metas (varios hijos pueden sumar)
+  // Helper: resolver madre real aunque el campo haya sido grabado con código hijo
+  // (puede pasar si el Excel se cargó antes de que CODIGO_A_MADRE tuviese los CVCs custom)
+  const resolverMadre = raw => {
+    if (!raw) return null;
+    // Si raw ya es una madre conocida, usarla tal cual
+    if (GRUPOS_MADRE[raw]) return raw;
+    // Intentar remap: raw puede ser un hijo → su madre
+    return CODIGO_A_MADRE[raw] || raw;
+  };
+
+  // Agrupar por CVC Madre (resuelta) + Indicador → suma de metas (varios hijos pueden sumar)
   const porMadreInd = {};
   metasMovilPrimarias.forEach(f => {
-    const madre = f.cvcMadre || f.cvc;
+    const madre = resolverMadre(f.cvcMadre || f.cvc);
     if (!madre) return;
     const key = madre + '||' + f.indicador;
     porMadreInd[key] = (porMadreInd[key]||0) + f.meta;
@@ -9289,7 +9300,7 @@ function aplicarMetasAProyeccion(mesKey) {
 
   // Para cada CVC Madre en el catálogo, buscar su meta PORTABILIDAD o LINEA NUEVA o MIGRACION
   // La meta principal del cvcConfig es PORTABILIDAD + MIGRACION + LINEA NUEVA (total pospago primario)
-  const madres = [...new Set(metasMovilPrimarias.map(f=>f.cvcMadre||f.cvc).filter(Boolean))];
+  const madres = [...new Set(metasMovilPrimarias.map(f => resolverMadre(f.cvcMadre||f.cvc)).filter(Boolean))];
   madres.forEach(madre => {
     // Ignorar CVCs de T&T en Móvil
     if (esCvcTyT(madre)) return;
@@ -9348,10 +9359,10 @@ function aplicarMetasAProyeccion(mesKey) {
     f.producto === 'MOVIL' && f.tipo === 'PRIMARIA' && f.indicador.includes('EFECTIVIDAD')
   );
   if (metasEfect.length) {
-    // Agrupar por CVC Madre
+    // Agrupar por CVC Madre (resuelta), igual que en la sección principal
     const porMadreEfect = {};
     metasEfect.forEach(f => {
-      const madre = f.cvcMadre || f.cvc;
+      const madre = resolverMadre(f.cvcMadre || f.cvc);
       if (!madre) return;
       if (!porMadreEfect[madre]) porMadreEfect[madre] = [];
       porMadreEfect[madre].push(f);
