@@ -8013,6 +8013,7 @@ const INDICADORES_MAP_INIT = {
   'EFECTIVIDAD MIGRA':              {producto:'MOVIL',     tipo:'PRIMARIA'},
   'CONVERGENCIA MOVIL':            {producto:'MOVIL',     tipo:'SECUNDARIA'},
   'MIGRACION':                     {producto:'MOVIL',     tipo:'PRIMARIA'},
+  'MIGRACIONES':                   {producto:'MOVIL',     tipo:'PRIMARIA'},  // variante plural del Excel
 };
 // Mutable copy (se pueden agregar indicadores personalizados)
 const INDICADORES_MAP = Object.assign({}, INDICADORES_MAP_INIT);
@@ -9295,12 +9296,21 @@ function aplicarMetasAProyeccion(mesKey) {
     return CODIGO_A_MADRE[raw] || raw;
   };
 
+  // Normalizar variantes de indicador al nombre canónico usado internamente
+  // (ej: Excel puede traer "MIGRACIONES" pero el código espera "MIGRACION")
+  const canonInd = ind => {
+    const n = (ind||'').trim().toUpperCase();
+    if (n === 'MIGRACIONES')  return 'MIGRACION';
+    if (n === 'LINEAS NUEVAS' || n === 'LÍNEA NUEVA') return 'LINEA NUEVA';
+    return n;
+  };
+
   // Agrupar por CVC Madre (resuelta) + Indicador → suma de metas (varios hijos pueden sumar)
   const porMadreInd = {};
   metasMovilPrimarias.forEach(f => {
     const madre = resolverMadre(f.cvcMadre || f.cvc);
     if (!madre) return;
-    const key = madre + '||' + f.indicador;
+    const key = madre + '||' + canonInd(f.indicador);
     porMadreInd[key] = (porMadreInd[key]||0) + f.meta;
   });
 
