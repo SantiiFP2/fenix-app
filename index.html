@@ -9357,18 +9357,21 @@ function aplicarMetasAProyeccion(mesKey) {
       porMadreEfect[madre].push(f);
     });
     // Para cada CVC con meta de efectividad, asegurar que esté en efectividadCvcs
+    let efectividadActualizada = false;
     Object.entries(porMadreEfect).forEach(([madre, filas]) => {
       if (esCvcTyT(madre)) return;
       const existe = efectividadCvcs.find(e => e.madre === madre);
       if (!existe && GRUPOS_MADRE[madre]) {
         // Auto-agregar sin base (la base se ingresa manual)
         efectividadCvcs.push({ madre, base: 0, meta: filas[0].meta * 100 });
-        renderEfectividadCvcLista();
+        efectividadActualizada = true;
       } else if (existe) {
         // Actualizar meta si viene del historial
         existe.meta = filas[0].meta * 100;
+        efectividadActualizada = true;
       }
     });
+    if (efectividadActualizada) renderEfectividadCvcLista();
   }
 }
 
@@ -9392,8 +9395,15 @@ function descargarPlantillaMetas() {
   if (!periodoEl) return;
   periodoEl.addEventListener('change', function() {
     const k = metasMesKey(this.value);
+    // Limpiar metas anteriores para que el nuevo mes parta desde cero
+    cvcConfigs.forEach(c => { c.meta = 0; c.metasInd = {}; delete c._metaDetalle; });
+    efectividadCvcs.forEach(c => { c.meta = 0; });
     if (k && historialMetas[k]) {
       aplicarMetasAProyeccion(k);
+    } else {
+      // Mes sin metas cargadas → refrescar UI con valores limpios
+      renderCvcLista();
+      renderEfectividadCvcLista();
     }
   });
 })();
