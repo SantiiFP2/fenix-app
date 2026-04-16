@@ -2415,6 +2415,32 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 5: Alto Valor -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleAltoValor()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">5</div>
+        <div class="card-title">Alto Valor</div>
+        <span id="hog-av-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-av-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
+          Solo TMK Outbound · Triple Play (TV+Voz+Internet) + OTT/Adicional · Sin meta — % sobre ARPU por servicio
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--texto-dim);">% Incentivo:</span>
+          <span id="hog-av-pct-tag" onclick="hogEditarPctAV()"
+            style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);border-radius:4px;padding:3px 10px;font-size:13px;font-weight:700;color:#FCD34D;cursor:pointer;"
+            title="Clic para editar">30%</span>
+          <input id="hog-av-pct-input" type="number" min="0" step="0.1"
+            style="display:none;width:70px;background:var(--negro);border:1px solid #D97706;border-radius:4px;color:var(--texto);font-size:13px;padding:3px 8px;outline:none;"
+            onblur="hogGuardarPctAV()" onkeydown="if(event.key==='Enter')hogGuardarPctAV()">
+        </div>
+        <div style="margin-top:10px;font-size:10px;color:var(--texto-dim);line-height:1.6;">
+          Califica: <b style="color:#FCD34D;">Outbound</b> · Triple Play (<b>TV + Voz + Internet</b>) · con <b>OTT</b> (Netflix, Disney, Amazon, HBO, WIN)
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2567,6 +2593,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <div class="proy-titulo">⚡ Incentivo Efectividad</div>
         </div>
         <div id="hog-efect-content"></div>
+      </div>
+
+      <!-- Sección: Alto Valor -->
+      <div id="hog-av-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">💎 Alto Valor</div>
+        </div>
+        <div id="hog-av-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -10444,6 +10478,8 @@ let _hogEfectEntradas  = [];        // [{label, base, meta, ejecutadoOverride}]
 let _hogEfectPct       = 5;         // % sobre renta ppales (TV/Voz/Internet), editable
 let _hogEfectEditIdx   = null;
 let _hogEfectVisible   = false;
+let _hogAltoValorPct     = 30;   // % sobre ARPU ppales de OTs Triple+OTT Outbound, editable
+let _hogAltoValorVisible = false;
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -10585,8 +10621,28 @@ function hogRecalcularProyeccion() {
     });
   }
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad
-  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo);
+  // Alto Valor: Outbound + Triple Play (TV+Voz+Internet) + OTT
+  const avOTs = datos.filter(r => {
+    const campU = (r.campaña||'').toUpperCase();
+    return campU.includes('OUTBOUND') &&
+           r.cntInt >= 1 && r.cntTV >= 1 && r.cntVoz >= 1 &&
+           r.hasOTT;
+  });
+  const avCount    = avOTs.length;
+  const avProy     = transDias > 0 ? Math.round((avCount / transDias) * totalDias) : avCount;
+  const avRentaInt = avOTs.reduce((s,r) => s + r.rentaInt, 0);
+  const avRentaTV  = avOTs.reduce((s,r) => s + r.rentaTV,  0);
+  const avRentaVoz = avOTs.reduce((s,r) => s + r.rentaVoz, 0);
+  const avArpuInt  = avCount > 0 ? avRentaInt / avCount : 0;
+  const avArpuTV   = avCount > 0 ? avRentaTV  / avCount : 0;
+  const avArpuVoz  = avCount > 0 ? avRentaVoz / avCount : 0;
+  const avPagoInt  = avArpuInt * (_hogAltoValorPct / 100) * avProy;
+  const avPagoTV   = avArpuTV  * (_hogAltoValorPct / 100) * avProy;
+  const avPagoVoz  = avArpuVoz * (_hogAltoValorPct / 100) * avProy;
+  const totalAltoValor = avPagoInt + avPagoTV + avPagoVoz;
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor);
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -10603,6 +10659,7 @@ function hogRecalcularProyeccion() {
     const parts = [];
     if (totalAdicReal > 0)         parts.push(`Adic. ${fmt(adicP1)}`);
     if (totalEfectIncentivo > 0)   parts.push(`Efect. ${fmt(Math.round(totalEfectIncentivo))}`);
+    if (totalAltoValor > 0)        parts.push(`Alto Valor ${fmt(Math.round(totalAltoValor))}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -10720,6 +10777,10 @@ function hogRecalcularProyeccion() {
     pagoIntUnit, pagoTVUnit, pagoVozUnit,
     intProy, tvProy, vozProy
   });
+
+  // Sección Alto Valor
+  hogRenderAltoValorSection({avCount, avProy, avArpuInt, avArpuTV, avArpuVoz,
+                              avPagoInt, avPagoTV, avPagoVoz, totalAltoValor});
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -11067,6 +11128,87 @@ function hogGetTasasAdic() {
     outbound: v('hog-t-adic-out'),
     auto:     v('hog-t-adic-auto')
   };
+}
+
+// ── Alto Valor Hogar ──
+function hogToggleAltoValor() {
+  _hogAltoValorVisible = !_hogAltoValorVisible;
+  document.getElementById('hog-av-body').style.display = _hogAltoValorVisible ? '' : 'none';
+  document.getElementById('hog-av-arrow').style.transform = _hogAltoValorVisible ? 'rotate(180deg)' : '';
+}
+function hogEditarPctAV() {
+  document.getElementById('hog-av-pct-tag').style.display = 'none';
+  const inp = document.getElementById('hog-av-pct-input');
+  inp.style.display = 'inline-block';
+  inp.value = _hogAltoValorPct;
+  inp.focus(); inp.select();
+}
+function hogGuardarPctAV() {
+  const inp = document.getElementById('hog-av-pct-input');
+  const val = parseFloat(inp.value.replace(/[^0-9.]/g,''));
+  if (!isNaN(val) && val > 0) _hogAltoValorPct = val;
+  document.getElementById('hog-av-pct-tag').textContent = _hogAltoValorPct + '%';
+  document.getElementById('hog-av-pct-tag').style.display = 'inline';
+  inp.style.display = 'none';
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogRenderAltoValorSection(av) {
+  const sec  = document.getElementById('hog-av-section');
+  const cont = document.getElementById('hog-av-content');
+  if (!sec || !cont) return;
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  if (av.avCount === 0 && av.avProy === 0) {
+    sec.style.display = '';
+    cont.innerHTML = `
+      <div style="background:var(--negro);border:1px solid rgba(251,191,36,0.2);border-radius:3px;padding:14px;margin-bottom:4px;">
+        <div style="font-size:12px;color:var(--texto-dim);">Sin OTs Outbound Triple Play con OTT en el período actual.</div>
+      </div>`;
+    return;
+  }
+  sec.style.display = '';
+
+  cont.innerHTML = `
+    <div style="background:var(--negro);border:1px solid rgba(251,191,36,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Alto Valor</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#FCD34D;line-height:1;">${fmt(Math.round(av.totalAltoValor))}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">${_hogAltoValorPct}% sobre ARPU · Pago único mes vencido</div>
+        </div>
+        <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
+          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">OTs calificadas</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:#FCD34D;">${fmtN(av.avCount)}</div>
+          <div style="font-size:9px;color:var(--texto-dim);margin-top:2px;">Proy. cierre: <b style="color:#FCD34D;">${fmtN(av.avProy)}</b></div>
+        </div>
+        <div style="font-size:10px;color:var(--texto-dim);align-self:center;line-height:1.7;">
+          <b style="color:#FCD34D;">Outbound</b> · Triple Play (TV + Voz + Internet)<br>+ OTT (Netflix, Disney, Amazon, HBO, WIN)
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:3px;padding:10px 14px;min-width:130px;flex:1;">
+          <div style="font-size:9px;color:#60A5FA;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:3px;">🌐 Internet</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#60A5FA;">${fmt(Math.round(av.avPagoInt))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">ARPU: ${fmt(Math.round(av.avArpuInt))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);">${fmtN(av.avProy)} serv. proy.</div>
+        </div>
+        <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:3px;padding:10px 14px;min-width:130px;flex:1;">
+          <div style="font-size:9px;color:#34D399;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:3px;">📺 TV</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#34D399;">${fmt(Math.round(av.avPagoTV))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">ARPU: ${fmt(Math.round(av.avArpuTV))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);">${fmtN(av.avProy)} serv. proy.</div>
+        </div>
+        <div style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.2);border-radius:3px;padding:10px 14px;min-width:130px;flex:1;">
+          <div style="font-size:9px;color:#FCD34D;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:3px;">📞 Voz</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#FCD34D;">${fmt(Math.round(av.avPagoVoz))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">ARPU: ${fmt(Math.round(av.avArpuVoz))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);">${fmtN(av.avProy)} serv. proy.</div>
+        </div>
+      </div>
+    </div>`;
 }
 
 // ── Incentivo Efectividad Hogar ──
