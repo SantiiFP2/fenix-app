@@ -2346,6 +2346,75 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 4: Incentivo Efectividad -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleEfect()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">4</div>
+        <div class="card-title">Incentivo Efectividad</div>
+        <span id="hog-efect-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-efect-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
+          % sobre renta ppales proyectada (TV · Voz · Internet) · Pago único mes vencido
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:11px;color:var(--texto-dim);">% Incentivo:</span>
+          <span id="hog-efect-pct-tag" onclick="hogEditarPctEfect()"
+            style="background:rgba(109,40,217,0.15);border:1px solid rgba(109,40,217,0.4);border-radius:4px;padding:3px 10px;font-size:13px;font-weight:700;color:#A78BFA;cursor:pointer;"
+            title="Clic para editar">5%</span>
+          <input id="hog-efect-pct-input" type="number" min="0" step="0.1"
+            style="display:none;width:70px;background:var(--negro);border:1px solid #6D28D9;border-radius:4px;color:var(--texto);font-size:13px;padding:3px 8px;outline:none;"
+            onblur="hogGuardarPctEfect()" onkeydown="if(event.key==='Enter')hogGuardarPctEfect()">
+        </div>
+        <div id="hog-efect-lista"><div style="font-size:11px;color:var(--texto-dim);text-align:center;padding:8px 0;">Sin grupos configurados.</div></div>
+        <button onclick="hogAbrirModalEfect(null)"
+          style="width:100%;margin-top:8px;padding:7px 0;background:rgba(109,40,217,0.1);border:1px dashed rgba(109,40,217,0.4);border-radius:4px;color:#A78BFA;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">
+          ＋ Añadir sede / grupo
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Incentivo Efectividad Hogar -->
+    <div id="hog-efect-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+      <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:8px;padding:24px;width:340px;max-width:90vw;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;color:var(--texto);">
+          Grupo de Efectividad
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Nombre / Sede</label>
+          <input id="hog-efect-m-label" type="text" placeholder="Ej: GENERAL, MEDELLIN..."
+            style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Base (# OTs objetivo)</label>
+            <input id="hog-efect-m-base" type="number" min="0" placeholder="0"
+              style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Meta efectividad (%)</label>
+            <input id="hog-efect-m-meta" type="number" min="0" placeholder="80"
+              style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Ejecutado manual <span style="font-style:italic;">(opcional — vacío = usa datos del archivo)</span></label>
+          <input id="hog-efect-m-ejec" type="number" min="0" placeholder="(automático)"
+            style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button onclick="hogCerrarModalEfect()"
+            style="padding:8px 18px;border:1px solid var(--g-outline);border-radius:4px;background:none;color:var(--texto-dim);font-size:13px;cursor:pointer;">
+            Cancelar
+          </button>
+          <button onclick="hogGuardarModalEfect()"
+            style="padding:8px 18px;border:none;border-radius:4px;background:#6D28D9;color:white;font-size:13px;font-weight:700;cursor:pointer;">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2490,6 +2559,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <div class="proy-titulo">⭐ Servicios Adicionales</div>
         </div>
         <div id="hog-adic-pago-content"></div>
+      </div>
+
+      <!-- Sección: Incentivo Efectividad -->
+      <div id="hog-efect-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">⚡ Incentivo Efectividad</div>
+        </div>
+        <div id="hog-efect-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -9399,6 +9476,10 @@ function aplicarMetasAProyeccion(mesKey) {
     });
     if (efectividadActualizada) renderEfectividadCvcLista();
   }
+
+  // Aplicar metas de EFECTIVIDAD FIJO a Hogares
+  hogAplicarMetasEfect(k);
+  hogRenderEfectLista();
 }
 
 // ─── Plantilla Excel ───
@@ -10359,6 +10440,10 @@ let _hogFestivosExtra  = [];        // Festivos añadidos manualmente
 let _hogFestivosRemove = [];        // Festivos eliminados manualmente
 let _hogAdicConfig     = [];        // [{producto: string, comisionable: boolean}]
 let _hogAdicPendientes = [];        // Productos nuevos esperando clasificación
+let _hogEfectEntradas  = [];        // [{label, base, meta, ejecutadoOverride}]
+let _hogEfectPct       = 5;         // % sobre renta ppales (TV/Voz/Internet), editable
+let _hogEfectEditIdx   = null;
+let _hogEfectVisible   = false;
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -10467,8 +10552,24 @@ function hogRecalcularProyeccion() {
   const adicP4   = Math.round(adicProy * 0.30); // mes 4 — informativo
   const adicP6   = Math.round(adicProy * 0.20); // mes 6 — informativo
 
-  // Cobro Proyectado total = ppales + P1 adicionales
-  const totalCobroProy = totalProyPpales + adicP1;
+  // Incentivo Efectividad Hogares (sobre renta ppales proyectada)
+  const totalRentaRealPpales = datos.reduce((s,r) => s + r.rentaInt + r.rentaTV + r.rentaVoz, 0);
+  const totalRentaProyPpales = transDias > 0 ? Math.round((totalRentaRealPpales / transDias) * totalDias) : totalRentaRealPpales;
+  let totalEfectIncentivo = 0;
+  if (_hogEfectEntradas.length) {
+    _hogEfectEntradas.forEach(e => {
+      const ejec     = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
+      const ejecProy = transDias > 0 ? Math.round((ejec / transDias) * totalDias) : ejec;
+      const pctEfect = e.base > 0 ? (ejecProy / e.base * 100) : 0;
+      const cumpl    = e.meta > 0 ? (pctEfect / e.meta * 100) : 0;
+      if (cumpl >= 100) {
+        totalEfectIncentivo += totalRentaProyPpales * (_hogEfectPct / 100);
+      }
+    });
+  }
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo);
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const intOTs  = datos.filter(r => r.cntInt  > 0).length;
@@ -10486,12 +10587,15 @@ function hogRecalcularProyeccion() {
   se2('hog-kpi-total',    fmt(totalCobroProy));
   se2('hog-kpi-ots-proy', fmtN(Math.round((totalOTs / transDias) * totalDias)));
 
-  // Desglose Comisión + Adicionales bajo el KPI
+  // Desglose Comisión + Adicionales + Efectividad bajo el KPI
   const desgloseEl = document.getElementById('hog-kpi-total-desglose');
   if (desgloseEl) {
-    if (totalAdicReal > 0) {
+    const parts = [];
+    if (totalAdicReal > 0)         parts.push(`Adic. ${fmt(adicP1)}`);
+    if (totalEfectIncentivo > 0)   parts.push(`Efect. ${fmt(Math.round(totalEfectIncentivo))}`);
+    if (parts.length) {
       desgloseEl.style.display = '';
-      desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · Adicionales ${fmt(adicP1)}`;
+      desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
     } else {
       desgloseEl.style.display = 'none';
     }
@@ -10598,6 +10702,9 @@ function hogRecalcularProyeccion() {
 
 
   document.getElementById('hog-proy-section').style.display = '';
+
+  // Sección Incentivo Efectividad
+  hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProyPpales, totalRentaRealPpales);
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -10946,6 +11053,211 @@ function hogGetTasasAdic() {
     auto:     v('hog-t-adic-auto')
   };
 }
+
+// ── Incentivo Efectividad Hogar ──
+function hogToggleEfect() {
+  _hogEfectVisible = !_hogEfectVisible;
+  document.getElementById('hog-efect-body').style.display = _hogEfectVisible ? '' : 'none';
+  document.getElementById('hog-efect-arrow').style.transform = _hogEfectVisible ? 'rotate(180deg)' : '';
+}
+
+function hogEditarPctEfect() {
+  document.getElementById('hog-efect-pct-tag').style.display = 'none';
+  const inp = document.getElementById('hog-efect-pct-input');
+  inp.style.display = 'inline-block';
+  inp.value = _hogEfectPct;
+  inp.focus(); inp.select();
+}
+function hogGuardarPctEfect() {
+  const inp = document.getElementById('hog-efect-pct-input');
+  const val = parseFloat(inp.value.replace(/[^0-9.]/g,''));
+  if (!isNaN(val) && val > 0) _hogEfectPct = val;
+  document.getElementById('hog-efect-pct-tag').textContent = _hogEfectPct + '%';
+  document.getElementById('hog-efect-pct-tag').style.display = 'inline';
+  inp.style.display = 'none';
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogRenderEfectLista() {
+  const cont = document.getElementById('hog-efect-lista');
+  if (!cont) return;
+  if (!_hogEfectEntradas.length) {
+    cont.innerHTML = '<div style="font-size:11px;color:var(--texto-dim);text-align:center;padding:8px 0;">Sin grupos configurados.</div>';
+    return;
+  }
+  const totalOTs = _hogResultados.length;
+  cont.innerHTML = _hogEfectEntradas.map((e, i) => {
+    const ejec = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
+    const pct  = e.base > 0 ? (ejec / e.base * 100) : 0;
+    const cumpl = e.meta > 0 ? (pct / e.meta * 100) : null;
+    const cumplColor = cumpl !== null ? (cumpl >= 100 ? 'var(--verde)' : '#FCA5A5') : '#A78BFA';
+    const barW = Math.min(cumpl !== null ? cumpl : 0, 100);
+    return `<div class="efect-cvc-item ${cumpl !== null && cumpl >= 100 ? 'cumple' : 'nocumple'}" style="margin-bottom:6px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:#A78BFA;">${e.label}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:3px;">
+          <span style="font-size:10px;color:var(--texto-dim);">Base: <b style="color:var(--texto);">${e.base.toLocaleString('es-CO')}</b></span>
+          <span style="font-size:10px;color:var(--texto-dim);">Meta: <b style="color:var(--texto);">${e.meta > 0 ? e.meta + '%' : '—'}</b></span>
+          <span style="font-size:10px;color:var(--texto-dim);">Ejec.: <b style="color:#A78BFA;">${ejec.toLocaleString('es-CO')}</b></span>
+          ${cumpl !== null ? `<span style="font-size:10px;font-weight:700;color:${cumplColor};">Cumpl.: ${cumpl.toFixed(1)}%</span>` : ''}
+        </div>
+        <div class="efect-pct-bar-bg"><div class="efect-pct-bar-fill" style="width:${barW}%;background:${cumpl !== null && cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+        <button onclick="hogAbrirModalEfect(${i})" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;color:var(--texto-dim);padding:2px 6px;font-size:11px;cursor:pointer;">✏️</button>
+        <button onclick="hogEliminarEfect(${i})" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;color:var(--texto-dim);padding:2px 6px;font-size:11px;cursor:pointer;">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function hogAbrirModalEfect(idx) {
+  _hogEfectEditIdx = idx;
+  const modal = document.getElementById('hog-efect-modal');
+  if (!modal) return;
+  const e = idx !== null ? _hogEfectEntradas[idx] : {label:'', base:0, meta:5, ejecutadoOverride:null};
+  document.getElementById('hog-efect-m-label').value = e.label;
+  document.getElementById('hog-efect-m-base').value  = e.base;
+  document.getElementById('hog-efect-m-meta').value  = e.meta;
+  document.getElementById('hog-efect-m-ejec').value  = e.ejecutadoOverride !== null ? e.ejecutadoOverride : '';
+  modal.style.display = 'flex';
+}
+function hogCerrarModalEfect() {
+  const modal = document.getElementById('hog-efect-modal');
+  if (modal) modal.style.display = 'none';
+}
+function hogGuardarModalEfect() {
+  const label = document.getElementById('hog-efect-m-label').value.trim();
+  if (!label) { alert('Ingresa un nombre para el grupo'); return; }
+  const base  = parseFloat(document.getElementById('hog-efect-m-base').value) || 0;
+  const meta  = parseFloat(document.getElementById('hog-efect-m-meta').value) || 0;
+  const ejecRaw = document.getElementById('hog-efect-m-ejec').value.trim();
+  const ejecutadoOverride = ejecRaw !== '' ? (parseFloat(ejecRaw)||0) : null;
+  const obj = {label, base, meta, ejecutadoOverride};
+  if (_hogEfectEditIdx !== null) {
+    _hogEfectEntradas[_hogEfectEditIdx] = obj;
+  } else {
+    _hogEfectEntradas.push(obj);
+  }
+  hogCerrarModalEfect();
+  hogRenderEfectLista();
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+function hogEliminarEfect(idx) {
+  _hogEfectEntradas.splice(idx, 1);
+  hogRenderEfectLista();
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+// Render sección derecha de Efectividad Hogares
+function hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProyPpales, totalRentaRealPpales) {
+  const sec  = document.getElementById('hog-efect-section');
+  const cont = document.getElementById('hog-efect-content');
+  if (!sec || !cont) return;
+  if (!_hogEfectEntradas.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+  const totalOTs = datos.length;
+
+  const rows = _hogEfectEntradas.map(e => {
+    const ejec     = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
+    const ejecProy = transDias > 0 ? Math.round((ejec / transDias) * totalDias) : ejec;
+    const pctEfect = e.base > 0 ? (ejecProy / e.base * 100) : 0;
+    const cumpl    = e.meta > 0 ? (pctEfect / e.meta * 100) : null;
+    const cumplEfect = cumpl || 0;
+    const valorIncentivo = (cumplEfect >= 100) ? totalRentaProyPpales * (_hogEfectPct / 100) : 0;
+    return {e, ejec, ejecProy, pctEfect, cumpl, valorIncentivo};
+  });
+
+  const totalIncentivo = rows.reduce((s, r) => s + r.valorIncentivo, 0);
+
+  const tarjetasHTML = rows.length > 1
+    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px;">
+        ${rows.map(r => {
+          const cumplLabel = r.cumpl !== null ? r.cumpl.toFixed(1) + '%' : '—';
+          const cumplColor = r.cumpl !== null ? (r.cumpl >= 100 ? 'var(--verde)' : '#FCA5A5') : '#A78BFA';
+          const barW = Math.min(r.cumpl !== null ? r.cumpl : 0, 100);
+          return `<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:4px;padding:10px;">
+            <div style="font-size:12px;font-weight:700;color:#A78BFA;margin-bottom:6px;">${r.e.label}</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#A78BFA;">${fmt(Math.round(r.valorIncentivo))}</div>
+            <div style="font-size:10px;color:var(--texto-dim);margin:4px 0;">OTs: <b>${fmtN(r.ejec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.ejecProy)}</b> proy.</div>
+            <div style="font-size:10px;color:var(--texto-dim);margin-bottom:4px;">Efect.: <b style="color:#A78BFA;">${r.pctEfect.toFixed(1)}%</b> · Meta: <b>${r.e.meta > 0 ? r.e.meta + '%' : '—'}</b></div>
+            <div style="height:4px;background:rgba(167,139,250,0.15);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:${barW}%;background:${r.cumpl !== null && r.cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};border-radius:2px;transition:width 0.4s;"></div>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:${cumplColor};margin-top:4px;">${cumplLabel}</div>
+          </div>`;
+        }).join('')}
+      </div>`
+    : rows.map(r => {
+        const cumplLabel = r.cumpl !== null ? r.cumpl.toFixed(1) + '%' : '—';
+        const cumplColor = r.cumpl !== null ? (r.cumpl >= 100 ? 'var(--verde)' : '#FCA5A5') : '#A78BFA';
+        const barW = Math.min(r.cumpl !== null ? r.cumpl : 0, 100);
+        return `<div style="margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:10px;color:var(--texto-dim);margin-bottom:5px;">
+            <span>OTs: <b>${fmtN(r.ejec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.ejecProy)}</b> proy. · Base: <b>${fmtN(r.e.base)}</b></span>
+            <span>Efect.: <b style="color:#A78BFA;">${r.pctEfect.toFixed(1)}%</b> de meta <b>${r.e.meta > 0 ? r.e.meta + '%' : '—'}</b> → <span style="color:${cumplColor};font-weight:700;">${cumplLabel}</span></span>
+          </div>
+          <div style="height:6px;background:rgba(167,139,250,0.15);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${barW}%;background:${r.cumpl !== null && r.cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};border-radius:3px;transition:width 0.4s;"></div>
+          </div>
+        </div>`;
+      }).join('');
+
+  cont.innerHTML = `
+    <div style="background:var(--negro);border:1px solid rgba(109,40,217,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+        <div>
+          <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Incentivo Efectividad</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#A78BFA;line-height:1;">${fmt(Math.round(totalIncentivo))}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">${_hogEfectPct}% sobre renta ppales proy. · Pago único mes vencido</div>
+        </div>
+        <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
+          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Renta ppales proy.</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalRentaProyPpales)}</div>
+          <div style="font-size:9px;color:var(--texto-dim);margin-top:2px;">Real: ${fmt(totalRentaRealPpales)}</div>
+        </div>
+      </div>
+      ${tarjetasHTML}
+    </div>`;
+}
+
+// Aplicar metas de EFECTIVIDAD FIJO desde historialMetas a _hogEfectEntradas
+function hogAplicarMetasEfect(mesKey) {
+  if (!mesKey || !historialMetas[mesKey]) return;
+  const filas = historialMetas[mesKey].filter(f =>
+    f.producto === 'HOGAR' && (f.indicador||'').toUpperCase() === 'EFECTIVIDAD FIJO'
+  );
+  if (!filas.length) return;
+  filas.forEach(f => {
+    const label = (f.cvcMadre || f.cvc || 'GENERAL').trim();
+    const meta  = (f.meta || 0) * 100; // decimal → %
+    const existe = _hogEfectEntradas.find(e => e.label === label);
+    if (existe) {
+      existe.meta = meta;
+    } else {
+      _hogEfectEntradas.push({label, base: 0, meta, ejecutadoOverride: null});
+    }
+  });
+}
+
+// Hook: auto-aplicar metas al cambiar mes en Hogares
+(function hookHogPeriodo() {
+  const el = document.getElementById('hog-periodo');
+  if (!el) return;
+  el.addEventListener('change', function() {
+    const k = metasMesKey(this.value);
+    // Limpiar metas anteriores
+    _hogEfectEntradas.forEach(e => { e.meta = 0; });
+    if (k && historialMetas[k]) {
+      hogAplicarMetasEfect(k);
+    }
+    hogRenderEfectLista();
+    if (_hogResultados.length) hogRecalcularProyeccion();
+  });
+})();
 
 // ── Persistencia de config adicionales en servidor ──
 async function hogCargarAdicConfig() {
