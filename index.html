@@ -11450,13 +11450,13 @@ function hogRenderBoniIntSection(d) {
         : `⏳ Sin cumplimiento (${meta > 0 ? cumplStr : 'sin meta'})`;
     }
     return `
-      <div style="background:rgba(0,0,0,0.2);border:1px solid ${color}33;border-radius:4px;padding:10px 12px;flex:1;min-width:150px;">
+      <div style="background:${color}0d;border:1px solid ${color}40;border-radius:4px;padding:10px 12px;flex:1;min-width:150px;">
         <div style="font-size:10px;font-weight:700;color:${color};margin-bottom:5px;">${emoji} ${label}</div>
         <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:${color};margin-bottom:5px;">${fmt(Math.round(pago))}</div>
         <div style="font-size:10px;color:var(--texto-dim);">🌐 Int: <b>${fmtN(intReal)}</b> real · <b style="color:${color};">${fmtN(intProy)}</b> proy.</div>
         <div style="font-size:10px;color:var(--texto-dim);">Meta: <b>${meta > 0 ? fmtN(meta) : '—'}</b> · ARPU: <b>${fmt(Math.round(arpu))}</b></div>
         <div style="font-size:10px;color:var(--texto-dim);">Ticket: <b style="color:${color};">${fmt(Math.round(ticket))}</b></div>
-        <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-top:6px;">
+        <div style="height:4px;background:${color}22;border-radius:2px;overflow:hidden;margin-top:6px;">
           <div style="height:100%;width:${barW}%;background:${cumpl>=100?'var(--verde)':color};border-radius:2px;transition:width 0.4s;"></div>
         </div>
         <div style="font-size:10px;font-weight:700;color:${cumplCol};margin-top:2px;">${cumplStr} cumpl.</div>
@@ -11470,7 +11470,7 @@ function hogRenderBoniIntSection(d) {
         <div style="flex:1;min-width:180px;">
           <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Bonif. Ventas Internet</div>
           <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#60A5FA;line-height:1;">${fmt(d.totalBoniInt)}</div>
-          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Ticket = ARPU × % · × Internet proyectado · Pago mes vencido</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Pago único mes vencido</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
