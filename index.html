@@ -2445,6 +2445,124 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 6: Bonificación Ventas Internet -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleBoniInt()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">6</div>
+        <div class="card-title">Bonif. Ventas Internet</div>
+        <span id="hog-bi-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-bi-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
+          Bono sobre ARPU Internet por canal según cumplimiento de meta. Ticket = ARPU × % · × servicios proyectados.
+        </div>
+
+        <!-- Inbound + Digital -->
+        <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.2);border-radius:5px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:#60A5FA;margin-bottom:8px;">📞 Inbound + Digital</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">Meta Internet (# servicios)</div>
+              <input class="hog-tasa-input" id="hog-bi-meta-in" type="number" min="0" value="0"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">% Bono (si cumple ≥100%)</div>
+              <input class="hog-tasa-input" id="hog-bi-pct-in" type="number" min="0" step="0.1" value="5"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Autogeneración -->
+        <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);border-radius:5px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:#34D399;margin-bottom:8px;">🔄 Autogeneración</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">Meta Internet (# servicios)</div>
+              <input class="hog-tasa-input" id="hog-bi-meta-auto" type="number" min="0" value="0"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">% Bono (si cumple ≥100%)</div>
+              <input class="hog-tasa-input" id="hog-bi-pct-auto" type="number" min="0" step="0.1" value="20"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Outbound -->
+        <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:5px;padding:10px 12px;">
+          <div style="font-size:11px;font-weight:700;color:#FCD34D;margin-bottom:8px;">📤 TMK Outbound · Por rangos</div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">Meta Internet (# servicios)</div>
+            <input class="hog-tasa-input" id="hog-bi-meta-out" type="number" min="0" value="0"
+              onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+              style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:10px;">
+            <thead>
+              <tr>
+                <th style="color:var(--texto-dim);padding:3px 4px;text-align:left;font-weight:600;">Rango cumplimiento</th>
+                <th style="color:var(--texto-dim);padding:3px 4px;text-align:center;font-weight:600;">% Bono</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:4px;color:var(--texto-dim);">0% – &lt;100%</td>
+                <td style="padding:4px;text-align:center;">
+                  <input class="hog-tasa-input" id="hog-bi-t1" type="number" min="0" value="0"
+                    onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                    style="width:52px;padding:3px 4px;font-size:11px;text-align:center;">
+                  <span style="color:var(--texto-dim);font-size:10px;">%</span>
+                </td>
+              </tr>
+              <tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:4px;color:var(--texto-dim);">100% – &lt;105%</td>
+                <td style="padding:4px;text-align:center;">
+                  <input class="hog-tasa-input" id="hog-bi-t2" type="number" min="0" value="50"
+                    onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                    style="width:52px;padding:3px 4px;font-size:11px;text-align:center;">
+                  <span style="color:var(--texto-dim);font-size:10px;">%</span>
+                </td>
+              </tr>
+              <tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:4px;color:var(--texto-dim);">105% – &lt;110%</td>
+                <td style="padding:4px;text-align:center;">
+                  <input class="hog-tasa-input" id="hog-bi-t3" type="number" min="0" value="70"
+                    onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                    style="width:52px;padding:3px 4px;font-size:11px;text-align:center;">
+                  <span style="color:var(--texto-dim);font-size:10px;">%</span>
+                </td>
+              </tr>
+              <tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:4px;color:var(--texto-dim);">110% – &lt;120%</td>
+                <td style="padding:4px;text-align:center;">
+                  <input class="hog-tasa-input" id="hog-bi-t4" type="number" min="0" value="75"
+                    onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                    style="width:52px;padding:3px 4px;font-size:11px;text-align:center;">
+                  <span style="color:var(--texto-dim);font-size:10px;">%</span>
+                </td>
+              </tr>
+              <tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:4px;color:var(--texto-dim);">≥ 120%</td>
+                <td style="padding:4px;text-align:center;">
+                  <input class="hog-tasa-input" id="hog-bi-t5" type="number" min="0" value="80"
+                    onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                    style="width:52px;padding:3px 4px;font-size:11px;text-align:center;">
+                  <span style="color:var(--texto-dim);font-size:10px;">%</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2605,6 +2723,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <div class="proy-titulo">💎 Alto Valor</div>
         </div>
         <div id="hog-av-content"></div>
+      </div>
+
+      <!-- Sección: Bonificación Ventas Internet -->
+      <div id="hog-boni-int-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">🌐 Bonif. Ventas Internet</div>
+        </div>
+        <div id="hog-boni-int-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -9528,6 +9654,8 @@ function aplicarMetasAProyeccion(mesKey) {
   // Aplicar metas de EFECTIVIDAD FIJO a Hogares
   hogAplicarMetasEfect(k);
   hogRenderEfectLista();
+  // Aplicar metas de INTERNET a Bonificación Ventas Internet
+  hogAplicarMetasBoniInt(k);
 }
 
 // ─── Plantilla Excel ───
@@ -10494,6 +10622,7 @@ let _hogEfectEditIdx   = null;
 let _hogEfectVisible   = false;
 let _hogAltoValorPct     = 30;   // % sobre ARPU ppales de OTs Triple+OTT Outbound, editable
 let _hogAltoValorVisible = false;
+let _hogBoniIntVisible   = false; // Bonificación Ventas Internet
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -10655,8 +10784,62 @@ function hogRecalcularProyeccion() {
   const avPagoVoz  = avArpuVoz * (_hogAltoValorPct / 100) * avProy;
   const totalAltoValor = avPagoInt + avPagoTV + avPagoVoz;
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor
-  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor);
+  // ── Bonificación Ventas Internet ──
+  // Helpers de lectura rápida de DOM
+  const biV = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
+  const biMetaIn   = biV('hog-bi-meta-in');
+  const biPctIn    = biV('hog-bi-pct-in');
+  const biMetaAuto = biV('hog-bi-meta-auto');
+  const biPctAuto  = biV('hog-bi-pct-auto');
+  const biMetaOut  = biV('hog-bi-meta-out');
+
+  // Clasificador de canal por campaña
+  const _canalBoni = campana => {
+    const c = (campana||'').toUpperCase();
+    if (c.includes('OUTBOUND') || c.includes('OUT BOUND')) return 'outbound';
+    if (c.includes('AUTO'))                                 return 'auto';
+    if (c.includes('DIGITAL') || c.includes('WEB') || c.includes('WHATSAPP') || c.includes('TIENDA')) return 'digital';
+    return 'inbound';
+  };
+
+  // Inbound + Digital (mismo % bono, misma meta)
+  const biInOTs     = datos.filter(r => r.cntInt > 0 && (_canalBoni(r.campaña) === 'inbound' || _canalBoni(r.campaña) === 'digital'));
+  const biInIntReal = biInOTs.reduce((s,r) => s + r.cntInt, 0);
+  const biInRenta   = biInOTs.reduce((s,r) => s + r.rentaInt, 0);
+  const biInArpu    = biInIntReal > 0 ? biInRenta / biInIntReal : 0;
+  const biInIntProy = transDias > 0 ? Math.round(biInIntReal / transDias * totalDias) : biInIntReal;
+  const biInCumpl   = biMetaIn > 0 ? (biInIntProy / biMetaIn * 100) : 0;
+  const biInPagoFin = biInCumpl >= 100 ? biInArpu * (biPctIn / 100) * biInIntProy : 0;
+
+  // Autogeneración
+  const biAutoOTs     = datos.filter(r => r.cntInt > 0 && _canalBoni(r.campaña) === 'auto');
+  const biAutoIntReal = biAutoOTs.reduce((s,r) => s + r.cntInt, 0);
+  const biAutoRenta   = biAutoOTs.reduce((s,r) => s + r.rentaInt, 0);
+  const biAutoArpu    = biAutoIntReal > 0 ? biAutoRenta / biAutoIntReal : 0;
+  const biAutoIntProy = transDias > 0 ? Math.round(biAutoIntReal / transDias * totalDias) : biAutoIntReal;
+  const biAutoCumpl   = biMetaAuto > 0 ? (biAutoIntProy / biMetaAuto * 100) : 0;
+  const biAutoPagoFin = biAutoCumpl >= 100 ? biAutoArpu * (biPctAuto / 100) * biAutoIntProy : 0;
+
+  // Outbound — por rangos de cumplimiento
+  const biOutOTs     = datos.filter(r => r.cntInt > 0 && _canalBoni(r.campaña) === 'outbound');
+  const biOutIntReal = biOutOTs.reduce((s,r) => s + r.cntInt, 0);
+  const biOutRenta   = biOutOTs.reduce((s,r) => s + r.rentaInt, 0);
+  const biOutArpu    = biOutIntReal > 0 ? biOutRenta / biOutIntReal : 0;
+  const biOutIntProy = transDias > 0 ? Math.round(biOutIntReal / transDias * totalDias) : biOutIntReal;
+  const biOutCumpl   = biMetaOut > 0 ? (biOutIntProy / biMetaOut * 100) : 0;
+  // Determinar tramo outbound
+  let biOutPct = 0;
+  if      (biOutCumpl < 100) biOutPct = biV('hog-bi-t1');
+  else if (biOutCumpl < 105) biOutPct = biV('hog-bi-t2');
+  else if (biOutCumpl < 110) biOutPct = biV('hog-bi-t3');
+  else if (biOutCumpl < 120) biOutPct = biV('hog-bi-t4');
+  else                       biOutPct = biV('hog-bi-t5');
+  const biOutPagoFin = biOutArpu * (biOutPct / 100) * biOutIntProy;
+
+  const totalBoniInt = Math.round(biInPagoFin + biAutoPagoFin + biOutPagoFin);
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -10674,6 +10857,7 @@ function hogRecalcularProyeccion() {
     if (totalAdicReal > 0)         parts.push(`Adic. ${fmt(adicP1)}`);
     if (totalEfectIncentivo > 0)   parts.push(`Efect. ${fmt(Math.round(totalEfectIncentivo))}`);
     if (totalAltoValor > 0)        parts.push(`Alto Valor ${fmt(Math.round(totalAltoValor))}`);
+    if (totalBoniInt > 0)          parts.push(`Boni. Int. ${fmt(totalBoniInt)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -10795,6 +10979,14 @@ function hogRecalcularProyeccion() {
   // Sección Alto Valor
   hogRenderAltoValorSection({avCount, avProy, avArpuInt, avArpuTV, avArpuVoz,
                               avPagoInt, avPagoTV, avPagoVoz, totalAltoValor});
+
+  // Sección Bonificación Ventas Internet
+  hogRenderBoniIntSection({
+    biInIntReal, biInIntProy, biInArpu, biInCumpl, biInPct: biPctIn, biInPago: biInPagoFin, biMetaIn,
+    biAutoIntReal, biAutoIntProy, biAutoArpu, biAutoCumpl, biAutoPct: biPctAuto, biAutoPago: biAutoPagoFin, biMetaAuto,
+    biOutIntReal, biOutIntProy, biOutArpu, biOutCumpl, biOutPct, biOutPago: biOutPagoFin, biMetaOut,
+    totalBoniInt
+  });
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -11225,6 +11417,70 @@ function hogRenderAltoValorSection(av) {
     </div>`;
 }
 
+// ── Bonificación Ventas Internet ──
+function hogToggleBoniInt() {
+  _hogBoniIntVisible = !_hogBoniIntVisible;
+  document.getElementById('hog-bi-body').style.display = _hogBoniIntVisible ? '' : 'none';
+  document.getElementById('hog-bi-arrow').style.transform = _hogBoniIntVisible ? 'rotate(180deg)' : '';
+}
+
+function hogRenderBoniIntSection(d) {
+  const sec  = document.getElementById('hog-boni-int-section');
+  const cont = document.getElementById('hog-boni-int-content');
+  if (!sec || !cont) return;
+  sec.style.display = '';
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  function canalCard(label, color, emoji, intReal, intProy, meta, cumpl, pct, arpu, pago, isOutbound) {
+    const hasData  = intReal > 0 || pago > 0;
+    const cumplStr = meta > 0 ? cumpl.toFixed(1) + '%' : '—';
+    const cumplCol = cumpl >= 100 ? 'var(--verde)' : '#F87171';
+    const barW     = Math.min(cumpl, 100);
+    const ticket   = arpu * pct / 100;
+    let condStr;
+    if (isOutbound) {
+      condStr = pct > 0
+        ? `Tramo: <b style="color:${color};">${pct}%</b> sobre ARPU`
+        : `Sin cumplimiento suficiente (${cumplStr})`;
+    } else {
+      condStr = cumpl >= 100
+        ? `✅ Cumple ≥100% → <b style="color:${color};">${pct}%</b> bono`
+        : `⏳ Sin cumplimiento (${meta > 0 ? cumplStr : 'sin meta'})`;
+    }
+    return `
+      <div style="background:rgba(0,0,0,0.2);border:1px solid ${color}33;border-radius:4px;padding:10px 12px;flex:1;min-width:150px;">
+        <div style="font-size:10px;font-weight:700;color:${color};margin-bottom:5px;">${emoji} ${label}</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:${color};margin-bottom:5px;">${fmt(Math.round(pago))}</div>
+        <div style="font-size:10px;color:var(--texto-dim);">🌐 Int: <b>${fmtN(intReal)}</b> real · <b style="color:${color};">${fmtN(intProy)}</b> proy.</div>
+        <div style="font-size:10px;color:var(--texto-dim);">Meta: <b>${meta > 0 ? fmtN(meta) : '—'}</b> · ARPU: <b>${fmt(Math.round(arpu))}</b></div>
+        <div style="font-size:10px;color:var(--texto-dim);">Ticket: <b style="color:${color};">${fmt(Math.round(ticket))}</b></div>
+        <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-top:6px;">
+          <div style="height:100%;width:${barW}%;background:${cumpl>=100?'var(--verde)':color};border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:${cumplCol};margin-top:2px;">${cumplStr} cumpl.</div>
+        <div style="font-size:9px;color:var(--texto-dim);margin-top:2px;">${condStr}</div>
+      </div>`;
+  }
+
+  cont.innerHTML = `
+    <div style="background:var(--negro);border:1px solid rgba(96,165,250,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:12px;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Bonif. Ventas Internet</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#60A5FA;line-height:1;">${fmt(d.totalBoniInt)}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Ticket = ARPU × % · × Internet proyectado · Pago mes vencido</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${canalCard('Inbound + Digital','#60A5FA','📞',d.biInIntReal,d.biInIntProy,d.biMetaIn,d.biInCumpl,d.biInPct,d.biInArpu,d.biInPago,false)}
+        ${canalCard('Autogeneración','#34D399','🔄',d.biAutoIntReal,d.biAutoIntProy,d.biMetaAuto,d.biAutoCumpl,d.biAutoPct,d.biAutoArpu,d.biAutoPago,false)}
+        ${canalCard('TMK Outbound','#FCD34D','📤',d.biOutIntReal,d.biOutIntProy,d.biMetaOut,d.biOutCumpl,d.biOutPct,d.biOutArpu,d.biOutPago,true)}
+      </div>
+    </div>`;
+}
+
 // ── Incentivo Efectividad Hogar ──
 function hogToggleEfect() {
   _hogEfectVisible = !_hogEfectVisible;
@@ -11443,6 +11699,29 @@ function hogAplicarMetasEfect(mesKey) {
   });
 }
 
+// Aplicar metas de INTERNET desde historialMetas a inputs de Bonif. Ventas Internet
+function hogAplicarMetasBoniInt(mesKey) {
+  if (!mesKey || !historialMetas[mesKey]) return;
+  const filas = historialMetas[mesKey].filter(f =>
+    f.producto === 'HOGAR' && (f.indicador||'').toUpperCase() === 'INTERNET'
+  );
+  if (!filas.length) return;
+  filas.forEach(f => {
+    const sub = (f.subcanal||'').toUpperCase();
+    let targetId;
+    if (sub.includes('OUTBOUND') || sub.includes('OUT BOUND')) {
+      targetId = 'hog-bi-meta-out';
+    } else if (sub.includes('AUTO')) {
+      targetId = 'hog-bi-meta-auto';
+    } else {
+      // Inbound y Digital comparten input de meta
+      targetId = 'hog-bi-meta-in';
+    }
+    const el = document.getElementById(targetId);
+    if (el) el.value = f.meta || 0;
+  });
+}
+
 // Hook: auto-aplicar metas al cambiar mes en Hogares
 (function hookHogPeriodo() {
   const el = document.getElementById('hog-periodo');
@@ -11453,6 +11732,7 @@ function hogAplicarMetasEfect(mesKey) {
     _hogEfectEntradas.forEach(e => { e.meta = 0; });
     if (k && historialMetas[k]) {
       hogAplicarMetasEfect(k);
+      hogAplicarMetasBoniInt(k);
     }
     hogRenderEfectLista();
     if (_hogResultados.length) hogRecalcularProyeccion();
