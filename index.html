@@ -1983,9 +1983,13 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         <div class="mcf-label">Meta <span style="color:var(--rojo);">*</span></div>
         <input type="number" class="mcf-input" id="mmm-meta" placeholder="0" min="0">
       </div>
-      <div class="mcf-field full">
+      <div class="mcf-field">
         <div class="mcf-label">Región</div>
         <input class="mcf-input" id="mmm-region" placeholder="Ej: REGION CENTRO">
+      </div>
+      <div class="mcf-field">
+        <div class="mcf-label">Subcanal <span style="color:var(--texto-dim);font-weight:400;">(canal Hogar)</span></div>
+        <input class="mcf-input" id="mmm-subcanal" placeholder="Ej: TMK OUT BOUND" oninput="this.value=this.value.toUpperCase()">
       </div>
     </div>
     <div class="mcf-actions">
@@ -9002,6 +9006,7 @@ function renderPanelMetas() {
     const icoMap = {MOVIL:'📱',HOGAR:'🏠','T&T':'📺',DEDICADAS:'🎬'};
     const badgeClass = {MOVIL:'metas-badge-movil',HOGAR:'metas-badge-hogar','T&T':'metas-badge-tyt',DEDICADAS:'metas-badge-dedicadas'};
     const esMovil = prod === 'MOVIL';
+    const esHogar = prod === 'HOGAR';
     return `<div class="metas-product-section">
       <div class="metas-product-title">
         <span>${icoMap[prod]||'📦'} ${prod}</span>
@@ -9010,7 +9015,7 @@ function renderPanelMetas() {
       <div class="metas-table-wrap">
         <table class="metas-table">
           <thead><tr>
-            ${esMovil ? '<th>CVC Hijo</th><th>CVC Madre</th>' : '<th>Sede</th><th>Región</th>'}
+            ${esMovil ? '<th>CVC Hijo</th><th>CVC Madre</th>' : esHogar ? '<th>Subcanal</th><th>Sede</th>' : '<th>Sede</th><th>Región</th>'}
             <th>Indicador</th>
             <th>Tipo</th>
             <th style="text-align:right;">Meta</th>
@@ -9026,9 +9031,11 @@ function renderPanelMetas() {
                 Object.entries(porInd).forEach(([ind, filaInd]) => {
                   filaInd.forEach(f => {
                     const globalIdx = getMetasMes(mes).indexOf(f);
+                    const col1 = esHogar
+                      ? `<td><span style="font-size:10px;font-weight:700;background:rgba(109,40,217,0.12);color:#A78BFA;border-radius:3px;padding:2px 6px;">${f.subcanal||'—'}</span></td><td style="font-size:11px;color:var(--texto-dim);">${f.sede||'—'}</td>`
+                      : `<td>${f.sede||'—'}</td><td style="font-size:11px;color:var(--texto-dim);">${f.region||'—'}</td>`;
                     html += `<tr>
-                      <td>${f.sede||'—'}</td>
-                      <td style="font-size:11px;color:var(--texto-dim);">${f.region||'—'}</td>
+                      ${col1}
                       <td style="font-weight:600;">${f.indicador}</td>
                       <td><span class="meta-tipo-badge meta-tipo-${f.tipo.toLowerCase()}">${f.tipo}</span></td>
                       <td style="text-align:right;">
@@ -9196,6 +9203,7 @@ function confirmarCargaMetas() {
     const region   = String(r['REGION']||'').trim().toUpperCase();
     const codigo   = String(r['CODIGO']||'').trim().toUpperCase();
     const desc2    = String(r['DESCRIP2']||'').trim().toUpperCase();
+    const subcanal = String(r['SUBCANAL']||'').trim().toUpperCase();
     const indicador= String(r['INDICADOR']||'').trim().toUpperCase();
     const metaVal  = parseFloat(r['META']) || 0;
     const mesRaw   = r['MES'];
@@ -9228,15 +9236,17 @@ function confirmarCargaMetas() {
       cvcMadre,
       sede:      desc2 || null,
       region:    region || null,
+      subcanal:  subcanal || null,
       meta:      metaVal,
     };
 
-    // Evitar duplicados exactos (mismo mes+indicador+cvc+sede+region) → actualizar
+    // Evitar duplicados exactos (mismo mes+indicador+cvc+sede+region+subcanal) → actualizar
     const existIdx = historialMetas[mesKey].findIndex(f =>
       f.indicador === fila.indicador &&
       f.cvc       === fila.cvc &&
       f.sede      === fila.sede &&
-      f.region    === fila.region
+      f.region    === fila.region &&
+      f.subcanal  === fila.subcanal
     );
     if (existIdx >= 0) {
       historialMetas[mesKey][existIdx] = fila;
@@ -9315,6 +9325,7 @@ function abrirEditarMeta(mes, idx) {
   document.getElementById('mmm-cvc').value       = f.cvc || f.sede || '';
   document.getElementById('mmm-meta').value      = f.meta ?? '';
   document.getElementById('mmm-region').value    = f.region || '';
+  document.getElementById('mmm-subcanal').value  = f.subcanal || '';
   // Guardar referencia al idx para sobreescribir en guardarMetaManual
   document.getElementById('modal-meta-manual')._editIdx = idx;
   document.getElementById('modal-meta-manual')._editMes = k;
@@ -9330,6 +9341,7 @@ function abrirModalMetaManual() {
   document.getElementById('mmm-meta').value = '';
   document.getElementById('mmm-cvc').value = '';
   document.getElementById('mmm-region').value = '';
+  document.getElementById('mmm-subcanal').value = '';
   document.getElementById('modal-meta-manual').style.display = 'flex';
 }
 
@@ -9348,6 +9360,7 @@ function guardarMetaManual() {
   const cvcRaw    = document.getElementById('mmm-cvc').value.trim().toUpperCase();
   const meta      = parseFloat(document.getElementById('mmm-meta').value) || 0;
   const region    = document.getElementById('mmm-region').value.trim().toUpperCase();
+  const subcanal  = document.getElementById('mmm-subcanal').value.trim().toUpperCase();
 
   if (!mes)       { alert('Selecciona un mes.'); return; }
   if (!indicador) { alert('El indicador es obligatorio.'); return; }
@@ -9367,6 +9380,7 @@ function guardarMetaManual() {
     cvcMadre: esMovil ? cvcMadre : null,
     sede:     !esMovil ? (cvcRaw||null) : null,
     region:   region || null,
+    subcanal: subcanal || null,
     meta,
   };
   // Si es edición, sobreescribir la fila; si no, agregar nueva
@@ -11417,7 +11431,8 @@ function hogAplicarMetasEfect(mesKey) {
   );
   if (!filas.length) return;
   filas.forEach(f => {
-    const label = (f.cvcMadre || f.cvc || 'GENERAL').trim();
+    // Preferir subcanal como identificador (distingue Outbound/Inbound/Digital en Hogares)
+    const label = (f.subcanal || f.cvcMadre || f.cvc || 'GENERAL').trim();
     const meta  = (f.meta || 0) * 100; // decimal → %
     const existe = _hogEfectEntradas.find(e => e.label === label);
     if (existe) {
