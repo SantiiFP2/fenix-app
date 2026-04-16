@@ -2355,7 +2355,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
       <div id="hog-efect-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
-          % sobre renta ppales proyectada (TV · Voz · Internet) · Pago único mes vencido
+          Cumplimiento = servicios proyectados / base. Si cumple: ARPU × 5% × servicios por producto. Pago único mes vencido.
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
           <span style="font-size:11px;color:var(--texto-dim);">% Incentivo:</span>
@@ -2387,7 +2387,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
           <div>
-            <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Base (# OTs objetivo)</label>
+            <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Base (# servicios objetivo)</label>
             <input id="hog-efect-m-base" type="number" min="0" placeholder="0"
               style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
           </div>
@@ -2398,7 +2398,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           </div>
         </div>
         <div style="margin-bottom:16px;">
-          <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Ejecutado manual <span style="font-style:italic;">(opcional — vacío = usa datos del archivo)</span></label>
+          <label style="font-size:11px;color:var(--texto-dim);margin-bottom:4px;display:block;">Servicios ejecutados manual <span style="font-style:italic;">(opcional — vacío = suma Int+TV+Voz del archivo)</span></label>
           <input id="hog-efect-m-ejec" type="number" min="0" placeholder="(automático)"
             style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--g-outline);border-radius:4px;color:var(--texto);font-size:13px;padding:8px 10px;outline:none;">
         </div>
@@ -10552,18 +10552,35 @@ function hogRecalcularProyeccion() {
   const adicP4   = Math.round(adicProy * 0.30); // mes 4 — informativo
   const adicP6   = Math.round(adicProy * 0.20); // mes 6 — informativo
 
-  // Incentivo Efectividad Hogares (sobre renta ppales proyectada)
-  const totalRentaRealPpales = datos.reduce((s,r) => s + r.rentaInt + r.rentaTV + r.rentaVoz, 0);
-  const totalRentaProyPpales = transDias > 0 ? Math.round((totalRentaRealPpales / transDias) * totalDias) : totalRentaRealPpales;
+  const intOTs  = datos.filter(r => r.cntInt  > 0).length;
+  const tvOTs   = datos.filter(r => r.cntTV   > 0).length;
+  const vozOTs  = datos.filter(r => r.cntVoz  > 0).length;
+  const intProy = transDias > 0 ? Math.round((intOTs  / transDias) * totalDias) : intOTs;
+  const tvProy  = transDias > 0 ? Math.round((tvOTs   / transDias) * totalDias) : tvOTs;
+  const vozProy = transDias > 0 ? Math.round((vozOTs  / transDias) * totalDias) : vozOTs;
+
+  // Incentivo Efectividad Hogares — cumplimiento por servicios (Int+TV+Voz)
+  // Pago: ARPU_producto × pct% × servicios_producto_proyectados
+  const totalServsReal = datos.reduce((s,r) => s + r.cntInt + r.cntTV + r.cntVoz, 0);
+  const totalServsProy = transDias > 0 ? Math.round((totalServsReal / transDias) * totalDias) : totalServsReal;
+  const totalRentaInt  = datos.reduce((s,r) => s + r.rentaInt, 0);
+  const totalRentaTV   = datos.reduce((s,r) => s + r.rentaTV,  0);
+  const totalRentaVoz  = datos.reduce((s,r) => s + r.rentaVoz, 0);
+  const arpuInt = intOTs > 0 ? totalRentaInt / intOTs : 0;
+  const arpuTV  = tvOTs  > 0 ? totalRentaTV  / tvOTs  : 0;
+  const arpuVoz = vozOTs > 0 ? totalRentaVoz / vozOTs : 0;
+  const pagoIntUnit  = arpuInt * (_hogEfectPct / 100);  // pago por servicio Internet
+  const pagoTVUnit   = arpuTV  * (_hogEfectPct / 100);  // pago por servicio TV
+  const pagoVozUnit  = arpuVoz * (_hogEfectPct / 100);  // pago por servicio Voz
   let totalEfectIncentivo = 0;
   if (_hogEfectEntradas.length) {
     _hogEfectEntradas.forEach(e => {
-      const ejec     = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
-      const ejecProy = transDias > 0 ? Math.round((ejec / transDias) * totalDias) : ejec;
-      const pctEfect = e.base > 0 ? (ejecProy / e.base * 100) : 0;
-      const cumpl    = e.meta > 0 ? (pctEfect / e.meta * 100) : 0;
+      const servsEjec = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalServsReal;
+      const servsProy = transDias > 0 ? Math.round((servsEjec / transDias) * totalDias) : servsEjec;
+      const pctEfect  = e.base > 0 ? (servsProy / e.base * 100) : 0;
+      const cumpl     = e.meta > 0 ? (pctEfect / e.meta * 100) : 0;
       if (cumpl >= 100) {
-        totalEfectIncentivo += totalRentaProyPpales * (_hogEfectPct / 100);
+        totalEfectIncentivo += (pagoIntUnit * intProy) + (pagoTVUnit * tvProy) + (pagoVozUnit * vozProy);
       }
     });
   }
@@ -10571,13 +10588,6 @@ function hogRecalcularProyeccion() {
   // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad
   const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo);
   const totalRealTotal = totalRealPpales + totalAdicReal;
-
-  const intOTs  = datos.filter(r => r.cntInt  > 0).length;
-  const tvOTs   = datos.filter(r => r.cntTV   > 0).length;
-  const vozOTs  = datos.filter(r => r.cntVoz  > 0).length;
-  const intProy = transDias > 0 ? Math.round((intOTs  / transDias) * totalDias) : intOTs;
-  const tvProy  = transDias > 0 ? Math.round((tvOTs   / transDias) * totalDias) : tvOTs;
-  const vozProy = transDias > 0 ? Math.round((vozOTs  / transDias) * totalDias) : vozOTs;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
   const fmtN = n => n.toLocaleString('es-CO');
@@ -10704,7 +10714,12 @@ function hogRecalcularProyeccion() {
   document.getElementById('hog-proy-section').style.display = '';
 
   // Sección Incentivo Efectividad
-  hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProyPpales, totalRentaRealPpales);
+  hogRenderEfectividadSection(datos, transDias, totalDias, {
+    totalServsReal, totalServsProy,
+    arpuInt, arpuTV, arpuVoz,
+    pagoIntUnit, pagoTVUnit, pagoVozUnit,
+    intProy, tvProy, vozProy
+  });
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -11085,9 +11100,9 @@ function hogRenderEfectLista() {
     cont.innerHTML = '<div style="font-size:11px;color:var(--texto-dim);text-align:center;padding:8px 0;">Sin grupos configurados.</div>';
     return;
   }
-  const totalOTs = _hogResultados.length;
+  const totalServs = _hogResultados.reduce((s,r) => s + r.cntInt + r.cntTV + r.cntVoz, 0);
   cont.innerHTML = _hogEfectEntradas.map((e, i) => {
-    const ejec = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
+    const ejec = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalServs;
     const pct  = e.base > 0 ? (ejec / e.base * 100) : 0;
     const cumpl = e.meta > 0 ? (pct / e.meta * 100) : null;
     const cumplColor = cumpl !== null ? (cumpl >= 100 ? 'var(--verde)' : '#FCA5A5') : '#A78BFA';
@@ -11096,9 +11111,9 @@ function hogRenderEfectLista() {
       <div style="flex:1;min-width:0;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:#A78BFA;">${e.label}</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:3px;">
-          <span style="font-size:10px;color:var(--texto-dim);">Base: <b style="color:var(--texto);">${e.base.toLocaleString('es-CO')}</b></span>
+          <span style="font-size:10px;color:var(--texto-dim);">Base: <b style="color:var(--texto);">${e.base.toLocaleString('es-CO')} serv.</b></span>
           <span style="font-size:10px;color:var(--texto-dim);">Meta: <b style="color:var(--texto);">${e.meta > 0 ? e.meta + '%' : '—'}</b></span>
-          <span style="font-size:10px;color:var(--texto-dim);">Ejec.: <b style="color:#A78BFA;">${ejec.toLocaleString('es-CO')}</b></span>
+          <span style="font-size:10px;color:var(--texto-dim);">Ejec.: <b style="color:#A78BFA;">${ejec.toLocaleString('es-CO')} serv.</b></span>
           ${cumpl !== null ? `<span style="font-size:10px;font-weight:700;color:${cumplColor};">Cumpl.: ${cumpl.toFixed(1)}%</span>` : ''}
         </div>
         <div class="efect-pct-bar-bg"><div class="efect-pct-bar-fill" style="width:${barW}%;background:${cumpl !== null && cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};"></div></div>
@@ -11150,7 +11165,7 @@ function hogEliminarEfect(idx) {
 }
 
 // Render sección derecha de Efectividad Hogares
-function hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProyPpales, totalRentaRealPpales) {
+function hogRenderEfectividadSection(datos, transDias, totalDias, ef) {
   const sec  = document.getElementById('hog-efect-section');
   const cont = document.getElementById('hog-efect-content');
   if (!sec || !cont) return;
@@ -11159,35 +11174,67 @@ function hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProy
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
   const fmtN = n => n.toLocaleString('es-CO');
-  const totalOTs = datos.length;
+  const {totalServsReal, totalServsProy, arpuInt, arpuTV, arpuVoz,
+         pagoIntUnit, pagoTVUnit, pagoVozUnit, intProy, tvProy, vozProy} = ef;
+
+  // Pago por producto (si cumple toda la efectividad)
+  const pagoIntTotal  = pagoIntUnit * intProy;
+  const pagoTVTotal   = pagoTVUnit  * tvProy;
+  const pagoVozTotal  = pagoVozUnit * vozProy;
+  const pagoFullTotal = pagoIntTotal + pagoTVTotal + pagoVozTotal;
 
   const rows = _hogEfectEntradas.map(e => {
-    const ejec     = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalOTs;
-    const ejecProy = transDias > 0 ? Math.round((ejec / transDias) * totalDias) : ejec;
-    const pctEfect = e.base > 0 ? (ejecProy / e.base * 100) : 0;
-    const cumpl    = e.meta > 0 ? (pctEfect / e.meta * 100) : null;
+    const servsEjec = e.ejecutadoOverride !== null ? e.ejecutadoOverride : totalServsReal;
+    const servsProy = transDias > 0 ? Math.round((servsEjec / transDias) * totalDias) : servsEjec;
+    const pctEfect  = e.base > 0 ? (servsProy / e.base * 100) : 0;
+    const cumpl     = e.meta > 0 ? (pctEfect / e.meta * 100) : null;
     const cumplEfect = cumpl || 0;
-    const valorIncentivo = (cumplEfect >= 100) ? totalRentaProyPpales * (_hogEfectPct / 100) : 0;
-    return {e, ejec, ejecProy, pctEfect, cumpl, valorIncentivo};
+    const cumple    = cumplEfect >= 100;
+    const valorInt  = cumple ? pagoIntTotal  : 0;
+    const valorTV   = cumple ? pagoTVTotal   : 0;
+    const valorVoz  = cumple ? pagoVozTotal  : 0;
+    const valorTotal = valorInt + valorTV + valorVoz;
+    return {e, servsEjec, servsProy, pctEfect, cumpl, cumple, valorInt, valorTV, valorVoz, valorTotal};
   });
 
-  const totalIncentivo = rows.reduce((s, r) => s + r.valorIncentivo, 0);
+  const totalIncentivo = rows.reduce((s, r) => s + r.valorTotal, 0);
+
+  // Bloque con desglose por producto (siempre visible)
+  const desglosePagos = (r) => `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:3px;padding:6px 10px;min-width:90px;">
+        <div style="font-size:9px;color:#60A5FA;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:2px;">🌐 Internet</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;color:${r.cumple?'#60A5FA':'var(--texto-dim)'};">${fmt(Math.round(r.valorInt))}</div>
+        <div style="font-size:9px;color:var(--texto-dim);">ARPU ${fmt(Math.round(arpuInt))} · ${fmtN(intProy)} serv.</div>
+      </div>
+      <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:3px;padding:6px 10px;min-width:90px;">
+        <div style="font-size:9px;color:#34D399;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:2px;">📺 TV</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;color:${r.cumple?'#34D399':'var(--texto-dim)'};">${fmt(Math.round(r.valorTV))}</div>
+        <div style="font-size:9px;color:var(--texto-dim);">ARPU ${fmt(Math.round(arpuTV))} · ${fmtN(tvProy)} serv.</div>
+      </div>
+      <div style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.2);border-radius:3px;padding:6px 10px;min-width:90px;">
+        <div style="font-size:9px;color:#FCD34D;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:2px;">📞 Voz</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;color:${r.cumple?'#FCD34D':'var(--texto-dim)'};">${fmt(Math.round(r.valorVoz))}</div>
+        <div style="font-size:9px;color:var(--texto-dim);">ARPU ${fmt(Math.round(arpuVoz))} · ${fmtN(vozProy)} serv.</div>
+      </div>
+    </div>`;
 
   const tarjetasHTML = rows.length > 1
-    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px;">
+    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:14px;">
         ${rows.map(r => {
           const cumplLabel = r.cumpl !== null ? r.cumpl.toFixed(1) + '%' : '—';
           const cumplColor = r.cumpl !== null ? (r.cumpl >= 100 ? 'var(--verde)' : '#FCA5A5') : '#A78BFA';
           const barW = Math.min(r.cumpl !== null ? r.cumpl : 0, 100);
-          return `<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:4px;padding:10px;">
+          return `<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,${r.cumple?'0.5':'0.2'});border-radius:4px;padding:10px;">
             <div style="font-size:12px;font-weight:700;color:#A78BFA;margin-bottom:6px;">${r.e.label}</div>
-            <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#A78BFA;">${fmt(Math.round(r.valorIncentivo))}</div>
-            <div style="font-size:10px;color:var(--texto-dim);margin:4px 0;">OTs: <b>${fmtN(r.ejec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.ejecProy)}</b> proy.</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#A78BFA;">${fmt(Math.round(r.valorTotal))}</div>
+            <div style="font-size:10px;color:var(--texto-dim);margin:4px 0;">Servicios: <b>${fmtN(r.servsEjec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.servsProy)}</b> proy.</div>
             <div style="font-size:10px;color:var(--texto-dim);margin-bottom:4px;">Efect.: <b style="color:#A78BFA;">${r.pctEfect.toFixed(1)}%</b> · Meta: <b>${r.e.meta > 0 ? r.e.meta + '%' : '—'}</b></div>
             <div style="height:4px;background:rgba(167,139,250,0.15);border-radius:2px;overflow:hidden;">
-              <div style="height:100%;width:${barW}%;background:${r.cumpl !== null && r.cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};border-radius:2px;transition:width 0.4s;"></div>
+              <div style="height:100%;width:${barW}%;background:${r.cumple ? 'var(--verde)' : '#A78BFA'};border-radius:2px;transition:width 0.4s;"></div>
             </div>
             <div style="font-size:10px;font-weight:700;color:${cumplColor};margin-top:4px;">${cumplLabel}</div>
+            ${desglosePagos(r)}
           </div>`;
         }).join('')}
       </div>`
@@ -11197,27 +11244,23 @@ function hogRenderEfectividadSection(datos, transDias, totalDias, totalRentaProy
         const barW = Math.min(r.cumpl !== null ? r.cumpl : 0, 100);
         return `<div style="margin-top:10px;">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:10px;color:var(--texto-dim);margin-bottom:5px;">
-            <span>OTs: <b>${fmtN(r.ejec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.ejecProy)}</b> proy. · Base: <b>${fmtN(r.e.base)}</b></span>
+            <span>Servicios: <b>${fmtN(r.servsEjec)}</b> real · <b style="color:#A78BFA;">${fmtN(r.servsProy)}</b> proy. · Base: <b>${fmtN(r.e.base)}</b></span>
             <span>Efect.: <b style="color:#A78BFA;">${r.pctEfect.toFixed(1)}%</b> de meta <b>${r.e.meta > 0 ? r.e.meta + '%' : '—'}</b> → <span style="color:${cumplColor};font-weight:700;">${cumplLabel}</span></span>
           </div>
           <div style="height:6px;background:rgba(167,139,250,0.15);border-radius:3px;overflow:hidden;">
-            <div style="height:100%;width:${barW}%;background:${r.cumpl !== null && r.cumpl >= 100 ? 'var(--verde)' : '#A78BFA'};border-radius:3px;transition:width 0.4s;"></div>
+            <div style="height:100%;width:${barW}%;background:${r.cumple ? 'var(--verde)' : '#A78BFA'};border-radius:3px;transition:width 0.4s;"></div>
           </div>
+          ${desglosePagos(r)}
         </div>`;
       }).join('');
 
   cont.innerHTML = `
     <div style="background:var(--negro);border:1px solid rgba(109,40,217,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
-      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
-        <div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:4px;">
+        <div style="flex:1;min-width:180px;">
           <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Incentivo Efectividad</div>
           <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#A78BFA;line-height:1;">${fmt(Math.round(totalIncentivo))}</div>
-          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">${_hogEfectPct}% sobre renta ppales proy. · Pago único mes vencido</div>
-        </div>
-        <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:8px 14px;text-align:center;">
-          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Renta ppales proy.</div>
-          <div style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:#A78BFA;">${fmt(totalRentaProyPpales)}</div>
-          <div style="font-size:9px;color:var(--texto-dim);margin-top:2px;">Real: ${fmt(totalRentaRealPpales)}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">${_hogEfectPct}% sobre ARPU por servicio · Pago único mes vencido</div>
         </div>
       </div>
       ${tarjetasHTML}
