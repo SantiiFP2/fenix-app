@@ -2679,6 +2679,53 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 8: Bonificación por Cumplimiento -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleBoniCumpl()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">8</div>
+        <div class="card-title">Bonif. por Cumplimiento</div>
+        <span id="hog-bc-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-bc-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
+          Solo Inbound + Digital. Si cumplimiento ≥100% de meta TOTAL FIJO: bono fijo × servicios proyectados (Internet, TV, Voz).
+        </div>
+
+        <!-- Meta TOTAL FIJO -->
+        <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.2);border-radius:5px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:#60A5FA;margin-bottom:8px;">📞 Inbound + Digital</div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:9px;color:var(--texto-dim);margin-bottom:3px;">Meta servicios totales (TOTAL FIJO)</div>
+            <input class="hog-tasa-input" id="hog-bc-meta" type="number" min="0" value="0"
+              onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+              style="width:100%;box-sizing:border-box;padding:5px 8px;font-size:12px;text-align:center;">
+          </div>
+          <!-- Bonos por servicio -->
+          <div style="font-size:9px;color:var(--texto-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;">Bono por servicio (si cumple ≥100%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <div>
+              <div style="font-size:9px;color:#60A5FA;margin-bottom:3px;">🌐 Internet</div>
+              <input class="hog-tasa-input" id="hog-bc-val-int" type="number" min="0" value="2000"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 6px;font-size:12px;text-align:center;">
+            </div>
+            <div>
+              <div style="font-size:9px;color:#34D399;margin-bottom:3px;">📺 TV</div>
+              <input class="hog-tasa-input" id="hog-bc-val-tv" type="number" min="0" value="2000"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 6px;font-size:12px;text-align:center;">
+            </div>
+            <div>
+              <div style="font-size:9px;color:#FCD34D;margin-bottom:3px;">📞 Voz</div>
+              <input class="hog-tasa-input" id="hog-bc-val-voz" type="number" min="0" value="2000"
+                onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+                style="width:100%;box-sizing:border-box;padding:5px 6px;font-size:12px;text-align:center;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2855,6 +2902,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <div class="proy-titulo">🚀 Acelerador Cumpl. Presupuesto</div>
         </div>
         <div id="hog-acel-content"></div>
+      </div>
+
+      <!-- Sección: Bonificación por Cumplimiento -->
+      <div id="hog-boni-cumpl-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">🏆 Bonif. por Cumplimiento</div>
+        </div>
+        <div id="hog-boni-cumpl-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -9784,6 +9839,7 @@ function aplicarMetasAProyeccion(mesKey) {
   hogAplicarMetasBoniInt(k);
   // Aplicar metas de TOTAL FIJO al Acelerador
   hogAplicarMetasAcel(k);
+  hogAplicarMetasBoniCumpl(k);
 }
 
 // ─── Plantilla Excel ───
@@ -10762,6 +10818,7 @@ let _hogAltoValorPct     = 30;   // % sobre ARPU ppales de OTs Triple+OTT Outbou
 let _hogAltoValorVisible = false;
 let _hogBoniIntVisible   = false; // Bonificación Ventas Internet
 let _hogAcelVisible      = false; // Acelerador de Cumplimiento de Presupuesto
+let _hogBoniCumplVisible = false; // Bonificación por Cumplimiento
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -11035,8 +11092,21 @@ function hogRecalcularProyeccion() {
 
   const totalAcel = Math.round(acInPago + acAuPago);
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador
-  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel;
+  // ── Bonificación por Cumplimiento (Inbound+Digital, TOTAL FIJO ≥100%, bono fijo × servicios proy.) ──
+  const bcV      = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
+  const bcMeta   = bcV('hog-bc-meta');
+  const bcValInt = bcV('hog-bc-val-int');
+  const bcValTV  = bcV('hog-bc-val-tv');
+  const bcValVoz = bcV('hog-bc-val-voz');
+  // Reutilizar OTs Inbound+Digital ya calculadas (acInOTs/acInServsProy)
+  const bcCumpl   = bcMeta > 0 ? (acInServsProy / bcMeta * 100) : 0;
+  const bcPagoInt = bcCumpl >= 100 ? bcValInt * acInIntProy : 0;
+  const bcPagoTV  = bcCumpl >= 100 ? bcValTV  * acInTvProy  : 0;
+  const bcPagoVoz = bcCumpl >= 100 ? bcValVoz * acInVozProy : 0;
+  const totalBoniCumpl = Math.round(bcPagoInt + bcPagoTV + bcPagoVoz);
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -11056,6 +11126,7 @@ function hogRecalcularProyeccion() {
     if (totalAltoValor > 0)        parts.push(`Alto Valor ${fmt(Math.round(totalAltoValor))}`);
     if (totalBoniInt > 0)          parts.push(`Boni. Int. ${fmt(totalBoniInt)}`);
     if (totalAcel > 0)             parts.push(`Acel. ${fmt(totalAcel)}`);
+    if (totalBoniCumpl > 0)        parts.push(`Boni. Cumpl. ${fmt(totalBoniCumpl)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -11184,6 +11255,15 @@ function hogRecalcularProyeccion() {
     biAutoIntReal, biAutoIntProy, biAutoArpu, biAutoCumpl, biAutoPct: biPctAuto, biAutoPago: biAutoPagoFin, biMetaAuto,
     biOutIntReal, biOutIntProy, biOutArpu, biOutCumpl, biOutPct, biOutPago: biOutPagoFin, biMetaOut,
     totalBoniInt
+  });
+
+  // Sección Bonificación por Cumplimiento
+  hogRenderBoniCumplSection({
+    bcMeta, bcCumpl,
+    servsReal: acInServsReal, servsProy: acInServsProy,
+    intProy: acInIntProy, tvProy: acInTvProy, vozProy: acInVozProy,
+    bcValInt, bcValTV, bcValVoz,
+    bcPagoInt, bcPagoTV, bcPagoVoz, totalBoniCumpl
   });
 
   // Sección Acelerador de Cumplimiento de Presupuesto
@@ -11626,6 +11706,68 @@ function hogRenderAltoValorSection(av) {
     </div>`;
 }
 
+// ── Bonificación por Cumplimiento ──
+function hogToggleBoniCumpl() {
+  _hogBoniCumplVisible = !_hogBoniCumplVisible;
+  document.getElementById('hog-bc-body').style.display = _hogBoniCumplVisible ? '' : 'none';
+  document.getElementById('hog-bc-arrow').style.transform = _hogBoniCumplVisible ? 'rotate(180deg)' : '';
+}
+
+function hogRenderBoniCumplSection(d) {
+  const sec  = document.getElementById('hog-boni-cumpl-section');
+  const cont = document.getElementById('hog-boni-cumpl-content');
+  if (!sec || !cont) return;
+  sec.style.display = '';
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  const cumplStr = d.bcMeta > 0 ? d.bcCumpl.toFixed(1) + '%' : '—';
+  const cumplCol = d.bcCumpl >= 100 ? 'var(--verde)' : '#F87171';
+  const barW     = Math.min(d.bcCumpl, 100);
+  const cumple   = d.bcCumpl >= 100;
+
+  cont.innerHTML = `
+    <div style="background:var(--negro);border:1px solid rgba(96,165,250,0.4);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:12px;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Bonif. por Cumplimiento</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#60A5FA;line-height:1;">${fmt(d.totalBoniCumpl)}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Inbound + Digital · Bono fijo × servicios proyectados · Pago mes vencido</div>
+        </div>
+        <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:4px;padding:10px 14px;text-align:center;min-width:130px;">
+          <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Cumplimiento TOTAL FIJO</div>
+          <div style="height:5px;background:rgba(96,165,250,0.15);border-radius:3px;overflow:hidden;margin-bottom:5px;">
+            <div style="height:100%;width:${barW}%;background:${cumple?'var(--verde)':'#60A5FA'};border-radius:3px;transition:width 0.4s;"></div>
+          </div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:${cumplCol};">${cumplStr}</div>
+          <div style="font-size:9px;color:var(--texto-dim);margin-top:3px;">
+            Serv: <b>${fmtN(d.servsReal)}</b> real · <b style="color:#60A5FA;">${fmtN(d.servsProy)}</b> proy.<br>
+            Meta: <b>${d.bcMeta > 0 ? fmtN(d.bcMeta) : '—'}</b>
+          </div>
+          <div style="margin-top:5px;font-size:10px;font-weight:700;color:${cumplCol};">${cumple ? '✅ Cumple — bono activo' : '⏳ Sin cumplimiento'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);border-radius:4px;padding:10px 12px;flex:1;min-width:120px;text-align:center;">
+          <div style="font-size:9px;color:#60A5FA;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:4px;">🌐 Internet</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#60A5FA;">${fmt(Math.round(d.bcPagoInt))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">Bono: ${fmt(d.bcValInt)} × ${fmtN(d.intProy)} proy.</div>
+        </div>
+        <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:4px;padding:10px 12px;flex:1;min-width:120px;text-align:center;">
+          <div style="font-size:9px;color:#34D399;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:4px;">📺 TV</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#34D399;">${fmt(Math.round(d.bcPagoTV))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">Bono: ${fmt(d.bcValTV)} × ${fmtN(d.tvProy)} proy.</div>
+        </div>
+        <div style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.25);border-radius:4px;padding:10px 12px;flex:1;min-width:120px;text-align:center;">
+          <div style="font-size:9px;color:#FCD34D;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:4px;">📞 Voz</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#FCD34D;">${fmt(Math.round(d.bcPagoVoz))}</div>
+          <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">Bono: ${fmt(d.bcValVoz)} × ${fmtN(d.vozProy)} proy.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
 // ── Acelerador de Cumplimiento de Presupuesto ──
 function hogToggleAcel() {
   _hogAcelVisible = !_hogAcelVisible;
@@ -11988,6 +12130,22 @@ function hogAplicarMetasEfect(mesKey) {
   });
 }
 
+// Aplicar metas de TOTAL FIJO a Bonificación por Cumplimiento (Inbound+Digital)
+function hogAplicarMetasBoniCumpl(mesKey) {
+  if (!mesKey || !historialMetas[mesKey]) return;
+  const filas = historialMetas[mesKey].filter(f =>
+    f.producto === 'HOGAR' && (f.indicador||'').toUpperCase() === 'TOTAL FIJO'
+  );
+  filas.forEach(f => {
+    const sub = (f.subcanal||'').toUpperCase();
+    // Solo Inbound y Digital (no Auto, no Outbound)
+    if (!sub.includes('AUTO') && !sub.includes('OUTBOUND') && !sub.includes('OUT BOUND')) {
+      const el = document.getElementById('hog-bc-meta');
+      if (el) el.value = f.meta || 0;
+    }
+  });
+}
+
 // Aplicar metas de TOTAL FIJO desde historialMetas a inputs del Acelerador
 function hogAplicarMetasAcel(mesKey) {
   if (!mesKey || !historialMetas[mesKey]) return;
@@ -12044,6 +12202,7 @@ function hogAplicarMetasBoniInt(mesKey) {
       hogAplicarMetasEfect(k);
       hogAplicarMetasBoniInt(k);
       hogAplicarMetasAcel(k);
+      hogAplicarMetasBoniCumpl(k);
     }
     hogRenderEfectLista();
     if (_hogResultados.length) hogRecalcularProyeccion();
