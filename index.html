@@ -11155,14 +11155,8 @@ function hogRecalcularProyeccion() {
   // ── Tecnología (ULTRAWIFI / DONGLE) — sin condición de cumplimiento ──
   const tecValUw  = (el => el ? (parseFloat(el.value) || 0) : 0)(document.getElementById('hog-tec-val-uw'));
   const tecValDng = (el => el ? (parseFloat(el.value) || 0) : 0)(document.getElementById('hog-tec-val-dng'));
-  let techUwReal = 0, techDngReal = 0;
-  datos.forEach(r => {
-    (r.adicDetalle || []).forEach(a => {
-      const p = (a.producto || '').toUpperCase();
-      if (p.includes('ULTRAWIFI') || p.includes('ULTRA WIFI')) techUwReal++;
-      if (p.includes('DONGLE')) techDngReal++;
-    });
-  });
+  const techUwReal  = datos.reduce((s, r) => s + (r.cntUw  || 0), 0);
+  const techDngReal = datos.reduce((s, r) => s + (r.cntDng || 0), 0);
   const techUwProy  = transDias > 0 ? Math.round(techUwReal  / transDias * totalDias) : techUwReal;
   const techDngProy = transDias > 0 ? Math.round(techDngReal / transDias * totalDias) : techDngReal;
   const techPagoUw  = techUwProy  * tecValUw;
@@ -11547,12 +11541,21 @@ function hogCalcular() {
     });
     comision += comisionAdic;
 
+    // Contar ULTRAWIFI y DONGLE en TODAS las filas de la OT (sin filtrar por Tipo)
+    let cntUw = 0, cntDng = 0;
+    filas.forEach(f => {
+      const p = (f.Producto || '').toUpperCase();
+      if (p.includes('ULTRAWIFI') || p.includes('ULTRA WIFI')) cntUw++;
+      if (p.includes('DONGLE')) cntDng++;
+    });
+
     return {
       ot, cuenta: base.Cuenta, site: base.Site, campaña, tipoRed,
       paquete: base.Paquete, isDTH, hasOTT,
       cntInt, cntTV, cntVoz, countOTT,
       rentaInt, rentaTV, rentaVoz, rentaOTT,
-      comision, comisionAdic, adicDetalle
+      comision, comisionAdic, adicDetalle,
+      cntUw, cntDng
     };
   });
 
