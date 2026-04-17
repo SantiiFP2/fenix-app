@@ -6,6 +6,7 @@
 <title>Proyección de Factura · Claro Colombia Móvil</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-straight/css/uicons-solid-straight.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -1511,17 +1512,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div style="display:flex;align-items:center;gap:10px;">
     <!-- Launcher -->
     <button id="btn-launcher" onclick="toggleLauncher()" title="Menú de módulos">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="3" width="4" height="4" rx="1"/>
-        <rect x="10" y="3" width="4" height="4" rx="1"/>
-        <rect x="17" y="3" width="4" height="4" rx="1"/>
-        <rect x="3" y="10" width="4" height="4" rx="1"/>
-        <rect x="10" y="10" width="4" height="4" rx="1"/>
-        <rect x="17" y="10" width="4" height="4" rx="1"/>
-        <rect x="3" y="17" width="4" height="4" rx="1"/>
-        <rect x="10" y="17" width="4" height="4" rx="1"/>
-        <rect x="17" y="17" width="4" height="4" rx="1"/>
-      </svg>
+      <i class="fi fi-sr-apps" style="font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center;"></i>
     </button>
     <!-- Modo -->
     <button id="btn-tema" onclick="toggleTema()" title="Modo Oscuro"
@@ -2004,7 +1995,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 <!-- PANEL DE INICIO -->
 <div id="panel-inicio">
   <div class="pi-header">
-    <h1><svg viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;vertical-align:middle;margin-right:8px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg> Panel de Inicio</h1>
+    <h1><i class="fi fi-sr-home" style="font-size:24px;color:#1A73E8;vertical-align:middle;margin-right:8px;line-height:1;"></i> Panel de Inicio</h1>
     <p>RESUMEN EJECUTIVO · CLARO COLOMBIA · TODOS LOS PRODUCTOS</p>
   </div>
 
@@ -2012,7 +2003,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div class="pi-products-grid">
     <div class="pi-product-card activo" id="pi-card-movil" onclick="toggleAnalisisMovil()">
       <span class="pi-badge">✓ Activo</span>
-      <div class="pi-product-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="7" y="2" width="10" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      <div class="pi-product-icon"><i class="fi fi-sr-mobile-5g" style="font-size:22px;color:#1A73E8;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
       <div class="pi-product-name">Móvil</div>
       <div class="pi-product-sub">Postpago · Power · Porta · Migra · Línea Nueva</div>
       <div class="pi-product-kpi vacio" id="pi-movil-kpi">Sin datos</div>
@@ -2020,7 +2011,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     </div>
         <div class="pi-product-card activo" id="pi-card-hogar" onclick="mostrarPanelHogar()">
       <span class="pi-badge">✓ Activo</span>
-      <div class="pi-product-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
+      <div class="pi-product-icon"><i class="fi fi-ss-smart-home-cloud" style="font-size:22px;color:#6D28D9;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
       <div class="pi-product-name">Hogares</div>
       <div class="pi-product-sub">Internet · TV · Telefonía fija</div>
       <div class="pi-product-kpi vacio" id="pi-hogar-kpi">Sin datos</div>
@@ -15005,7 +14996,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- ══ INICIO (opción global) ══ -->
   <div class="lnc-global-section">
     <button class="lnc-global-item" onclick="closeLauncher();mostrarPanelInicio();">
-      <div class="lnc-icon li-inicio"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
+      <div class="lnc-icon li-inicio"><i class="fi fi-sr-home" style="font-size:20px;color:#7C3AED;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
       <div class="lnc-global-label">Panel de Inicio</div>
     </button>
   </div>
@@ -15025,13 +15016,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <button class="launcher-item lnc-item lnc-product" id="lnc-prod-movil"
               onclick="toggleLncModules('claro','movil')">
-        <div class="lnc-icon li-movil"><svg viewBox="0 0 24 24" fill="none" stroke="#1A73E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><rect x="7" y="2" width="10" height="20" rx="2.5"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        <div class="lnc-icon li-movil"><i class="fi fi-sr-mobile-5g" style="font-size:20px;color:#1A73E8;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
         <div class="lnc-label">Móvil</div>
         <div class="lnc-arrow" id="lnc-arr-claro-movil">▾</div>
       </button>
 
       <button class="launcher-item lnc-item" onclick="hogToggleLncPanel(this)">
-        <div class="lnc-icon li-hogar"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg></div>
+        <div class="lnc-icon li-hogar"><i class="fi fi-ss-smart-home-cloud" style="font-size:20px;color:#6D28D9;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
         <div class="lnc-label">Hogares</div>
         <div class="lnc-arrow" id="lnc-arr-hogar">▾</div>
       </button>
@@ -15054,13 +15045,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- MÓDULOS DE HOGAR -->
     <div class="lnc-modules-panel" id="lnc-mod-hogar">
       <div class="lnc-subsection-label lnc-mod-label" style="color:#6D28D9;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;margin-right:4px;"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>
+        <i class="fi fi-ss-smart-home-cloud" style="font-size:12px;color:#6D28D9;margin-right:4px;line-height:1;vertical-align:middle;"></i>
         Módulos Hogar
       </div>
       <div class="lnc-grid">
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
-          <div class="lnc-icon li-proy"><svg viewBox="0 0 24 24" fill="none" stroke="#137333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+          <div class="lnc-icon li-proy"><i class="fi fi-sr-stats" style="font-size:20px;color:#137333;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">Proyección</div>
         </button>
         <button class="launcher-item lnc-item"
@@ -15079,7 +15070,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelMetas();">
-          <div class="lnc-icon li-metas"><svg viewBox="0 0 24 24" fill="none" stroke="#C5221F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#C5221F" stroke="none"/></svg></div>
+          <div class="lnc-icon li-metas"><i class="fi fi-sr-analytics" style="font-size:20px;color:#C5221F;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">Metas</div>
         </button>
       </div>
@@ -15089,30 +15080,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- MÓDULOS DE MÓVIL (ocultos, se revelan al click) -->
     <div class="lnc-modules-panel" id="lnc-mod-claro-movil">
-      <div class="lnc-subsection-label lnc-mod-label">📱 Módulos Móvil</div>
+      <div class="lnc-subsection-label lnc-mod-label"><i class="fi fi-sr-mobile-5g" style="font-size:12px;color:currentColor;margin-right:4px;line-height:1;vertical-align:middle;"></i> Módulos Móvil</div>
       <div class="lnc-grid">
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
-          <div class="lnc-icon li-proy"><svg viewBox="0 0 24 24" fill="none" stroke="#137333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+          <div class="lnc-icon li-proy"><i class="fi fi-sr-stats" style="font-size:20px;color:#137333;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">Proyección</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
-          <div class="lnc-icon li-cvc"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.5" fill="#B45309" stroke="none"/></svg></div>
+          <div class="lnc-icon li-cvc"><i class="fi fi-sr-qrcode-information" style="font-size:20px;color:#B45309;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">CVCs</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelMetas();">
-          <div class="lnc-icon li-metas"><svg viewBox="0 0 24 24" fill="none" stroke="#C5221F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#C5221F" stroke="none"/></svg></div>
+          <div class="lnc-icon li-metas"><i class="fi fi-sr-analytics" style="font-size:20px;color:#C5221F;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">Metas</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelCosechas();">
-          <div class="lnc-icon li-cos" style="background:linear-gradient(135deg,#065F46,#34D399);"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 22V12"/><path d="M12 12C12 7 8 4 4 4c0 4 2.5 7.5 8 8z"/><path d="M12 12C12 7 16 4 20 4c0 4-2.5 7.5-8 8z"/><path d="M12 17C12 13 9 11 6 11"/><path d="M12 17C12 13 15 11 18 11"/></svg></div>
+          <div class="lnc-icon li-cos" style="background:linear-gradient(135deg,#065F46,#34D399);"><i class="fi fi-sr-financial-analysis" style="font-size:20px;color:#ffffff;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
           <div class="lnc-label">Cosechas</div>
         </button>
 
