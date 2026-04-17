@@ -2968,14 +2968,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <button onclick="hogExportarExcel()" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:6px;border:1px solid rgba(109,40,217,0.4);background:rgba(109,40,217,0.1);color:#A78BFA;cursor:pointer;">↓ Exportar Excel</button>
         </div>
         <div class="hog-table-wrap">
-          <table class="hog-table">
-            <thead>
-              <tr>
-                <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
-                <th>Canal</th><th>Paquete</th><th class="num"># Ppales</th><th class="num"># OTT</th>
-                <th class="num">Renta Ppales</th><th class="num">Renta OTT</th><th class="num">Comisión</th>
-              </tr>
-            </thead>
+          <table id="hog-serv-table" class="hog-table">
+            <thead id="hog-serv-thead"></thead>
             <tbody id="hog-serv-tbody"></tbody>
           </table>
         </div>
@@ -11342,6 +11336,74 @@ function hogRecalcularProyeccion() {
     acAuIntProy, acAuTvProy, acAuVozProy, acAuPago,
     totalAcel
   });
+
+  // ── Desglose por OT → tab Servicios ─────────────────────────────────
+  // Calcula lo que cada OT aporta a cada indicador usando los valores
+  // globales ya computados arriba. Si la condición de cumplimiento global
+  // no se cumple para un indicador, ese indicador vale 0 en todas las OTs.
+  const detallePorOT = datos.map(r => {
+    const canal = _canalBoni(r.campaña);
+
+    // COMISIÓN principal (sin parte de adicionales)
+    const dComision = Math.round(r.comision - (r.comisionAdic || 0));
+
+    // ADICIONALES — 50% del primer pago real del OT
+    const dAdic = Math.round((r.comisionAdic || 0) * 0.50);
+
+    // EFECTIVIDAD — solo si el incentivo global disparó (cumpl ≥ 100%)
+    const dEfect = totalEfectIncentivo > 0
+      ? Math.round(pagoIntUnit * r.cntInt + pagoTVUnit * r.cntTV + pagoVozUnit * r.cntVoz)
+      : 0;
+
+    // ALTO VALOR — Outbound + Triple Play + OTT
+    const campU = (r.campaña || '').toUpperCase();
+    const dAltoValor = (campU.includes('OUTBOUND') && r.cntInt >= 1 && r.cntTV >= 1 && r.cntVoz >= 1 && r.hasOTT)
+      ? Math.round((avArpuInt + avArpuTV + avArpuVoz) * (_hogAltoValorPct / 100))
+      : 0;
+
+    // BONIFICACIÓN INTERNET — por canal, condicionada al cumpl global
+    let dBoniInt = 0;
+    if (r.cntInt > 0) {
+      if (canal === 'inbound' || canal === 'digital') {
+        dBoniInt = biInCumpl  >= 100 ? Math.round(biInArpu   * (biPctIn   / 100) * r.cntInt) : 0;
+      } else if (canal === 'auto') {
+        dBoniInt = biAutoCumpl >= 100 ? Math.round(biAutoArpu * (biPctAuto / 100) * r.cntInt) : 0;
+      } else if (canal === 'outbound') {
+        // Outbound se paga siempre según el tramo alcanzado (puede ser 0% si cumpl < 100)
+        dBoniInt = Math.round(biOutArpu * (biOutPct / 100) * r.cntInt);
+      }
+    }
+
+    // ACELERADOR — Inbound+Digital y Auto, NO Outbound
+    let dAcel = 0;
+    if (canal === 'inbound' || canal === 'digital') {
+      dAcel = Math.round(
+        acInArpuInt * (acInPct / 100) * r.cntInt +
+        acInArpuTV  * (acInPct / 100) * r.cntTV  +
+        acInArpuVoz * (acInPct / 100) * r.cntVoz
+      );
+    } else if (canal === 'auto') {
+      dAcel = Math.round(
+        acAuArpuInt * (acAuPct / 100) * r.cntInt +
+        acAuArpuTV  * (acAuPct / 100) * r.cntTV  +
+        acAuArpuVoz * (acAuPct / 100) * r.cntVoz
+      );
+    }
+
+    // BONIFICACIÓN POR CUMPLIMIENTO — Inbound+Digital, solo si bcCumpl ≥ 100%
+    const dBoniCumpl = ((canal === 'inbound' || canal === 'digital') && bcCumpl >= 100)
+      ? Math.round(bcValInt * r.cntInt + bcValTV * r.cntTV + bcValVoz * r.cntVoz)
+      : 0;
+
+    // TECNOLOGÍA — sin condición de cumplimiento
+    const dTec = Math.round((r.cntUw || 0) * tecValUw + (r.cntDng || 0) * tecValDng);
+
+    const dTotal = dComision + dAdic + dEfect + dAltoValor + dBoniInt + dAcel + dBoniCumpl + dTec;
+
+    return { ...r, dComision, dAdic, dEfect, dAltoValor, dBoniInt, dAcel, dBoniCumpl, dTec, dTotal };
+  });
+
+  hogRenderTablaServicios(detallePorOT);
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -11653,31 +11715,119 @@ function hogRenderKPIs(datos) {
 
 // ── Tabla Servicios (tab Servicios) ──
 function hogRenderTablaServicios(datos) {
-  const fmt = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
+  const cop  = n => n.toLocaleString('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 });
+  const fmt  = n => n > 0 ? cop(n) : '—';
+
   const pillRed = r => {
-    if (r.isDTH) return '<span class="hog-pill hog-pill-dth">DTH</span>';
+    if (r.isDTH)            return '<span class="hog-pill hog-pill-dth">DTH</span>';
     if (r.tipoRed === 'FTT') return '<span class="hog-pill hog-pill-ftt">FTT</span>';
     return '<span class="hog-pill hog-pill-bidir">BIDIR</span>';
   };
 
-  const tbody = datos.map((r, i) => `
-    <tr>
-      <td style="color:var(--texto-dim);">${i+1}</td>
-      <td style="font-weight:700;">${r.ot}</td>
-      <td style="color:var(--texto-dim);">${r.cuenta}</td>
-      <td>${r.site}</td>
-      <td>${pillRed(r)}</td>
-      <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
-      <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
-      <td class="num">${r.cntInt + r.cntTV + r.cntVoz}</td>
-      <td class="num">${r.countOTT ? '<span class="hog-ott-badge">'+r.countOTT+' OTT</span>' : '—'}</td>
-      <td class="num">${fmt(r.rentaInt + r.rentaTV + r.rentaVoz)}</td>
-      <td class="num">${r.rentaOTT ? fmt(r.rentaOTT) : '—'}</td>
-      <td class="num" style="font-weight:700;color:#A78BFA;">${fmt(r.comision)}</td>
-    </tr>`).join('');
+  const hasDesglose = datos.length > 0 && 'dTotal' in datos[0];
 
-  document.getElementById('hog-serv-tbody').innerHTML    = tbody;
-  document.getElementById('hog-serv-count').textContent  = '(' + datos.length + ')';
+  // ── THEAD ──────────────────────────────────────────────────────────────
+  const theadHtml = hasDesglose ? `<tr>
+    <th style="min-width:28px;">#</th>
+    <th style="min-width:90px;">OT</th>
+    <th style="min-width:70px;">Site</th>
+    <th style="min-width:50px;">Red</th>
+    <th style="min-width:120px;">Canal</th>
+    <th class="num" style="min-width:50px;"># Serv.</th>
+    <th class="num" style="min-width:100px;color:#A78BFA;">Comisión</th>
+    <th class="num" style="min-width:100px;color:#60A5FA;">Adicionales</th>
+    <th class="num" style="min-width:105px;color:#34D399;">Efectividad</th>
+    <th class="num" style="min-width:95px;color:#F59E0B;">Alto Valor</th>
+    <th class="num" style="min-width:110px;color:#38BDF8;">Boni. Internet</th>
+    <th class="num" style="min-width:100px;color:#818CF8;">Acelerador</th>
+    <th class="num" style="min-width:105px;color:#FB7185;">Boni. Cumpl.</th>
+    <th class="num" style="min-width:100px;color:#4ADE80;">Tecnología</th>
+    <th class="num" style="min-width:110px;color:#FCD34D;border-left:2px solid rgba(255,255,255,0.15);">TOTAL</th>
+  </tr>` : `<tr>
+    <th>#</th><th>OT</th><th>Cuenta</th><th>Site</th><th>TipoRed</th>
+    <th>Canal</th><th>Paquete</th><th class="num"># Ppales</th><th class="num"># OTT</th>
+    <th class="num">Renta Ppales</th><th class="num">Renta OTT</th><th class="num">Comisión</th>
+  </tr>`;
+
+  // ── FILAS ──────────────────────────────────────────────────────────────
+  const filas = datos.map((r, i) => {
+    if (hasDesglose) {
+      return `<tr>
+        <td style="color:var(--texto-dim);">${i+1}</td>
+        <td style="font-weight:700;">${r.ot}</td>
+        <td>${r.site}</td>
+        <td>${pillRed(r)}</td>
+        <td><span class="hog-pill hog-pill-out" style="font-size:10px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;">${r.campaña}</span></td>
+        <td class="num">${r.cntInt + r.cntTV + r.cntVoz}</td>
+        <td class="num" style="color:#A78BFA;">${fmt(r.dComision)}</td>
+        <td class="num" style="color:#60A5FA;">${fmt(r.dAdic)}</td>
+        <td class="num" style="color:#34D399;">${fmt(r.dEfect)}</td>
+        <td class="num" style="color:#F59E0B;">${fmt(r.dAltoValor)}</td>
+        <td class="num" style="color:#38BDF8;">${fmt(r.dBoniInt)}</td>
+        <td class="num" style="color:#818CF8;">${fmt(r.dAcel)}</td>
+        <td class="num" style="color:#FB7185;">${fmt(r.dBoniCumpl)}</td>
+        <td class="num" style="color:#4ADE80;">${fmt(r.dTec)}</td>
+        <td class="num" style="font-weight:800;color:#FCD34D;border-left:2px solid rgba(255,255,255,0.15);">${fmt(r.dTotal)}</td>
+      </tr>`;
+    } else {
+      return `<tr>
+        <td style="color:var(--texto-dim);">${i+1}</td>
+        <td style="font-weight:700;">${r.ot}</td>
+        <td style="color:var(--texto-dim);">${r.cuenta}</td>
+        <td>${r.site}</td>
+        <td>${pillRed(r)}</td>
+        <td><span class="hog-pill hog-pill-out">${r.campaña}</span></td>
+        <td style="color:var(--texto-dim);font-size:12px;">${r.paquete}</td>
+        <td class="num">${r.cntInt + r.cntTV + r.cntVoz}</td>
+        <td class="num">${r.countOTT ? '<span class="hog-ott-badge">'+r.countOTT+' OTT</span>' : '—'}</td>
+        <td class="num">${cop(r.rentaInt + r.rentaTV + r.rentaVoz)}</td>
+        <td class="num">${r.rentaOTT ? cop(r.rentaOTT) : '—'}</td>
+        <td class="num" style="font-weight:700;color:#A78BFA;">${cop(r.comision)}</td>
+      </tr>`;
+    }
+  }).join('');
+
+  // ── FILA TOTALES ───────────────────────────────────────────────────────
+  let tfootHtml = '';
+  if (hasDesglose && datos.length > 0) {
+    const sum = f => datos.reduce((s,r) => s + (r[f]||0), 0);
+    const tComision  = sum('dComision');
+    const tAdic      = sum('dAdic');
+    const tEfect     = sum('dEfect');
+    const tAltoValor = sum('dAltoValor');
+    const tBoniInt   = sum('dBoniInt');
+    const tAcel      = sum('dAcel');
+    const tBoniCumpl = sum('dBoniCumpl');
+    const tTec       = sum('dTec');
+    const tTotal     = sum('dTotal');
+    tfootHtml = `<tfoot><tr style="background:rgba(255,255,255,0.04);font-weight:800;font-size:12px;">
+      <td colspan="6" style="color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-size:10px;">TOTALES</td>
+      <td class="num" style="color:#A78BFA;">${cop(tComision)}</td>
+      <td class="num" style="color:#60A5FA;">${cop(tAdic)}</td>
+      <td class="num" style="color:#34D399;">${cop(tEfect)}</td>
+      <td class="num" style="color:#F59E0B;">${cop(tAltoValor)}</td>
+      <td class="num" style="color:#38BDF8;">${cop(tBoniInt)}</td>
+      <td class="num" style="color:#818CF8;">${cop(tAcel)}</td>
+      <td class="num" style="color:#FB7185;">${cop(tBoniCumpl)}</td>
+      <td class="num" style="color:#4ADE80;">${cop(tTec)}</td>
+      <td class="num" style="font-weight:900;color:#FCD34D;border-left:2px solid rgba(255,255,255,0.15);">${cop(tTotal)}</td>
+    </tr></tfoot>`;
+  }
+
+  // ── INYECTAR ───────────────────────────────────────────────────────────
+  const thead = document.getElementById('hog-serv-thead');
+  const tbody = document.getElementById('hog-serv-tbody');
+  const tfoot = document.getElementById('hog-serv-table');
+  if (thead) thead.innerHTML = theadHtml;
+  if (tbody) tbody.innerHTML = filas;
+  // Remover tfoot previo e insertar nuevo
+  if (tfoot) {
+    const prevFoot = tfoot.querySelector('tfoot');
+    if (prevFoot) prevFoot.remove();
+    if (tfootHtml) tfoot.insertAdjacentHTML('beforeend', tfootHtml);
+  }
+
+  document.getElementById('hog-serv-count').textContent = '(' + datos.length + ')';
   const wrap  = document.getElementById('hog-serv-wrap');
   const empty = document.getElementById('hog-serv-empty');
   if (wrap)  wrap.style.display  = datos.length ? '' : 'none';
