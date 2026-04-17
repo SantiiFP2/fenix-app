@@ -2981,8 +2981,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 2. ESQUEMAS DE PAGO -->
   <div class="card">
-    <div class="card-header"><div class="card-num">2</div><div class="card-title">Esquemas de Pago</div></div>
-    <div class="card-body">
+    <div class="card-header" onclick="movToggle(2)" style="cursor:pointer;user-select:none;"><div class="card-num">2</div><div class="card-title">Esquemas de Pago</div><span id="mov-arrow-2" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-2" style="display:none;">
       <div class="esquema-box">
         <div class="esquema-title"><div class="dot dot-post"></div><span style="color:var(--azul);">Postpago</span><span style="font-size:11px;color:var(--texto-dim);font-weight:400;margin-left:4px;">3 pagos</span></div>
         <div class="pagos-grid pagos-grid-3">
@@ -3008,8 +3008,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 3. CAÍDAS -->
   <div class="card">
-    <div class="card-header"><div class="card-num">3</div><div class="card-title">Porcentajes de Caída</div></div>
-    <div class="card-body">
+    <div class="card-header" onclick="movToggle(3)" style="cursor:pointer;user-select:none;"><div class="card-num">3</div><div class="card-title">Porcentajes de Caída</div><span id="mov-arrow-3" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-3" style="display:none;">
       <div style="font-size:12px;color:var(--texto-dim);line-height:1.6;">Reducción aplicada a cada pago antes de calcular la factura proyectada.</div>
       <div>
         <div class="caida-section-label"><div class="dot dot-post"></div><span style="color:var(--azul);">Postpago</span><button class="reset-caida-btn" onclick="resetCaidas('post')">↺ Restaurar</button></div>
@@ -3039,8 +3039,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 4. CVCs Y METAS -->
   <div class="card">
-    <div class="card-header"><div class="card-num">4</div><div class="card-title">CVCs y Metas por Sede</div></div>
-    <div class="card-body" style="gap:10px;">
+    <div class="card-header" onclick="movToggle(4)" style="cursor:pointer;user-select:none;"><div class="card-num">4</div><div class="card-title">CVCs y Metas por Sede</div><span id="mov-arrow-4" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-4" style="display:none;gap:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="font-size:11px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Sedes configuradas</div>
         <button class="btn-sm" style="border-color:rgba(110,231,183,0.4);color:var(--verde);" onclick="abrirModalCvc()">＋ Añadir CVC</button>
@@ -3053,8 +3053,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 5. INDICADORES DE CUMPLIMIENTO -->
   <div class="card">
-    <div class="card-header"><div class="card-num">5</div><div class="card-title">Indicadores de Cumplimiento</div></div>
-    <div class="card-body" style="gap:0;">
+    <div class="card-header" onclick="movToggle(5)" style="cursor:pointer;user-select:none;"><div class="card-num">5</div><div class="card-title">Indicadores de Cumplimiento</div><span id="mov-arrow-5" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-5" style="display:none;gap:0;">
 
       <!-- ACELERADOR CFM ALTO -->
       <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;padding:14px;">
@@ -3389,8 +3389,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   </div>
   <!-- 6. COSECHAS -->
   <div class="card">
-    <div class="card-header"><div class="card-num">6</div><div class="card-title">Cosechas</div></div>
-    <div class="card-body" style="gap:10px;">
+    <div class="card-header" onclick="movToggle(6)" style="cursor:pointer;user-select:none;"><div class="card-num">6</div><div class="card-title">Cosechas</div><span id="mov-arrow-6" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-6" style="display:none;gap:10px;">
       <div style="font-size:11px;color:var(--texto-dim);letter-spacing:0.5px;line-height:1.5;">
         Registra aquí los pagos pendientes o cosechas de meses anteriores que se cobrarán en este período.
       </div>
@@ -3522,8 +3522,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 9. CARGA -->
   <div class="card">
-    <div class="card-header"><div class="card-num">9</div><div class="card-title">Cargar Ventas del Mes</div></div>
-    <div class="card-body">
+    <div class="card-header" onclick="movToggle(9)" style="cursor:pointer;user-select:none;"><div class="card-num">9</div><div class="card-title">Cargar Ventas del Mes</div><span id="mov-arrow-9" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-body" id="mov-body-9" style="display:none;">
       <div id="upload-zone" class="upload-zone">
         <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
         <span class="upload-icon">📊</span>
@@ -3552,11 +3552,12 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 10. INCENTIVOS ADICIONALES -->
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" onclick="movToggle(10)" style="cursor:pointer;user-select:none;">
       <div class="card-num">10</div>
       <div class="card-title">Incentivos Adicionales</div>
+      <span id="mov-arrow-10" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="mov-body-10" style="display:none;">
       <div style="font-size:11px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
         Agrega bonos, incentivos o pagos adicionales que quieras sumar al cobro neto proyectado.
       </div>
@@ -3571,11 +3572,12 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 
   <!-- 11. VENTAS MIGRA POWER -->
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" onclick="movToggle(11)" style="cursor:pointer;user-select:none;">
       <div class="card-num">11</div>
       <div class="card-title">Ventas Migra Power</div>
+      <span id="mov-arrow-11" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="mov-body-11" style="display:none;">
       <div style="font-size:11px;color:var(--texto-dim);margin-bottom:10px;line-height:1.6;">
         Ventas adicionales que <b style="color:#A78BFA;">solo aceleran el cumplimiento proyectado</b> por CVC.
         <span style="color:#FCA5A5;font-weight:600;">No generan ningún pago.</span>
@@ -9945,6 +9947,16 @@ function badgeCliente(v){const l=(v||'').toLowerCase();if(l.includes('no todo'))
 function badgeProducto(v){const l=(v||'').toLowerCase();if(l.includes('port'))return'badge-port';if(l.includes('migr'))return'badge-mig';if(l.includes('nueva')||l.includes('linea')||l.includes('línea'))return'badge-nueva';return'badge-default';}
 function badgeTipo(v){const l=(v||'').toLowerCase();if(l.includes('power'))return'badge-power';if(l.includes('post'))return'badge-postpago';return'badge-default';}
 function lb(v,cls){return`<span class="badge ${cls}">${v}</span>`;}
+
+// ── Collapse/expand cards del panel izquierdo Móvil ──
+function movToggle(n) {
+  const body  = document.getElementById('mov-body-' + n);
+  const arrow = document.getElementById('mov-arrow-' + n);
+  if (!body || !arrow) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display  = isOpen ? 'none' : '';
+  arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
 
 function checkTotal(t){
   if(t==='post'){const s=+document.getElementById('post_p1').value + +document.getElementById('post_p2').value + +document.getElementById('post_p3').value;const el=document.getElementById('post-check');el.textContent=(s===100?'✓':'⚠️')+` Total: ${s}%`;el.className='pago-total-check '+(s===100?'ok':'warn');}
