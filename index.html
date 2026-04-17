@@ -2758,6 +2758,36 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 10: Semilleros -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-num">10</div>
+        <div class="card-title">Semilleros</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;" id="hog-sem-toggle-label">Deshabilitado</span>
+          <div id="hog-sem-toggle" onclick="hogToggleSemilleros()"
+            style="width:38px;height:20px;border-radius:10px;background:var(--gris-linea);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
+            <div id="hog-sem-knob" style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body" id="hog-sem-body" style="display:none;gap:10px;">
+        <div style="font-size:11px;color:var(--texto-dim);line-height:1.5;padding:8px 10px;background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:3px;">
+          🌱 Apoyo para operaciones nuevas. Cada semillero genera un valor fijo según el mes de pago, ajustado al % de cumplimiento de la meta.
+        </div>
+        <div id="hog-semilleros-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <button onclick="hogAbrirModalSemillero()"
+          style="width:100%;background:rgba(251,191,36,0.06);border:1px dashed rgba(251,191,36,0.4);color:var(--amarillo);padding:9px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px;transition:all 0.15s;"
+          onmouseover="this.style.background='rgba(251,191,36,0.13)'" onmouseout="this.style.background='rgba(251,191,36,0.06)'">
+          ＋ Añadir semillero
+        </button>
+        <div id="hog-semilleros-total-row" style="display:none;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--negro);border:1px solid rgba(251,191,36,0.3);border-radius:3px;">
+          <span style="font-size:11px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Total Semilleros</span>
+          <span id="hog-semilleros-total-val" style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:var(--amarillo);">$0</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -3024,6 +3054,68 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
       <button onclick="hogAdicConfirmarModal()" style="background:#6D28D9;border:none;color:white;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 20px;border-radius:6px;cursor:pointer;letter-spacing:0.5px;">✓ Confirmar y Guardar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL SEMILLERO HOGARES -->
+<div class="modal-bg" id="modal-hog-semillero">
+  <div class="modal modal-sm" style="max-width:420px;">
+    <div class="modal-top">
+      <div class="modal-title">🌱 Semillero</div>
+      <button class="btn-modal-close" onclick="cerrarModal('modal-hog-semillero')">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label>Campaña</label>
+      <input type="text" value="Hogar" disabled
+        style="width:100%;background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:14px;padding:8px 10px;box-sizing:border-box;opacity:0.7;">
+    </div>
+
+    <div class="form-group">
+      <label>Mes de Pago</label>
+      <select id="hog-sem-mes" onchange="hogActualizarInfoSemillero()"
+        style="width:100%;background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;padding:8px 10px;outline:none;">
+        <option value="1">Mes 1 — $1.000.000</option>
+        <option value="2">Mes 2 — $800.000</option>
+        <option value="3">Mes 3 — $600.000</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>% Cumplimiento Meta Semilleros</label>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="number" id="hog-sem-cumpl" placeholder="Ej: 95" min="0" max="200" step="0.1"
+          oninput="hogActualizarInfoSemillero()" style="flex:1;">
+        <span style="font-size:14px;color:var(--texto-dim);font-weight:700;">%</span>
+      </div>
+      <div id="hog-sem-cumpl-badge" style="margin-top:6px;font-size:11px;font-weight:700;min-height:16px;"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Cantidad de Semilleros a Reclamar</label>
+      <input type="number" id="hog-sem-cantidad" placeholder="Ej: 10" min="1" step="1"
+        oninput="hogActualizarInfoSemillero()">
+    </div>
+
+    <div id="hog-sem-preview" style="display:none;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.3);border-radius:3px;padding:12px;margin:4px 0 8px;">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Vista previa</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--texto-dim);margin-bottom:4px;">
+        <span>Valor base por semillero</span><span id="hog-sem-prev-base" style="color:var(--texto);font-weight:700;"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--texto-dim);margin-bottom:4px;">
+        <span>% aplicado por cumplimiento</span><span id="hog-sem-prev-pct" style="color:var(--amarillo);font-weight:700;"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--texto-dim);margin-bottom:8px;">
+        <span>Valor efectivo por semillero</span><span id="hog-sem-prev-efectivo" style="color:var(--texto);font-weight:700;"></span>
+      </div>
+      <div style="height:1px;background:rgba(251,191,36,0.2);margin-bottom:8px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);letter-spacing:1px;">TOTAL</span>
+        <span id="hog-sem-prev-total" style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--amarillo);"></span>
+      </div>
+    </div>
+
+    <button class="btn-primary" style="background:rgba(251,191,36,0.15);border-color:var(--amarillo);color:var(--amarillo);" onclick="hogGuardarSemillero()">Guardar semillero</button>
   </div>
 </div>
 
@@ -10854,6 +10946,10 @@ let _hogBoniIntVisible   = false; // Bonificación Ventas Internet
 let _hogAcelVisible      = false; // Acelerador de Cumplimiento de Presupuesto
 let _hogBoniCumplVisible = false; // Bonificación por Cumplimiento
 let _hogTecnologiaVisible = false; // Tecnología (ULTRAWIFI / DONGLE)
+let _hogSemillerosHabilitado = false;
+let _hogSemilleros = [];           // [{mes, valorBase, cumplPct, pctAplicado, valorEfectivo, cantidad, total}]
+let _hogSemilleroEditIdx = null;
+const HOG_VALORES_MES = { '1': 1000000, '2': 800000, '3': 600000 };
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -11151,8 +11247,11 @@ function hogRecalcularProyeccion() {
   const techPagoDng = techDngProy * tecValDng;
   const totalTecnologia = Math.round(techPagoUw + techPagoDng);
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento
-  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia;
+  // Semilleros Hogar (solo si habilitado)
+  const totalHogSemilleros = _hogSemillerosHabilitado ? _hogSemilleros.reduce((s, x) => s + x.total, 0) : 0;
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -11174,6 +11273,7 @@ function hogRecalcularProyeccion() {
     if (totalAcel > 0)             parts.push(`Acel. ${fmt(totalAcel)}`);
     if (totalBoniCumpl > 0)        parts.push(`Boni. Cumpl. ${fmt(totalBoniCumpl)}`);
     if (totalTecnologia > 0)       parts.push(`Tecnología ${fmt(totalTecnologia)}`);
+    if (totalHogSemilleros > 0)    parts.push(`Semilleros ${fmt(totalHogSemilleros)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -11972,6 +12072,147 @@ function hogRenderTecnologiaSection(d) {
         ${productoCard('DONGLE','#34D399','🔌',d.techDngReal,d.techDngProy,d.tecValDng,d.techPagoDng)}
       </div>
     </div>`;
+}
+
+// ── Semilleros Hogares ──────────────────────────────────────────────────
+function hogToggleSemilleros() {
+  _hogSemillerosHabilitado = !_hogSemillerosHabilitado;
+  const body   = document.getElementById('hog-sem-body');
+  const toggle = document.getElementById('hog-sem-toggle');
+  const knob   = document.getElementById('hog-sem-knob');
+  const label  = document.getElementById('hog-sem-toggle-label');
+  if (_hogSemillerosHabilitado) {
+    body.style.display      = 'flex';
+    toggle.style.background = 'var(--amarillo)';
+    knob.style.left         = '20px';
+    label.textContent       = 'Habilitado';
+    label.style.color       = 'var(--amarillo)';
+  } else {
+    body.style.display      = 'none';
+    toggle.style.background = 'var(--gris-linea)';
+    knob.style.left         = '2px';
+    label.textContent       = 'Deshabilitado';
+    label.style.color       = 'var(--texto-dim)';
+  }
+  hogRenderSemillerosTotalRow();
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogAbrirModalSemillero(idx) {
+  _hogSemilleroEditIdx = idx !== undefined ? idx : null;
+  document.getElementById('hog-sem-mes').value      = '1';
+  document.getElementById('hog-sem-cumpl').value    = '';
+  document.getElementById('hog-sem-cantidad').value = '';
+  document.getElementById('hog-sem-preview').style.display   = 'none';
+  document.getElementById('hog-sem-cumpl-badge').innerHTML   = '';
+  if (_hogSemilleroEditIdx !== null) {
+    const s = _hogSemilleros[_hogSemilleroEditIdx];
+    document.getElementById('hog-sem-mes').value      = String(s.mes);
+    document.getElementById('hog-sem-cumpl').value    = s.cumplPct;
+    document.getElementById('hog-sem-cantidad').value = s.cantidad;
+    hogActualizarInfoSemillero();
+  }
+  document.getElementById('modal-hog-semillero').classList.add('open');
+}
+
+function hogActualizarInfoSemillero() {
+  const mes      = document.getElementById('hog-sem-mes').value;
+  const cumpl    = parseFloat(document.getElementById('hog-sem-cumpl').value);
+  const cantidad = parseInt(document.getElementById('hog-sem-cantidad').value) || 0;
+  const valorBase = HOG_VALORES_MES[mes] || 1000000;
+  const pctAplica = isNaN(cumpl) ? null : getPctSemillero(cumpl);
+  const badgeEl  = document.getElementById('hog-sem-cumpl-badge');
+  if (!isNaN(cumpl)) {
+    if (pctAplica === 0)        badgeEl.innerHTML = '<span style="color:#FCA5A5;">✗ Menor al 80% — no genera pago</span>';
+    else if (pctAplica === 80)  badgeEl.innerHTML = '<span style="color:var(--amarillo);">◑ 80% del valor aplicado</span>';
+    else if (pctAplica === 90)  badgeEl.innerHTML = '<span style="color:var(--amarillo);">◕ 90% del valor aplicado</span>';
+    else                        badgeEl.innerHTML = '<span style="color:var(--verde);">✓ 100% — meta cumplida</span>';
+  } else {
+    badgeEl.innerHTML = '';
+  }
+  const preview = document.getElementById('hog-sem-preview');
+  if (!isNaN(cumpl) && cantidad > 0) {
+    const valorEfect = Math.round(valorBase * (pctAplica / 100));
+    const total      = valorEfect * cantidad;
+    document.getElementById('hog-sem-prev-base').textContent     = '$' + valorBase.toLocaleString('es-CO');
+    document.getElementById('hog-sem-prev-pct').textContent      = pctAplica + '%';
+    document.getElementById('hog-sem-prev-efectivo').textContent = '$' + valorEfect.toLocaleString('es-CO');
+    document.getElementById('hog-sem-prev-total').textContent    = '$' + total.toLocaleString('es-CO');
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function hogGuardarSemillero() {
+  const mes      = parseInt(document.getElementById('hog-sem-mes').value);
+  const cumplPct = parseFloat(document.getElementById('hog-sem-cumpl').value);
+  const cantidad = parseInt(document.getElementById('hog-sem-cantidad').value);
+  if (isNaN(cumplPct) || cumplPct < 0) { alert('Ingresa el % de cumplimiento.'); return; }
+  if (!cantidad || cantidad < 1)        { alert('Ingresa la cantidad de semilleros (mínimo 1).'); return; }
+  const valorBase     = HOG_VALORES_MES[String(mes)];
+  const pctAplicado   = getPctSemillero(cumplPct);
+  const valorEfectivo = Math.round(valorBase * (pctAplicado / 100));
+  const total         = valorEfectivo * cantidad;
+  const obj = { mes, valorBase, cumplPct, pctAplicado, valorEfectivo, cantidad, total };
+  if (_hogSemilleroEditIdx !== null) {
+    _hogSemilleros[_hogSemilleroEditIdx] = obj;
+  } else {
+    _hogSemilleros.push(obj);
+  }
+  cerrarModal('modal-hog-semillero');
+  hogRenderSemillerosLista();
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogEliminarSemillero(i) {
+  if (!confirm('¿Eliminar este semillero?')) return;
+  _hogSemilleros.splice(i, 1);
+  hogRenderSemillerosLista();
+  if (_hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogRenderSemillerosLista() {
+  const cont = document.getElementById('hog-semilleros-lista');
+  if (!cont) return;
+  const NOMBRES_MES = { 1:'Mes 1 · $1.000.000', 2:'Mes 2 · $800.000', 3:'Mes 3 · $600.000' };
+  if (!_hogSemilleros.length) {
+    cont.innerHTML = '<div style="font-size:11px;color:var(--texto-dim);text-align:center;padding:6px 0;">Sin semilleros añadidos.</div>';
+    hogRenderSemillerosTotalRow();
+    return;
+  }
+  cont.innerHTML = _hogSemilleros.map((s, i) => {
+    const cumplColor = s.pctAplicado === 0 ? '#FCA5A5' : s.pctAplicado < 100 ? 'var(--amarillo)' : 'var(--verde)';
+    return `<div style="background:var(--negro);border:1px solid rgba(251,191,36,${s.pctAplicado>0?'0.3':'0.1'});border-radius:3px;padding:10px 12px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+            <span style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;color:var(--amarillo);">Hogar</span>
+            <span style="font-size:10px;color:var(--texto-dim);background:var(--gris-oscuro);padding:1px 6px;border-radius:2px;">${NOMBRES_MES[s.mes]}</span>
+            <span style="font-size:10px;font-weight:700;color:${cumplColor};">${s.cumplPct}% → ${s.pctAplicado}% aplicado</span>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--texto-dim);">Cantidad: <b style="color:var(--texto);">${s.cantidad}</b></span>
+            <span style="font-size:11px;color:var(--texto-dim);">Valor unit.: <b style="color:var(--texto);">$${s.valorEfectivo.toLocaleString('es-CO')}</b></span>
+            <span style="font-size:11px;font-weight:800;color:var(--amarillo);">Total: $${s.total.toLocaleString('es-CO')}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          <button onclick="hogAbrirModalSemillero(${i})" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;color:var(--texto-dim);padding:3px 6px;font-size:11px;cursor:pointer;">✏️</button>
+          <button onclick="hogEliminarSemillero(${i})" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;color:var(--texto-dim);padding:3px 6px;font-size:11px;cursor:pointer;">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  hogRenderSemillerosTotalRow();
+}
+
+function hogRenderSemillerosTotalRow() {
+  const rowEl = document.getElementById('hog-semilleros-total-row');
+  const valEl = document.getElementById('hog-semilleros-total-val');
+  const total = _hogSemilleros.reduce((s, x) => s + x.total, 0);
+  if (rowEl) rowEl.style.display = _hogSemillerosHabilitado && _hogSemilleros.length ? 'flex' : 'none';
+  if (valEl) valEl.textContent   = '$' + Math.round(total).toLocaleString('es-CO');
 }
 
 // ── Bonificación por Cumplimiento ──
