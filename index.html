@@ -2726,6 +2726,44 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
       </div>
     </div>
 
+    <!-- Card 9: Tecnología -->
+    <div class="card">
+      <div class="card-header" onclick="hogToggleTecnologia()" style="cursor:pointer;user-select:none;">
+        <div class="card-num">9</div>
+        <div class="card-title">Tecnología</div>
+        <span id="hog-tec-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div id="hog-tec-body" style="display:none;padding:0 14px 14px;">
+        <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
+          Sin condición de cumplimiento. Detecta automáticamente los productos en Servicios Adicionales y proyecta el pago.
+        </div>
+
+        <!-- ULTRAWIFI -->
+        <div style="background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.2);border-radius:5px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;color:#60A5FA;margin-bottom:6px;">📡 ULTRAWIFI <span style="font-size:9px;font-weight:400;color:var(--texto-dim);">(detecta ULTRAWIFI, ULTRA WIFI…)</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;color:var(--texto-dim);white-space:nowrap;">Pago por unidad:</span>
+            <input class="hog-tasa-input" id="hog-tec-val-uw" type="number" min="0" value="9000"
+              onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+              style="flex:1;padding:5px 8px;font-size:13px;font-weight:700;text-align:center;">
+            <span style="font-size:10px;color:var(--texto-dim);">COP</span>
+          </div>
+        </div>
+
+        <!-- DONGLE -->
+        <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);border-radius:5px;padding:10px 12px;">
+          <div style="font-size:11px;font-weight:700;color:#34D399;margin-bottom:6px;">🔌 DONGLE <span style="font-size:9px;font-weight:400;color:var(--texto-dim);">(detecta DONGLE…)</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;color:var(--texto-dim);white-space:nowrap;">Pago por unidad:</span>
+            <input class="hog-tasa-input" id="hog-tec-val-dng" type="number" min="0" value="7000"
+              onchange="if(_hogResultados.length)hogRecalcularProyeccion()"
+              style="flex:1;padding:5px 8px;font-size:13px;font-weight:700;text-align:center;">
+            <span style="font-size:10px;color:var(--texto-dim);">COP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
 
@@ -2910,6 +2948,14 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
           <div class="proy-titulo">🏆 Bonif. por Cumplimiento</div>
         </div>
         <div id="hog-boni-cumpl-content"></div>
+      </div>
+
+      <!-- Sección: Tecnología -->
+      <div id="hog-tec-section" class="proy-section" style="display:none;">
+        <div class="proy-header">
+          <div class="proy-titulo">📡 Tecnología</div>
+        </div>
+        <div id="hog-tec-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -10819,6 +10865,7 @@ let _hogAltoValorVisible = false;
 let _hogBoniIntVisible   = false; // Bonificación Ventas Internet
 let _hogAcelVisible      = false; // Acelerador de Cumplimiento de Presupuesto
 let _hogBoniCumplVisible = false; // Bonificación por Cumplimiento
+let _hogTecnologiaVisible = false; // Tecnología (ULTRAWIFI / DONGLE)
 
 // Keywords OTT (busca coincidencia parcial en Producto)
 const HOG_OTT_KW = ['NETFLIX','DISNEY','AMAZON','HBO','MAX','WIN'];
@@ -11105,8 +11152,25 @@ function hogRecalcularProyeccion() {
   const bcPagoVoz = bcCumpl >= 100 ? bcValVoz * acInVozProy : 0;
   const totalBoniCumpl = Math.round(bcPagoInt + bcPagoTV + bcPagoVoz);
 
+  // ── Tecnología (ULTRAWIFI / DONGLE) — sin condición de cumplimiento ──
+  const tecValUw  = (el => el ? (parseFloat(el.value) || 0) : 0)(document.getElementById('hog-tec-val-uw'));
+  const tecValDng = (el => el ? (parseFloat(el.value) || 0) : 0)(document.getElementById('hog-tec-val-dng'));
+  let techUwReal = 0, techDngReal = 0;
+  datos.forEach(r => {
+    (r.adicDetalle || []).forEach(a => {
+      const p = (a.producto || '').toUpperCase();
+      if (p.includes('ULTRAWIFI') || p.includes('ULTRA WIFI')) techUwReal++;
+      if (p.includes('DONGLE')) techDngReal++;
+    });
+  });
+  const techUwProy  = transDias > 0 ? Math.round(techUwReal  / transDias * totalDias) : techUwReal;
+  const techDngProy = transDias > 0 ? Math.round(techDngReal / transDias * totalDias) : techDngReal;
+  const techPagoUw  = techUwProy  * tecValUw;
+  const techPagoDng = techDngProy * tecValDng;
+  const totalTecnologia = Math.round(techPagoUw + techPagoDng);
+
   // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento
-  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl;
+  const totalCobroProy = totalProyPpales + adicP1 + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -11127,6 +11191,7 @@ function hogRecalcularProyeccion() {
     if (totalBoniInt > 0)          parts.push(`Boni. Int. ${fmt(totalBoniInt)}`);
     if (totalAcel > 0)             parts.push(`Acel. ${fmt(totalAcel)}`);
     if (totalBoniCumpl > 0)        parts.push(`Boni. Cumpl. ${fmt(totalBoniCumpl)}`);
+    if (totalTecnologia > 0)       parts.push(`Tecnología ${fmt(totalTecnologia)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -11255,6 +11320,13 @@ function hogRecalcularProyeccion() {
     biAutoIntReal, biAutoIntProy, biAutoArpu, biAutoCumpl, biAutoPct: biPctAuto, biAutoPago: biAutoPagoFin, biMetaAuto,
     biOutIntReal, biOutIntProy, biOutArpu, biOutCumpl, biOutPct, biOutPago: biOutPagoFin, biMetaOut,
     totalBoniInt
+  });
+
+  // Sección Tecnología
+  hogRenderTecnologiaSection({
+    techUwReal, techUwProy, tecValUw, techPagoUw,
+    techDngReal, techDngProy, tecValDng, techPagoDng,
+    totalTecnologia
   });
 
   // Sección Bonificación por Cumplimiento
@@ -11702,6 +11774,55 @@ function hogRenderAltoValorSection(av) {
           <div style="font-size:10px;color:var(--texto-dim);margin-top:3px;">ARPU: ${fmt(Math.round(av.avArpuVoz))}</div>
           <div style="font-size:10px;color:var(--texto-dim);">${fmtN(av.avProy)} serv. proy.</div>
         </div>
+      </div>
+    </div>`;
+}
+
+// ── Tecnología (ULTRAWIFI / DONGLE) ──
+function hogToggleTecnologia() {
+  _hogTecnologiaVisible = !_hogTecnologiaVisible;
+  document.getElementById('hog-tec-body').style.display  = _hogTecnologiaVisible ? '' : 'none';
+  document.getElementById('hog-tec-arrow').style.transform = _hogTecnologiaVisible ? 'rotate(180deg)' : '';
+}
+
+function hogRenderTecnologiaSection(d) {
+  const sec  = document.getElementById('hog-tec-section');
+  const cont = document.getElementById('hog-tec-content');
+  if (!sec || !cont) return;
+  sec.style.display = '';
+
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  const fmtN = n => n.toLocaleString('es-CO');
+
+  function productoCard(label, color, emoji, real, proy, valUnit, pago) {
+    return `
+      <div style="background:${color}0d;border:1px solid ${color}40;border-radius:4px;padding:12px;flex:1;min-width:160px;">
+        <div style="font-size:10px;font-weight:700;color:${color};margin-bottom:6px;">${emoji} ${label}</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:${color};margin-bottom:6px;">${fmt(Math.round(pago))}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:4px 8px;text-align:center;flex:1;">
+            <div style="font-size:9px;color:var(--texto-dim);margin-bottom:2px;">Real</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:${color};">${fmtN(real)}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:4px 8px;text-align:center;flex:1;">
+            <div style="font-size:9px;color:var(--texto-dim);margin-bottom:2px;">Proyectado</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:${color};">${fmtN(proy)}</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--texto-dim);">${fmt(valUnit)} × ${fmtN(proy)} unidades</div>
+      </div>`;
+  }
+
+  cont.innerHTML = `
+    <div style="background:var(--negro);border:1px solid rgba(96,165,250,0.35);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="margin-bottom:12px;">
+        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Tecnología</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#60A5FA;line-height:1;">${fmt(d.totalTecnologia)}</div>
+        <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Sin condición de cumplimiento · Pago por unidad proyectada</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        ${productoCard('ULTRAWIFI','#60A5FA','📡',d.techUwReal,d.techUwProy,d.tecValUw,d.techPagoUw)}
+        ${productoCard('DONGLE','#34D399','🔌',d.techDngReal,d.techDngProy,d.tecValDng,d.techPagoDng)}
       </div>
     </div>`;
 }
