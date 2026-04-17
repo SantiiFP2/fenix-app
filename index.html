@@ -5,13 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proyección de Factura · Claro Colombia Móvil</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
-<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-straight/css/uicons-solid-straight.css">
-<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
-<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 :root{
   --rojo:#DA0000;--rojo-light:#E53935;--acento:#1a73e8;
   --negro:#F8F9FA;--gris-oscuro:#FFFFFF;--gris-medio:#F1F3F4;--gris-linea:#DADCE0;
@@ -1514,7 +1519,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div style="display:flex;align-items:center;gap:10px;">
     <!-- Launcher -->
     <button id="btn-launcher" onclick="toggleLauncher()" title="Menú de módulos">
-      <i class="fi fi-sr-apps" style="font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center;"></i>
+      <span class="material-symbols-rounded" style="font-size:22px;">apps</span>
     </button>
     <!-- Modo -->
     <button id="btn-tema" onclick="toggleTema()" title="Modo Oscuro"
@@ -1524,7 +1529,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     <!-- Gestión de usuarios (solo admin/supervisor) -->
     <button id="btn-gestion-usuarios" onclick="abrirModalUsuarios()" title="Gestionar usuarios"
       style="display:none;width:38px;height:38px;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
-      <i class="fi fi-sr-users-alt" style="font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;"></i>
+      <span class="material-symbols-rounded" style="font-size:20px;">group</span>
     </button>
     <!-- Usuario -->
     <div id="header-usuario"></div>
@@ -1997,7 +2002,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 <!-- PANEL DE INICIO -->
 <div id="panel-inicio">
   <div class="pi-header">
-    <h1><i class="fi fi-sr-home" style="font-size:24px;color:#1A73E8;vertical-align:middle;margin-right:8px;line-height:1;"></i> Panel de Inicio</h1>
+    <h1><span class="material-symbols-rounded" style="font-size:26px;color:#1A73E8;vertical-align:middle;margin-right:8px;">home</span> Panel de Inicio</h1>
     <p>RESUMEN EJECUTIVO · CLARO COLOMBIA · TODOS LOS PRODUCTOS</p>
   </div>
 
@@ -2005,7 +2010,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <div class="pi-products-grid">
     <div class="pi-product-card activo" id="pi-card-movil" onclick="toggleAnalisisMovil()">
       <span class="pi-badge">✓ Activo</span>
-      <div class="pi-product-icon"><i class="fi fi-sr-mobile-5g" style="font-size:22px;color:#1A73E8;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+      <div class="pi-product-icon"><span class="material-symbols-rounded" style="font-size:24px;color:#1A73E8;">smartphone</span></div>
       <div class="pi-product-name">Móvil</div>
       <div class="pi-product-sub">Postpago · Power · Porta · Migra · Línea Nueva</div>
       <div class="pi-product-kpi vacio" id="pi-movil-kpi">Sin datos</div>
@@ -2013,7 +2018,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     </div>
         <div class="pi-product-card activo" id="pi-card-hogar" onclick="mostrarPanelHogar()">
       <span class="pi-badge">✓ Activo</span>
-      <div class="pi-product-icon"><i class="fi fi-ss-smart-home" style="font-size:22px;color:#6D28D9;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+      <div class="pi-product-icon"><span class="material-symbols-rounded" style="font-size:24px;color:#6D28D9;">cottage</span></div>
       <div class="pi-product-name">Hogares</div>
       <div class="pi-product-sub">Internet · TV · Telefonía fija</div>
       <div class="pi-product-kpi vacio" id="pi-hogar-kpi">Sin datos</div>
@@ -15239,7 +15244,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- ══ INICIO (opción global) ══ -->
   <div class="lnc-global-section">
     <button class="lnc-global-item" onclick="closeLauncher();mostrarPanelInicio();">
-      <div class="lnc-icon li-inicio"><i class="fi fi-sr-home" style="font-size:20px;color:#7C3AED;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+      <div class="lnc-icon li-inicio"><span class="material-symbols-rounded" style="font-size:22px;color:#7C3AED;">home</span></div>
       <div class="lnc-global-label">Panel de Inicio</div>
     </button>
   </div>
@@ -15259,13 +15264,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <button class="launcher-item lnc-item lnc-product" id="lnc-prod-movil"
               onclick="toggleLncModules('claro','movil')">
-        <div class="lnc-icon li-movil"><i class="fi fi-sr-mobile-5g" style="font-size:20px;color:#1A73E8;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+        <div class="lnc-icon li-movil"><span class="material-symbols-rounded" style="font-size:22px;color:#1A73E8;">smartphone</span></div>
         <div class="lnc-label">Móvil</div>
         <div class="lnc-arrow" id="lnc-arr-claro-movil">▾</div>
       </button>
 
       <button class="launcher-item lnc-item" onclick="hogToggleLncPanel(this)">
-        <div class="lnc-icon li-hogar"><i class="fi fi-ss-smart-home" style="font-size:20px;color:#6D28D9;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+        <div class="lnc-icon li-hogar"><span class="material-symbols-rounded" style="font-size:22px;color:#6D28D9;">cottage</span></div>
         <div class="lnc-label">Hogares</div>
         <div class="lnc-arrow" id="lnc-arr-hogar">▾</div>
       </button>
@@ -15288,32 +15293,32 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- MÓDULOS DE HOGAR -->
     <div class="lnc-modules-panel" id="lnc-mod-hogar">
       <div class="lnc-subsection-label lnc-mod-label" style="color:#6D28D9;">
-        <i class="fi fi-ss-smart-home" style="font-size:12px;color:#6D28D9;margin-right:4px;line-height:1;vertical-align:middle;"></i>
+        <span class="material-symbols-rounded" style="font-size:14px;color:#6D28D9;margin-right:4px;vertical-align:middle;">cottage</span>
         Módulos Hogar
       </div>
       <div class="lnc-grid">
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
-          <div class="lnc-icon li-proy"><i class="fi fi-sr-stats" style="font-size:20px;color:#137333;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-proy"><span class="material-symbols-rounded" style="font-size:22px;color:#137333;">monitoring</span></div>
           <div class="lnc-label">Proyección</div>
         </button>
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
           <div class="lnc-icon" style="background:#E8EAED;">
-            <i class="fi fi-rr-tv-music" style="font-size:20px;color:#5F6368;line-height:1;display:flex;align-items:center;justify-content:center;"></i>
+            <span class="material-symbols-rounded" style="font-size:22px;color:#5F6368;">live_tv</span>
           </div>
           <div class="lnc-label">Servicios</div>
         </button>
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
           <div class="lnc-icon" style="background:#EDE9FE;">
-            <i class="fi fi-brands-hbo" style="font-size:20px;color:#6D28D9;line-height:1;display:flex;align-items:center;justify-content:center;"></i>
+            <span class="material-symbols-rounded" style="font-size:22px;color:#6D28D9;">add_box</span>
           </div>
           <div class="lnc-label">Adicionales</div>
         </button>
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelMetas();">
-          <div class="lnc-icon li-metas"><i class="fi fi-sr-bullseye-arrow" style="font-size:20px;color:#C5221F;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-metas"><span class="material-symbols-rounded" style="font-size:22px;color:#C5221F;">target</span></div>
           <div class="lnc-label">Metas</div>
         </button>
       </div>
@@ -15323,30 +15328,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- MÓDULOS DE MÓVIL (ocultos, se revelan al click) -->
     <div class="lnc-modules-panel" id="lnc-mod-claro-movil">
-      <div class="lnc-subsection-label lnc-mod-label"><i class="fi fi-sr-mobile-5g" style="font-size:12px;color:currentColor;margin-right:4px;line-height:1;vertical-align:middle;"></i> Módulos Móvil</div>
+      <div class="lnc-subsection-label lnc-mod-label"><span class="material-symbols-rounded" style="font-size:14px;margin-right:4px;vertical-align:middle;">smartphone</span> Módulos Móvil</div>
       <div class="lnc-grid">
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
-          <div class="lnc-icon li-proy"><i class="fi fi-sr-stats" style="font-size:20px;color:#137333;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-proy"><span class="material-symbols-rounded" style="font-size:22px;color:#137333;">monitoring</span></div>
           <div class="lnc-label">Proyección</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
-          <div class="lnc-icon li-cvc"><i class="fi fi-sr-qr-code" style="font-size:20px;color:#B45309;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-cvc"><span class="material-symbols-rounded" style="font-size:22px;color:#B45309;">qr_code</span></div>
           <div class="lnc-label">CVCs</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelMetas();">
-          <div class="lnc-icon li-metas"><i class="fi fi-sr-bullseye-arrow" style="font-size:20px;color:#C5221F;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-metas"><span class="material-symbols-rounded" style="font-size:22px;color:#C5221F;">target</span></div>
           <div class="lnc-label">Metas</div>
         </button>
 
         <button class="launcher-item lnc-item"
                 onclick="closeLauncher();mostrarPanelCosechas();">
-          <div class="lnc-icon li-cos" style="background:linear-gradient(135deg,#065F46,#34D399);"><i class="fi fi-sr-bag-seedling" style="font-size:20px;color:#ffffff;line-height:1;display:flex;align-items:center;justify-content:center;"></i></div>
+          <div class="lnc-icon li-cos" style="background:linear-gradient(135deg,#065F46,#34D399);"><span class="material-symbols-rounded" style="font-size:22px;color:#ffffff;">compost</span></div>
           <div class="lnc-label">Cosechas</div>
         </button>
 
