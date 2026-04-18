@@ -7225,6 +7225,22 @@ function mostrarMovilDesdeInicio() {
   // Ya no redirige — el análisis se muestra in-place al hacer toggle
 }
 
+// ── Cierra cualquier panel de análisis que esté abierto (excepto el indicado) ──
+function _cerrarOtrosAnalisis(excepto) {
+  if (excepto !== 'movil') {
+    const el = document.getElementById('pi-movil-analisis');
+    const c  = document.getElementById('pi-card-movil');
+    if (el) el.style.display = 'none';
+    if (c)  c.style.borderColor = '';
+  }
+  if (excepto !== 'hogar') {
+    const el = document.getElementById('pi-hogar-analisis');
+    const c  = document.getElementById('pi-card-hogar');
+    if (el) el.style.display = 'none';
+    if (c)  c.style.borderColor = '';
+  }
+}
+
 function toggleAnalisisMovil() {
   const analisis = document.getElementById('pi-movil-analisis');
   const card     = document.getElementById('pi-card-movil');
@@ -7234,8 +7250,8 @@ function toggleAnalisisMovil() {
     analisis.style.display = 'none';
     if (card) card.style.borderColor = '';
   } else {
+    _cerrarOtrosAnalisis('movil'); // colapsar Hogar si estaba abierto
     if (!_proyeccionGuardada) {
-      // Sin snapshot: mostrar mensaje
       const sinDatos = document.getElementById('pi-sin-datos');
       if (sinDatos) {
         sinDatos.style.display = '';
@@ -7260,6 +7276,7 @@ function toggleAnalisisHogar() {
     analisis.style.display = 'none';
     if (card) card.style.borderColor = '';
   } else {
+    _cerrarOtrosAnalisis('hogar'); // colapsar Móvil si estaba abierto
     if (!_hogProyeccionGuardada) {
       const sinDatos = document.getElementById('pi-sin-datos');
       if (sinDatos) {
