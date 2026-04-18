@@ -6570,6 +6570,18 @@ function actualizarKpiTotal(datosKpi) {
 
   const fmt = v => '$'+Math.round(v).toLocaleString('es-CO');
   kpiTotalEl.textContent = fmt(totalGrand);
+
+  // ── Cachear todos los componentes para guardarProyeccion() ──
+  // Esto garantiza que lo guardado en BD = lo que ve el usuario en pantalla
+  kpiTotalEl.dataset.totalGrand       = totalGrand;
+  kpiTotalEl.dataset.efectividadVal   = totalEfectividadVal;
+  kpiTotalEl.dataset.presupuestoP1Val = totalPresupuestoP1Val;
+  kpiTotalEl.dataset.bonoValCalc      = totalBonoVal;
+  kpiTotalEl.dataset.cosechasValCalc  = totalCosechasVal;
+  kpiTotalEl.dataset.semillerosValCalc= totalSemillerosVal;
+  kpiTotalEl.dataset.cpmValCalc       = totalCpmVal;
+  kpiTotalEl.dataset.aceleradorValCalc= totalAceleradorVal;
+  kpiTotalEl.dataset.incentivosValCalc= totalIncentivosVal;
   // Subtexto: Vtas separadas en C1 (ajustado) y C2
   const c1El = document.getElementById('kpi-c1-valor');
   let vtasLabel;
@@ -7271,60 +7283,29 @@ function guardarProyeccion() {
   const fmt    = v => '$' + Math.round(v).toLocaleString('es-CO');
   const fmtn   = v => Math.round(v).toLocaleString('es-CO');
 
-  // Leer todos los valores actuales del KPI
+  // Leer todos los valores directamente del dataset del KPI (= lo que el usuario ve en pantalla)
   const pctC1Ajuste      = parseFloat((document.getElementById('kpi-c1-pct')||{value:'100'}).value||100)/100;
   const totalVentasProyC1 = parseFloat(kpiEl.dataset.proyVentasC1||'0');
   const totalVentasProyC2 = parseFloat(kpiEl.dataset.proyVentasC2||'0');
   const totalVentasProyVal= parseFloat(kpiEl.dataset.proyVentas  ||'0');
   const c1Ajustado        = totalVentasProyC1 * pctC1Ajuste;
   const ventasVal         = totalVentasProyVal>0 ? (c1Ajustado+totalVentasProyC2) : parseFloat(kpiEl.dataset.base||'0');
-  const cosechasVal       = cosechas.reduce((s,c)=>s+(c.valor||0),0);
-  const semillerosVal     = semillerosHabilitado?semilleros.reduce((s,x)=>s+x.total,0):0;
-  const cpmVal            = getTotalCpm();
-  const aceleradorVal     = (calcularAcelerador(_resultadosCache)||{}).totalAcelerador||0;
-  const incentivosVal     = getTotalIncentivos();
+  // Leer componentes cacheados por renderKpiTotal() — idénticos a lo mostrado en pantalla
+  const cosechasVal    = parseFloat(kpiEl.dataset.cosechasValCalc  || '0') || cosechas.reduce((s,c)=>s+(c.valor||0),0);
+  const semillerosVal  = parseFloat(kpiEl.dataset.semillerosValCalc|| '0') || (semillerosHabilitado?semilleros.reduce((s,x)=>s+x.total,0):0);
+  const cpmVal         = parseFloat(kpiEl.dataset.cpmValCalc       || '0') || getTotalCpm();
+  const aceleradorVal  = parseFloat(kpiEl.dataset.aceleradorValCalc|| '0') || (calcularAcelerador(_resultadosCache)||{}).totalAcelerador||0;
+  const incentivosVal  = parseFloat(kpiEl.dataset.incentivosValCalc|| '0') || getTotalIncentivos();
+  const efectividadVal = parseFloat(kpiEl.dataset.efectividadVal   || '0');
 
-  const presupuestoVal = cvcConfigs.reduce((s,cvc)=>{
-    const lc=getLineasCvcParaMeta(cvc,_resultadosCache);
-    const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lc.length;
-    const mt=cvc.meta||0; const cp=mt>0?(ej/mt*100):0;
-    const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCache);
-    const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
-    const cpEf=Math.max(cp,cpProy);
-    const cfmP=lc.length>0?lc.reduce((a,r)=>a+(r.cfm||0),0)/lc.length:0;
-    const contC={};lc.forEach(r=>{const k=norm(r.canal);contC[k]=(contC[k]||0)+1;});
-    const canalP=Object.entries(contC).sort((a,b)=>b[1]-a[1])[0]?.[0]||'tmk outbound';
-    const tabC=tablaPresupuestoPorCanal(canalP)||tablaPresupuestoPorCanal('tmk outbound');
-    const pc=tabC?getPctPresupuesto(cpEf,tabC):0;
-    if(!pc)return s;
-    // pago sobre proyectadoBase (sin MP)
-    const uPago = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado||ej);
-    return s+(uPago*cfmP*(pc/100))/3;
-  },0);
+  // Leer presupuesto y bono desde el dataset cacheado por renderKpiTotal()
+  const presupuestoVal = parseFloat(kpiEl.dataset.presupuestoP1Val || '0');
+  const bonoVal        = parseFloat(kpiEl.dataset.bonoValCalc      || '0');
 
-  const bonoVal = cvcConfigs.reduce((s,cvc)=>{
-    const lp=getLineasCvcParaMeta(cvc,_resultadosCache);
-    const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lp.length;
-    const mt=cvc.meta||0;const cp=mt>0?(ej/mt*100):0;
-    const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCache);
-    const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
-    if(cp<100&&cpProy<100)return s;
-    // pago sobre proyectadoBase (sin MP), rango determinado por proyectado (con MP)
-    const baseSinMP = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado||ej);
-    const upago=cp>=100?ej:baseSinMP;
-    const f2=upago/(lp.length||1);
-    const nIP=lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
-    const nIM=lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
-    const nDP=lp.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
-    const outL=lp.filter(r=>norm(r.canal).includes('outbound'));
-    const nOP=outL.filter(r=>norm(r.producto).includes('port')).length;
-    const nOM=outL.filter(r=>norm(r.producto).includes('migr')).length;
-    return s+Math.round(nIP*f2)*bonoCumplimiento.inbPorta+Math.round(nIM*f2)*bonoCumplimiento.inbMigra
-           +Math.round(nDP*f2)*bonoCumplimiento.digPorta+Math.round(nOP*f2)*getBonoOutbound(upago,'portabilidad')
-           +Math.round(nOM*f2)*getBonoOutbound(upago,'migracion');
-  },0);
-
-  const total = ventasVal+cosechasVal+semillerosVal+cpmVal+aceleradorVal+incentivosVal+presupuestoVal+bonoVal;
+  // Total = EXACTAMENTE lo que el usuario ve en pantalla (desde dataset)
+  const total = parseFloat(kpiEl.dataset.totalGrand || '0') ||
+    (ventasVal + cosechasVal + semillerosVal + cpmVal + aceleradorVal
+     + efectividadVal + presupuestoVal + bonoVal + incentivosVal);
 
   // Calcular distribuciones
   const lC1 = _resultadosCache.filter(r=>r.ciclo===1);
@@ -7359,7 +7340,7 @@ function guardarProyeccion() {
     ts: new Date().toLocaleString('es-CO'),
     mes: mesEl?mesEl.textContent:'',
     total, ventasVal, c1Ajustado, totalVentasProyC2,
-    cosechasVal, cpmVal, aceleradorVal, incentivosVal, presupuestoVal, bonoVal, semillerosVal,
+    cosechasVal, cpmVal, aceleradorVal, efectividadVal, incentivosVal, presupuestoVal, bonoVal, semillerosVal,
     pctC1: Math.round(pctC1Ajuste*100),
     totalLineas: _resultadosCache.length,
     cfmPromedio: _resultadosCache.reduce((s,r)=>s+(r.cfm||0),0)/(_resultadosCache.length||1),
@@ -7450,15 +7431,16 @@ async function piGuardarProyeccionBD(snap) {
       cfm_promedio: Math.round(snap.cfmPromedio || 0),
       pct_c1:       snap.pctC1 || 100,
       financiero: {
-        total:       Math.round(snap.total        || 0),
-        ventas:      Math.round(snap.ventasVal    || 0),
-        cosechas:    Math.round(snap.cosechasVal  || 0),
-        cpm:         Math.round(snap.cpmVal       || 0),
-        acelerador:  Math.round(snap.aceleradorVal   || 0),
-        incentivos:  Math.round(snap.incentivosVal   || 0),
-        presupuesto: Math.round(snap.presupuestoVal  || 0),
-        bono:        Math.round(snap.bonoVal         || 0),
-        semilleros:  Math.round(snap.semillerosVal   || 0),
+        total:       Math.round(snap.total          || 0),
+        ventas:      Math.round(snap.ventasVal      || 0),
+        cosechas:    Math.round(snap.cosechasVal    || 0),
+        cpm:         Math.round(snap.cpmVal         || 0),
+        acelerador:  Math.round(snap.aceleradorVal  || 0),
+        efectividad: Math.round(snap.efectividadVal || 0),
+        incentivos:  Math.round(snap.incentivosVal  || 0),
+        presupuesto: Math.round(snap.presupuestoVal || 0),
+        bono:        Math.round(snap.bonoVal        || 0),
+        semilleros:  Math.round(snap.semillerosVal  || 0),
       },
       operativo: {
         total:       totalOp,
@@ -7798,48 +7780,17 @@ function renderPanelDesdeCache() {
   const c1Ajustado = totalVentasProyC1 * pctC1Ajuste;
   const ventasVal  = totalVentasProyVal>0 ? (c1Ajustado+totalVentasProyC2) : parseFloat(kpiEl?.dataset.base||'0');
 
-  const cosechasVal    = cosechas.reduce((s,c)=>s+(c.valor||0),0);
-  const semillerosVal  = semillerosHabilitado?semilleros.reduce((s,x)=>s+x.total,0):0;
-  const cpmVal         = getTotalCpm();
-  const aceleradorVal  = (calcularAcelerador(_resultadosCache)||{}).totalAcelerador||0;
-  const incentivosVal  = getTotalIncentivos();
-  const presupuestoVal = cvcConfigs.reduce((s,cvc)=>{
-    const lcc=getLineasCvcParaMeta(cvc,_resultadosCache);
-    const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lcc.length;
-    const mt=cvc.meta||0;const cp=mt>0?(ej/mt*100):0;
-    const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCache);
-    const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
-    const cpEf=Math.max(cp,cpProy);
-    const cfmP=lcc.length>0?lcc.reduce((a,r)=>a+(r.cfm||0),0)/lcc.length:0;
-    const contC={};lcc.forEach(r=>{const k=norm(r.canal);contC[k]=(contC[k]||0)+1;});
-    const canalP=Object.entries(contC).sort((a,b)=>b[1]-a[1])[0]?.[0]||'tmk outbound';
-    const tabC=tablaPresupuestoPorCanal(canalP)||tablaPresupuestoPorCanal('tmk outbound');
-    const pc=tabC?getPctPresupuesto(cpEf,tabC):0;
-    if(!pc)return s;
-    const uPago=proyD.proyectadoBase!==undefined?proyD.proyectadoBase:(proyD.proyectado||ej);
-    return s+(uPago*cfmP*(pc/100))/3;
-  },0);
-  const bonoVal = cvcConfigs.reduce((s,cvc)=>{
-    const lp=getLineasCvcParaMeta(cvc,_resultadosCache);
-    const ej=(cvc.ejecutadoOverride!=null)?cvc.ejecutadoOverride:lp.length;
-    const mt=cvc.meta||0;const cp=mt>0?(ej/mt*100):0;
-    const proyD=calcularProyeccionCvc(cvc.madre,_resultadosCache);
-    const cpProy=mt>0?((proyD.proyectado||ej)/mt*100):0;
-    if(cp<100&&cpProy<100)return s;
-    const baseSinMP=proyD.proyectadoBase!==undefined?proyD.proyectadoBase:(proyD.proyectado||ej);
-    const upago=cp>=100?ej:baseSinMP;
-    const f2=upago/(lp.length||1);
-    const nIP=lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('port')).length;
-    const nIM=lp.filter(r=>norm(r.canal).includes('inbound')&&norm(r.producto).includes('migr')).length;
-    const nDP=lp.filter(r=>{const c=norm(r.canal);return(c.includes('digital')||c.includes('web')||c.includes('wcb')||c.includes('autog'))&&norm(r.producto).includes('port');}).length;
-    const outL=lp.filter(r=>norm(r.canal).includes('outbound'));
-    const nOP=outL.filter(r=>norm(r.producto).includes('port')).length;
-    const nOM=outL.filter(r=>norm(r.producto).includes('migr')).length;
-    return s+Math.round(nIP*f2)*bonoCumplimiento.inbPorta+Math.round(nIM*f2)*bonoCumplimiento.inbMigra
-           +Math.round(nDP*f2)*bonoCumplimiento.digPorta+Math.round(nOP*f2)*getBonoOutbound(upago,'portabilidad')
-           +Math.round(nOM*f2)*getBonoOutbound(upago,'migracion');
-  },0);
-  const total = ventasVal+cosechasVal+semillerosVal+cpmVal+aceleradorVal+incentivosVal+presupuestoVal+bonoVal;
+  // Leer todos los componentes desde el dataset cacheado por renderKpiTotal()
+  const cosechasVal    = parseFloat(kpiEl?.dataset.cosechasValCalc  ||'0') || cosechas.reduce((s,c)=>s+(c.valor||0),0);
+  const semillerosVal  = parseFloat(kpiEl?.dataset.semillerosValCalc||'0') || (semillerosHabilitado?semilleros.reduce((s,x)=>s+x.total,0):0);
+  const cpmVal         = parseFloat(kpiEl?.dataset.cpmValCalc       ||'0') || getTotalCpm();
+  const aceleradorVal  = parseFloat(kpiEl?.dataset.aceleradorValCalc||'0') || (calcularAcelerador(_resultadosCache)||{}).totalAcelerador||0;
+  const incentivosVal  = parseFloat(kpiEl?.dataset.incentivosValCalc||'0') || getTotalIncentivos();
+  const efectividadVal = parseFloat(kpiEl?.dataset.efectividadVal   ||'0');
+  const presupuestoVal = parseFloat(kpiEl?.dataset.presupuestoP1Val ||'0');
+  const bonoVal        = parseFloat(kpiEl?.dataset.bonoValCalc      ||'0');
+  const total = parseFloat(kpiEl?.dataset.totalGrand||'0') ||
+    (ventasVal+cosechasVal+semillerosVal+cpmVal+aceleradorVal+efectividadVal+incentivosVal+presupuestoVal+bonoVal);
 
   const lC1=_resultadosCache.filter(r=>r.ciclo===1);
   const lC2=_resultadosCache.filter(r=>r.ciclo===2);
