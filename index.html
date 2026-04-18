@@ -8920,8 +8920,34 @@ function authHeaders() {
   return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_authToken}` };
 }
 
-function authFetch(url, options = {}) {
-  return fetch(url, { ...options, headers: { ...authHeaders(), ...(options.headers||{}) } });
+async function authFetch(url, options = {}) {
+  const res = await fetch(url, { ...options, headers: { ...authHeaders(), ...(options.headers||{}) } });
+  // Si el servidor responde 401 (token expirado / sesión inválida) → cerrar sesión automáticamente
+  if (res.status === 401) {
+    try {
+      const body = await res.clone().json();
+      if (body.error === 'No autorizado' || body.ok === false) {
+        localStorage.removeItem('fenix_token');
+        localStorage.removeItem('fenix_usuario');
+        _authToken   = null;
+        _authUsuario = null;
+        mostrarLogin();
+        // Mostrar aviso breve al usuario
+        const aviso = document.createElement('div');
+        aviso.textContent = '⚠️ Sesión expirada. Por favor vuelve a iniciar sesión.';
+        Object.assign(aviso.style, {
+          position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+          background:'#1E1E1E', border:'1px solid rgba(218,0,0,0.5)', color:'#FCA5A5',
+          fontFamily:"'Inter Tight',sans-serif", fontSize:'13px', fontWeight:'600',
+          padding:'12px 22px', borderRadius:'8px', zIndex:'9999',
+          boxShadow:'0 4px 20px rgba(0,0,0,0.6)', letterSpacing:'0.3px'
+        });
+        document.body.appendChild(aviso);
+        setTimeout(() => aviso.remove(), 4000);
+      }
+    } catch(_) {}
+  }
+  return res;
 }
 
 // ── LOGIN CANVAS STARS ──────────────────────────────────────────
@@ -9089,13 +9115,14 @@ async function verificarSesion() {
   _authUsuario = JSON.parse(usuStr);
 
   try {
-    const res = await authFetch(`${FENIX_API}/auth/me`).then(r => r.json());
+    const r   = await fetch(`${FENIX_API}/auth/me`, { headers: authHeaders() });
+    const res = await r.json();
     if (!res.ok) { mostrarLogin(); return; }
     _authUsuario = res.usuario;
     localStorage.setItem('fenix_usuario', JSON.stringify(res.usuario));
     mostrarApp();
   } catch(e) {
-    // Sin conexión — usar token local si existe
+    // Sin conexión — usar datos locales cacheados si el token existe
     mostrarApp();
   }
 }
