@@ -7192,8 +7192,9 @@ function mostrarPanelInicio() {
   // Cargar historial de meses disponibles
   piCargarMeses();
 
-  // Si hay datos calculados, mostrar el análisis de Móvil directamente
-  if (_resultadosCache.length > 0) {
+  // Si hay datos calculados y Hogar no está activo → mostrar análisis Móvil
+  const hogarActivo = document.getElementById('pi-hogar-analisis')?.style.display !== 'none';
+  if (_resultadosCache.length > 0 && !hogarActivo) {
     const analisis = document.getElementById('pi-movil-analisis');
     const card     = document.getElementById('pi-card-movil');
     const sinDatos = document.getElementById('pi-sin-datos');
@@ -7201,9 +7202,11 @@ function mostrarPanelInicio() {
     if (sinDatos) sinDatos.style.display = 'none';
     if (card)     card.style.borderColor = 'var(--rojo)';
     renderSedeTabs();
-    // Si no hay snapshot guardada, renderizar desde cache directamente
     if (!_proyeccionGuardada) renderPanelDesdeCache();
     else renderPanelDesdeSnapshot();
+  } else if (hogarActivo && _hogProyeccionGuardada) {
+    // Hogar ya estaba activo al volver al panel → re-renderizar su análisis
+    renderHogarPanelDesdeSnapshot();
   }
 }
 
@@ -7230,14 +7233,22 @@ function _cerrarOtrosAnalisis(excepto) {
   if (excepto !== 'movil') {
     const el = document.getElementById('pi-movil-analisis');
     const c  = document.getElementById('pi-card-movil');
+    const fw = document.getElementById('pi-facturas-wrap');
     if (el) el.style.display = 'none';
     if (c)  c.style.borderColor = '';
+    if (fw) fw.style.display = 'none'; // Ocultar historial de facturas Móvil al abrir Hogar
   }
   if (excepto !== 'hogar') {
     const el = document.getElementById('pi-hogar-analisis');
     const c  = document.getElementById('pi-card-hogar');
     if (el) el.style.display = 'none';
     if (c)  c.style.borderColor = '';
+  }
+  // Al volver a Móvil, restaurar el historial de facturas si hay datos guardados en BD
+  if (excepto === 'movil') {
+    const fw = document.getElementById('pi-facturas-wrap');
+    const hasMes = document.getElementById('pi-hist-mes')?.value;
+    if (fw && hasMes) fw.style.display = '';
   }
 }
 
@@ -7275,6 +7286,10 @@ function toggleAnalisisHogar() {
   if (visible) {
     analisis.style.display = 'none';
     if (card) card.style.borderColor = '';
+    // Restaurar historial de facturas Móvil al cerrar Hogar
+    const fw = document.getElementById('pi-facturas-wrap');
+    const hasMes = document.getElementById('pi-hist-mes')?.value;
+    if (fw && hasMes) fw.style.display = '';
   } else {
     _cerrarOtrosAnalisis('hogar'); // colapsar Móvil si estaba abierto
     if (!_hogProyeccionGuardada) {
@@ -7611,9 +7626,10 @@ async function piCargarMeses() {
     const actual = sel.value;
     sel.innerHTML = '<option value="">— Mes —</option>' +
       r.meses.map(m => `<option value="${m}"${m===actual?' selected':''}>${piMesLabel(m)}</option>`).join('');
-    // Mostrar el bloque de facturas ya que hay datos en BD
+    // Mostrar el bloque de facturas sólo si Hogares NO está activo
     const wrap = document.getElementById('pi-facturas-wrap');
-    if (wrap) wrap.style.display = '';
+    const hogarActivo = document.getElementById('pi-hogar-analisis')?.style.display !== 'none';
+    if (wrap && !hogarActivo) wrap.style.display = '';
     // Auto-seleccionar el mes más reciente si no hay selección
     const mesASeleccionar = actual || r.meses[0];
     sel.value = mesASeleccionar;
@@ -7664,9 +7680,10 @@ function piMostrarProyeccionHistorica() {
   const fmtn = v => Math.round(v||0).toLocaleString('es-CO');
   const pct  = (v,t) => t>0 ? Math.round(v/t*100) : 0;
 
-  // ── Mostrar el bloque ──
+  // ── Mostrar el bloque (sólo si Hogares NO está activo) ──
   const wrap = document.getElementById('pi-facturas-wrap');
-  if (wrap) wrap.style.display = '';
+  const _hogarActivo = document.getElementById('pi-hogar-analisis')?.style.display !== 'none';
+  if (wrap && !_hogarActivo) wrap.style.display = '';
 
   // ── Badge con hora de guardado ──
   const badge = document.getElementById('pi-hist-badge');
