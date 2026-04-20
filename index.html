@@ -8122,8 +8122,12 @@ function actualizarPanelInicio() {
   const pct  = (v, t) => t > 0 ? Math.round(v / t * 100) : 0;
 
   const hayDatos = _resultadosCache.length > 0;
-  document.getElementById('pi-movil-analisis').style.display = hayDatos ? '' : 'none';
-  document.getElementById('pi-sin-datos').style.display      = hayDatos ? 'none' : '';
+  // Solo mostrar pi-movil-analisis si Hogar NO está activo en este momento
+  const hogarAbierto = document.getElementById('pi-hogar-analisis')?.style.display !== 'none';
+  if (!hogarAbierto) {
+    document.getElementById('pi-movil-analisis').style.display = hayDatos ? '' : 'none';
+    document.getElementById('pi-sin-datos').style.display      = hayDatos ? 'none' : '';
+  }
 
   // KPI total (leer del DOM — ya está calculado)
   const kpiEl = document.getElementById('kpi-total');
@@ -10836,8 +10840,9 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   // KPI total DESPUÉS de renderBonoCumplimiento para usar _bonoCalculado correcto
   actualizarKpiTotal();
 
-  // Si el panel de inicio está visible, actualizarlo con los nuevos datos
+  // Si el panel de inicio está visible, actualizarlo con los nuevos datos de Móvil
   if (_panelInicioVisible) {
+    _cerrarOtrosAnalisis('movil'); // colapsar Hogar si estaba abierto (Móvil recién calculado tiene prioridad)
     const analisis = document.getElementById('pi-movil-analisis');
     const sinDatos = document.getElementById('pi-sin-datos');
     const card     = document.getElementById('pi-card-movil');
