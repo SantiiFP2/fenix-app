@@ -7486,6 +7486,28 @@ async function piGuardarProyeccionBD(snap) {
 // PANEL INICIO — GUARDAR PROYECCIÓN HOGAR
 // ══════════════════════════════════════════════════════════════
 
+function _hogRestaurarProyeccionLocal() {
+  try {
+    const raw = localStorage.getItem('fenix_hog_proyeccion');
+    if (!raw) return;
+    _hogProyeccionGuardada = JSON.parse(raw);
+    const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+    // Actualizar tarjeta en Panel de Inicio
+    const kpiCard = document.getElementById('pi-hogar-kpi');
+    const kpiSub  = document.getElementById('pi-hogar-kpi-sub');
+    if (kpiCard) { kpiCard.className = 'pi-product-kpi'; kpiCard.textContent = fmt(_hogProyeccionGuardada.totalCobroProy || 0); }
+    if (kpiSub)  kpiSub.textContent = 'Guardado ' + _hogProyeccionGuardada.ts;
+    // Marcar la tarjeta con borde violeta
+    const cardH = document.getElementById('pi-card-hogar');
+    if (cardH) {
+      cardH.style.borderColor = 'rgba(167,139,250,0.5)';
+      cardH.title = 'Click para ver/ocultar el análisis';
+    }
+  } catch(e) {
+    console.warn('Error restaurando proyección Hogar:', e.message);
+  }
+}
+
 function guardarProyeccionHogar() {
   if (!_hogLastProy) return;
   const snap = _hogLastProy;
@@ -7493,7 +7515,10 @@ function guardarProyeccionHogar() {
 
   _hogProyeccionGuardada = { ts: new Date().toLocaleString('es-CO'), ...snap };
 
-  // Persistir en BD
+  // Persistir localmente (sobrevive recargas de página)
+  try { localStorage.setItem('fenix_hog_proyeccion', JSON.stringify(_hogProyeccionGuardada)); } catch(_) {}
+
+  // Persistir en BD (cuando el endpoint exista en el servidor)
   piGuardarProyeccionHogarBD(_hogProyeccionGuardada);
 
   // Actualizar tarjeta Hogares en Panel de Inicio
@@ -9048,6 +9073,8 @@ async function logout() {
   _authUsuario = null;
   localStorage.removeItem('fenix_token');
   localStorage.removeItem('fenix_usuario');
+  localStorage.removeItem('fenix_hog_proyeccion');
+  _hogProyeccionGuardada = null;
   document.getElementById('app-wrapper').style.display  = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-email').value    = '';
@@ -9119,6 +9146,8 @@ function mostrarApp() {
     metasCargar();
   });
   cosInicializarStorage();
+  // Restaurar proyección de Hogares guardada localmente
+  _hogRestaurarProyeccionLocal();
   // Siempre abrir en Panel de Inicio al entrar/refrescar
   mostrarPanelInicio();
 }
