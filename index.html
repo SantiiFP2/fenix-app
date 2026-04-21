@@ -9090,8 +9090,9 @@ async function logout() {
   _authUsuario = null;
   localStorage.removeItem('fenix_token');
   localStorage.removeItem('fenix_usuario');
-  localStorage.removeItem('fenix_hog_proyeccion');
-  _hogProyeccionGuardada = null;
+  // NOTA: fenix_hog_proyeccion NO se borra en logout — es el trabajo guardado del usuario
+  // y debe sobrevivir entre sesiones en el mismo dispositivo.
+  _hogProyeccionGuardada = null; // sólo limpiamos memoria; localStorage se conserva
   document.getElementById('app-wrapper').style.display  = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-email').value    = '';
