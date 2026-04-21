@@ -7501,25 +7501,69 @@ async function piGuardarProyeccionBD(snap) {
 // PANEL INICIO — GUARDAR PROYECCIÓN HOGAR
 // ══════════════════════════════════════════════════════════════
 
+// ── Actualizar la tarjeta Hogares en Panel de Inicio con los datos cargados ──
+function _hogActualizarKpiCard() {
+  const s = _hogProyeccionGuardada;
+  if (!s) return;
+  const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const kpiCard = document.getElementById('pi-hogar-kpi');
+  const kpiSub  = document.getElementById('pi-hogar-kpi-sub');
+  if (kpiCard) { kpiCard.className = 'pi-product-kpi'; kpiCard.textContent = fmt(s.totalCobroProy || 0); }
+  if (kpiSub)  kpiSub.textContent = 'Guardado ' + (s.ts || '');
+  const cardH = document.getElementById('pi-card-hogar');
+  if (cardH) { cardH.style.borderColor = 'rgba(167,139,250,0.5)'; cardH.title = 'Click para ver/ocultar el análisis'; }
+}
+
+// ── Fallback: leer desde localStorage (caché local) ──
 function _hogRestaurarProyeccionLocal() {
   try {
     const raw = localStorage.getItem('fenix_hog_proyeccion');
     if (!raw) return;
     _hogProyeccionGuardada = JSON.parse(raw);
-    const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
-    // Actualizar tarjeta en Panel de Inicio
-    const kpiCard = document.getElementById('pi-hogar-kpi');
-    const kpiSub  = document.getElementById('pi-hogar-kpi-sub');
-    if (kpiCard) { kpiCard.className = 'pi-product-kpi'; kpiCard.textContent = fmt(_hogProyeccionGuardada.totalCobroProy || 0); }
-    if (kpiSub)  kpiSub.textContent = 'Guardado ' + _hogProyeccionGuardada.ts;
-    // Marcar la tarjeta con borde violeta
-    const cardH = document.getElementById('pi-card-hogar');
-    if (cardH) {
-      cardH.style.borderColor = 'rgba(167,139,250,0.5)';
-      cardH.title = 'Click para ver/ocultar el análisis';
-    }
+    _hogActualizarKpiCard();
   } catch(e) {
-    console.warn('Error restaurando proyección Hogar:', e.message);
+    console.warn('Error restaurando proyección Hogar desde localStorage:', e.message);
+  }
+}
+
+// ── Principal: cargar desde BD (igual que Móvil) → fallback a localStorage ──
+async function piCargarProyeccionHogarBD() {
+  try {
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/ultimo`).then(x => x.json());
+    if (!r.ok || !r.proyeccion) {
+      // Endpoint aún no implementado en el backend → usar caché local
+      _hogRestaurarProyeccionLocal();
+      return;
+    }
+    const d = r.proyeccion;
+    _hogProyeccionGuardada = {
+      ts:              new Date(d.guardado_en).toLocaleString('es-CO'),
+      totalCobroProy:  d.financiero?.total       || 0,
+      totalCobroProyOp:d.operativo?.total        || 0,
+      totalProyPpales: d.financiero?.comision    || 0,
+      adicP1:          d.financiero?.adicionales || 0,
+      adicProy:        d.operativo?.adicionales  || 0,
+      efect:           d.financiero?.efectividad || 0,
+      altoValor:       d.financiero?.alto_valor  || 0,
+      boniInt:         d.financiero?.boni_int    || 0,
+      acel:            d.financiero?.acelerador  || 0,
+      boniCumpl:       d.financiero?.boni_cumpl  || 0,
+      tec:             d.financiero?.tecnologia  || 0,
+      semilleros:      d.financiero?.semilleros  || 0,
+      totalOTs:        d.total_ots               || 0,
+      periodoVal:      d.mes_venta               || '',
+      canalesMap:      d.snapshot?.canalesMap    || {},
+      redMap:          d.snapshot?.redMap        || {},
+      intProy:         d.snapshot?.intProy       || 0,
+      tvProy:          d.snapshot?.tvProy        || 0,
+      vozProy:         d.snapshot?.vozProy       || 0,
+    };
+    // Sincronizar al localStorage como caché offline
+    try { localStorage.setItem('fenix_hog_proyeccion', JSON.stringify(_hogProyeccionGuardada)); } catch(_) {}
+    _hogActualizarKpiCard();
+  } catch(e) {
+    // Error de red o endpoint 404 → usar caché local sin ruido en consola
+    _hogRestaurarProyeccionLocal();
   }
 }
 
@@ -7604,7 +7648,13 @@ async function piGuardarProyeccionHogarBD(snap) {
         tecnologia:  Math.round(snap.tec              || 0),
         semilleros:  Math.round(snap.semilleros       || 0),
       },
-      snapshot: { canalesMap: snap.canalesMap, redMap: snap.redMap }
+      snapshot: {
+        canalesMap: snap.canalesMap,
+        redMap:     snap.redMap,
+        intProy:    snap.intProy  || 0,
+        tvProy:     snap.tvProy   || 0,
+        vozProy:    snap.vozProy  || 0,
+      }
     };
 
     const res = await authFetch(`${FENIX_API}/proyecciones/hogar`, {
@@ -9164,8 +9214,8 @@ function mostrarApp() {
     metasCargar();
   });
   cosInicializarStorage();
-  // Restaurar proyección de Hogares guardada localmente
-  _hogRestaurarProyeccionLocal();
+  // Restaurar proyección de Hogares: primero intenta BD (multi-usuario), cae en localStorage si no hay endpoint
+  piCargarProyeccionHogarBD();
   // Siempre abrir en Panel de Inicio al entrar/refrescar
   mostrarPanelInicio();
 }
