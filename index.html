@@ -2212,6 +2212,53 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   <!-- Análisis detallado Hogares -->
   <div id="pi-hogar-analisis" style="display:none;">
 
+    <!-- Selector de historial Hogares — mismo diseño que Móvil -->
+    <div style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);white-space:nowrap;">Ver proyección de:</span>
+
+        <!-- Selector MES -->
+        <div style="position:relative;display:inline-flex;align-items:center;">
+          <select id="pi-hog-hist-mes" onchange="piHogCargarDiasMes()"
+            style="appearance:none;-webkit-appearance:none;padding:7px 32px 7px 14px;font-size:13px;font-weight:700;font-family:'Inter Tight',sans-serif;border-radius:20px;background:rgba(109,40,217,0.12);border:1px solid rgba(109,40,217,0.4);color:#8B5CF6;cursor:pointer;outline:none;letter-spacing:0.3px;">
+            <option value="">— Mes —</option>
+          </select>
+          <span style="position:absolute;right:10px;pointer-events:none;font-size:9px;color:#8B5CF6;">▼</span>
+        </div>
+
+        <!-- Selector DÍA -->
+        <div style="position:relative;display:inline-flex;align-items:center;">
+          <select id="pi-hog-hist-dia" onchange="piHogMostrarProyeccionHistorica()"
+            style="appearance:none;-webkit-appearance:none;padding:7px 32px 7px 14px;font-size:13px;font-weight:700;font-family:'Inter Tight',sans-serif;border-radius:20px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;cursor:pointer;outline:none;letter-spacing:0.3px;">
+            <option value="">— Día —</option>
+          </select>
+          <span style="position:absolute;right:10px;pointer-events:none;font-size:9px;color:#a78bfa;">▼</span>
+        </div>
+
+        <!-- Badge timestamp -->
+        <span id="pi-hog-hist-badge" style="font-size:11px;color:var(--texto-dim);background:var(--gris-medio);padding:4px 10px;border-radius:20px;border:1px solid var(--gris-linea);"></span>
+      </div>
+
+      <!-- Cards Factura Financiera + Operativa — mismo diseño que Móvil -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <!-- Financiera -->
+        <div style="background:var(--gris-oscuro);border:1px solid rgba(218,0,0,0.25);border-radius:8px;padding:20px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rojo),rgba(218,0,0,0.3));"></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--rojo-light);margin-bottom:8px;opacity:0.8;">💰 Factura Financiera</div>
+          <div id="pi-hog-fact-fin-total" style="font-size:28px;font-weight:900;color:var(--rojo-light);line-height:1;margin-bottom:10px;">$0</div>
+          <div id="pi-hog-fact-fin-sub" style="font-size:11px;color:var(--texto-dim);line-height:1.8;">—</div>
+        </div>
+        <!-- Operativa -->
+        <div style="background:var(--gris-oscuro);border:1px solid rgba(167,139,250,0.25);border-radius:8px;padding:20px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a78bfa,rgba(167,139,250,0.3));"></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a78bfa;margin-bottom:8px;opacity:0.8;">⚙️ Factura Operativa</div>
+          <div id="pi-hog-fact-op-total" style="font-size:28px;font-weight:900;color:#a78bfa;line-height:1;margin-bottom:10px;">$0</div>
+          <div id="pi-hog-fact-op-sub" style="font-size:11px;color:var(--texto-dim);line-height:1.8;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Análisis detallado Hogares -->
     <div class="pi-detalle">
       <div class="pi-detalle-title">🏠 Desglose del Cobro Proyectado — Hogares</div>
       <div class="pi-desglose-grid" id="pi-hog-desglose-grid"></div>
@@ -7205,8 +7252,8 @@ function mostrarPanelInicio() {
     if (!_proyeccionGuardada) renderPanelDesdeCache();
     else renderPanelDesdeSnapshot();
   } else if (hogarActivo && _hogProyeccionGuardada) {
-    // Hogar ya estaba activo al volver al panel → re-renderizar su análisis
-    renderHogarPanelDesdeSnapshot();
+    // Hogar ya estaba activo al volver al panel → recargar historial
+    piHogCargarMeses();
   }
 }
 
@@ -7304,7 +7351,8 @@ function toggleAnalisisHogar() {
     }
     analisis.style.display = '';
     if (card) card.style.borderColor = 'rgba(167,139,250,0.5)';
-    renderHogarPanelDesdeSnapshot();
+    // Cargar meses disponibles (intenta BD, fallback a snapshot guardado)
+    piHogCargarMeses();
   }
 }
 
@@ -7565,6 +7613,141 @@ async function piCargarProyeccionHogarBD() {
     // Error de red o endpoint 404 → usar caché local sin ruido en consola
     _hogRestaurarProyeccionLocal();
   }
+}
+
+// ══════════════════════════════════════════════════════════════
+// PANEL INICIO — HISTORIAL HOGARES (mismo patrón que Móvil)
+// ══════════════════════════════════════════════════════════════
+
+let _piHogHistCache = {}; // caché de filas por mes
+
+function piHogMesLabel(m) {
+  if (!m) return m;
+  const [y, mo] = m.split('-');
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return (meses[parseInt(mo,10)-1] || mo) + ' ' + y;
+}
+
+// ── Cargar meses disponibles para Hogares ──
+async function piHogCargarMeses() {
+  try {
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/meses`).then(x => x.json());
+    if (!r.ok || !r.meses || !r.meses.length) {
+      // Endpoint no disponible aún → mostrar la proyección guardada localmente
+      _piHogMostrarDesdeCache();
+      return;
+    }
+    const sel = document.getElementById('pi-hog-hist-mes');
+    if (!sel) return;
+    const actual = sel.value;
+    sel.innerHTML = '<option value="">— Mes —</option>' +
+      r.meses.map(m => `<option value="${m}"${m===actual?' selected':''}>${piHogMesLabel(m)}</option>`).join('');
+    const mesASeleccionar = actual || r.meses[0];
+    sel.value = mesASeleccionar;
+    await piHogCargarDiasMes();
+  } catch(e) {
+    // Endpoint no existe todavía → fallback a datos locales
+    _piHogMostrarDesdeCache();
+  }
+}
+
+// ── Fallback: mostrar la proyección actual guardada en el selector sin datos de BD ──
+function _piHogMostrarDesdeCache() {
+  const s = _hogProyeccionGuardada;
+  if (!s) return;
+  const selMes = document.getElementById('pi-hog-hist-mes');
+  const selDia = document.getElementById('pi-hog-hist-dia');
+  const badge  = document.getElementById('pi-hog-hist-badge');
+  // Llenar selector con el mes de la proyección guardada
+  if (selMes && s.periodoVal) {
+    selMes.innerHTML = `<option value="${s.periodoVal}">${piHogMesLabel(s.periodoVal)}</option>`;
+    selMes.value = s.periodoVal;
+  }
+  if (selDia) {
+    const hoy = new Date().toISOString().substring(0,10);
+    selDia.innerHTML = `<option value="${hoy}">${new Date(hoy+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short'})}</option>`;
+    selDia.value = hoy;
+  }
+  if (badge) badge.textContent = 'Guardado: ' + (s.ts || '');
+  // Renderizar las cards
+  renderHogarPanelDesdeSnapshot();
+}
+
+// ── Cargar días disponibles para el mes seleccionado ──
+async function piHogCargarDiasMes() {
+  const mes = document.getElementById('pi-hog-hist-mes')?.value;
+  const selDia = document.getElementById('pi-hog-hist-dia');
+  if (!mes || !selDia) return;
+  selDia.innerHTML = '<option value="">Cargando…</option>';
+
+  if (!_piHogHistCache[mes]) {
+    try {
+      const r = await authFetch(`${FENIX_API}/proyecciones/hogar?mes=${mes}`).then(x => x.json());
+      if (r.ok) _piHogHistCache[mes] = r.rows;
+    } catch(e) { console.warn('piHogCargarDiasMes:', e.message); }
+  }
+
+  const rows = _piHogHistCache[mes] || [];
+  if (!rows.length) {
+    selDia.innerHTML = '<option value="">Sin datos</option>';
+    _piHogMostrarDesdeCache();
+    return;
+  }
+  selDia.innerHTML = rows.map(row => {
+    const fechaNorm = String(row.fecha_corte).substring(0, 10);
+    const d = new Date(fechaNorm + 'T12:00:00');
+    const label = d.toLocaleDateString('es-CO', { day:'2-digit', month:'short' });
+    return `<option value="${fechaNorm}">${label}</option>`;
+  }).join('');
+  selDia.value = String(rows[rows.length - 1].fecha_corte).substring(0, 10);
+  piHogMostrarProyeccionHistorica();
+}
+
+// ── Mostrar la proyección del día seleccionado ──
+function piHogMostrarProyeccionHistorica() {
+  const mes = document.getElementById('pi-hog-hist-mes')?.value;
+  const dia = document.getElementById('pi-hog-hist-dia')?.value;
+  if (!mes || !dia) return;
+  const rows = _piHogHistCache[mes] || [];
+  const row  = rows.find(r => r.fecha_corte && String(r.fecha_corte).substring(0,10) === dia);
+  if (!row) { _piHogMostrarDesdeCache(); return; }
+
+  const fmt  = v => '$' + Math.round(v||0).toLocaleString('es-CO');
+
+  // Badge timestamp
+  const badge = document.getElementById('pi-hog-hist-badge');
+  if (badge) {
+    const ts = new Date(row.guardado_en);
+    badge.textContent = 'Guardado: ' + ts.toLocaleString('es-CO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  // Reconstruir snapshot desde la fila BD y renderizar
+  const snap = {
+    totalCobroProy:  row.financiero?.total       || 0,
+    totalCobroProyOp:row.operativo?.total        || 0,
+    totalProyPpales: row.financiero?.comision    || 0,
+    adicP1:          row.financiero?.adicionales || 0,
+    adicProy:        row.operativo?.adicionales  || 0,
+    efect:           row.financiero?.efectividad || 0,
+    altoValor:       row.financiero?.alto_valor  || 0,
+    boniInt:         row.financiero?.boni_int    || 0,
+    acel:            row.financiero?.acelerador  || 0,
+    boniCumpl:       row.financiero?.boni_cumpl  || 0,
+    tec:             row.financiero?.tecnologia  || 0,
+    semilleros:      row.financiero?.semilleros  || 0,
+    totalOTs:        row.total_ots               || 0,
+    periodoVal:      row.mes_venta               || '',
+    canalesMap:      row.snapshot?.canalesMap    || {},
+    redMap:          row.snapshot?.redMap        || {},
+    intProy:         row.snapshot?.intProy       || 0,
+    tvProy:          row.snapshot?.tvProy        || 0,
+    vozProy:         row.snapshot?.vozProy       || 0,
+    ts:              new Date(row.guardado_en).toLocaleString('es-CO'),
+  };
+
+  // Renderizar cards + análisis con ese snapshot temporal (sin reemplazar _hogProyeccionGuardada)
+  _hogRenderCardsFactura(snap);
+  _hogRenderAnalisis(snap);
 }
 
 function guardarProyeccionHogar() {
@@ -8109,6 +8292,41 @@ function renderPanelDesdeSnapshot() {
   </tr>`;
 }
 
+function _hogRenderCardsFactura(s) {
+  const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+  // ── Card Financiera ──
+  const finEl    = document.getElementById('pi-hog-fact-fin-total');
+  const finSubEl = document.getElementById('pi-hog-fact-fin-sub');
+  if (finEl) finEl.textContent = fmt(s.totalCobroProy || 0);
+  if (finSubEl) {
+    const parts = [];
+    if (s.totalProyPpales > 0) parts.push(`Comisión: ${fmt(s.totalProyPpales)}`);
+    if (s.adicP1          > 0) parts.push(`Adic. 50%: ${fmt(s.adicP1)}`);
+    if (s.efect           > 0) parts.push(`Efectividad: ${fmt(s.efect)}`);
+    if (s.altoValor       > 0) parts.push(`Alto Valor: ${fmt(s.altoValor)}`);
+    if (s.boniInt         > 0) parts.push(`Boni. Int.: ${fmt(s.boniInt)}`);
+    if (s.acel            > 0) parts.push(`Acelerador: ${fmt(s.acel)}`);
+    if (s.boniCumpl       > 0) parts.push(`Boni. Cumpl.: ${fmt(s.boniCumpl)}`);
+    if (s.tec             > 0) parts.push(`Tecnología: ${fmt(s.tec)}`);
+    if (s.semilleros      > 0) parts.push(`Semilleros: ${fmt(s.semilleros)}`);
+    finSubEl.textContent = parts.join(' · ') || '—';
+  }
+  // ── Card Operativa ──
+  const opEl    = document.getElementById('pi-hog-fact-op-total');
+  const opSubEl = document.getElementById('pi-hog-fact-op-sub');
+  if (opEl) opEl.textContent = fmt(s.totalCobroProyOp || 0);
+  if (opSubEl) {
+    const parts = [];
+    if (s.totalProyPpales > 0) parts.push(`Comisión: ${fmt(s.totalProyPpales)}`);
+    if (s.adicProy        > 0) parts.push(`Adic. 100%: ${fmt(s.adicProy)}`);
+    if (s.efect           > 0) parts.push(`Efectividad: ${fmt(s.efect)}`);
+    if (s.altoValor       > 0) parts.push(`Alto Valor: ${fmt(s.altoValor)}`);
+    if (s.acel            > 0) parts.push(`Acelerador: ${fmt(s.acel)}`);
+    if (s.boniCumpl       > 0) parts.push(`Boni. Cumpl.: ${fmt(s.boniCumpl)}`);
+    opSubEl.textContent = parts.join(' · ') || '—';
+  }
+}
+
 function renderHogarPanelDesdeSnapshot() {
   const s = _hogProyeccionGuardada;
   if (!s) return;
@@ -8116,12 +8334,27 @@ function renderHogarPanelDesdeSnapshot() {
   const fmtn = v => Math.round(v).toLocaleString('es-CO');
   const pct  = (v, t) => t > 0 ? Math.round(v / t * 100) : 0;
 
+  // ── CARDS GRANDES: Factura Financiera + Operativa ──
+  _hogRenderCardsFactura(s);
+  // Badge timestamp
+  const badge = document.getElementById('pi-hog-hist-badge');
+  if (badge) badge.textContent = 'Guardado: ' + (s.ts || '');
+  // Análisis detallado
+  _hogRenderAnalisis(s);
+}
+
+// ── Renderizar análisis detallado de Hogares (reutilizable para snapshot + historial) ──
+function _hogRenderAnalisis(s) {
+  const fmt  = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const fmtn = v => Math.round(v).toLocaleString('es-CO');
+  const pct  = (v, t) => t > 0 ? Math.round(v / t * 100) : 0;
+
   // ── DESGLOSE GRID ──
   const stats = [
-    { label: 'Cobro Proyectado (Fin.)', val: fmt(s.totalCobroProy),   sub: 'Guardado: ' + s.ts,            color: '#A78BFA', big: true },
-    { label: 'Cobro Operativo',         val: fmt(s.totalCobroProyOp), sub: 'Adicionales al 100%',           color: '#C084FC' },
-    { label: 'Comisión Ppales',         val: fmt(s.totalProyPpales),  sub: 'Ventas principales',            color: 'var(--texto)' },
-    { label: 'Adicionales (Fin.)',       val: fmt(s.adicP1),           sub: '50% mes vencido',               color: '#F59E0B' },
+    { label: 'Cobro Proyectado (Fin.)', val: fmt(s.totalCobroProy),   sub: s.ts ? 'Guardado: ' + s.ts : 'Proyección financiera', color: '#A78BFA', big: true },
+    { label: 'Cobro Operativo',         val: fmt(s.totalCobroProyOp), sub: 'Adicionales al 100%',    color: '#C084FC' },
+    { label: 'Comisión Ppales',         val: fmt(s.totalProyPpales),  sub: 'Ventas principales',     color: 'var(--texto)' },
+    { label: 'Adicionales (Fin.)',       val: fmt(s.adicP1),           sub: '50% mes vencido',        color: '#F59E0B' },
   ];
   if (s.efect     > 0) stats.push({ label: 'Efectividad',     val: fmt(s.efect),     sub: 'Incentivo por cumplimiento',  color: '#34D399' });
   if (s.altoValor > 0) stats.push({ label: 'Alto Valor',      val: fmt(s.altoValor), sub: 'Triple Play + OTT Outbound',  color: '#F97316' });
