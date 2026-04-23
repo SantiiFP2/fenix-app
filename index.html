@@ -1177,7 +1177,44 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   50%{background-position:100% 50%;}
   100%{background-position:0% 50%;}
 }
+
+/* =================================================
+   PLANTA ACTIVA - Detalle Personal
+   ================================================= */
+#panel-planta{display:none;padding:24px;max-width:1400px;margin:0 auto;}
+.planta-upload-zone{border:2px dashed var(--gris-linea);border-radius:14px;padding:28px 24px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:24px;background:rgba(11,128,67,0.03);}
+.planta-upload-zone:hover,.planta-upload-zone.dragover{border-color:#0B8043;background:rgba(11,128,67,0.07);}
+.planta-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;margin-bottom:24px;}
+.planta-kpi-card{background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;}
+.planta-kpi-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--texto-dim);}
+.planta-kpi-value{font-family:'Inter Tight',sans-serif;font-size:26px;font-weight:900;color:var(--blanco);line-height:1;}
+.planta-kpi-sub{font-size:11px;color:var(--texto-dim);margin-top:2px;}
+.planta-filtros{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;}
+.planta-filtros select,.planta-filtros input[type=text]{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid var(--gris-linea);background:var(--gris-medio);color:var(--texto);cursor:pointer;outline:none;transition:border-color 0.15s;}
+.planta-filtros select:focus,.planta-filtros input[type=text]:focus{border-color:#0B8043;}
+.planta-filtros input[type=text]{min-width:180px;}
+.planta-tabla-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--gris-linea);}
+.planta-tabla{width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:12px;}
+.planta-tabla thead th{background:var(--gris-medio);color:var(--texto-dim);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:1px solid var(--gris-linea);white-space:nowrap;}
+.planta-tabla thead th.sortable{cursor:pointer;user-select:none;}
+.planta-tabla thead th.sortable:hover{color:var(--blanco);}
+.planta-tabla tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.12s;}
+.planta-tabla tbody tr:hover{background:rgba(11,128,67,0.05);}
+.planta-tabla tbody td{padding:9px 12px;color:var(--texto);vertical-align:middle;white-space:nowrap;}
+.planta-badge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
+.planta-badge-activo{background:rgba(34,197,94,0.15);color:#22C55E;}
+.planta-badge-retirado{background:rgba(239,68,68,0.15);color:#EF4444;}
+.planta-badge-otro{background:rgba(156,163,175,0.15);color:#9CA3AF;}
+.planta-tabla-info{font-size:11px;color:var(--texto-dim);margin-bottom:8px;}
+body.modo-claro .planta-kpi-card{background:#F8F9FA;border-color:#DADCE0;}
+body.modo-claro .planta-kpi-value{color:#111;}
+body.modo-claro .planta-filtros select,body.modo-claro .planta-filtros input[type=text]{background:#F8F9FA;border-color:#DADCE0;color:#111;}
+body.modo-claro .planta-upload-zone{background:rgba(11,128,67,0.02);}
+body.modo-claro .planta-tabla thead th{background:#F8F9FA;}
+body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
+
 </style>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body class="modo-claro">
 
@@ -2980,6 +3017,8 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
     <div id="hog-tabs-bar" style="display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g-outline);padding:0 20px;">
       <button id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')"
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
+      <button id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Servicios</button>
+      <button id="hog-tab-btn-adicionales" onclick="hogTabSwitch('adicionales')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Adicionales</button>
     </div>
 
     <!-- ── TAB: PROYECCIÓN ── -->
@@ -16028,6 +16067,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
             </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#0077D7;">wifi</span> Servicios
+            </button>
             <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#6D28D9;">add_box</span> Adicionales
             </button>
@@ -16052,7 +16094,384 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
+  <!-- Divider -->
+  <div class="sb-nav-divider"></div>
+
+  <!-- MODULO: Planta Activa -->
+  <div class="sb-nav-module">
+    <div class="sb-nav-module-title">PLANTA ACTIVA</div>
+    <div class="sb-nav-client" id="sb-nav-client-planta">
+      <button class="sb-nav-client-btn" onclick="toggleSbNavClient('planta')" style="padding-left:12px;">
+        <div class="sb-nav-client-logo" style="background:#0B8043;font-size:13px;">P</div>
+        <span class="sb-nav-client-name">Claro Colombia</span>
+        <span class="sb-nav-client-arrow" id="sb-nav-arrow-planta">&#9660;</span>
+      </button>
+      <div class="sb-nav-client-body" id="sb-nav-body-planta">
+        <div class="sb-nav-product" id="sb-nav-prod-planta-personal">
+          <button class="sb-nav-product-btn" onclick="closeLauncher();mostrarPanelPlanta();">
+            <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#0B8043;">badge</span>
+            <span class="sb-nav-prod-label">Detalle Personal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+
+<!-- ================================================================
+     PANEL PLANTA ACTIVA
+     ================================================================ -->
+<div id="panel-planta" style="display:none;padding:24px;max-width:1400px;margin:0 auto;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <span class="material-symbols-rounded" style="font-size:22px;color:#0B8043;">badge</span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--blanco);">Detalle Personal</span>
+      </div>
+      <div style="font-size:11px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-left:32px;">Planta Activa &middot; Claro Colombia</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <span id="planta-archivo-nombre" style="font-size:11px;color:var(--texto-dim);font-style:italic;"></span>
+      <button onclick="document.getElementById('planta-file-input').click()"
+        style="display:flex;align-items:center;gap:6px;background:#0B8043;color:#fff;border:none;padding:9px 18px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;"
+        onmouseover="this.style.background='#137333'" onmouseout="this.style.background='#0B8043'">
+        <span class="material-symbols-rounded" style="font-size:16px;">upload_file</span>
+        Cargar Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- Zona upload inicial -->
+  <div id="planta-upload-zone-box" class="planta-upload-zone"
+       onclick="document.getElementById('planta-file-input').click()"
+       ondragover="event.preventDefault();this.classList.add('dragover')"
+       ondragleave="this.classList.remove('dragover')"
+       ondrop="event.preventDefault();this.classList.remove('dragover');plantaCargarArchivo(event.dataTransfer.files[0])">
+    <span class="material-symbols-rounded" style="font-size:44px;color:var(--texto-dim);opacity:0.4;display:block;margin-bottom:10px;">table_view</span>
+    <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;color:var(--texto-dim);margin-bottom:6px;">Carga la Plantilla de Planta</div>
+    <div style="font-size:12px;color:var(--texto-dim);opacity:0.7;">Arrastra el archivo .xlsx aqui o haz clic para seleccionar</div>
+    <div style="font-size:11px;color:var(--texto-dim);opacity:0.45;margin-top:8px;">Columnas esperadas: ESTADO &middot; NOMBRE COMPLETO &middot; CARGO &middot; CIUDAD &middot; CAMPANA &middot; ...</div>
+  </div>
+  <input type="file" id="planta-file-input" accept=".xlsx,.xls" style="display:none" onchange="plantaCargarArchivo(this.files[0])">
+
+  <!-- Contenido (oculto hasta cargar) -->
+  <div id="planta-contenido" style="display:none;">
+
+    <!-- KPI Cards -->
+    <div class="planta-kpi-grid">
+      <div class="planta-kpi-card" style="border-top:3px solid #6B7280;">
+        <div class="planta-kpi-label">Total Personal</div>
+        <div class="planta-kpi-value" id="planta-kpi-total">0</div>
+        <div class="planta-kpi-sub">en el archivo</div>
+      </div>
+      <div class="planta-kpi-card" style="border-top:3px solid #22C55E;">
+        <div class="planta-kpi-label">Activos</div>
+        <div class="planta-kpi-value" id="planta-kpi-activos" style="color:#22C55E;">0</div>
+        <div class="planta-kpi-sub" id="planta-kpi-activos-pct"></div>
+      </div>
+      <div class="planta-kpi-card" style="border-top:3px solid #EF4444;">
+        <div class="planta-kpi-label">Retirados</div>
+        <div class="planta-kpi-value" id="planta-kpi-retirados" style="color:#EF4444;">0</div>
+        <div class="planta-kpi-sub" id="planta-kpi-retirados-pct"></div>
+      </div>
+      <div class="planta-kpi-card" style="border-top:3px solid #F59E0B;">
+        <div class="planta-kpi-label">Ciudades</div>
+        <div class="planta-kpi-value" id="planta-kpi-ciudades" style="color:#F59E0B;">0</div>
+        <div class="planta-kpi-sub">distintas</div>
+      </div>
+      <div class="planta-kpi-card" style="border-top:3px solid #60A5FA;">
+        <div class="planta-kpi-label">Jefes / Lideres</div>
+        <div class="planta-kpi-value" id="planta-kpi-jefes" style="color:#60A5FA;">0</div>
+        <div class="planta-kpi-sub">distintos</div>
+      </div>
+      <div class="planta-kpi-card" style="border-top:3px solid #A78BFA;">
+        <div class="planta-kpi-label">Sub-Campanas</div>
+        <div class="planta-kpi-value" id="planta-kpi-subcampanas" style="color:#A78BFA;">0</div>
+        <div class="planta-kpi-sub">distintas</div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="planta-filtros">
+      <select id="pf-estado" onchange="plantaFiltrar()">
+        <option value="">Todos los estados</option>
+        <option value="ACTIVO">Activos</option>
+        <option value="RETIRADO">Retirados</option>
+      </select>
+      <select id="pf-ciudad" onchange="plantaFiltrar()"><option value="">Todas las ciudades</option></select>
+      <select id="pf-campana" onchange="plantaFiltrar()"><option value="">Todas las campanas</option></select>
+      <select id="pf-subcampana" onchange="plantaFiltrar()"><option value="">Todas las sub-campanas</option></select>
+      <select id="pf-jefe" onchange="plantaFiltrar()"><option value="">Todos los jefes</option></select>
+      <select id="pf-cargo" onchange="plantaFiltrar()"><option value="">Todos los cargos</option></select>
+      <input type="text" id="pf-buscar" placeholder="Buscar nombre o documento..." oninput="plantaFiltrar()">
+      <button onclick="plantaLimpiarFiltros()"
+        style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#EF4444';this.style.color='#EF4444';"
+        onmouseout="this.style.borderColor='';this.style.color='';">
+        Limpiar filtros
+      </button>
+    </div>
+
+    <!-- Info de conteo -->
+    <div class="planta-tabla-info" id="planta-tabla-info"></div>
+
+    <!-- Tabla -->
+    <div class="planta-tabla-wrap">
+      <table class="planta-tabla">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="plantaOrdenar('ESTADO')" title="Ordenar por Estado">Estado <span id="planta-sort-ESTADO"></span></th>
+            <th class="sortable" onclick="plantaOrdenar('NOMBRE COMPLETO')" title="Ordenar por Nombre">Nombre Completo <span id="planta-sort-NC"></span></th>
+            <th>Documento</th>
+            <th class="sortable" onclick="plantaOrdenar('JEFE INMEDIATO')" title="Ordenar por Jefe">Jefe Inmediato <span id="planta-sort-JI"></span></th>
+            <th class="sortable" onclick="plantaOrdenar('FECHA INGRESO')" title="Ordenar por Fecha Ingreso">Fecha Ingreso <span id="planta-sort-FI"></span></th>
+            <th>Fecha Retiro</th>
+            <th style="text-align:center;">Horas</th>
+            <th class="sortable" onclick="plantaOrdenar('CIUDAD')" title="Ordenar por Ciudad">Ciudad <span id="planta-sort-CIU"></span></th>
+            <th>Campana</th>
+            <th class="sortable" onclick="plantaOrdenar('SUB CAMPANA')" title="Ordenar por Sub-Campana">Sub Campana <span id="planta-sort-SC"></span></th>
+            <th>Cargo</th>
+          </tr>
+        </thead>
+        <tbody id="planta-tbody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /planta-contenido -->
+</div><!-- /panel-planta -->
+
+<script>
+/* ============================================================
+   PLANTA ACTIVA - Detalle Personal
+   ============================================================ */
+var _plantaDatos  = [];
+var _plantaSortCol = null;
+var _plantaSortAsc = true;
+
+function mostrarPanelPlanta() {
+  setHeaderModulo('Planta Activa');
+  // ocultar otros paneles
+  var ids = ['main-content','panel-inicio','panel-hogar','panel-metas','panel-cosechas'];
+  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  document.getElementById('panel-planta').style.display = 'block';
+}
+
+function plantaCargarArchivo(file) {
+  if (!file) return;
+  if (typeof XLSX === 'undefined') {
+    alert('Error: la libreria SheetJS no cargo. Refresca la pagina e intenta de nuevo.');
+    return;
+  }
+  document.getElementById('planta-archivo-nombre').textContent = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = new Uint8Array(e.target.result);
+      var wb   = XLSX.read(data, { type:'array', cellDates:true });
+      var ws   = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
+      _plantaDatos = rows.map(function(r) {
+        var out = {};
+        for (var k in r) {
+          var key = k.trim().toUpperCase();
+          out[key] = r[k];
+        }
+        // Normalize accented column names
+        if (out['CAMPA\u00d1A'] !== undefined && out['CAMPANA'] === undefined) out['CAMPANA'] = out['CAMPA\u00d1A'];
+        if (out['SUB CAMPA\u00d1A'] !== undefined && out['SUB CAMPANA'] === undefined) out['SUB CAMPANA'] = out['SUB CAMPA\u00d1A'];
+        if (out['HORAS CONTRATADAS'] !== undefined && out['HORAS'] === undefined) out['HORAS'] = out['HORAS CONTRATADAS'];
+        return out;
+      });
+      plantaInicializar();
+    } catch(err) {
+      alert('No se pudo leer el archivo: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function plantaInicializar() {
+  if (!_plantaDatos.length) return;
+  document.getElementById('planta-upload-zone-box').style.display = 'none';
+  document.getElementById('planta-contenido').style.display = 'block';
+  plantaActualizarKPIs(_plantaDatos);
+  plantaPoblarFiltros();
+  plantaFiltrar();
+}
+
+function plantaActualizarKPIs(datos) {
+  var total     = datos.length;
+  var activos   = datos.filter(function(r){ return (r['ESTADO']||'').toUpperCase()==='ACTIVO'; }).length;
+  var retirados = datos.filter(function(r){ return (r['ESTADO']||'').toUpperCase()==='RETIRADO'; }).length;
+  var ciudades  = new Set(datos.map(function(r){ return r['CIUDAD']||''; })).size;
+  var jefes     = new Set(datos.map(function(r){ return r['JEFE INMEDIATO']||''; })).size;
+  var subcamps  = new Set(datos.map(function(r){ return r['SUB CAMPANA']||''; })).size;
+
+  document.getElementById('planta-kpi-total').textContent       = total;
+  document.getElementById('planta-kpi-activos').textContent     = activos;
+  document.getElementById('planta-kpi-retirados').textContent   = retirados;
+  document.getElementById('planta-kpi-ciudades').textContent    = ciudades;
+  document.getElementById('planta-kpi-jefes').textContent       = jefes;
+  document.getElementById('planta-kpi-subcampanas').textContent = subcamps;
+  var pctA = total ? Math.round(activos/total*100) : 0;
+  var pctR = total ? Math.round(retirados/total*100) : 0;
+  document.getElementById('planta-kpi-activos-pct').textContent   = pctA + '% del total';
+  document.getElementById('planta-kpi-retirados-pct').textContent = pctR + '% del total';
+}
+
+function _plantaUnique(campo) {
+  var seen = {}, vals = [];
+  _plantaDatos.forEach(function(r){
+    var v = (r[campo]||'').toString().trim();
+    if (v && !seen[v]) { seen[v]=true; vals.push(v); }
+  });
+  return vals.sort();
+}
+
+function _poblarSelect(id, campo) {
+  var sel = document.getElementById(id);
+  if (!sel) return;
+  var cur = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  _plantaUnique(campo).forEach(function(v){
+    var op = document.createElement('option');
+    op.value = v; op.textContent = v;
+    sel.appendChild(op);
+  });
+  if (cur) sel.value = cur;
+}
+
+function plantaPoblarFiltros() {
+  _poblarSelect('pf-ciudad',     'CIUDAD');
+  _poblarSelect('pf-campana',    'CAMPANA');
+  _poblarSelect('pf-subcampana', 'SUB CAMPANA');
+  _poblarSelect('pf-jefe',       'JEFE INMEDIATO');
+  _poblarSelect('pf-cargo',      'CARGO');
+}
+
+function plantaFiltrar() {
+  var fEstado     = (document.getElementById('pf-estado').value||'').toUpperCase();
+  var fCiudad     = (document.getElementById('pf-ciudad').value||'').toLowerCase();
+  var fCampana    = (document.getElementById('pf-campana').value||'').toLowerCase();
+  var fSubcampana = (document.getElementById('pf-subcampana').value||'').toLowerCase();
+  var fJefe       = (document.getElementById('pf-jefe').value||'').toLowerCase();
+  var fCargo      = (document.getElementById('pf-cargo').value||'').toLowerCase();
+  var fBuscar     = (document.getElementById('pf-buscar').value||'').toLowerCase();
+
+  var filtrado = _plantaDatos.filter(function(r) {
+    if (fEstado     && (r['ESTADO']||'').toUpperCase()         !== fEstado)     return false;
+    if (fCiudad     && (r['CIUDAD']||'').toLowerCase()         !== fCiudad)     return false;
+    if (fCampana    && (r['CAMPANA']||'').toLowerCase()        !== fCampana)    return false;
+    if (fSubcampana && (r['SUB CAMPANA']||'').toLowerCase()    !== fSubcampana) return false;
+    if (fJefe       && (r['JEFE INMEDIATO']||'').toLowerCase() !== fJefe)       return false;
+    if (fCargo      && (r['CARGO']||'').toLowerCase()          !== fCargo)      return false;
+    if (fBuscar) {
+      var hay = ((r['NOMBRE COMPLETO']||'')+' '+(r['NUMERO DOC']||'')).toLowerCase();
+      if (hay.indexOf(fBuscar) === -1) return false;
+    }
+    return true;
+  });
+
+  if (_plantaSortCol) {
+    filtrado = filtrado.slice().sort(function(a,b){
+      var va = (a[_plantaSortCol]||'').toString().toLowerCase();
+      var vb = (b[_plantaSortCol]||'').toString().toLowerCase();
+      if (va < vb) return _plantaSortAsc ? -1 : 1;
+      if (va > vb) return _plantaSortAsc ?  1 : -1;
+      return 0;
+    });
+  }
+
+  plantaRenderTabla(filtrado);
+  var info = document.getElementById('planta-tabla-info');
+  if (info) info.textContent = 'Mostrando ' + filtrado.length + ' de ' + _plantaDatos.length + ' registros';
+}
+
+var _plantaSortKeys = {
+  'ESTADO':'ESTADO','NOMBRE COMPLETO':'NC','JEFE INMEDIATO':'JI',
+  'FECHA INGRESO':'FI','CIUDAD':'CIU','SUB CAMPANA':'SC'
+};
+
+function plantaOrdenar(col) {
+  if (_plantaSortCol === col) {
+    _plantaSortAsc = !_plantaSortAsc;
+  } else {
+    _plantaSortCol = col;
+    _plantaSortAsc = true;
+  }
+  for (var c in _plantaSortKeys) {
+    var el = document.getElementById('planta-sort-' + _plantaSortKeys[c]);
+    if (el) el.textContent = '';
+  }
+  var key = _plantaSortKeys[col];
+  if (key) {
+    var ico = document.getElementById('planta-sort-' + key);
+    if (ico) ico.textContent = _plantaSortAsc ? ' ↑' : ' ↓';
+  }
+  plantaFiltrar();
+}
+
+function plantaLimpiarFiltros() {
+  ['pf-estado','pf-ciudad','pf-campana','pf-subcampana','pf-jefe','pf-cargo'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var b = document.getElementById('pf-buscar'); if (b) b.value = '';
+  _plantaSortCol = null; _plantaSortAsc = true;
+  for (var c in _plantaSortKeys) {
+    var el = document.getElementById('planta-sort-' + _plantaSortKeys[c]);
+    if (el) el.textContent = '';
+  }
+  plantaFiltrar();
+}
+
+function _formatFechaPlanta(val) {
+  if (!val) return '—';
+  if (val instanceof Date) {
+    return val.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  return String(val);
+}
+
+function plantaRenderTabla(datos) {
+  var tbody = document.getElementById('planta-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!datos.length) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
+    return;
+  }
+  var html = '';
+  datos.forEach(function(r) {
+    var estado = (r['ESTADO']||'').toUpperCase();
+    var badgeCls = 'planta-badge-otro';
+    if (estado === 'ACTIVO')   badgeCls = 'planta-badge-activo';
+    if (estado === 'RETIRADO') badgeCls = 'planta-badge-retirado';
+    var doc = ((r['TIPO DOC']||'') + ' ' + (r['NUMERO DOC']||'')).trim();
+    var retiro = r['FECHA DE RETIRO'];
+    var retiroStr = _formatFechaPlanta(retiro);
+    var retiroColor = retiro ? '#EF4444' : 'var(--texto-dim)';
+    html +=
+      '<tr>' +
+      '<td><span class="planta-badge ' + badgeCls + '">' + (r['ESTADO']||'—') + '</span></td>' +
+      '<td style="font-weight:600;min-width:170px;">' + (r['NOMBRE COMPLETO']||'—') + '</td>' +
+      '<td style="color:var(--texto-dim);font-size:11px;">' + (doc||'—') + '</td>' +
+      '<td style="min-width:130px;">' + (r['JEFE INMEDIATO']||'—') + '</td>' +
+      '<td>' + _formatFechaPlanta(r['FECHA INGRESO']) + '</td>' +
+      '<td style="color:' + retiroColor + ';">' + retiroStr + '</td>' +
+      '<td style="text-align:center;">' + (r['HORAS']||'—') + '</td>' +
+      '<td>' + (r['CIUDAD']||'—') + '</td>' +
+      '<td style="font-size:11px;color:var(--texto-dim);">' + (r['CAMPANA']||'—') + '</td>' +
+      '<td style="font-size:11px;color:var(--texto-dim);">' + (r['SUB CAMPANA']||'—') + '</td>' +
+      '<td>' + (r['CARGO']||'—') + '</td>' +
+      '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+</script>
 
 </body>
 </html>
