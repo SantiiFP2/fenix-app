@@ -1643,7 +1643,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
   <!-- Centro: módulo activo + cliente -->
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
     <div id="header-modulo" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blanco);">Móvil</div>
-    <div style="font-size:10px;color:var(--texto-dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px;">Claro Colombia</div>
+    <div id="header-cliente" style="font-size:10px;color:var(--texto-dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px;">Claro Colombia</div>
   </div>
 
   <!-- Botones header derecha -->
@@ -7352,7 +7352,7 @@ function toggleSidebar() {
 let _panelInicioVisible = false;
 
 function mostrarPanelInicio() {
-  setHeaderModulo('Panel de Inicio');
+  setHeaderModulo('Panel de Inicio', null);
   _panelInicioVisible = true;
   // Ocultar todos los paneles antes de mostrar inicio
   document.getElementById('main-content').style.display = 'none';
@@ -8877,7 +8877,8 @@ function selectProductMovil(el) {
 
 function selectSubmenu(tipo) {
   const nombres = { 'proyeccion': 'Móvil', 'cvcs': 'Códigos CVC' };
-  setHeaderModulo(nombres[tipo] || tipo);
+  const _movClientes = ['Proyección','CVCs'];
+  setHeaderModulo(nombres[tipo] || tipo, 'CLARO COLOMBIA');
   document.querySelectorAll('.sb-submenu-item').forEach(x => x.classList.remove('active'));
   const smi = document.getElementById('smi-' + tipo);
   if (smi) smi.classList.add('active');
@@ -9980,8 +9981,9 @@ function selectProductMetas(el) {
 
 function mostrarPanelMetas() {
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
-  setHeaderModulo('Metas');
+  setHeaderModulo('Metas', 'CLARO COLOMBIA');
   ocultarPanelInicio();
+  _ocultarPanelPlanta();
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('panel-codigos-cvc').style.display = 'none';
   document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
@@ -11570,9 +11572,20 @@ document.getElementById('periodo').value=`${hoy.getFullYear()}-${String(hoy.getM
 poblarSelectMadre();
 
 // Actualiza el texto del módulo en el header
-function setHeaderModulo(nombre) {
+function _ocultarPanelPlanta() {
+  var pp = document.getElementById('panel-planta');
+  if (pp) pp.style.display = 'none';
+}
+
+function setHeaderModulo(nombre, cliente) {
   const el = document.getElementById('header-modulo');
   if (el) el.textContent = nombre;
+  const ec = document.getElementById('header-cliente');
+  if (ec) {
+    if (cliente === undefined) cliente = null; // default: hide
+    if (cliente) { ec.textContent = cliente; ec.style.display = ''; }
+    else { ec.style.display = 'none'; }
+  }
 }
 
 // ── LAUNCHER ──
@@ -12293,7 +12306,8 @@ function hogToggleLncPanel(btn) {
 
 // ── Mostrar panel ──
 function mostrarPanelHogar() {
-  setHeaderModulo('Hogares');
+  setHeaderModulo('Hogares', 'CLARO COLOMBIA');
+  _ocultarPanelPlanta();
   document.getElementById('main-content').style.display = 'none';
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); }
@@ -13647,7 +13661,7 @@ function hogExportarExcel() {
 }
 
 function mostrarPanelCosechas() {
-  setHeaderModulo('Cosechas');
+  setHeaderModulo('Cosechas', 'CLARO COLOMBIA');
   document.getElementById('main-content').style.display = 'none';
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); pi.style.display = ''; }
@@ -16229,6 +16243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <th>Campana</th>
             <th class="sortable" onclick="plantaOrdenar('SUB CAMPANA')" title="Ordenar por Sub-Campana">Sub Campana <span id="planta-sort-SC"></span></th>
             <th>Cargo</th>
+            <th style="text-align:center;width:96px;">Acciones</th>
           </tr>
         </thead>
         <tbody id="planta-tbody"></tbody>
@@ -16276,7 +16291,7 @@ async function plantaGuardarEnServidor(nombreArchivo) {
 }
 
 function mostrarPanelPlanta() {
-  setHeaderModulo('Planta Activa');
+  setHeaderModulo('Planta Activa', null);
   // ocultar otros paneles
   var ids = ['main-content','panel-inicio','panel-hogar','panel-metas','panel-cosechas'];
   ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
@@ -16319,6 +16334,7 @@ function plantaCargarArchivo(file) {
 
 function plantaInicializar() {
   if (!_plantaDatos.length) return;
+  _plantaDatos.forEach(function(r, i) { r._pid = i; });
   document.getElementById('planta-upload-zone-box').style.display = 'none';
   document.getElementById('planta-contenido').style.display = 'block';
   plantaActualizarKPIs(_plantaDatos);
@@ -16473,6 +16489,7 @@ function plantaRenderTabla(datos) {
   }
   var html = '';
   datos.forEach(function(r) {
+    var pid = r._pid !== undefined ? r._pid : _plantaDatos.indexOf(r);
     var estado = (r['ESTADO']||'').toUpperCase();
     var badgeCls = 'planta-badge-otro';
     if (estado === 'ACTIVO')   badgeCls = 'planta-badge-activo';
@@ -16494,11 +16511,165 @@ function plantaRenderTabla(datos) {
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['CAMPANA']||'—') + '</td>' +
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['SUB CAMPANA']||'—') + '</td>' +
       '<td>' + (r['CARGO']||'—') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap;">' +
+        '<button onclick="plantaAbrirEditar(' + pid + ')" title="Editar" style="width:28px;height:28px;border:none;background:rgba(96,165,250,0.12);color:#60A5FA;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;" onmouseover="this.style.background='rgba(96,165,250,0.25)'" onmouseout="this.style.background='rgba(96,165,250,0.12)'"><span class='material-symbols-rounded' style='font-size:14px;'>edit</span></button>' +
+        '<button onclick="plantaCambiarEstado(' + pid + ')" title="Cambiar estado" style="width:28px;height:28px;border:none;background:' + (estado==='ACTIVO'?'rgba(239,68,68,0.12)':'rgba(34,197,94,0.12)') + ';color:' + (estado==='ACTIVO'?'#EF4444':'#22C55E') + ';border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'"><span class='material-symbols-rounded' style='font-size:14px;'>' + (estado==='ACTIVO'?'person_off':'person_check') + '</span></button>' +
+        '<button onclick="plantaEliminar(' + pid + ')" title="Eliminar" style="width:28px;height:28px;border:none;background:rgba(239,68,68,0.08);color:#EF4444;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;" onmouseover="this.style.background='rgba(239,68,68,0.22)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'"><span class='material-symbols-rounded' style='font-size:14px;'>delete</span></button>' +
+      '</td>' +
       '</tr>';
   });
   tbody.innerHTML = html;
+
+function plantaAbrirEditar(pid) {
+  var r = _plantaDatos.find(function(x){ return x._pid === pid; });
+  if (!r) return;
+  document.getElementById('planta-edit-pid').value = pid;
+  document.getElementById('planta-edit-jefe').value       = r['JEFE INMEDIATO']||'';
+  document.getElementById('planta-edit-ciudad').value     = r['CIUDAD']||'';
+  document.getElementById('planta-edit-campana').value    = r['CAMPANA']||'';
+  document.getElementById('planta-edit-subcampana').value = r['SUB CAMPANA']||'';
+  document.getElementById('planta-edit-cargo').value      = r['CARGO']||'';
+  document.getElementById('planta-edit-modal').style.display = 'flex';
+}
+
+function plantaGuardarEdicion() {
+  var pid = parseInt(document.getElementById('planta-edit-pid').value);
+  var idx = _plantaDatos.findIndex(function(x){ return x._pid === pid; });
+  if (idx === -1) return;
+  _plantaDatos[idx]['JEFE INMEDIATO'] = document.getElementById('planta-edit-jefe').value;
+  _plantaDatos[idx]['CIUDAD']         = document.getElementById('planta-edit-ciudad').value;
+  _plantaDatos[idx]['CAMPANA']        = document.getElementById('planta-edit-campana').value;
+  _plantaDatos[idx]['SUB CAMPANA']    = document.getElementById('planta-edit-subcampana').value;
+  _plantaDatos[idx]['CARGO']          = document.getElementById('planta-edit-cargo').value;
+  document.getElementById('planta-edit-modal').style.display = 'none';
+  plantaActualizarKPIs(_plantaDatos);
+  plantaPoblarFiltros();
+  plantaFiltrar();
+  var nom = document.getElementById('planta-archivo-nombre');
+  plantaGuardarEnServidor(nom ? nom.textContent : '');
+}
+
+function plantaCambiarEstado(pid) {
+  var idx = _plantaDatos.findIndex(function(x){ return x._pid === pid; });
+  if (idx === -1) return;
+  var actual = (_plantaDatos[idx]['ESTADO']||'').toUpperCase();
+  if (actual === 'ACTIVO') {
+    document.getElementById('planta-retiro-pid').value = pid;
+    var lbl = document.getElementById('planta-retiro-nombre-label');
+    if (lbl) lbl.textContent = _plantaDatos[idx]['NOMBRE COMPLETO']||'';
+    document.getElementById('planta-retiro-modal').style.display = 'flex';
+    var today = new Date();
+    var dd=String(today.getDate()).padStart(2,'0'), mm=String(today.getMonth()+1).padStart(2,'0'), yyyy=today.getFullYear();
+    document.getElementById('planta-retiro-fecha').value = yyyy+'-'+mm+'-'+dd;
+  } else {
+    _plantaDatos[idx]['ESTADO'] = 'ACTIVO';
+    _plantaDatos[idx]['FECHA DE RETIRO'] = '';
+    plantaActualizarKPIs(_plantaDatos);
+    plantaFiltrar();
+    var nom = document.getElementById('planta-archivo-nombre');
+    plantaGuardarEnServidor(nom ? nom.textContent : '');
+  }
+}
+
+function plantaConfirmarRetiro() {
+  var pid   = parseInt(document.getElementById('planta-retiro-pid').value);
+  var fecha = document.getElementById('planta-retiro-fecha').value;
+  if (!fecha) { alert('Por favor ingresa la fecha de retiro.'); return; }
+  var idx = _plantaDatos.findIndex(function(x){ return x._pid === pid; });
+  if (idx === -1) return;
+  _plantaDatos[idx]['ESTADO'] = 'RETIRADO';
+  _plantaDatos[idx]['FECHA DE RETIRO'] = fecha;
+  document.getElementById('planta-retiro-modal').style.display = 'none';
+  plantaActualizarKPIs(_plantaDatos);
+  plantaFiltrar();
+  var nom = document.getElementById('planta-archivo-nombre');
+  plantaGuardarEnServidor(nom ? nom.textContent : '');
+}
+
+function plantaEliminar(pid) {
+  var r = _plantaDatos.find(function(x){ return x._pid === pid; });
+  var nombre = r ? (r['NOMBRE COMPLETO']||'este registro') : 'este registro';
+  if (!confirm('¿Eliminar a ' + nombre + '? Esta acción no se puede deshacer.')) return;
+  _plantaDatos = _plantaDatos.filter(function(x){ return x._pid !== pid; });
+  plantaActualizarKPIs(_plantaDatos);
+  plantaPoblarFiltros();
+  plantaFiltrar();
+  var nom = document.getElementById('planta-archivo-nombre');
+  plantaGuardarEnServidor(nom ? nom.textContent : '');
+}
+
 }
 </script>
+
+
+<!-- ===== PLANTA: Modal Editar Registro ===== -->
+<div id="planta-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px 28px 20px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.5px;color:var(--blanco);">Editar Registro</div>
+      <button onclick="document.getElementById('planta-edit-modal').style.display='none'" style="background:none;border:none;color:var(--texto-dim);font-size:20px;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <input type="hidden" id="planta-edit-pid">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Jefe Inmediato</label>
+        <input id="planta-edit-jefe" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Ciudad</label>
+        <input id="planta-edit-ciudad" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Campana</label>
+        <input id="planta-edit-campana" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Sub Campana</label>
+        <input id="planta-edit-subcampana" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Cargo</label>
+        <input id="planta-edit-cargo" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+      <button onclick="document.getElementById('planta-edit-modal').style.display='none'"
+        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 20px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="plantaGuardarEdicion()"
+        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:20px;border:none;background:#0B8043;color:#fff;cursor:pointer;transition:background 0.15s;"
+        onmouseover="this.style.background='#137333'" onmouseout="this.style.background='#0B8043'">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PLANTA: Modal Fecha de Retiro ===== -->
+<div id="planta-retiro-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;color:var(--blanco);">Registrar Retiro</div>
+    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:20px;" id="planta-retiro-nombre-label"></div>
+    <input type="hidden" id="planta-retiro-pid">
+    <div>
+      <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:6px;">Fecha de Retiro</label>
+      <input id="planta-retiro-fecha" type="date"
+        style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;padding:10px 12px;outline:none;">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+      <button onclick="document.getElementById('planta-retiro-modal').style.display='none'"
+        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 20px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="plantaConfirmarRetiro()"
+        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:20px;border:none;background:#EF4444;color:#fff;cursor:pointer;transition:background 0.15s;"
+        onmouseover="this.style.background='#DC2626'" onmouseout="this.style.background='#EF4444'">
+        Confirmar Retiro
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
