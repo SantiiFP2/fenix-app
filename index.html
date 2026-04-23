@@ -16021,114 +16021,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 </div><!-- /main-content -->
-</div><!-- /body-with-sidebar -->
-</div><!-- /app-wrapper -->
-
-<!-- ── LAUNCHER PANEL ── -->
-<div class="launcher-overlay" id="launcher-overlay" onclick="closeLauncher()" style="display:none;"></div>
-<div class="launcher-panel" id="launcher-panel">
-
-  <!-- Panel de Inicio -->
-  <div class="sb-nav-section">
-    <button class="sb-nav-item sb-nav-home" onclick="closeLauncher();mostrarPanelInicio();">
-      <span class="material-symbols-rounded sb-nav-icon" style="color:#7C3AED;">home</span>
-      <span class="sb-nav-label">Panel de Inicio</span>
-    </button>
-  </div>
-
-  <div class="sb-nav-divider"></div>
-
-  <!-- Módulo: Facturación -->
-  <div class="sb-nav-module">
-    <div class="sb-nav-module-title">FACTURACIÓN</div>
-
-    <!-- Cliente: Claro Colombia -->
-    <div class="sb-nav-client" id="sb-nav-client-claro">
-      <button class="sb-nav-client-btn" onclick="toggleSbNavClient('claro')">
-        <div class="sb-nav-client-logo">C</div>
-        <span class="sb-nav-client-name">Claro Colombia</span>
-        <span class="sb-nav-client-arrow" id="sb-nav-arrow-claro">▶</span>
-      </button>
-
-      <div class="sb-nav-client-body" id="sb-nav-body-claro">
-
-        <!-- Producto: Móvil -->
-        <div class="sb-nav-product" id="sb-nav-prod-movil">
-          <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('movil')">
-            <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#1A73E8;">smartphone</span>
-            <span class="sb-nav-prod-label">Móvil</span>
-            <span class="sb-nav-prod-arrow" id="sb-nav-parr-movil">▾</span>
-          </button>
-          <div class="sb-nav-submenu" id="sb-nav-sub-movil">
-            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#B45309;">qr_code</span> CVCs
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelCosechas();">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#065F46;">compost</span> Cosechas
-            </button>
-          </div>
-        </div>
-
-        <!-- Producto: Hogares -->
-        <div class="sb-nav-product" id="sb-nav-prod-hogar">
-          <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('hogar')">
-            <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#6D28D9;">cottage</span>
-            <span class="sb-nav-prod-label">Hogares</span>
-            <span class="sb-nav-prod-arrow" id="sb-nav-parr-hogar">▾</span>
-          </button>
-          <div class="sb-nav-submenu" id="sb-nav-sub-hogar">
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#0077D7;">wifi</span> Servicios
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#6D28D9;">add_box</span> Adicionales
-            </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
-              <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
-            </button>
-          </div>
-        </div>
-
-        <!-- Producto: T&T (próximo) -->
-        <div class="sb-nav-product">
-          <button class="sb-nav-product-btn sb-nav-disabled">
-            <span class="sb-nav-prod-icon" style="opacity:0.4;display:flex;align-items:center;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </span>
-            <span class="sb-nav-prod-label" style="opacity:0.4;">T&amp;T</span>
-            <span class="sb-nav-badge">Pronto</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div class="sb-nav-divider"></div>
-
-  <!-- MODULO: Planta Activa -->
-  <div class="sb-nav-module">
-    <div class="sb-nav-module-title">PLANTA ACTIVA</div>
-    <button class="sb-nav-item" onclick="closeLauncher();mostrarPanelPlanta();"
-      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
-      onmouseover="this.style.background='rgba(11,128,67,0.08)'" onmouseout="this.style.background='none'">
-      <span class="material-symbols-rounded sb-nav-icon" style="color:#0B8043;font-size:20px;">badge</span>
-      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Detalle Personal</span>
-    </button>
-  </div>
-
-</div>
-
 
 <!-- ================================================================
      PANEL PLANTA ACTIVA
@@ -16684,6 +16576,116 @@ function plantaEliminar(pid) {
     </div>
   </div>
 </div>
+
+</div><!-- /body-with-sidebar -->
+</div><!-- /app-wrapper -->
+
+<!-- ── LAUNCHER PANEL ── -->
+<div class="launcher-overlay" id="launcher-overlay" onclick="closeLauncher()" style="display:none;"></div>
+<div class="launcher-panel" id="launcher-panel">
+
+  <!-- Panel de Inicio -->
+  <div class="sb-nav-section">
+    <button class="sb-nav-item sb-nav-home" onclick="closeLauncher();mostrarPanelInicio();">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#7C3AED;">home</span>
+      <span class="sb-nav-label">Panel de Inicio</span>
+    </button>
+  </div>
+
+  <div class="sb-nav-divider"></div>
+
+  <!-- Módulo: Facturación -->
+  <div class="sb-nav-module">
+    <div class="sb-nav-module-title">FACTURACIÓN</div>
+
+    <!-- Cliente: Claro Colombia -->
+    <div class="sb-nav-client" id="sb-nav-client-claro">
+      <button class="sb-nav-client-btn" onclick="toggleSbNavClient('claro')">
+        <div class="sb-nav-client-logo">C</div>
+        <span class="sb-nav-client-name">Claro Colombia</span>
+        <span class="sb-nav-client-arrow" id="sb-nav-arrow-claro">▶</span>
+      </button>
+
+      <div class="sb-nav-client-body" id="sb-nav-body-claro">
+
+        <!-- Producto: Móvil -->
+        <div class="sb-nav-product" id="sb-nav-prod-movil">
+          <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('movil')">
+            <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#1A73E8;">smartphone</span>
+            <span class="sb-nav-prod-label">Móvil</span>
+            <span class="sb-nav-prod-arrow" id="sb-nav-parr-movil">▾</span>
+          </button>
+          <div class="sb-nav-submenu" id="sb-nav-sub-movil">
+            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#B45309;">qr_code</span> CVCs
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelCosechas();">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#065F46;">compost</span> Cosechas
+            </button>
+          </div>
+        </div>
+
+        <!-- Producto: Hogares -->
+        <div class="sb-nav-product" id="sb-nav-prod-hogar">
+          <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('hogar')">
+            <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#6D28D9;">cottage</span>
+            <span class="sb-nav-prod-label">Hogares</span>
+            <span class="sb-nav-prod-arrow" id="sb-nav-parr-hogar">▾</span>
+          </button>
+          <div class="sb-nav-submenu" id="sb-nav-sub-hogar">
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#0077D7;">wifi</span> Servicios
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#6D28D9;">add_box</span> Adicionales
+            </button>
+            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
+              <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
+            </button>
+          </div>
+        </div>
+
+        <!-- Producto: T&T (próximo) -->
+        <div class="sb-nav-product">
+          <button class="sb-nav-product-btn sb-nav-disabled">
+            <span class="sb-nav-prod-icon" style="opacity:0.4;display:flex;align-items:center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </span>
+            <span class="sb-nav-prod-label" style="opacity:0.4;">T&amp;T</span>
+            <span class="sb-nav-badge">Pronto</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="sb-nav-divider"></div>
+
+  <!-- MODULO: Planta Activa -->
+  <div class="sb-nav-module">
+    <div class="sb-nav-module-title">PLANTA ACTIVA</div>
+    <button class="sb-nav-item" onclick="closeLauncher();mostrarPanelPlanta();"
+      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
+      onmouseover="this.style.background='rgba(11,128,67,0.08)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#0B8043;font-size:20px;">badge</span>
+      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Detalle Personal</span>
+    </button>
+  </div>
+
+</div>
+
+
 
 </body>
 </html>
