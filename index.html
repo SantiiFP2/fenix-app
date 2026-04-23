@@ -3017,8 +3017,6 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     <div id="hog-tabs-bar" style="display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g-outline);padding:0 20px;">
       <button id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')"
         style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
-      <button id="hog-tab-btn-servicios" onclick="hogTabSwitch('servicios')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Servicios</button>
-      <button id="hog-tab-btn-adicionales" onclick="hogTabSwitch('adicionales')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.3px;">Adicionales</button>
     </div>
 
     <!-- ── TAB: PROYECCIÓN ── -->
@@ -9984,6 +9982,7 @@ function mostrarPanelMetas() {
   setHeaderModulo('Metas', 'CLARO COLOMBIA');
   ocultarPanelInicio();
   _ocultarPanelPlanta();
+  var _ph=document.getElementById('panel-hogar'); if(_ph) _ph.style.display='none';
   document.getElementById('main-content').style.display = 'none';
   document.getElementById('panel-codigos-cvc').style.display = 'none';
   document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
@@ -12308,6 +12307,8 @@ function hogToggleLncPanel(btn) {
 function mostrarPanelHogar() {
   setHeaderModulo('Hogares', 'CLARO COLOMBIA');
   _ocultarPanelPlanta();
+  var _pm=document.getElementById('panel-metas'); if(_pm) _pm.style.display='none';
+  var _pcos=document.getElementById('panel-cosechas'); if(_pcos) _pcos.style.display='none';
   document.getElementById('main-content').style.display = 'none';
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); }
@@ -12332,7 +12333,7 @@ function hogTabSwitch(tab) {
   const bar      = document.getElementById('hog-tabs-bar');
   const leftPanel = document.getElementById('hog-left-panel');
   const grid      = document.getElementById('hog-grid');
-  const isAdic    = tab === 'adicionales';
+  const isAdic    = tab === 'adicionales' || tab === 'servicios';
   if (bar)       bar.style.display        = isAdic ? 'none' : '';
   if (leftPanel) leftPanel.style.display  = isAdic ? 'none' : '';
   if (grid)      grid.style.gridTemplateColumns = isAdic ? '1fr' : '340px 1fr';
@@ -13662,6 +13663,8 @@ function hogExportarExcel() {
 
 function mostrarPanelCosechas() {
   setHeaderModulo('Cosechas', 'CLARO COLOMBIA');
+  _ocultarPanelPlanta();
+  var _ph=document.getElementById('panel-hogar'); if(_ph) _ph.style.display='none';
   document.getElementById('main-content').style.display = 'none';
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); pi.style.display = ''; }
@@ -16292,10 +16295,21 @@ async function plantaGuardarEnServidor(nombreArchivo) {
 
 function mostrarPanelPlanta() {
   setHeaderModulo('Planta Activa', null);
-  // ocultar otros paneles
-  var ids = ['main-content','panel-inicio','panel-hogar','panel-metas','panel-cosechas'];
-  ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  // Ocultar panel-inicio correctamente (clase visible + display)
+  var pi = document.getElementById('panel-inicio');
+  if (pi) { pi.classList.remove('visible'); pi.style.display = 'none'; }
+  // Ocultar todos los paneles de contenido
+  ['main-content','panel-hogar','panel-metas','panel-cosechas','panel-codigos-cvc'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='none';
+  });
   document.getElementById('panel-planta').style.display = 'block';
+  // Si ya hay datos cargados, asegurarse que se vean
+  if (_plantaDatos && _plantaDatos.length) {
+    var upz = document.getElementById('planta-upload-zone-box');
+    var con = document.getElementById('planta-contenido');
+    if (upz) upz.style.display = 'none';
+    if (con) con.style.display = 'block';
+  }
 }
 
 function plantaCargarArchivo(file) {
