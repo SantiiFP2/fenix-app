@@ -1339,7 +1339,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     </div>
 
     <div style="display:flex;gap:10px;">
-      <button onclick="guardarNuevoUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;">Crear Usuario</button>
+      <button onclick="crearUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;">Crear Usuario</button>
       <button onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">Cancelar</button>
     </div>
   </div>
@@ -9788,10 +9788,22 @@ async function cargarListaUsuarios() {
             <span style="font-size:10px;color:${u.activo?'#34D399':'#F87171'};">${u.activo?'● Activo':'● Inactivo'}</span>
           </div>
           ${_authUsuario.rol === 'admin' && u.id !== _authUsuario.id ? `
-            <button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>` : ''}
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>
+              <button onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">🗑️ Eliminar</button>
+            </div>` : ''}
         </div>`;
     }).join('');
   } catch(e) { console.error('Error cargando usuarios:', e); }
+}
+
+async function eliminarUsuario(id, nombre) {
+  if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
+  try {
+    const res = await authFetch(`${FENIX_API}/usuarios/${id}`, { method: 'DELETE' }).then(r => r.json());
+    if (!res.ok) { alert('Error: ' + (res.error || 'No se pudo eliminar')); return; }
+    await cargarListaUsuarios();
+  } catch(e) { alert('Error de conexión'); }
 }
 
 async function crearUsuario() {
@@ -9845,8 +9857,8 @@ async function abrirEditarUsuario(id) {
       const items = PERMISOS_DEF.filter(p => p.grupo === g);
       const col = grupoColores[g] || '#A78BFA';
       const ico = grupoIconos[g] || 'lock';
-      return `<div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--gris-linea);background:${col}11;">
+      return `<div style="border:1px solid ${col}33;border-radius:10px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
           <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
           <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
         </div>
@@ -9857,9 +9869,9 @@ async function abrirEditarUsuario(id) {
               <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
                 <input type="checkbox" name="eu-perm" value="${p.key}" ${permActivos.includes(p.key)?'checked':''}
                   style="opacity:0;width:0;height:0;position:absolute;"
-                  onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('div').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
-                <div onclick="this.previousElementSibling.click()" style="position:absolute;inset:0;border-radius:20px;background:${permActivos.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;">
-                  <div style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permActivos.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+                  onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('span').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
+                <div style="position:absolute;inset:0;border-radius:20px;background:${permActivos.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;pointer-events:none;">
+                  <span style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permActivos.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:block;"></span>
                 </div>
               </div>
             </label>`).join('')}
