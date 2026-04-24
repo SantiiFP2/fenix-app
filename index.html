@@ -12217,14 +12217,16 @@ function hogRecalcularProyeccion() {
     const dAdic = Math.round((r.comisionAdic || 0) * 0.50);
 
     // EFECTIVIDAD — solo si el incentivo global disparó (cumpl ≥ 100%)
+    // Se usa la renta real del OT para reflejar el valor individual, no el ARPU promedio.
     const dEfect = totalEfectIncentivo > 0
-      ? Math.round(pagoIntUnit * r.cntInt + pagoTVUnit * r.cntTV + pagoVozUnit * r.cntVoz)
+      ? Math.round((r.rentaInt + r.rentaTV + r.rentaVoz) * (_hogEfectPct / 100))
       : 0;
 
     // ALTO VALOR — Outbound + Triple Play + OTT
+    // Se usa la renta real del OT (rentaInt+TV+Voz) en lugar del ARPU promedio global.
     const campU = (r.campaña || '').toUpperCase();
     const dAltoValor = (campU.includes('OUTBOUND') && r.cntInt >= 1 && r.cntTV >= 1 && r.cntVoz >= 1 && r.hasOTT)
-      ? Math.round((avArpuInt + avArpuTV + avArpuVoz) * (_hogAltoValorPct / 100))
+      ? Math.round((r.rentaInt + r.rentaTV + r.rentaVoz) * (_hogAltoValorPct / 100))
       : 0;
 
     // BONIFICACIÓN INTERNET — por canal, condicionada al cumpl global
