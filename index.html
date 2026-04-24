@@ -1267,64 +1267,84 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- MODAL GESTIÓN DE USUARIOS (solo admin/supervisor)             -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div id="modal-usuarios" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8000;align-items:center;justify-content:center;overflow-y:auto;padding:20px;box-sizing:border-box;">
-  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:12px;padding:28px;width:100%;max-width:780px;margin:auto;position:relative;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--texto);">👥 Gestión de Usuarios</div>
-      <button onclick="cerrarModalUsuarios()" style="background:none;border:none;color:var(--texto-dim);cursor:pointer;font-size:20px;line-height:1;">✕</button>
+<div id="panel-usuarios" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
+<div style="padding:32px;max-width:1000px;margin:0 auto;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--gris-linea);">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="material-symbols-rounded" style="font-size:28px;color:#A78BFA;">group</span>
+      <div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--texto);">Gestión de Usuarios</div>
+        <div style="font-size:11px;color:var(--texto-dim);margin-top:2px;letter-spacing:0.5px;">Administra accesos y permisos del equipo</div>
+      </div>
+    </div>
+    <button onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:var(--violeta);color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
+      <span class="material-symbols-rounded" style="font-size:16px;">person_add</span> Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--gris-linea);">
+    <button id="gu-tab-lista" onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid var(--violeta);background:none;color:var(--texto);cursor:pointer;">
+      <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-3px;margin-right:4px;">group</span>Lista de Usuarios
+    </button>
+    <button id="gu-tab-nuevo" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;">
+      <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-3px;margin-right:4px;">person_add</span>Nuevo
+    </button>
+  </div>
+
+  <!-- Panel Lista -->
+  <div id="gu-panel-lista">
+    <div id="usuarios-lista"></div>
+  </div>
+
+  <!-- Panel Nuevo Usuario -->
+  <div id="gu-panel-nuevo" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre *</label>
+        <input id="nu-nombre" placeholder="Nombre completo" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email *</label>
+        <input id="nu-email" type="email" placeholder="correo@ejemplo.com" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña *</label>
+        <input id="nu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
+        <select id="nu-rol" onchange="guActualizarPermisosDefecto('nu')" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+          <option value="usuario">Usuario</option>
+          <option value="analista">Analista</option>
+          <option value="gerente">Gerente</option>
+          <option value="jefe">Jefe</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
     </div>
 
-    <!-- Tabs -->
-    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--gris-linea);padding-bottom:0;">
-      <button id="gu-tab-lista"  onclick="guTab('lista')"  style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border:none;border-bottom:2px solid var(--violeta);background:none;color:var(--texto);cursor:pointer;">Usuarios</button>
-      <button id="gu-tab-nuevo" onclick="guTab('nuevo')"  style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;">➕ Nuevo</button>
+    <!-- Módulos con acceso -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;">Módulos con acceso</div>
+      <div id="nu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
     </div>
 
-    <!-- Panel Lista -->
-    <div id="gu-panel-lista">
-      <div id="usuarios-lista"></div>
+    <!-- Permisos -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px;">Permisos</div>
+      <div id="nu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
     </div>
 
-    <!-- Panel Nuevo Usuario -->
-    <div id="gu-panel-nuevo" style="display:none;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre *</label>
-          <input id="nu-nombre" placeholder="Nombre completo" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-        </div>
-        <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email *</label>
-          <input id="nu-email" type="email" placeholder="correo@ejemplo.com" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-        </div>
-        <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña *</label>
-          <input id="nu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-        </div>
-        <div>
-          <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
-          <select id="nu-rol" onchange="guActualizarPermisosDefecto('nu')" style="width:100%;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-            <option value="usuario">Usuario</option>
-            <option value="analista">Analista</option>
-            <option value="gerente">Gerente</option>
-            <option value="jefe">Jefe</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-      </div>
-      <!-- Módulos -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Módulos con acceso</div>
-        <div id="nu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-      </div>
-      <!-- Permisos -->
-      <div style="margin-bottom:16px;">
-        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Permisos</div>
-        <div id="nu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
-      </div>
-      <button onclick="crearUsuario()" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#A78BFA;border-radius:4px;padding:10px 20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">✓ Crear Usuario</button>
+    <div style="display:flex;gap:10px;">
+      <button onclick="guardarNuevoUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:var(--violeta);color:#fff;cursor:pointer;">Crear Usuario</button>
+      <button onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">Cancelar</button>
     </div>
   </div>
+
+</div>
 </div>
 
 <!-- MODAL EDITAR USUARIO -->
@@ -1652,11 +1672,6 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     <button id="btn-tema" onclick="toggleTema()" title="Modo Oscuro"
       style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
       <span id="btn-tema-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg></span>
-    </button>
-    <!-- Gestión de usuarios (solo admin/supervisor) -->
-    <button id="btn-gestion-usuarios" onclick="abrirModalUsuarios()" title="Gestionar usuarios"
-      style="display:none;width:38px;height:38px;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
-      <span class="material-symbols-rounded" style="font-size:20px;">group</span>
     </button>
     <!-- Usuario -->
     <div id="header-usuario"></div>
@@ -9292,12 +9307,23 @@ const PERMISOS_DEF = [
   { key: 'editar_caidas_cosechas',      label: 'Editar caídas',       grupo: 'Cosechas' },
   { key: 'reset_proyeccion',            label: 'Reset proyección',    grupo: 'Cosechas' },
   { key: 'vaciar_cosechas',             label: 'Vaciar cosechas',     grupo: 'Cosechas' },
+  // ── Adicionales ──
+  { key: 'cambiar_comision',            label: 'Cambiar comisión',    grupo: 'Adicionales' },
+  // ── Detalle Personal ──
+  { key: 'cargar_planta',               label: 'Cargar plantilla',    grupo: 'Detalle Personal' },
+  { key: 'editar_personal',             label: 'Editar personal',     grupo: 'Detalle Personal' },
+  { key: 'cambiar_estado_personal',     label: 'Cambiar estado',      grupo: 'Detalle Personal' },
+  { key: 'eliminar_personal',           label: 'Eliminar personal',   grupo: 'Detalle Personal' },
 ];
 const MODULOS_DEF = [
-  { key: 'proyeccion', label: 'Proyección Móvil' },
-  { key: 'cvc',        label: 'CVC' },
-  { key: 'metas',      label: 'Metas' },
-  { key: 'cosechas',   label: 'Cosechas' },
+  { key: 'proyeccion',  label: 'Proyección Móvil', icon: 'smartphone',  color: '#F97316' },
+  { key: 'hogar',       label: 'Proyección Hogar', icon: 'home',         color: '#38BDF8' },
+  { key: 'cvc',         label: 'CVC',              icon: 'bar_chart',    color: '#A78BFA' },
+  { key: 'metas',       label: 'Metas',            icon: 'flag',         color: '#22C55E' },
+  { key: 'cosechas',    label: 'Cosechas',         icon: 'inventory_2',  color: '#F59E0B' },
+  { key: 'servicios',   label: 'Servicios',        icon: 'receipt_long', color: '#60A5FA' },
+  { key: 'adicionales', label: 'Adicionales',      icon: 'add_box',      color: '#34D399' },
+  { key: 'planta',      label: 'Detalle Personal', icon: 'badge',        color: '#0B8043' },
 ];
 const ROLES_DEF = [
   { value: 'admin',      label: 'Admin',     color: '#F97316' },
@@ -9309,7 +9335,7 @@ const ROLES_DEF = [
 // Permisos por defecto según rol
 const PERMISOS_POR_ROL = {
   admin:   PERMISOS_DEF.map(p => p.key), // todo
-  jefe:    ['crear_usuarios','editar_usuarios','cargar_metas','exportar_plantilla_metas','anadir_metas','editar_metas','vaciar_metas','editar_cvc','eliminar_cvc','anadir_cvc','cargar_cosechas','exportar_plantillas_cosechas','exportar_excel_cosechas','editar_caidas_cosechas','reset_proyeccion','vaciar_cosechas'],
+  jefe:    ['crear_usuarios','editar_usuarios','cargar_metas','exportar_plantilla_metas','anadir_metas','editar_metas','vaciar_metas','editar_cvc','eliminar_cvc','anadir_cvc','cargar_cosechas','exportar_plantillas_cosechas','exportar_excel_cosechas','editar_caidas_cosechas','reset_proyeccion','vaciar_cosechas','cambiar_comision','cargar_planta','editar_personal','cambiar_estado_personal','eliminar_personal'],
   gerente: ['editar_usuarios','cargar_metas','exportar_plantilla_metas','anadir_metas','editar_metas','editar_cvc','anadir_cvc','cargar_cosechas','exportar_plantillas_cosechas','exportar_excel_cosechas','editar_caidas_cosechas','reset_proyeccion'],
   analista:['exportar_excel_cosechas','exportar_plantillas_cosechas'],
   usuario: [],
@@ -9593,6 +9619,17 @@ function aplicarPermisosUI() {
     if (el) el.style.display = tienePerm(perm) ? 'none' : '';
   };
 
+  // ── Módulo Usuarios (sidebar) ──
+  const sbModUsuarios = document.getElementById('sb-mod-usuarios');
+  if (sbModUsuarios) {
+    const puedeGestionar = _authUsuario && (_authUsuario.rol === 'admin' || _authUsuario.rol === 'supervisor');
+    sbModUsuarios.style.display = puedeGestionar ? '' : 'none';
+  }
+  // ── Planta: botones de acción ──
+  window._perm_cargar_planta            = tienePerm('cargar_planta');
+  window._perm_editar_personal          = tienePerm('editar_personal');
+  window._perm_cambiar_estado_personal  = tienePerm('cambiar_estado_personal');
+  window._perm_eliminar_personal        = tienePerm('eliminar_personal');
   // ── Cosechas: Cargar Excel ──
   show('btn-cos-cargar-r5',    'cargar_cosechas');
   show('btn-cos-cargar-fact',  'cargar_cosechas');
@@ -9606,7 +9643,11 @@ function aplicarPermisosUI() {
   const btnVaciar = document.getElementById('btn-vaciar-cosechas');
   if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
   // ── Cosechas: Editar caídas (controla si los inputs de % en proyección son editables) ──
-  window._perm_editar_caidas   = tienePerm('editar_caidas_cosechas');
+  window._perm_editar_caidas            = tienePerm('editar_caidas_cosechas');
+  // Planta perms already set above, ensure they are applied to current table render
+  if (typeof plantaFiltrar === 'function' && _plantaDatos && _plantaDatos.length) {
+    plantaFiltrar(); // re-render table with permission-aware buttons
+  }
   // ── Cosechas: Reset proyección ──
   window._perm_reset_proyeccion = tienePerm('reset_proyeccion');
 }
@@ -9626,45 +9667,103 @@ function guTab(tab) {
 function guRenderCheckboxes(prefix) {
   const rolVal = (document.getElementById(prefix + '-rol') || {value:'usuario'}).value;
   const permDefecto = PERMISOS_POR_ROL[rolVal] || [];
+
+  // ── MÓDULOS — chips interactivos ──
   const mCont = document.getElementById(prefix + '-modulos');
   if (mCont) {
     mCont.innerHTML = MODULOS_DEF.map(m => `
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;padding:5px 10px;">
-        <input type="checkbox" name="${prefix}-mod" value="${m.key}" checked style="accent-color:var(--violeta);cursor:pointer;">
-        ${m.label}
-      </label>`).join('');
+      <button type="button" class="gu-mod-tag" data-key="${m.key}" data-active="1"
+        onclick="guToggleModulo(this)"
+        style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:2px solid ${m.color};background:${m.color}22;color:${m.color};cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+        <span class="material-symbols-rounded" style="font-size:14px;">${m.icon}</span>${m.label}
+      </button>`).join('');
   }
+
+  // ── PERMISOS — toggles agrupados ──
   const pCont = document.getElementById(prefix + '-permisos');
   if (!pCont) return;
+  const grupoIconos = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
+  const grupoColores = { 'Usuarios':'#A78BFA', 'Metas':'#22C55E', 'CVC':'#F97316', 'Cosechas':'#F59E0B', 'Adicionales':'#34D399', 'Detalle Personal':'#0B8043' };
   const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
   pCont.innerHTML = grupos.map(g => {
     const items = PERMISOS_DEF.filter(p => p.grupo === g);
-    return `<div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:10px;">
-      <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">${g}</div>
-      ${items.map(p => `
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);margin-bottom:4px;">
-          <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${permDefecto.includes(p.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
-          ${p.label}
-        </label>`).join('')}
+    const col = grupoColores[g] || '#A78BFA';
+    const ico = grupoIconos[g] || 'lock';
+    return `<div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--gris-linea);background:${col}11;">
+        <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
+      </div>
+      <div style="padding:8px 14px;">
+        ${items.map(p => `
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
+            <span style="font-size:12px;color:var(--texto);font-family:'Inter Tight',sans-serif;">${p.label}</span>
+            <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
+              <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${permDefecto.includes(p.key)?'checked':''}
+                style="opacity:0;width:0;height:0;position:absolute;"
+                onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('div').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
+              <div onclick="this.previousElementSibling.click()" style="position:absolute;inset:0;border-radius:20px;background:${permDefecto.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;">
+                <div style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permDefecto.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+              </div>
+            </div>
+          </label>`).join('')}
+      </div>
     </div>`;
   }).join('');
 }
 
-function guActualizarPermisosDefecto(prefix) { guRenderCheckboxes(prefix); }
+function guToggleModulo(btn) {
+  const active = btn.getAttribute('data-active') === '1';
+  const newActive = !active;
+  btn.setAttribute('data-active', newActive ? '1' : '0');
+  const key = btn.getAttribute('data-key');
+  const m = MODULOS_DEF.find(x => x.key === key);
+  if (!m) return;
+  if (newActive) {
+    btn.style.border = '2px solid ' + m.color;
+    btn.style.background = m.color + '22';
+    btn.style.color = m.color;
+    btn.style.opacity = '1';
+  } else {
+    btn.style.border = '2px solid var(--gris-linea)';
+    btn.style.background = 'none';
+    btn.style.color = 'var(--texto-dim)';
+    btn.style.opacity = '0.5';
+  }
+}
+
 
 function guGetChecked(prefix, name) {
   return [...document.querySelectorAll(`input[name="${prefix}-${name}"]:checked`)].map(i => i.value);
 }
+function guGetModulos(prefix) {
+  const cont = document.getElementById(prefix + '-modulos');
+  if (!cont) return [];
+  return [...cont.querySelectorAll('.gu-mod-tag[data-active="1"]')].map(b => b.getAttribute('data-key'));
+}
 
-async function abrirModalUsuarios() {
-  document.getElementById('modal-usuarios').style.display = 'flex';
+function _ocultarPanelUsuarios() {
+  var pu = document.getElementById('panel-usuarios');
+  if (pu) pu.style.display = 'none';
+}
+
+async function mostrarPanelUsuarios() {
+  // Ocultar todos los demás paneles
+  var toHide = ['main-content','panel-hogar','panel-metas','panel-cosechas',
+                'panel-codigos-cvc','panel-nuevo-cvc','panel-planta'];
+  toHide.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
+  var pi = document.getElementById('panel-inicio');
+  if (pi) { pi.classList.remove('visible'); pi.style.display='none'; }
+  setHeaderModulo('Usuarios', null);
+  var pu = document.getElementById('panel-usuarios');
+  if (pu) pu.style.display = 'block';
   guTab('lista');
   await cargarListaUsuarios();
 }
 
-function cerrarModalUsuarios() {
-  document.getElementById('modal-usuarios').style.display = 'none';
-}
+// Backward compat aliases
+async function abrirModalUsuarios() { await mostrarPanelUsuarios(); }
+function cerrarModalUsuarios() { _ocultarPanelUsuarios(); }
 
 async function cargarListaUsuarios() {
   try {
@@ -9707,7 +9806,7 @@ async function crearUsuario() {
   const rol      = document.getElementById('nu-rol').value;
   if (!nombre || !email || !password) { alert('Completa todos los campos obligatorios'); return; }
   const permisos = guGetChecked('nu', 'perm');
-  const modulos  = guGetChecked('nu', 'mod');
+  const modulos  = guGetModulos('nu');
   try {
     const res = await authFetch(`${FENIX_API}/usuarios`, {
       method: 'POST',
@@ -9739,20 +9838,37 @@ async function abrirEditarUsuario(id) {
     const modActivos  = u.modulos  || ['proyeccion','cvc','metas','cosechas'];
     const permActivos = u.permisos || [];
     document.getElementById('eu-modulos').innerHTML = MODULOS_DEF.map(m => `
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;padding:5px 10px;">
-        <input type="checkbox" name="eu-mod" value="${m.key}" ${modActivos.includes(m.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
-        ${m.label}
-      </label>`).join('');
+      <button type="button" class="gu-mod-tag" data-key="${m.key}" data-active="${modActivos.includes(m.key)?'1':'0'}"
+        onclick="guToggleModulo(this)"
+        style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:2px solid ${m.color};background:${modActivos.includes(m.key)?m.color+'22':'none'};color:${modActivos.includes(m.key)?m.color:'var(--texto-dim)'};opacity:${modActivos.includes(m.key)?'1':'0.5'};cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
+        <span class="material-symbols-rounded" style="font-size:14px;">${m.icon}</span>${m.label}
+      </button>`).join('');
     const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
+    const grupoIconos = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
+    const grupoColores = { 'Usuarios':'#A78BFA', 'Metas':'#22C55E', 'CVC':'#F97316', 'Cosechas':'#F59E0B', 'Adicionales':'#34D399', 'Detalle Personal':'#0B8043' };
     document.getElementById('eu-permisos').innerHTML = grupos.map(g => {
       const items = PERMISOS_DEF.filter(p => p.grupo === g);
-      return `<div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:10px;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">${g}</div>
-        ${items.map(p => `
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--texto);margin-bottom:4px;">
-            <input type="checkbox" name="eu-perm" value="${p.key}" ${permActivos.includes(p.key)?'checked':''} style="accent-color:var(--violeta);cursor:pointer;">
-            ${p.label}
-          </label>`).join('')}
+      const col = grupoColores[g] || '#A78BFA';
+      const ico = grupoIconos[g] || 'lock';
+      return `<div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--gris-linea);background:${col}11;">
+          <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
+        </div>
+        <div style="padding:8px 14px;">
+          ${items.map(p => `
+            <label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
+              <span style="font-size:12px;color:var(--texto);font-family:'Inter Tight',sans-serif;">${p.label}</span>
+              <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
+                <input type="checkbox" name="eu-perm" value="${p.key}" ${permActivos.includes(p.key)?'checked':''}
+                  style="opacity:0;width:0;height:0;position:absolute;"
+                  onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('div').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
+                <div onclick="this.previousElementSibling.click()" style="position:absolute;inset:0;border-radius:20px;background:${permActivos.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;">
+                  <div style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permActivos.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+                </div>
+              </div>
+            </label>`).join('')}
+        </div>
       </div>`;
     }).join('');
     document.getElementById('modal-editar-usuario').style.display = 'flex';
@@ -9772,7 +9888,7 @@ async function guardarEdicionUsuario() {
   const rol      = document.getElementById('eu-rol').value;
   const activo   = document.getElementById('eu-activo').checked;
   const permisos = guGetChecked('eu', 'perm');
-  const modulos  = guGetChecked('eu', 'mod');
+  const modulos  = guGetModulos('eu');
   const body = { nombre, email, rol, activo, permisos, modulos };
   if (password) body.password = password;
   try {
@@ -11574,6 +11690,7 @@ poblarSelectMadre();
 function _ocultarPanelPlanta() {
   var pp = document.getElementById('panel-planta');
   if (pp) pp.style.display = 'none';
+  _ocultarPanelUsuarios();
 }
 
 function setHeaderModulo(nombre, cliente) {
@@ -16375,6 +16492,16 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- Divider -->
   <div class="sb-nav-divider"></div>
 
+  <!-- MODULO: Usuarios (solo admin/supervisor) -->
+  <div class="sb-nav-module" id="sb-mod-usuarios" style="display:none;">
+    <div class="sb-nav-module-title">USUARIOS</div>
+    <button class="sb-nav-item" onclick="closeLauncher();mostrarPanelUsuarios();"
+      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
+      onmouseover="this.style.background='rgba(167,139,250,0.08)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#A78BFA;font-size:20px;">group</span>
+      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Lista de Usuarios</span>
+    </button>
+  </div>
   <!-- MODULO: Planta Activa -->
   <div class="sb-nav-module">
     <div class="sb-nav-module-title">PLANTA ACTIVA</div>
@@ -16691,6 +16818,7 @@ function plantaRenderTabla(datos) {
     bEdit.addEventListener('mouseover', function(){ this.style.background='rgba(96,165,250,0.25)'; });
     bEdit.addEventListener('mouseout',  function(){ this.style.background='rgba(96,165,250,0.12)'; });
     (function(p){ bEdit.addEventListener('click', function(){ plantaAbrirEditar(p); }); })(pid);
+    if (!window._perm_editar_personal) { bEdit.style.display='none'; }
 
     /* ---- Status button ---- */
     var bSt   = document.createElement('button');
@@ -16704,6 +16832,7 @@ function plantaRenderTabla(datos) {
     bSt.addEventListener('mouseover', function(){ this.style.background=stBg2; });
     bSt.addEventListener('mouseout',  function(){ this.style.background=stBg; });
     (function(p){ bSt.addEventListener('click', function(){ plantaCambiarEstado(p); }); })(pid);
+    if (!window._perm_cambiar_estado_personal) { bSt.style.display='none'; }
 
     /* ---- Delete button ---- */
     var bDel  = document.createElement('button');
@@ -16713,6 +16842,7 @@ function plantaRenderTabla(datos) {
     bDel.addEventListener('mouseover', function(){ this.style.background='rgba(239,68,68,0.22)'; });
     bDel.addEventListener('mouseout',  function(){ this.style.background='rgba(239,68,68,0.08)'; });
     (function(p){ bDel.addEventListener('click', function(){ plantaEliminar(p); }); })(pid);
+    if (!window._perm_eliminar_personal) { bDel.style.display='none'; }
 
     tdAcc.appendChild(bEdit);
     tdAcc.appendChild(bSt);
