@@ -1189,10 +1189,10 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 .planta-kpi-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--texto-dim);}
 .planta-kpi-value{font-family:'Inter Tight',sans-serif;font-size:26px;font-weight:900;color:var(--blanco);line-height:1;}
 .planta-kpi-sub{font-size:11px;color:var(--texto-dim);margin-top:2px;}
-.planta-filtros{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;}
-.planta-filtros select,.planta-filtros input[type=text]{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid var(--gris-linea);background:var(--gris-medio);color:var(--texto);cursor:pointer;outline:none;transition:border-color 0.15s;}
+.planta-filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;align-items:center;}
+.planta-filtros select,.planta-filtros input[type=text]{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid var(--gris-linea);background:var(--gris-medio);color:var(--texto);cursor:pointer;outline:none;transition:border-color 0.15s;width:100%;box-sizing:border-box;}
 .planta-filtros select:focus,.planta-filtros input[type=text]:focus{border-color:#0B8043;}
-.planta-filtros input[type=text]{min-width:180px;}
+.planta-filtros .pf-btn-limpiar{grid-column:4;justify-self:stretch;}
 .planta-tabla-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--gris-linea);}
 .planta-tabla{width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:12px;}
 .planta-tabla thead th{background:var(--gris-medio);color:var(--texto-dim);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:1px solid var(--gris-linea);white-space:nowrap;}
@@ -1208,7 +1208,7 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 .planta-tabla-info{font-size:11px;color:var(--texto-dim);margin-bottom:8px;}
 body.modo-claro .planta-kpi-card{background:#F8F9FA;border-color:#DADCE0;}
 body.modo-claro .planta-kpi-value{color:#111;}
-body.modo-claro .planta-filtros select,body.modo-claro .planta-filtros input[type=text]{background:#F8F9FA;border-color:#DADCE0;color:#111;}
+body.modo-claro .planta-filtros select,body.modo-claro .planta-filtros input[type=text]{background:#F8F9FA;border-color:#DADCE0;color:#111;} body.modo-claro .pf-btn-limpiar{border-color:#DADCE0;color:#555;}
 body.modo-claro .planta-upload-zone{background:rgba(11,128,67,0.02);}
 body.modo-claro .planta-tabla thead th{background:#F8F9FA;}
 body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
@@ -16171,11 +16171,11 @@ document.addEventListener('DOMContentLoaded', function() {
       <select id="pf-jefe" onchange="plantaFiltrar()"><option value="">Todos los jefes</option></select>
       <select id="pf-cargo" onchange="plantaFiltrar()"><option value="">Todos los cargos</option></select>
       <input type="text" id="pf-buscar" placeholder="Buscar nombre o documento..." oninput="plantaFiltrar()">
-      <button onclick="plantaLimpiarFiltros()"
-        style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;"
-        onmouseover="this.style.borderColor='#EF4444';this.style.color='#EF4444';"
-        onmouseout="this.style.borderColor='';this.style.color='';">
-        Limpiar filtros
+      <button class="pf-btn-limpiar" onclick="plantaLimpiarFiltros()"
+        style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;width:100%;"
+        onmouseover="this.style.borderColor='#EF4444';this.style.color='#EF4444';this.style.background='rgba(239,68,68,0.06)';"
+        onmouseout="this.style.borderColor='';this.style.color='';this.style.background='none';">
+        ✕ Limpiar filtros
       </button>
     </div>
 
