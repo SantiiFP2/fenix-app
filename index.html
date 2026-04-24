@@ -9102,9 +9102,8 @@ function cerrarModalCvcFull() {
 }
 
 function guardarCvcFull() {
-  const esNuevo = !_cvcEditando;
-  if (esNuevo && !tienePerm('anadir_cvc'))    { alert('No tienes permiso para añadir CVCs.'); return; }
-  if (!esNuevo && !tienePerm('editar_cvc'))   { alert('No tienes permiso para editar CVCs.'); return; }
+  if (!_cvcEditando && !tienePerm('anadir_cvc'))  { alert('No tienes permiso para añadir CVCs.'); return; }
+  if (_cvcEditando  && !tienePerm('editar_cvc'))  { alert('No tienes permiso para editar CVCs.'); return; }
   const codigo    = document.getElementById('mcf-codigo').value.trim().toUpperCase();
   const sede      = document.getElementById('mcf-sede').value.trim().toUpperCase() || '—';
   const categoria = document.getElementById('mcf-categoria').value;
