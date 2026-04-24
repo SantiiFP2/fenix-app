@@ -9696,9 +9696,9 @@ function guRenderCheckboxes(prefix) {
             <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
               <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${permDefecto.includes(p.key)?'checked':''}
                 style="opacity:0;width:0;height:0;position:absolute;"
-                onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('div').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
-              <div onclick="this.previousElementSibling.click()" style="position:absolute;inset:0;border-radius:20px;background:${permDefecto.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;">
-                <div style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permDefecto.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+                onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('span').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
+              <div style="position:absolute;inset:0;border-radius:20px;background:${permDefecto.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;pointer-events:none;">
+                <span style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permDefecto.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:block;"></span>
               </div>
             </div>
           </label>`).join('')}
