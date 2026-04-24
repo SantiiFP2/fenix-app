@@ -11685,6 +11685,7 @@ function cosInit() {
 // ── Estado global Hogar ──
 let _hogDatos          = [];        // Todas las filas del archivo cargado
 let _hogResultados     = [];        // Resultados por OT (sin filtrar)
+let _hogDetallePorOT  = [];        // Última proyección con campos de desglose (dComision, dTotal, etc.)
 let _hogSiteFiltro     = 'GENERAL';
 let _hogTasasVisible   = false;
 let _hogTasasAdicVisible = false;
@@ -12268,6 +12269,7 @@ function hogRecalcularProyeccion() {
     return { ...r, dComision, dAdic, dEfect, dAltoValor, dBoniInt, dAcel, dBoniCumpl, dTec, dTotal };
   });
 
+  _hogDetallePorOT = detallePorOT;
   hogRenderTablaServicios(detallePorOT);
 
   // Guardar snapshot de la última proyección (para botón Guardar)
@@ -13651,7 +13653,9 @@ function hogRenderAdicionales() {
 // ── Exportar Excel ──
 function hogExportarExcel() {
   if (!_hogResultados.length) return;
-  const datos = _hogSiteFiltro === 'GENERAL' ? _hogResultados : _hogResultados.filter(r => r.site === _hogSiteFiltro);
+  // Use the last calculated projection (has dTotal/desglose fields) if available
+  const source = _hogDetallePorOT.length > 0 ? _hogDetallePorOT : _hogResultados;
+  const datos = _hogSiteFiltro === 'GENERAL' ? source : source.filter(r => r.site === _hogSiteFiltro);
   const round = n => Math.round(n || 0);
   const hasDesglose = datos.length > 0 && 'dTotal' in datos[0];
   const redLabel = r => r.isDTH ? 'DTH' : r.tipoRed === 'FTT' ? 'FTT' : 'BIDIR';
