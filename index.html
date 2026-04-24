@@ -1279,14 +1279,14 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
         <div style="font-size:11px;color:var(--texto-dim);margin-top:2px;letter-spacing:0.5px;">Administra accesos y permisos del equipo</div>
       </div>
     </div>
-    <button onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:var(--violeta);color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
+    <button onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
       <span class="material-symbols-rounded" style="font-size:16px;">person_add</span> Nuevo Usuario
     </button>
   </div>
 
   <!-- Tabs -->
   <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--gris-linea);">
-    <button id="gu-tab-lista" onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid var(--violeta);background:none;color:var(--texto);cursor:pointer;">
+    <button id="gu-tab-lista" onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid #7C3AED;background:none;color:var(--texto);cursor:pointer;">
       <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-3px;margin-right:4px;">group</span>Lista de Usuarios
     </button>
     <button id="gu-tab-nuevo" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;">
@@ -1339,7 +1339,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     </div>
 
     <div style="display:flex;gap:10px;">
-      <button onclick="guardarNuevoUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:var(--violeta);color:#fff;cursor:pointer;">Crear Usuario</button>
+      <button onclick="guardarNuevoUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;">Crear Usuario</button>
       <button onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">Cancelar</button>
     </div>
   </div>
@@ -1383,7 +1383,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;">Estado:</label>
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--texto);">
-        <input type="checkbox" id="eu-activo" style="width:16px;height:16px;cursor:pointer;accent-color:var(--violeta);">
+        <input type="checkbox" id="eu-activo" style="width:16px;height:16px;cursor:pointer;accent-color:#7C3AED;">
         Activo
       </label>
     </div>
@@ -1668,11 +1668,6 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
 
   <!-- Botones header derecha -->
   <div style="display:flex;align-items:center;gap:10px;">
-    <!-- Modo -->
-    <button id="btn-tema" onclick="toggleTema()" title="Modo Oscuro"
-      style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.2s;flex-shrink:0;">
-      <span id="btn-tema-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg></span>
-    </button>
     <!-- Usuario -->
     <div id="header-usuario"></div>
   </div>
@@ -9657,9 +9652,9 @@ function aplicarPermisosUI() {
 function guTab(tab) {
   document.getElementById('gu-panel-lista').style.display  = tab === 'lista' ? '' : 'none';
   document.getElementById('gu-panel-nuevo').style.display  = tab === 'nuevo' ? '' : 'none';
-  document.getElementById('gu-tab-lista').style.borderBottomColor  = tab === 'lista' ? 'var(--violeta)' : 'transparent';
+  document.getElementById('gu-tab-lista').style.borderBottomColor  = tab === 'lista' ? '#7C3AED' : 'transparent';
   document.getElementById('gu-tab-lista').style.color               = tab === 'lista' ? 'var(--texto)' : 'var(--texto-dim)';
-  document.getElementById('gu-tab-nuevo').style.borderBottomColor  = tab === 'nuevo' ? 'var(--violeta)' : 'transparent';
+  document.getElementById('gu-tab-nuevo').style.borderBottomColor  = tab === 'nuevo' ? '#7C3AED' : 'transparent';
   document.getElementById('gu-tab-nuevo').style.color               = tab === 'nuevo' ? 'var(--texto)' : 'var(--texto-dim)';
   if (tab === 'nuevo') guRenderCheckboxes('nu');
 }
@@ -9689,8 +9684,8 @@ function guRenderCheckboxes(prefix) {
     const items = PERMISOS_DEF.filter(p => p.grupo === g);
     const col = grupoColores[g] || '#A78BFA';
     const ico = grupoIconos[g] || 'lock';
-    return `<div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--gris-linea);background:${col}11;">
+    return `<div style="border:1px solid ${col}33;border-radius:10px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
         <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
         <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
       </div>
@@ -13961,9 +13956,9 @@ function cosIntentarCalcular() {
             ${nombre} · ${cargados}/${total}
           </div>
           <div style="margin:12px auto;max-width:200px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">
-            <div style="height:4px;border-radius:2px;background:var(--violeta);width:${pct}%;transition:width 0.2s;"></div>
+            <div style="height:4px;border-radius:2px;background:#7C3AED;width:${pct}%;transition:width 0.2s;"></div>
           </div>
-          <div style="font-size:12px;font-weight:700;color:var(--violeta);margin-top:4px;">${pct}%</div>
+          <div style="font-size:12px;font-weight:700;color:#7C3AED;margin-top:4px;">${pct}%</div>
           ${!desdeCache ? '<div style="font-size:10px;margin-top:4px;color:var(--texto-dim);">Se guardará en caché para la próxima vez ⚡</div>' : ''}
         </div>`;
     };
