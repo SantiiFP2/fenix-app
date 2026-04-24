@@ -13652,13 +13652,65 @@ function hogRenderAdicionales() {
 function hogExportarExcel() {
   if (!_hogResultados.length) return;
   const datos = _hogSiteFiltro === 'GENERAL' ? _hogResultados : _hogResultados.filter(r => r.site === _hogSiteFiltro);
-  const fmt = n => Math.round(n);
-  const rows = [['OT','Cuenta','Site','TipoRed','Campaña','Paquete','Con OTT','# OTT','Renta @','Renta TV','Renta Voz','Renta OTT','Comisión']];
-  datos.forEach(r => rows.push([r.ot, r.cuenta, r.site, r.tipoRed, r.campaña, r.paquete, r.hasOTT?'Sí':'No', r.countOTT, fmt(r.rentaInt), fmt(r.rentaTV), fmt(r.rentaVoz), fmt(r.rentaOTT), fmt(r.comision)]));
+  const round = n => Math.round(n || 0);
+  const hasDesglose = datos.length > 0 && 'dTotal' in datos[0];
+  const redLabel = r => r.isDTH ? 'DTH' : r.tipoRed === 'FTT' ? 'FTT' : 'BIDIR';
+
+  let rows, filename, sheetName;
+
+  if (hasDesglose) {
+    // Export matches the desglose table view exactly
+    sheetName = 'Servicios';
+    filename  = 'servicios_hogar.xlsx';
+    rows = [['OT', 'Site', 'Red', 'Canal', '# Serv.', 'Comisión', 'Adicionales',
+             'Efectividad', 'Alto Valor', 'Boni. Internet', 'Acelerador',
+             'Boni. Cumpl.', 'Tecnología', 'TOTAL']];
+    datos.forEach(r => rows.push([
+      r.ot,
+      r.site,
+      redLabel(r),
+      r.campaña,
+      (r.cntInt || 0) + (r.cntTV || 0) + (r.cntVoz || 0),
+      round(r.dComision),
+      round(r.dAdic),
+      round(r.dEfect),
+      round(r.dAltoValor),
+      round(r.dBoniInt),
+      round(r.dAcel),
+      round(r.dBoniCumpl),
+      round(r.dTec),
+      round(r.dTotal)
+    ]));
+    // Totals row
+    const sum = f => datos.reduce((s, r) => s + (r[f] || 0), 0);
+    rows.push(['TOTALES', '', '', '', '',
+      round(sum('dComision')), round(sum('dAdic')), round(sum('dEfect')),
+      round(sum('dAltoValor')), round(sum('dBoniInt')), round(sum('dAcel')),
+      round(sum('dBoniCumpl')), round(sum('dTec')), round(sum('dTotal'))
+    ]);
+  } else {
+    // Fallback: raw data view
+    sheetName = 'Proyección Hogar';
+    filename  = 'proyeccion_hogar.xlsx';
+    rows = [['OT', 'Cuenta', 'Site', 'TipoRed', 'Campaña', 'Paquete',
+             'Con OTT', '# OTT', 'Renta @', 'Renta TV', 'Renta Voz', 'Renta OTT', 'Comisión']];
+    datos.forEach(r => rows.push([
+      r.ot, r.cuenta, r.site, r.tipoRed, r.campaña, r.paquete,
+      r.hasOTT ? 'Sí' : 'No', r.countOTT,
+      round(r.rentaInt), round(r.rentaTV), round(r.rentaVoz), round(r.rentaOTT), round(r.comision)
+    ]));
+  }
+
   const ws = XLSX.utils.aoa_to_sheet(rows);
+  // Style header row bold + auto column widths
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  ws['!cols'] = Array.from({length: range.e.c + 1}, () => ({ wch: 14 }));
+  if (ws['!cols'][0]) ws['!cols'][0].wch = 12; // OT
+  if (ws['!cols'][1]) ws['!cols'][1].wch = 12; // Site
+  if (ws['!cols'][3]) ws['!cols'][3].wch = 22; // Canal (longer text)
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Proyección Hogar');
-  XLSX.writeFile(wb, 'proyeccion_hogar.xlsx');
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, filename);
 }
 
 function mostrarPanelCosechas() {
