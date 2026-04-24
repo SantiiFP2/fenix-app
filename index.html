@@ -12228,15 +12228,17 @@ function hogRecalcularProyeccion() {
       : 0;
 
     // BONIFICACIÓN INTERNET — por canal, condicionada al cumpl global
+    // Se usa la renta real del OT (r.rentaInt) para reflejar el valor individual,
+    // no el ARPU promedio global.
     let dBoniInt = 0;
     if (r.cntInt > 0) {
       if (canal === 'inbound' || canal === 'digital') {
-        dBoniInt = biInCumpl  >= 100 ? Math.round(biInArpu   * (biPctIn   / 100) * r.cntInt) : 0;
+        dBoniInt = biInCumpl  >= 100 ? Math.round(r.rentaInt * (biPctIn   / 100)) : 0;
       } else if (canal === 'auto') {
-        dBoniInt = biAutoCumpl >= 100 ? Math.round(biAutoArpu * (biPctAuto / 100) * r.cntInt) : 0;
+        dBoniInt = biAutoCumpl >= 100 ? Math.round(r.rentaInt * (biPctAuto / 100)) : 0;
       } else if (canal === 'outbound') {
         // Outbound se paga siempre según el tramo alcanzado (puede ser 0% si cumpl < 100)
-        dBoniInt = Math.round(biOutArpu * (biOutPct / 100) * r.cntInt);
+        dBoniInt = Math.round(r.rentaInt * (biOutPct / 100));
       }
     }
 
