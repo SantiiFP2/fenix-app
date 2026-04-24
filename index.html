@@ -16404,6 +16404,8 @@ async function plantaCargarDesdeServidor() {
     const j = await r.json();
     if (!j.ok || !j.datos || !j.datos.length) return;
     _plantaDatos = j.datos;
+    // Asignar _pid para que los botones de acción funcionen correctamente
+    _plantaDatos.forEach(function(r, i) { r._pid = i; });
     // Si el panel esta visible lo inicializa, si no precarga silencioso
     document.getElementById('planta-upload-zone-box').style.display = 'none';
     document.getElementById('planta-contenido').style.display = 'block';
@@ -16627,10 +16629,24 @@ function plantaLimpiarFiltros() {
 
 function _formatFechaPlanta(val) {
   if (!val) return '—';
+  var d;
   if (val instanceof Date) {
-    return val.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    d = val;
+  } else {
+    // ISO string like "2025-12-01T05:00:00.000Z" or plain "2025-12-01"
+    var s = String(val);
+    // Take only the date part to avoid timezone shift
+    var datePart = s.substring(0, 10); // "YYYY-MM-DD"
+    var parts = datePart.split('-');
+    if (parts.length === 3) {
+      return parts[2] + '/' + parts[1] + '/' + parts[0]; // DD/MM/YYYY
+    }
+    return s;
   }
-  return String(val);
+  var dd = String(d.getDate()).padStart(2,'0');
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var yy = d.getFullYear();
+  return dd + '/' + mm + '/' + yy;
 }
 
 function plantaRenderTabla(datos) {
