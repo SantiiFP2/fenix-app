@@ -1279,7 +1279,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
         <div style="font-size:11px;color:var(--texto-dim);margin-top:2px;letter-spacing:0.5px;">Administra accesos y permisos del equipo</div>
       </div>
     </div>
-    <button onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
+    <button id="btn-nuevo-usuario" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
       <span class="material-symbols-rounded" style="font-size:16px;">person_add</span> Nuevo Usuario
     </button>
   </div>
@@ -1688,7 +1688,7 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
     </div>
     <div class="cvc-panel-actions">
       <input type="text" class="cvc-search" id="cvc-buscar" placeholder="🔍  Buscar código, sede, categoría…" oninput="renderTablaCatalogoCvc()">
-      <button class="btn-primary" style="background:rgba(218,0,0,0.15);border-color:var(--rojo);color:var(--rojo);white-space:nowrap;" onclick="abrirModalCvcFull(null)">➕ Nuevo CVC</button>
+      <button id="btn-nuevo-cvc" class="btn-primary" style="background:rgba(218,0,0,0.15);border-color:var(--rojo);color:var(--rojo);white-space:nowrap;" onclick="abrirModalCvcFull(null)">➕ Nuevo CVC</button>
     </div>
   </div>
 
@@ -9037,8 +9037,8 @@ function renderTablaCatalogoCvc() {
       <td>${execStr}</td>
       <td>
         <div class="cvc-action-btns" style="justify-content:center;">
-          <button class="cvc-action-btn edit" title="Editar" onclick='abrirModalCvcFull(${JSON.stringify(f)})'>✏️</button>
-          <button class="cvc-action-btn del"  title="Eliminar del catálogo" onclick="eliminarCvcCatalogo('${f.madre}')">🗑</button>
+          ${tienePerm('editar_cvc') ? `<button class="cvc-action-btn edit" title="Editar" onclick='abrirModalCvcFull(${JSON.stringify(f)})'>✏️</button>` : ''}
+          ${tienePerm('eliminar_cvc') ? `<button class="cvc-action-btn del" title="Eliminar del catálogo" onclick="eliminarCvcCatalogo('${f.madre}')">🗑</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -9102,6 +9102,9 @@ function cerrarModalCvcFull() {
 }
 
 function guardarCvcFull() {
+  const esNuevo = !_cvcEditando;
+  if (esNuevo && !tienePerm('anadir_cvc'))    { alert('No tienes permiso para añadir CVCs.'); return; }
+  if (!esNuevo && !tienePerm('editar_cvc'))   { alert('No tienes permiso para editar CVCs.'); return; }
   const codigo    = document.getElementById('mcf-codigo').value.trim().toUpperCase();
   const sede      = document.getElementById('mcf-sede').value.trim().toUpperCase() || '—';
   const categoria = document.getElementById('mcf-categoria').value;
@@ -9154,6 +9157,7 @@ function guardarCvcFull() {
 }
 
 function eliminarCvcCatalogo(madre) {
+  if (!tienePerm('eliminar_cvc')) { alert('No tienes permiso para eliminar CVCs.'); return; }
   const enConfig = cvcConfigs.find(c=>c.madre===madre);
   const msg = enConfig
     ? `¿Eliminar el CVC "${madre}"? También se eliminará su configuración de metas.`
@@ -9319,6 +9323,7 @@ const MODULOS_DEF = [
   { key: 'servicios',   label: 'Servicios',        icon: 'receipt_long', color: '#60A5FA' },
   { key: 'adicionales', label: 'Adicionales',      icon: 'add_box',      color: '#34D399' },
   { key: 'planta',      label: 'Detalle Personal', icon: 'badge',        color: '#0B8043' },
+  { key: 'usuarios',    label: 'Usuarios',         icon: 'group',        color: '#7C3AED' },
 ];
 const ROLES_DEF = [
   { value: 'admin',      label: 'Admin',     color: '#F97316' },
@@ -9605,45 +9610,61 @@ function mostrarApp() {
 }
 // ── Aplicar permisos a la UI ──
 function aplicarPermisosUI() {
-  const show = (id, perm) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = tienePerm(perm) ? '' : 'none';
-  };
-  const hide = (id, perm) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = tienePerm(perm) ? 'none' : '';
-  };
+  const showP = (id, perm) => { const e=document.getElementById(id); if(e) e.style.display=tienePerm(perm)?'':'none'; };
+  const showM = (id, mod)  => { const e=document.getElementById(id); if(e) e.style.display=tieneModulo(mod)?'':'none'; };
 
-  // ── Módulo Usuarios (sidebar) ──
+  // ══ SIDEBAR: visibilidad por módulo ══
+  // Móvil — sub-items individuales
+  showM('sb-sub-proyeccion',  'proyeccion');
+  showM('sb-sub-cvc',         'cvc');
+  showM('sb-sub-metas-movil', 'metas');
+  showM('sb-sub-cosechas',    'cosechas');
+  // Móvil — sección completa si tiene alguno
+  const prodMovil = document.getElementById('sb-nav-prod-movil');
+  if (prodMovil) prodMovil.style.display = ['proyeccion','cvc','metas','cosechas'].some(m=>tieneModulo(m)) ? '' : 'none';
+
+  // Hogar — sub-items individuales
+  showM('sb-sub-hog-proyeccion',  'hogar');
+  showM('sb-sub-hog-servicios',   'servicios');
+  showM('sb-sub-hog-adicionales', 'adicionales');
+  showM('sb-sub-hog-metas',       'metas');
+  // Hogar — sección completa si tiene alguno
+  const prodHogar = document.getElementById('sb-nav-prod-hogar');
+  if (prodHogar) prodHogar.style.display = ['hogar','servicios','adicionales','metas'].some(m=>tieneModulo(m)) ? '' : 'none';
+
+  // Usuarios sidebar
   const sbModUsuarios = document.getElementById('sb-mod-usuarios');
-  if (sbModUsuarios) {
-    const puedeGestionar = _authUsuario && (_authUsuario.rol === 'admin' || _authUsuario.rol === 'supervisor');
-    sbModUsuarios.style.display = puedeGestionar ? '' : 'none';
-  }
-  // ── Planta: botones de acción ──
+  if (sbModUsuarios) sbModUsuarios.style.display = tieneModulo('usuarios') ? '' : 'none';
+
+  // Planta sidebar
+  const sbModPlanta = document.getElementById('sb-mod-planta');
+  if (sbModPlanta) sbModPlanta.style.display = tieneModulo('planta') ? '' : 'none';
+
+  // ══ BOTONES DE ACCIÓN: visibilidad por permiso ══
+  // CVC
+  showP('btn-nuevo-cvc', 'anadir_cvc');
+  // Usuarios panel
+  showP('btn-nuevo-usuario', 'crear_usuarios');
+
+  // ── Planta: flags de acción ──
   window._perm_cargar_planta            = tienePerm('cargar_planta');
   window._perm_editar_personal          = tienePerm('editar_personal');
   window._perm_cambiar_estado_personal  = tienePerm('cambiar_estado_personal');
   window._perm_eliminar_personal        = tienePerm('eliminar_personal');
-  // ── Cosechas: Cargar Excel ──
-  show('btn-cos-cargar-r5',    'cargar_cosechas');
-  show('btn-cos-cargar-fact',  'cargar_cosechas');
-  // ── Cosechas: Exportar Plantillas ──
-  show('btn-cos-plantilla-r5',   'exportar_plantillas_cosechas');
-  show('btn-cos-plantilla-fact', 'exportar_plantillas_cosechas');
-  // ── Cosechas: Exportar Excel ──
+  if (typeof plantaFiltrar === 'function' && _plantaDatos && _plantaDatos.length) {
+    plantaFiltrar();
+  }
+
+  // ── Cosechas ──
+  showP('btn-cos-cargar-r5',           'cargar_cosechas');
+  showP('btn-cos-cargar-fact',         'cargar_cosechas');
+  showP('btn-cos-plantilla-r5',        'exportar_plantillas_cosechas');
+  showP('btn-cos-plantilla-fact',      'exportar_plantillas_cosechas');
   const btnExpExcel = document.getElementById('btn-exportar-excel-cosechas');
   if (btnExpExcel) btnExpExcel.style.display = tienePerm('exportar_excel_cosechas') ? '' : 'none';
-  // ── Cosechas: Vaciar ──
   const btnVaciar = document.getElementById('btn-vaciar-cosechas');
   if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
-  // ── Cosechas: Editar caídas (controla si los inputs de % en proyección son editables) ──
-  window._perm_editar_caidas            = tienePerm('editar_caidas_cosechas');
-  // Planta perms already set above, ensure they are applied to current table render
-  if (typeof plantaFiltrar === 'function' && _plantaDatos && _plantaDatos.length) {
-    plantaFiltrar(); // re-render table with permission-aware buttons
-  }
-  // ── Cosechas: Reset proyección ──
+  window._perm_editar_caidas    = tienePerm('editar_caidas_cosechas');
   window._perm_reset_proyeccion = tienePerm('reset_proyeccion');
 }
 
@@ -9787,10 +9808,10 @@ async function cargarListaUsuarios() {
             <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid ${c};color:${c};background:${c}22;">${rolLabel(u.rol)}</span>
             <span style="font-size:10px;color:${u.activo?'#34D399':'#F87171'};">${u.activo?'● Activo':'● Inactivo'}</span>
           </div>
-          ${_authUsuario.rol === 'admin' && u.id !== _authUsuario.id ? `
+          ${u.id !== _authUsuario.id && (tienePerm('editar_usuarios') || tienePerm('eliminar_usuarios')) ? `
             <div style="display:flex;flex-direction:column;gap:4px;">
-              <button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>
-              <button onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">🗑️ Eliminar</button>
+              ${tienePerm('editar_usuarios') ? `<button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>` : ''}
+              ${tienePerm('eliminar_usuarios') ? `<button onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">🗑️ Eliminar</button>` : ''}
             </div>` : ''}
         </div>`;
     }).join('');
@@ -9798,6 +9819,7 @@ async function cargarListaUsuarios() {
 }
 
 async function eliminarUsuario(id, nombre) {
+  if (!tienePerm('eliminar_usuarios')) { alert('No tienes permiso para eliminar usuarios.'); return; }
   if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
   try {
     const res = await authFetch(`${FENIX_API}/usuarios/${id}`, { method: 'DELETE' }).then(r => r.json());
@@ -9807,6 +9829,7 @@ async function eliminarUsuario(id, nombre) {
 }
 
 async function crearUsuario() {
+  if (!tienePerm('crear_usuarios')) { alert('No tienes permiso para crear usuarios.'); return; }
   const nombre   = document.getElementById('nu-nombre').value.trim();
   const email    = document.getElementById('nu-email').value.trim();
   const password = document.getElementById('nu-password').value;
@@ -9888,6 +9911,7 @@ function cerrarEditarUsuario() {
 }
 
 async function guardarEdicionUsuario() {
+  if (!tienePerm('editar_usuarios')) { alert('No tienes permiso para editar usuarios.'); return; }
   const id       = parseInt(document.getElementById('eu-id').value);
   const nombre   = document.getElementById('eu-nombre').value.trim();
   const email    = document.getElementById('eu-email').value.trim();
@@ -16443,16 +16467,16 @@ document.addEventListener('DOMContentLoaded', function() {
             <span class="sb-nav-prod-arrow" id="sb-nav-parr-movil">▾</span>
           </button>
           <div class="sb-nav-submenu" id="sb-nav-sub-movil">
-            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
+            <button id="sb-sub-proyeccion" class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('proyeccion');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
+            <button id="sb-sub-cvc" class="sb-nav-sub-item" onclick="closeLauncher();selectProductMovil(null);selectSubmenu('cvcs');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#B45309;">qr_code</span> CVCs
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
+            <button id="sb-sub-metas-movil" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
               <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelCosechas();">
+            <button id="sb-sub-cosechas" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelCosechas();">
               <span class="material-symbols-rounded" style="font-size:14px;color:#065F46;">compost</span> Cosechas
             </button>
           </div>
@@ -16466,16 +16490,16 @@ document.addEventListener('DOMContentLoaded', function() {
             <span class="sb-nav-prod-arrow" id="sb-nav-parr-hogar">▾</span>
           </button>
           <div class="sb-nav-submenu" id="sb-nav-sub-hogar">
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
+            <button id="sb-sub-hog-proyeccion" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('proyeccion');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#137333;">monitoring</span> Proyección
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
+            <button id="sb-sub-hog-servicios" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('servicios');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#0077D7;">wifi</span> Servicios
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
+            <button id="sb-sub-hog-adicionales" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelHogar();hogTabSwitch('adicionales');">
               <span class="material-symbols-rounded" style="font-size:14px;color:#6D28D9;">add_box</span> Adicionales
             </button>
-            <button class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
+            <button id="sb-sub-hog-metas" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelMetas();">
               <span class="material-symbols-rounded" style="font-size:14px;color:#C5221F;">target</span> Metas
             </button>
           </div>
@@ -16510,7 +16534,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </button>
   </div>
   <!-- MODULO: Planta Activa -->
-  <div class="sb-nav-module">
+  <div class="sb-nav-module" id="sb-mod-planta">
     <div class="sb-nav-module-title">PLANTA ACTIVA</div>
     <button class="sb-nav-item" onclick="closeLauncher();mostrarPanelPlanta();"
       style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
