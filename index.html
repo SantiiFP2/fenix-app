@@ -9350,7 +9350,7 @@ function tienePerm(perm) {
 function tieneModulo(mod) {
   if (!_authUsuario) return false;
   if (_authUsuario.rol === 'admin') return true;
-  const modulos = _authUsuario.modulos || ['proyeccion','cvc','metas','cosechas'];
+  const modulos = _authUsuario.modulos || [];
   return modulos.includes(mod);
 }
 function rolColor(rol) {
