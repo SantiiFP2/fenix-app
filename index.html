@@ -1789,11 +1789,11 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
       <p id="metas-header-sub">HISTORIAL DE METAS · CLARO COLOMBIA · TODOS LOS PRODUCTOS</p>
     </div>
     <div class="metas-toolbar">
-      <button class="btn-sm" style="background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.4);color:#4ADE80;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="descargarPlantillaMetas()">⬇ Plantilla Excel</button>
+      <button id="btn-metas-plantilla" class="btn-sm" style="background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.4);color:#4ADE80;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="descargarPlantillaMetas()">⬇ Plantilla Excel</button>
       <input type="file" id="metas-file-input" accept=".xlsx,.xls" style="display:none;" onchange="cargarArchivoMetas(this)">
-      <button class="btn-sm" style="background:rgba(218,0,0,0.1);border-color:rgba(218,0,0,0.4);color:var(--rojo);padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="document.getElementById('metas-file-input').click()">📂 Cargar Excel</button>
-      <button class="btn-sm" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4);color:#93C5FD;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="abrirModalMetaManual()">➕ Meta Manual</button>
-      <button class="btn-sm" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#FCA5A5;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarMesMetas()">🗑 Vaciar Mes</button>
+      <button id="btn-metas-cargar" class="btn-sm" style="background:rgba(218,0,0,0.1);border-color:rgba(218,0,0,0.4);color:var(--rojo);padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="document.getElementById('metas-file-input').click()">📂 Cargar Excel</button>
+      <button id="btn-metas-manual" class="btn-sm" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4);color:#93C5FD;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="abrirModalMetaManual()">➕ Meta Manual</button>
+      <button id="btn-metas-vaciar" class="btn-sm" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#FCA5A5;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarMesMetas()">🗑 Vaciar Mes</button>
     </div>
   </div>
 
@@ -1858,9 +1858,9 @@ body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
       <span id="cos-mini-fact-txt" style="font-size:11px;color:#FCD34D;font-weight:600;"></span>
     </div>
     <div style="display:flex;gap:6px;flex-shrink:0;">
-      <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(147,197,253,0.4);color:#93C5FD;" onclick="cosToggleCarga()" title="Ver/editar archivos">✎ Gestionar archivos</button>
-      <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-r5').click()">＋ R5</button>
-      <button class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-factura').click()">＋ Factura</button>
+      <button id="btn-cos-gestionar" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(147,197,253,0.4);color:#93C5FD;" onclick="cosToggleCarga()" title="Ver/editar archivos">✎ Gestionar archivos</button>
+      <button id="btn-cos-rapido-r5" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-r5').click()">＋ R5</button>
+      <button id="btn-cos-rapido-fact" class="btn-sm" style="font-size:10px;padding:4px 10px;border-color:rgba(110,231,183,0.4);color:#6EE7B7;" onclick="document.getElementById('cos-input-factura').click()">＋ Factura</button>
     </div>
   </div>
 
@@ -9655,6 +9655,9 @@ function aplicarPermisosUI() {
   }
 
   // ── Cosechas ──
+  showP('btn-cos-rapido-r5',           'cargar_cosechas');
+  showP('btn-cos-rapido-fact',         'cargar_cosechas');
+  showP('btn-cos-gestionar',           'cargar_cosechas');
   showP('btn-cos-cargar-r5',           'cargar_cosechas');
   showP('btn-cos-cargar-fact',         'cargar_cosechas');
   showP('btn-cos-plantilla-r5',        'exportar_plantillas_cosechas');
@@ -9665,6 +9668,17 @@ function aplicarPermisosUI() {
   if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
   window._perm_editar_caidas    = tienePerm('editar_caidas_cosechas');
   window._perm_reset_proyeccion = tienePerm('reset_proyeccion');
+
+  // ── Metas toolbar ──
+  showP('btn-metas-plantilla', 'exportar_plantilla_metas');
+  showP('btn-metas-cargar',    'cargar_metas');
+  showP('btn-metas-manual',    'anadir_metas');
+  showP('btn-metas-vaciar',    'vaciar_metas');
+  window._perm_editar_metas = tienePerm('editar_metas');
+  // Re-render tabla si ya hay datos cargados
+  if (typeof renderPanelMetas === 'function' && document.getElementById('panel-metas')?.style.display !== 'none') {
+    renderPanelMetas();
+  }
 }
 
 
@@ -10342,20 +10356,21 @@ function renderPanelMetas() {
                     const col1 = esHogar
                       ? `<td><span style="font-size:10px;font-weight:700;background:rgba(109,40,217,0.12);color:#A78BFA;border-radius:3px;padding:2px 6px;">${f.subcanal||'—'}</span></td><td style="font-size:11px;color:var(--texto-dim);">${f.sede||'—'}</td>`
                       : `<td>${f.sede||'—'}</td><td style="font-size:11px;color:var(--texto-dim);">${f.region||'—'}</td>`;
+                    const canEdit = window._perm_editar_metas || tienePerm('editar_metas');
                     html += `<tr>
                       ${col1}
                       <td style="font-weight:600;">${f.indicador}</td>
                       <td><span class="meta-tipo-badge meta-tipo-${f.tipo.toLowerCase()}">${f.tipo}</span></td>
                       <td style="text-align:right;">
-                        <input class="meta-val-input" type="number" value="${f.meta}"
-                          onchange="editarMetaValor('${mes}',${globalIdx},this.value)"
-                          title="Editar meta">
+                        ${canEdit
+                          ? `<input class="meta-val-input" type="number" value="${f.meta}" onchange="editarMetaValor('${mes}',${globalIdx},this.value)" title="Editar meta">`
+                          : `<span style="font-family:'Inter Tight',sans-serif;font-weight:700;">${fmtN(f.meta)}</span>`}
                       </td>
                       <td style="text-align:center;">
-                        <div style="display:flex;gap:4px;justify-content:center;">
+                        ${canEdit ? `<div style="display:flex;gap:4px;justify-content:center;">
                           <button class="cvc-action-btn edit" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar">✏️</button>
                           <button class="cvc-action-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar">🗑</button>
-                        </div>
+                        </div>` : ''}
                       </td>
                     </tr>`;
                   });
@@ -10388,21 +10403,22 @@ function renderPanelMetas() {
                   Object.entries(porMadre).forEach(([madre, hijosFils]) => {
                     hijosFils.forEach(f => {
                       const globalIdx = getMetasMes(mes).indexOf(f);
+                      const canEditM = window._perm_editar_metas || tienePerm('editar_metas');
                       html += `<tr>
                         <td style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--rojo);">${f.cvc||'—'}</td>
                         <td style="font-size:11px;color:var(--texto-dim);">${f.cvcMadre||'—'}</td>
                         <td style="font-weight:600;">${f.indicador}</td>
                         <td><span class="meta-tipo-badge meta-tipo-${f.tipo.toLowerCase()}">${f.tipo}</span></td>
                         <td style="text-align:right;">
-                          <input class="meta-val-input" type="number" value="${f.meta}"
-                            onchange="editarMetaValor('${mes}',${globalIdx},this.value)"
-                            title="Editar meta">
+                          ${canEditM
+                            ? `<input class="meta-val-input" type="number" value="${f.meta}" onchange="editarMetaValor('${mes}',${globalIdx},this.value)" title="Editar meta">`
+                            : `<span style="font-family:'Inter Tight',sans-serif;font-weight:700;">${fmtN(f.meta)}</span>`}
                         </td>
                         <td style="text-align:center;">
-                          <div style="display:flex;gap:4px;justify-content:center;">
+                          ${canEditM ? `<div style="display:flex;gap:4px;justify-content:center;">
                             <button class="cvc-action-btn edit" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar">✏️</button>
                             <button class="cvc-action-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar">🗑</button>
-                          </div>
+                          </div>` : ''}
                         </td>
                       </tr>`;
                     });
