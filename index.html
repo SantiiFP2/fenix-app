@@ -9490,20 +9490,20 @@ async function loginSubmit() {
       return;
     }
 
-    // Guardar sesión
+    // Guardar sesión (token primero, para que authFetch funcione)
     _authToken   = res.token;
     _authUsuario = res.usuario;
     localStorage.setItem('fenix_token', res.token);
-    localStorage.setItem('fenix_usuario', JSON.stringify(res.usuario));
+
+    // Refrescar datos completos del usuario (modulos + permisos) desde /auth/me
+    try {
+      const me = await fetch(`${FENIX_API}/auth/me`, { headers: authHeaders() }).then(r => r.json());
+      if (me.ok && me.usuario) { _authUsuario = me.usuario; }
+    } catch(e2) { /* sin conexión — usar datos del login */ }
+    localStorage.setItem('fenix_usuario', JSON.stringify(_authUsuario));
 
     // Mostrar app
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-wrapper').style.display  = '';
-    actualizarHeaderUsuario();
-    aplicarPermisosUI();
-    // Cargar datos
-    metasCargar();
-    cosInicializarStorage();
+    mostrarApp();
 
   } catch (e) {
     mostrarLoginError('Error de conexión. Intenta de nuevo.');
