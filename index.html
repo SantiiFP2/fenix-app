@@ -9645,13 +9645,26 @@ function aplicarPermisosUI() {
   // Usuarios panel
   showP('btn-nuevo-usuario', 'crear_usuarios');
 
-  // ── Planta: flags de acción ──
-  window._perm_cargar_planta            = tienePerm('cargar_planta');
+  // ── Planta: visibilidad y flags de acción ──
+  showP('btn-planta-cargar', 'cargar_planta');
+  // Zona de drop inicial: ocultar si no tiene permiso (solo cuando está visible, i.e. sin datos aún)
+  const _plantaUpZone = document.getElementById('planta-upload-zone-box');
+  if (_plantaUpZone && _plantaUpZone.style.display !== 'none') {
+    _plantaUpZone.style.display = tienePerm('cargar_planta') ? '' : 'none';
+  }
   window._perm_editar_personal          = tienePerm('editar_personal');
   window._perm_cambiar_estado_personal  = tienePerm('cambiar_estado_personal');
   window._perm_eliminar_personal        = tienePerm('eliminar_personal');
   if (typeof plantaFiltrar === 'function' && _plantaDatos && _plantaDatos.length) {
     plantaFiltrar();
+  }
+
+  // ── Adicionales: flag cambiar comisión ──
+  window._perm_cambiar_comision = tienePerm('cambiar_comision');
+  // Re-render si la tabla ya está visible
+  if (typeof hogRenderAdicionales === 'function' &&
+      document.getElementById('hog-tab-adicionales')?.style.display !== 'none') {
+    hogRenderAdicionales();
   }
 
   // ── Cosechas ──
@@ -13763,6 +13776,7 @@ async function hogAdicConfirmarModal() {
 
 // ── Toggle comisionable desde la tabla de Adicionales ──
 async function hogAdicToggle(prod) {
+  if (!tienePerm('cambiar_comision')) { alert('No tienes permiso para cambiar la comisión de servicios adicionales.'); return; }
   const cfg = _hogAdicConfig.find(c => c.producto === prod);
   if (cfg) {
     cfg.comisionable = !cfg.comisionable;
@@ -13808,10 +13822,10 @@ function hogRenderAdicionales() {
           <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:${pillBg};color:${pillColor};border:1px solid ${pillBorder};">${pillLabel}</span>
         </td>
         <td style="text-align:center;">
-          <button onclick="hogAdicToggle('${prodEsc}')"
+          ${(window._perm_cambiar_comision || tienePerm('cambiar_comision')) ? `<button onclick="hogAdicToggle('${prodEsc}')"
             style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:5px;border:1px solid ${btnBorder};background:${btnBg};color:${btnColor};cursor:pointer;letter-spacing:0.3px;">
             ${btnLabel}
-          </button>
+          </button>` : ''}
         </td>
       </tr>`;
   }).join('');
@@ -16262,7 +16276,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <span id="planta-archivo-nombre" style="font-size:11px;color:var(--texto-dim);font-style:italic;"></span>
-      <button onclick="document.getElementById('planta-file-input').click()"
+      <button id="btn-planta-cargar" onclick="document.getElementById('planta-file-input').click()"
         style="display:flex;align-items:center;gap:6px;background:#0B8043;color:#fff;border:none;padding:9px 18px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;"
         onmouseover="this.style.background='#137333'" onmouseout="this.style.background='#0B8043'">
         <span class="material-symbols-rounded" style="font-size:16px;">upload_file</span>
