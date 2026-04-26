@@ -1355,6 +1355,60 @@ body.modo-claro {
 .pa-mov-item:hover{background:var(--pa-surface-2);}
 .pa-mov-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Inter Tight',sans-serif;}
 
+/* ═══════════════════════════════════════════════════════
+   GU — Gestión de Usuarios  (Lovable Design System)
+   ═══════════════════════════════════════════════════════ */
+/* User card */
+.gu-user-card{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--pa-shadow);transition:transform 0.12s,box-shadow 0.12s;position:relative;}
+.gu-user-card:hover{transform:translateY(-1px);box-shadow:var(--pa-shadow-hover);}
+.gu-user-card:hover .gu-card-actions{opacity:1;}
+/* Avatar */
+.gu-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;flex-shrink:0;position:relative;}
+.gu-avatar-dot{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--pa-surface-1);}
+/* Role badge */
+.gu-role-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid;white-space:nowrap;}
+/* Mod chip */
+.gu-mod-chip{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid;}
+/* Actions */
+.gu-card-actions{display:flex;align-items:center;gap:4px;opacity:0;transition:opacity 0.15s;flex-shrink:0;}
+.gu-action-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.12s;background:transparent;color:var(--pa-text-dim);}
+.gu-action-btn:hover{background:var(--pa-muted);color:var(--pa-text);}
+.gu-action-btn.danger:hover{background:rgba(248,113,113,0.15);color:#F87171;}
+/* Module toggle card */
+.gu-mod-toggle{border:2px solid transparent;border-radius:12px;padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;text-align:center;transition:all 0.15s;background:var(--pa-muted);position:relative;width:100%;box-sizing:border-box;}
+.gu-mod-toggle.on{background:var(--pa-surface-1);box-shadow:var(--pa-shadow);}
+.gu-mod-toggle:hover{opacity:0.85;}
+.gu-mod-toggle-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.gu-mod-toggle-label{font-size:10px;font-weight:600;line-height:1.3;color:var(--pa-text-dim);}
+.gu-mod-toggle.on .gu-mod-toggle-label{color:var(--pa-text);}
+.gu-mod-check{position:absolute;top:5px;right:5px;width:15px;height:15px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:900;}
+.gu-mod-toggle.on .gu-mod-check{display:flex;}
+/* Permission group */
+.gu-perm-group{border-radius:12px;overflow:hidden;border:1px solid;}
+.gu-perm-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid;}
+.gu-perm-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;border-bottom:1px solid;transition:background 0.1s;}
+.gu-perm-row:last-child{border-bottom:none;}
+/* Custom toggle */
+.gu-toggle{position:relative;width:36px;height:20px;flex-shrink:0;cursor:pointer;}
+.gu-toggle input{opacity:0;width:0;height:0;position:absolute;}
+.gu-toggle-track{position:absolute;inset:0;border-radius:20px;background:var(--pa-muted);transition:background 0.2s;}
+.gu-toggle input:checked + .gu-toggle-track{background:var(--gu-toggle-col,#7C3AED);}
+.gu-toggle-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.25);}
+.gu-toggle input:checked ~ .gu-toggle-thumb{transform:translateX(16px);}
+/* Search / filter */
+.gu-search-input{width:100%;box-sizing:border-box;padding:9px 12px 9px 36px;border:1px solid var(--pa-border);border-radius:10px;background:var(--pa-surface-1);color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+.gu-search-input:focus{border-color:#7C3AED;}
+.gu-filter-sel{padding:9px 12px;border:1px solid var(--pa-border);border-radius:10px;background:var(--pa-surface-1);color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+/* Edit modal tabs */
+.gu-modal-tab{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:none;cursor:pointer;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;border-radius:8px;background:none;color:var(--pa-text-dim);transition:all 0.15s;}
+.gu-modal-tab.active{background:rgba(124,58,237,0.1);color:#7C3AED;}
+.gu-modal-tab-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(124,58,237,0.15);color:#7C3AED;}
+/* "Tú" badge */
+.gu-you-badge{position:absolute;top:-8px;left:16px;font-size:9px;font-weight:800;letter-spacing:0.8px;padding:2px 8px;border-radius:10px;background:#7C3AED;color:#fff;}
+/* Light mode adjustments */
+body.modo-claro .gu-search-input,body.modo-claro .gu-filter-sel{background:#fff;border-color:#DADCE0;color:#111;}
+body.modo-claro .gu-action-btn{color:#6B7280;}
+
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -1410,79 +1464,127 @@ body.modo-claro {
 <!-- MODAL GESTIÓN DE USUARIOS (solo admin/supervisor)             -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div id="panel-usuarios" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="padding:32px;max-width:1000px;margin:0 auto;">
+<div style="padding:32px;max-width:1100px;margin:0 auto;">
 
-  <!-- Header -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--gris-linea);">
+  <!-- ── Header ── -->
+  <div style="display:flex;align-items:start;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
     <div style="display:flex;align-items:center;gap:14px;">
-      <span class="material-symbols-rounded" style="font-size:28px;color:#A78BFA;">group</span>
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7C3AED,#6D28D9);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(124,58,237,0.35);">
+        <span class="material-symbols-rounded" style="font-size:22px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">group</span>
+      </div>
       <div>
-        <div style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--texto);">Gestión de Usuarios</div>
-        <div style="font-size:11px;color:var(--texto-dim);margin-top:2px;letter-spacing:0.5px;">Administra accesos y permisos del equipo</div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--pa-text);line-height:1.2;">Gestión de Usuarios</div>
+        <div id="gu-header-sub" style="font-size:12px;color:var(--pa-text-dim);margin-top:2px;">Administra accesos y permisos del equipo</div>
       </div>
     </div>
-    <button id="btn-nuevo-usuario" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
-      <span class="material-symbols-rounded" style="font-size:16px;">person_add</span> Nuevo Usuario
+    <button id="btn-nuevo-usuario" onclick="guTab('nuevo')" style="display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,0.35);white-space:nowrap;flex-shrink:0;">
+      <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">person_add</span> Nuevo Usuario
     </button>
   </div>
 
-  <!-- Tabs -->
-  <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--gris-linea);">
-    <button id="gu-tab-lista" onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid #7C3AED;background:none;color:var(--texto);cursor:pointer;">
-      <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-3px;margin-right:4px;">group</span>Lista de Usuarios
+  <!-- ── Tabs ── -->
+  <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--pa-border);">
+    <button id="gu-tab-lista" onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid #7C3AED;background:none;color:var(--pa-text);cursor:pointer;display:inline-flex;align-items:center;gap:5px;">
+      <span class="material-symbols-rounded" style="font-size:14px;">group</span>Lista de Usuarios
     </button>
-    <button id="gu-tab-nuevo" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid transparent;background:none;color:var(--texto-dim);cursor:pointer;">
-      <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-3px;margin-right:4px;">person_add</span>Nuevo
+    <button id="gu-tab-nuevo" onclick="guTab('nuevo')" style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border:none;border-bottom:2px solid transparent;background:none;color:var(--pa-text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:5px;">
+      <span class="material-symbols-rounded" style="font-size:14px;">person_add</span>Nuevo
     </button>
   </div>
 
-  <!-- Panel Lista -->
+  <!-- ── Panel Lista ── -->
   <div id="gu-panel-lista">
+    <!-- Search + Filters -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
+      <div style="position:relative;flex:1;min-width:200px;">
+        <span class="material-symbols-rounded" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--pa-text-dim);pointer-events:none;">search</span>
+        <input class="gu-search-input" id="gu-search" placeholder="Buscar por nombre o email…" oninput="guFiltrar()">
+      </div>
+      <select class="gu-filter-sel" id="gu-filter-rol" onchange="guFiltrar()">
+        <option value="">Todos los roles</option>
+        <option value="admin">Admin</option>
+        <option value="jefe">Jefe</option>
+        <option value="gerente">Gerente</option>
+        <option value="analista">Analista</option>
+        <option value="usuario">Usuario</option>
+      </select>
+      <select class="gu-filter-sel" id="gu-filter-estado" onchange="guFiltrar()">
+        <option value="">Todos</option>
+        <option value="activo">Activos</option>
+        <option value="inactivo">Inactivos</option>
+      </select>
+    </div>
     <div id="usuarios-lista"></div>
   </div>
 
-  <!-- Panel Nuevo Usuario -->
+  <!-- ── Panel Nuevo Usuario ── -->
   <div id="gu-panel-nuevo" style="display:none;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre *</label>
-        <input id="nu-nombre" placeholder="Nombre completo" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+
+    <!-- Step 1: Datos básicos -->
+    <div style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--pa-shadow);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <span style="width:24px;height:24px;border-radius:50%;background:#7C3AED;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--pa-text);">Datos básicos</span>
       </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email *</label>
-        <input id="nu-email" type="email" placeholder="correo@ejemplo.com" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña *</label>
-        <input id="nu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
-        <select id="nu-rol" onchange="guActualizarPermisosDefecto('nu')" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:6px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
-          <option value="usuario">Usuario</option>
-          <option value="analista">Analista</option>
-          <option value="gerente">Gerente</option>
-          <option value="jefe">Jefe</option>
-          <option value="admin">Admin</option>
-        </select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Nombre completo *</label>
+          <input id="nu-nombre" placeholder="Ej. María Pérez" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Email *</label>
+          <input id="nu-email" type="email" placeholder="correo@ejemplo.com" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+        </div>
+        <div style="position:relative;">
+          <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Contraseña *</label>
+          <input id="nu-password" type="password" placeholder="Mínimo 8 caracteres" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+          <button type="button" onclick="guTogglePwd('nu-password',this)" style="position:absolute;right:10px;bottom:9px;background:none;border:none;cursor:pointer;color:var(--pa-text-dim);padding:0;line-height:1;">
+            <span class="material-symbols-rounded" style="font-size:16px;">visibility</span>
+          </button>
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Rol</label>
+          <select id="nu-rol" onchange="guActualizarPermisosDefecto('nu')" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;cursor:pointer;">
+            <option value="usuario">Usuario</option>
+            <option value="analista">Analista</option>
+            <option value="gerente">Gerente</option>
+            <option value="jefe">Jefe</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
       </div>
     </div>
 
-    <!-- Módulos con acceso -->
-    <div style="margin-bottom:20px;">
-      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;">Módulos con acceso</div>
-      <div id="nu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    <!-- Step 2: Módulos -->
+    <div style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--pa-shadow);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:24px;height:24px;border-radius:50%;background:#7C3AED;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+          <span style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--pa-text);">Acceso a módulos</span>
+          <span id="nu-mod-count" style="font-size:11px;color:var(--pa-text-dim);"></span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" onclick="guSelectAllMods('nu',true)" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Todos</button>
+          <button type="button" onclick="guSelectAllMods('nu',false)" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Ninguno</button>
+        </div>
+      </div>
+      <div id="nu-modulos" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;"></div>
     </div>
 
-    <!-- Permisos -->
-    <div style="margin-bottom:24px;">
-      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px;">Permisos</div>
+    <!-- Step 3: Permisos -->
+    <div style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:20px;margin-bottom:20px;box-shadow:var(--pa-shadow);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <span style="width:24px;height:24px;border-radius:50%;background:#7C3AED;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--pa-text);">Permisos detallados</span>
+      </div>
       <div id="nu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
     </div>
 
     <div style="display:flex;gap:10px;">
-      <button onclick="crearUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;">Crear Usuario</button>
-      <button onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">Cancelar</button>
+      <button onclick="crearUsuario()" style="display:flex;align-items:center;gap:6px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,0.3);">
+        <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">person_add</span> Crear Usuario
+      </button>
+      <button onclick="guTab('lista')" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:10px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Cancelar</button>
     </div>
   </div>
 
@@ -1491,58 +1593,119 @@ body.modo-claro {
 
 <!-- MODAL EDITAR USUARIO -->
 <div id="modal-editar-usuario" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8100;align-items:center;justify-content:center;overflow-y:auto;padding:20px;box-sizing:border-box;">
-  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:12px;padding:28px;width:100%;max-width:700px;margin:auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--texto);">✏️ Editar Usuario</div>
-      <button onclick="cerrarEditarUsuario()" style="background:none;border:none;color:var(--texto-dim);cursor:pointer;font-size:20px;line-height:1;">✕</button>
-    </div>
-    <input type="hidden" id="eu-id">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre</label>
-        <input id="eu-nombre" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
+  <div style="background:var(--pa-surface-1,var(--gris-oscuro));border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:680px;margin:auto;display:flex;flex-direction:column;max-height:90vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+
+    <!-- ── Modal Header ── -->
+    <div style="padding:20px 22px 0;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div id="eu-avatar-header" style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-size:17px;font-weight:800;flex-shrink:0;background:rgba(124,58,237,0.18);color:#A78BFA;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="eu-header-nombre" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:var(--pa-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;"></span>
+            <span id="eu-dirty-badge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(251,191,36,0.15);color:#FBBF24;border:1px solid rgba(251,191,36,0.3);white-space:nowrap;">● Cambios</span>
+          </div>
+          <span id="eu-header-email" style="font-size:12px;color:var(--pa-text-dim);"></span>
+        </div>
+        <button onclick="cerrarEditarUsuario()" style="width:32px;height:32px;border-radius:8px;background:var(--pa-muted);border:none;cursor:pointer;color:var(--pa-text-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:18px;">close</span>
+        </button>
       </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Email</label>
-        <input id="eu-email" type="email" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Nueva contraseña <span style="font-weight:400;text-transform:none;">(dejar vacío para no cambiar)</span></label>
-        <input id="eu-password" type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px;">Rol</label>
-        <select id="eu-rol" onchange="guActualizarPermisosDefecto('eu')" style="width:100%;background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:8px 10px;outline:none;">
-          <option value="usuario">Usuario</option>
-          <option value="analista">Analista</option>
-          <option value="gerente">Gerente</option>
-          <option value="jefe">Jefe</option>
-          <option value="admin">Admin</option>
-        </select>
+
+      <!-- Tab bar -->
+      <div style="display:flex;gap:4px;margin-top:16px;border-bottom:1px solid var(--pa-border);padding-bottom:0;">
+        <button id="eu-tab-btn-info" class="gu-modal-tab active" onclick="guEuTab('info')">
+          <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">person</span>Información
+        </button>
+        <button id="eu-tab-btn-modulos" class="gu-modal-tab" onclick="guEuTab('modulos')">
+          <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">grid_view</span>Módulos
+          <span id="eu-mod-count-badge" style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(124,58,237,0.15);color:#A78BFA;margin-left:2px;"></span>
+        </button>
+        <button id="eu-tab-btn-permisos" class="gu-modal-tab" onclick="guEuTab('permisos')">
+          <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">shield</span>Permisos
+          <span id="eu-perm-count-badge" style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(124,58,237,0.15);color:#A78BFA;margin-left:2px;"></span>
+        </button>
       </div>
     </div>
-    <!-- Estado -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <label style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;">Estado:</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--texto);">
-        <input type="checkbox" id="eu-activo" style="width:16px;height:16px;cursor:pointer;accent-color:#7C3AED;">
-        Activo
-      </label>
+
+    <!-- ── Scrollable body ── -->
+    <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+      <input type="hidden" id="eu-id">
+
+      <!-- Tab: Información -->
+      <div id="eu-panel-info">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Nombre completo</label>
+            <input id="eu-nombre" oninput="guEuMarkDirty()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Email</label>
+            <input id="eu-email" type="email" oninput="guEuMarkDirty()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+          </div>
+          <div style="position:relative;">
+            <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Nueva contraseña <span style="font-weight:400;text-transform:none;font-size:9px;">(vacío = sin cambio)</span></label>
+            <input id="eu-password" type="password" placeholder="••••••••" oninput="guEuMarkDirty()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+            <button type="button" onclick="guTogglePwd('eu-password',this)" style="position:absolute;right:10px;bottom:9px;background:none;border:none;cursor:pointer;color:var(--pa-text-dim);padding:0;line-height:1;">
+              <span class="material-symbols-rounded" style="font-size:16px;">visibility</span>
+            </button>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Rol</label>
+            <select id="eu-rol" onchange="guActualizarPermisosDefecto('eu');guEuMarkDirty();" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;cursor:pointer;">
+              <option value="usuario">Usuario</option>
+              <option value="analista">Analista</option>
+              <option value="gerente">Gerente</option>
+              <option value="jefe">Jefe</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <!-- Estado toggle -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding:14px;background:var(--pa-muted);border-radius:10px;border:1px solid var(--pa-border);">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--pa-text);font-family:'Inter Tight',sans-serif;">Estado de cuenta</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">El usuario puede o no iniciar sesión</div>
+          </div>
+          <label class="gu-toggle" style="--gu-toggle-col:#22C55E;">
+            <input type="checkbox" id="eu-activo" onchange="guEuMarkDirty()">
+            <div class="gu-toggle-track"></div>
+            <div class="gu-toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tab: Módulos -->
+      <div id="eu-panel-modulos" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:11px;color:var(--pa-text-dim);">Activa los módulos a los que tendrá acceso este usuario.</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" onclick="guSelectAllMods('eu',true)" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Todos</button>
+            <button type="button" onclick="guSelectAllMods('eu',false)" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Ninguno</button>
+          </div>
+        </div>
+        <div id="eu-modulos" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+      </div>
+
+      <!-- Tab: Permisos -->
+      <div id="eu-panel-permisos" style="display:none;">
+        <div style="font-size:11px;color:var(--pa-text-dim);margin-bottom:14px;">Configura los permisos individuales del usuario.</div>
+        <div id="eu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+      </div>
     </div>
-    <!-- Módulos -->
-    <div style="margin-bottom:14px;">
-      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Módulos con acceso</div>
-      <div id="eu-modulos" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+    <!-- ── Sticky footer ── -->
+    <div style="flex-shrink:0;padding:14px 22px;border-top:1px solid var(--pa-border);display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--pa-surface-1,var(--gris-oscuro));">
+      <div id="eu-footer-status" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--pa-text-dim);">
+        <span class="material-symbols-rounded" style="font-size:14px;">info</span>Sin cambios
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="cerrarEditarUsuario()" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Cancelar</button>
+        <button onclick="guardarEdicionUsuario()" style="display:flex;align-items:center;gap:6px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,0.3);">
+          <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">save</span>Guardar cambios
+        </button>
+      </div>
     </div>
-    <!-- Permisos agrupados -->
-    <div style="margin-bottom:20px;">
-      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Permisos</div>
-      <div id="eu-permisos" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
-    </div>
-    <div style="display:flex;gap:10px;">
-      <button onclick="guardarEdicionUsuario()" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#A78BFA;border-radius:4px;padding:10px 20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;flex:1;">✓ Guardar Cambios</button>
-      <button onclick="cerrarEditarUsuario()" style="background:none;border:1px solid var(--gris-linea);color:var(--texto-dim);border-radius:4px;padding:10px 16px;font-family:'Inter Tight',sans-serif;font-size:12px;cursor:pointer;">Cancelar</button>
-    </div>
+
   </div>
 </div>
 
@@ -9889,82 +10052,244 @@ function aplicarPermisosUI() {
 
 
 
+var _guAllUsuarios = [];
+
 function guTab(tab) {
   document.getElementById('gu-panel-lista').style.display  = tab === 'lista' ? '' : 'none';
   document.getElementById('gu-panel-nuevo').style.display  = tab === 'nuevo' ? '' : 'none';
-  document.getElementById('gu-tab-lista').style.borderBottomColor  = tab === 'lista' ? '#7C3AED' : 'transparent';
-  document.getElementById('gu-tab-lista').style.color               = tab === 'lista' ? 'var(--texto)' : 'var(--texto-dim)';
-  document.getElementById('gu-tab-nuevo').style.borderBottomColor  = tab === 'nuevo' ? '#7C3AED' : 'transparent';
-  document.getElementById('gu-tab-nuevo').style.color               = tab === 'nuevo' ? 'var(--texto)' : 'var(--texto-dim)';
+  var tl = document.getElementById('gu-tab-lista');
+  var tn = document.getElementById('gu-tab-nuevo');
+  if (tl) {
+    tl.style.borderBottomColor = tab === 'lista' ? '#7C3AED' : 'transparent';
+    tl.style.color             = tab === 'lista' ? 'var(--pa-text,var(--texto))' : 'var(--pa-text-dim,var(--texto-dim))';
+  }
+  if (tn) {
+    tn.style.borderBottomColor = tab === 'nuevo' ? '#7C3AED' : 'transparent';
+    tn.style.color             = tab === 'nuevo' ? 'var(--pa-text,var(--texto))' : 'var(--pa-text-dim,var(--texto-dim))';
+  }
   if (tab === 'nuevo') guRenderCheckboxes('nu');
 }
 
-function guRenderCheckboxes(prefix) {
-  const rolVal = (document.getElementById(prefix + '-rol') || {value:'usuario'}).value;
-  const permDefecto = PERMISOS_POR_ROL[rolVal] || [];
+// ── Edit-modal tab switcher ──
+function guEuTab(tab) {
+  ['info','modulos','permisos'].forEach(function(t) {
+    var btn = document.getElementById('eu-tab-btn-' + t);
+    var panel = document.getElementById('eu-panel-' + t);
+    if (btn)   btn.classList.toggle('active', t === tab);
+    if (panel) panel.style.display = t === tab ? '' : 'none';
+  });
+}
 
-  // ── MÓDULOS — chips interactivos ──
-  const mCont = document.getElementById(prefix + '-modulos');
-  if (mCont) {
-    mCont.innerHTML = MODULOS_DEF.map(m => `
-      <button type="button" class="gu-mod-tag" data-key="${m.key}" data-active="1"
-        onclick="guToggleModulo(this)"
-        style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:2px solid ${m.color};background:${m.color}22;color:${m.color};cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
-        <span class="material-symbols-rounded" style="font-size:14px;">${m.icon}</span>${m.label}
-      </button>`).join('');
+// ── Password visibility toggle ──
+function guTogglePwd(inputId, btn) {
+  var inp = document.getElementById(inputId);
+  if (!inp) return;
+  var icon = btn.querySelector('.material-symbols-rounded');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    if (icon) icon.textContent = 'visibility_off';
+  } else {
+    inp.type = 'password';
+    if (icon) icon.textContent = 'visibility';
   }
+}
 
-  // ── PERMISOS — toggles agrupados ──
-  const pCont = document.getElementById(prefix + '-permisos');
+// ── Select/deselect all module toggles ──
+function guSelectAllMods(prefix, all) {
+  var cont = document.getElementById(prefix + '-modulos');
+  if (!cont) return;
+  cont.querySelectorAll('.gu-mod-tag').forEach(function(btn) {
+    btn.setAttribute('data-active', all ? '1' : '0');
+    btn.classList.toggle('on', all);
+    var key = btn.getAttribute('data-key');
+    var m = MODULOS_DEF.find(function(x){ return x.key === key; });
+    if (m) {
+      if (all) {
+        btn.style.borderColor = m.color;
+        btn.style.background  = m.color + '22';
+        btn.style.color       = m.color;
+        btn.style.opacity     = '1';
+      } else {
+        btn.style.borderColor = 'var(--pa-border)';
+        btn.style.background  = 'none';
+        btn.style.color       = 'var(--pa-text-dim)';
+        btn.style.opacity     = '0.45';
+      }
+    }
+  });
+  _guUpdateModCount(prefix);
+}
+
+function _guUpdateModCount(prefix) {
+  var cont = document.getElementById(prefix + '-modulos');
+  if (!cont) return;
+  var total  = cont.querySelectorAll('.gu-mod-tag').length;
+  var active = cont.querySelectorAll('.gu-mod-tag[data-active="1"]').length;
+  var badge  = document.getElementById(prefix === 'eu' ? 'eu-mod-count-badge' : 'nu-mod-count');
+  if (badge) badge.textContent = active + '/' + total;
+}
+
+// ── Dirty tracking for edit modal ──
+var _guDirty = false;
+function guEuMarkDirty() {
+  _guDirty = true;
+  var badge  = document.getElementById('eu-dirty-badge');
+  var status = document.getElementById('eu-footer-status');
+  if (badge)  badge.style.display = 'inline-flex';
+  if (status) status.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;color:#FBBF24;">edit</span><span style="color:#FBBF24;">Tienes cambios pendientes</span>';
+}
+
+// ── Re-render permisos when role changes ──
+function guActualizarPermisosDefecto(prefix) {
+  const rolVal    = (document.getElementById(prefix + '-rol') || {value:'usuario'}).value;
+  const permDef   = PERMISOS_POR_ROL[rolVal] || [];
+  const pCont     = document.getElementById(prefix + '-permisos');
   if (!pCont) return;
-  const grupoIconos = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
+  // Re-render permisos section with new defaults
+  const grupoIconos  = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
   const grupoColores = { 'Usuarios':'#A78BFA', 'Metas':'#22C55E', 'CVC':'#F97316', 'Cosechas':'#F59E0B', 'Adicionales':'#34D399', 'Detalle Personal':'#0B8043' };
-  const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
-  pCont.innerHTML = grupos.map(g => {
-    const items = PERMISOS_DEF.filter(p => p.grupo === g);
+  const grupos = [...new Set(PERMISOS_DEF.map(function(p){ return p.grupo; }))];
+  pCont.innerHTML = grupos.map(function(g) {
+    const items = PERMISOS_DEF.filter(function(p){ return p.grupo === g; });
     const col = grupoColores[g] || '#A78BFA';
     const ico = grupoIconos[g] || 'lock';
-    return `<div style="border:1px solid ${col}33;border-radius:10px;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
-        <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
-        <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
+    return `<div class="gu-perm-group" style="border-color:${col}33;">
+      <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
+        <span class="material-symbols-rounded" style="font-size:15px;color:${col};font-variation-settings:'FILL' 1,'wght' 500;">${ico}</span>
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${col};flex:1;">${g}</span>
       </div>
-      <div style="padding:8px 14px;">
-        ${items.map(p => `
-          <label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
-            <span style="font-size:12px;color:var(--texto);font-family:'Inter Tight',sans-serif;">${p.label}</span>
-            <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
-              <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${permDefecto.includes(p.key)?'checked':''}
-                style="opacity:0;width:0;height:0;position:absolute;"
-                onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('span').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
-              <div style="position:absolute;inset:0;border-radius:20px;background:${permDefecto.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;pointer-events:none;">
-                <span style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permDefecto.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:block;"></span>
-              </div>
-            </div>
-          </label>`).join('')}
+      <div style="padding:6px 14px;">
+        ${items.map(function(p) {
+          const chk = permDef.includes(p.key);
+          return `<label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
+            <span style="font-size:12px;color:var(--pa-text,var(--texto));font-family:'Inter Tight',sans-serif;">${p.label}</span>
+            <label class="gu-toggle" style="--gu-toggle-col:${col};">
+              <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${chk?'checked':''} onchange="if(typeof guEuMarkDirty==='function') guEuMarkDirty();">
+              <div class="gu-toggle-track"></div>
+              <div class="gu-toggle-thumb"></div>
+            </label>
+          </label>`;
+        }).join('')}
       </div>
     </div>`;
   }).join('');
+}
+
+// ── User list filter ──
+function guFiltrar() {
+  var q      = (document.getElementById('gu-search')       || {value:''}).value.toLowerCase();
+  var rol    = (document.getElementById('gu-filter-rol')   || {value:''}).value;
+  var estado = (document.getElementById('gu-filter-estado')|| {value:''}).value;
+  var list   = _guAllUsuarios.filter(function(u) {
+    var matchQ = !q || u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+    var matchR = !rol    || u.rol === rol;
+    var matchE = !estado || (estado === 'activo' ? u.activo : !u.activo);
+    return matchQ && matchR && matchE;
+  });
+  _guRenderUsuarioCards(list);
+}
+
+function guRenderCheckboxes(prefix, permActivos) {
+  const rolVal = (document.getElementById(prefix + '-rol') || {value:'usuario'}).value;
+  const permDefecto = permActivos || PERMISOS_POR_ROL[rolVal] || [];
+
+  // ── MÓDULOS — card toggles (new design) ──
+  const mCont = document.getElementById(prefix + '-modulos');
+  if (mCont) {
+    const existingKeys = {};
+    mCont.querySelectorAll('.gu-mod-tag').forEach(function(b){ existingKeys[b.getAttribute('data-key')] = b.getAttribute('data-active'); });
+    const isNew = Object.keys(existingKeys).length === 0;
+    mCont.innerHTML = MODULOS_DEF.map(function(m) {
+      const wasActive = isNew ? '1' : (existingKeys[m.key] || '0');
+      const on = wasActive === '1';
+      return `<button type="button" class="gu-mod-tag${on?' on':''}" data-key="${m.key}" data-active="${on?'1':'0'}"
+        onclick="guToggleModulo(this)"
+        style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:10px 6px 8px;border-radius:10px;border:2px solid ${on?m.color:'var(--pa-border)'};background:${on?m.color+'1a':'var(--pa-muted)'};color:${on?m.color:'var(--pa-text-dim)'};opacity:${on?'1':'0.5'};cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;width:100%;box-sizing:border-box;position:relative;">
+        <span class="material-symbols-rounded" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500;">${m.icon}</span>
+        <span style="line-height:1.2;">${m.label}</span>
+        ${on?`<span style="position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:${m.color};display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:900;">✓</span>`:''}
+      </button>`;
+    }).join('');
+    _guUpdateModCount(prefix);
+  }
+
+  // ── PERMISOS — toggle rows ──
+  const pCont = document.getElementById(prefix + '-permisos');
+  if (!pCont) return;
+  const grupoIconos  = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
+  const grupoColores = { 'Usuarios':'#A78BFA', 'Metas':'#22C55E', 'CVC':'#F97316', 'Cosechas':'#F59E0B', 'Adicionales':'#34D399', 'Detalle Personal':'#0B8043' };
+  const grupos = [...new Set(PERMISOS_DEF.map(function(p){ return p.grupo; }))];
+  pCont.innerHTML = grupos.map(function(g) {
+    const items = PERMISOS_DEF.filter(function(p){ return p.grupo === g; });
+    const col = grupoColores[g] || '#A78BFA';
+    const ico = grupoIconos[g] || 'lock';
+    return `<div class="gu-perm-group" style="border-color:${col}33;">
+      <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
+        <span class="material-symbols-rounded" style="font-size:15px;color:${col};font-variation-settings:'FILL' 1,'wght' 500;">${ico}</span>
+        <span style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${col};flex:1;">${g}</span>
+      </div>
+      <div style="padding:6px 14px;">
+        ${items.map(function(p) {
+          const chk = permDefecto.includes(p.key);
+          return `<label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
+            <span style="font-size:12px;color:var(--pa-text,var(--texto));font-family:'Inter Tight',sans-serif;">${p.label}</span>
+            <label class="gu-toggle" style="--gu-toggle-col:${col};">
+              <input type="checkbox" name="${prefix}-perm" value="${p.key}" ${chk?'checked':''} onchange="guEuMarkDirty ? guEuMarkDirty() : null;">
+              <div class="gu-toggle-track"></div>
+              <div class="gu-toggle-thumb"></div>
+            </label>
+          </label>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Update perm count badge if in eu context
+  if (prefix === 'eu') {
+    const active = pCont.querySelectorAll('input[name="eu-perm"]:checked').length;
+    const badge = document.getElementById('eu-perm-count-badge');
+    if (badge) badge.textContent = active;
+  }
 }
 
 function guToggleModulo(btn) {
   const active = btn.getAttribute('data-active') === '1';
   const newActive = !active;
   btn.setAttribute('data-active', newActive ? '1' : '0');
+  btn.classList.toggle('on', newActive);
   const key = btn.getAttribute('data-key');
-  const m = MODULOS_DEF.find(x => x.key === key);
+  const m = MODULOS_DEF.find(function(x){ return x.key === key; });
   if (!m) return;
   if (newActive) {
-    btn.style.border = '2px solid ' + m.color;
-    btn.style.background = m.color + '22';
-    btn.style.color = m.color;
-    btn.style.opacity = '1';
+    btn.style.borderColor = m.color;
+    btn.style.background  = m.color + '1a';
+    btn.style.color       = m.color;
+    btn.style.opacity     = '1';
+    // Add check dot
+    var dot = btn.querySelector('.gu-mod-check-dot');
+    if (!dot) {
+      dot = document.createElement('span');
+      dot.className = 'gu-mod-check-dot';
+      dot.style.cssText = 'position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:900;';
+      dot.textContent = '✓';
+      btn.appendChild(dot);
+    }
+    dot.style.display = 'flex';
   } else {
-    btn.style.border = '2px solid var(--gris-linea)';
-    btn.style.background = 'none';
-    btn.style.color = 'var(--texto-dim)';
-    btn.style.opacity = '0.5';
+    btn.style.borderColor = 'var(--pa-border)';
+    btn.style.background  = 'var(--pa-muted)';
+    btn.style.color       = 'var(--pa-text-dim)';
+    btn.style.opacity     = '0.5';
+    var dot = btn.querySelector('.gu-mod-check-dot');
+    if (dot) dot.style.display = 'none';
   }
+  // Update count badge
+  const cont = btn.closest('[id$="-modulos"]');
+  if (cont) {
+    const prefix = cont.id.replace('-modulos','');
+    _guUpdateModCount(prefix);
+  }
+  if (typeof guEuMarkDirty === 'function') guEuMarkDirty();
 }
 
 
@@ -10000,40 +10325,61 @@ async function mostrarPanelUsuarios() {
 async function abrirModalUsuarios() { await mostrarPanelUsuarios(); }
 function cerrarModalUsuarios() { _ocultarPanelUsuarios(); }
 
+function _guInitials(nombre) {
+  return (nombre || '?').split(' ').filter(function(p){ return p.length > 0; }).slice(0,2).map(function(p){ return p[0].toUpperCase(); }).join('');
+}
+
+function _guRenderUsuarioCards(lista) {
+  const cont = document.getElementById('usuarios-lista');
+  if (!cont) return;
+  if (!lista.length) {
+    cont.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--pa-text-dim);font-size:13px;"><span class="material-symbols-rounded" style="font-size:36px;display:block;margin:0 auto 10px;opacity:0.4;">person_search</span>No se encontraron usuarios</div>';
+    return;
+  }
+  cont.innerHTML = lista.map(function(u) {
+    const c  = rolColor(u.rol);
+    const ini = _guInitials(u.nombre);
+    const mods = (u.modulos || ['proyeccion','cvc','metas','cosechas']).map(function(mk) {
+      const def = MODULOS_DEF.find(function(d){ return d.key === mk; });
+      return `<span style="font-size:9px;padding:2px 7px;border-radius:20px;background:${def?def.color+'15':'rgba(255,255,255,0.06)'};color:${def?def.color:'var(--pa-text-dim)'};border:1px solid ${def?def.color+'33':'rgba(255,255,255,0.1)'};font-weight:700;display:inline-flex;align-items:center;gap:3px;"><span class="material-symbols-rounded" style="font-size:10px;font-variation-settings:'FILL' 1,'wght' 500;">${def?def.icon:'grid_view'}</span>${def?def.label:mk}</span>`;
+    }).join('');
+    const canEdit   = tienePerm('editar_usuarios')   && u.id !== _authUsuario.id;
+    const canDelete = tienePerm('eliminar_usuarios')  && u.id !== _authUsuario.id;
+    return `
+      <div class="gu-user-card">
+        <div class="gu-avatar" style="background:${c}18;color:${c};">
+          ${ini}
+          <span class="gu-avatar-dot" style="background:${u.activo?'#22C55E':'#6B7280'};"></span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">${u.nombre}</span>
+            <span class="gu-role-badge" style="border-color:${c}44;color:${c};background:${c}15;">
+              <span class="material-symbols-rounded" style="font-size:10px;font-variation-settings:'FILL' 1,'wght' 500;">shield_person</span>${rolLabel(u.rol)}
+            </span>
+          </div>
+          <div style="font-size:11px;color:var(--pa-text-dim);margin:2px 0 6px;">${u.email}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">${mods}</div>
+        </div>
+        ${canEdit || canDelete ? `
+        <div class="gu-card-actions" style="display:flex;flex-direction:column;gap:5px;opacity:0;transition:opacity 0.15s;flex-shrink:0;">
+          ${canEdit ? `<button onclick="abrirEditarUsuario(${u.id})" style="display:flex;align-items:center;gap:5px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">
+            <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 500;">edit</span>Editar
+          </button>` : ''}
+          ${canDelete ? `<button onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:5px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#F87171;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">
+            <span class="material-symbols-rounded" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 500;">delete</span>Eliminar
+          </button>` : ''}
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
 async function cargarListaUsuarios() {
   try {
     const res = await authFetch(`${FENIX_API}/usuarios`).then(r => r.json());
     if (!res.ok) return;
-    const cont = document.getElementById('usuarios-lista');
-    if (!res.usuarios.length) {
-      cont.innerHTML = '<div style="text-align:center;padding:30px;color:var(--texto-dim);font-size:13px;">No hay usuarios registrados</div>';
-      return;
-    }
-    cont.innerHTML = res.usuarios.map(u => {
-      const c = rolColor(u.rol);
-      const mods = (u.modulos || ['proyeccion','cvc','metas','cosechas']).map(m => {
-        const def = MODULOS_DEF.find(d => d.key === m);
-        return `<span style="font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.12);color:var(--texto-dim);">${def ? def.label : m}</span>`;
-      }).join('');
-      return `
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:8px;margin-bottom:8px;">
-          <div style="width:34px;height:34px;border-radius:50%;background:${c}22;border:1px solid ${c}55;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-weight:700;font-size:14px;color:${c};flex-shrink:0;">${u.nombre.charAt(0).toUpperCase()}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;color:var(--blanco);">${u.nombre}</div>
-            <div style="font-size:11px;color:var(--texto-dim);">${u.email}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">${mods}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid ${c};color:${c};background:${c}22;">${rolLabel(u.rol)}</span>
-            <span style="font-size:10px;color:${u.activo?'#34D399':'#F87171'};">${u.activo?'● Activo':'● Inactivo'}</span>
-          </div>
-          ${u.id !== _authUsuario.id && (tienePerm('editar_usuarios') || tienePerm('eliminar_usuarios')) ? `
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              ${tienePerm('editar_usuarios') ? `<button onclick="abrirEditarUsuario(${u.id})" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">✏️ Editar</button>` : ''}
-              ${tienePerm('eliminar_usuarios') ? `<button onclick="eliminarUsuario(${u.id},'${u.nombre.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#EF4444;border-radius:4px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Inter Tight',sans-serif;font-weight:700;white-space:nowrap;">🗑️ Eliminar</button>` : ''}
-            </div>` : ''}
-        </div>`;
-    }).join('');
+    _guAllUsuarios = res.usuarios || [];
+    _guRenderUsuarioCards(_guAllUsuarios);
   } catch(e) { console.error('Error cargando usuarios:', e); }
 }
 
@@ -10075,51 +10421,78 @@ let _guUsuarioEditando = null;
 async function abrirEditarUsuario(id) {
   try {
     const res = await authFetch(`${FENIX_API}/usuarios`).then(r => r.json());
-    const u = res.usuarios.find(x => x.id === id);
+    const u = res.usuarios.find(function(x){ return x.id === id; });
     if (!u) return;
     _guUsuarioEditando = u;
+
+    // Basic fields
     document.getElementById('eu-id').value       = u.id;
     document.getElementById('eu-nombre').value   = u.nombre;
     document.getElementById('eu-email').value    = u.email;
     document.getElementById('eu-password').value = '';
     document.getElementById('eu-rol').value      = u.rol;
     document.getElementById('eu-activo').checked = u.activo;
+
+    // Header
+    const ini  = _guInitials(u.nombre);
+    const col  = rolColor(u.rol);
+    const avEl = document.getElementById('eu-avatar-header');
+    if (avEl) { avEl.textContent = ini; avEl.style.background = col + '25'; avEl.style.color = col; }
+    const hnEl = document.getElementById('eu-header-nombre');
+    if (hnEl) hnEl.textContent = u.nombre;
+    const heEl = document.getElementById('eu-header-email');
+    if (heEl) heEl.textContent = u.email;
+
+    // Reset dirty state
+    _guDirty = false;
+    const badge  = document.getElementById('eu-dirty-badge');
+    const status = document.getElementById('eu-footer-status');
+    if (badge)  badge.style.display = 'none';
+    if (status) status.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">info</span>Sin cambios';
+
+    // Módulos — pre-render then flip active states
     const modActivos  = u.modulos  || ['proyeccion','cvc','metas','cosechas'];
     const permActivos = u.permisos || [];
-    document.getElementById('eu-modulos').innerHTML = MODULOS_DEF.map(m => `
-      <button type="button" class="gu-mod-tag" data-key="${m.key}" data-active="${modActivos.includes(m.key)?'1':'0'}"
-        onclick="guToggleModulo(this)"
-        style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:2px solid ${m.color};background:${modActivos.includes(m.key)?m.color+'22':'none'};color:${modActivos.includes(m.key)?m.color:'var(--texto-dim)'};opacity:${modActivos.includes(m.key)?'1':'0.5'};cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
-        <span class="material-symbols-rounded" style="font-size:14px;">${m.icon}</span>${m.label}
-      </button>`).join('');
-    const grupos = [...new Set(PERMISOS_DEF.map(p => p.grupo))];
-    const grupoIconos = { 'Usuarios':'group', 'Metas':'flag', 'CVC':'bar_chart', 'Cosechas':'inventory_2', 'Adicionales':'add_box', 'Detalle Personal':'badge' };
-    const grupoColores = { 'Usuarios':'#A78BFA', 'Metas':'#22C55E', 'CVC':'#F97316', 'Cosechas':'#F59E0B', 'Adicionales':'#34D399', 'Detalle Personal':'#0B8043' };
-    document.getElementById('eu-permisos').innerHTML = grupos.map(g => {
-      const items = PERMISOS_DEF.filter(p => p.grupo === g);
-      const col = grupoColores[g] || '#A78BFA';
-      const ico = grupoIconos[g] || 'lock';
-      return `<div style="border:1px solid ${col}33;border-radius:10px;overflow:hidden;">
-        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid ${col}22;background:${col}11;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:${col};">${ico}</span>
-          <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${col};">${g}</span>
-        </div>
-        <div style="padding:8px 14px;">
-          ${items.map(p => `
-            <label style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;cursor:pointer;border-bottom:1px solid ${col}11;">
-              <span style="font-size:12px;color:var(--texto);font-family:'Inter Tight',sans-serif;">${p.label}</span>
-              <div style="position:relative;width:36px;height:20px;flex-shrink:0;">
-                <input type="checkbox" name="eu-perm" value="${p.key}" ${permActivos.includes(p.key)?'checked':''}
-                  style="opacity:0;width:0;height:0;position:absolute;"
-                  onchange="var t=this.nextElementSibling;t.style.background=this.checked?'${col}':'var(--gris-linea)';t.querySelector('span').style.transform=this.checked?'translateX(16px)':'translateX(2px)';">
-                <div style="position:absolute;inset:0;border-radius:20px;background:${permActivos.includes(p.key)?col:'var(--gris-linea)'};transition:background 0.2s;cursor:pointer;pointer-events:none;">
-                  <span style="position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;transform:${permActivos.includes(p.key)?'translateX(16px)':'translateX(2px)'};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:block;"></span>
-                </div>
-              </div>
-            </label>`).join('')}
-        </div>
-      </div>`;
-    }).join('');
+
+    // Clear modulos container so guRenderCheckboxes renders fresh
+    const mCont = document.getElementById('eu-modulos');
+    if (mCont) mCont.innerHTML = '';
+    // Temporarily force active keys via closure before rendering
+    const origDef = MODULOS_DEF;
+    guRenderCheckboxes('eu', permActivos);
+    // Now adjust active states for modules per user data
+    if (mCont) {
+      mCont.querySelectorAll('.gu-mod-tag').forEach(function(btn) {
+        const key = btn.getAttribute('data-key');
+        const on  = modActivos.includes(key);
+        btn.setAttribute('data-active', on ? '1' : '0');
+        btn.classList.toggle('on', on);
+        const m = MODULOS_DEF.find(function(x){ return x.key === key; });
+        if (m) {
+          btn.style.borderColor = on ? m.color : 'var(--pa-border)';
+          btn.style.background  = on ? m.color + '1a' : 'var(--pa-muted)';
+          btn.style.color       = on ? m.color : 'var(--pa-text-dim)';
+          btn.style.opacity     = on ? '1' : '0.5';
+          var dot = btn.querySelector('.gu-mod-check-dot');
+          if (on) {
+            if (!dot) {
+              dot = document.createElement('span');
+              dot.className = 'gu-mod-check-dot';
+              dot.style.cssText = 'position:absolute;top:4px;right:4px;width:14px;height:14px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:900;';
+              dot.textContent = '✓';
+              btn.appendChild(dot);
+            }
+            dot.style.display = 'flex';
+          } else {
+            if (dot) dot.style.display = 'none';
+          }
+        }
+      });
+      _guUpdateModCount('eu');
+    }
+
+    // Reset to info tab
+    guEuTab('info');
     document.getElementById('modal-editar-usuario').style.display = 'flex';
   } catch(e) { console.error(e); }
 }
@@ -10127,6 +10500,7 @@ async function abrirEditarUsuario(id) {
 function cerrarEditarUsuario() {
   document.getElementById('modal-editar-usuario').style.display = 'none';
   _guUsuarioEditando = null;
+  _guDirty = false;
 }
 
 async function guardarEdicionUsuario() {
