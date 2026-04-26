@@ -9288,6 +9288,7 @@ const PERMISOS_DEF = [
   { key: 'crear_usuarios',        label: 'Crear usuarios',            grupo: 'Usuarios' },
   { key: 'editar_usuarios',       label: 'Editar usuarios',           grupo: 'Usuarios' },
   { key: 'eliminar_usuarios',     label: 'Eliminar usuarios',         grupo: 'Usuarios' },
+  { key: 'editar_tipo_cargo',     label: 'Editar tipo cargo (Labour/Load/Overhead)', grupo: 'Usuarios' },
   // ── Metas ──
   { key: 'anadir_metas',          label: 'Añadir metas',              grupo: 'Metas' },
   { key: 'editar_metas',          label: 'Editar metas',              grupo: 'Metas' },
@@ -9658,6 +9659,7 @@ function aplicarPermisosUI() {
     _plantaUpZone.style.display = tienePerm('cargar_planta') ? '' : 'none';
   }
   window._perm_editar_personal          = tienePerm('editar_personal');
+  window._perm_editar_tipo_cargo        = tienePerm('editar_tipo_cargo');
   window._perm_cambiar_estado_personal  = tienePerm('cambiar_estado_personal');
   window._perm_eliminar_personal        = tienePerm('eliminar_personal');
   if (typeof plantaFiltrar === 'function' && _plantaDatos && _plantaDatos.length) {
@@ -17248,9 +17250,11 @@ function _cargosTipoPill(cargo) {
   var c = tipo ? configs[tipo] : { color:'#6B7280', bg:'rgba(107,114,128,0.1)', border:'rgba(107,114,128,0.25)' };
   var label = tipo || '—';
   var cargoEsc = (cargo||'').replace(/'/g,"\\'");
+  var lapiz = window._perm_editar_tipo_cargo
+    ? '<span class="material-symbols-rounded" onclick="plantaCargoEditar(\'' + cargoEsc + '\')" title="Cambiar clasificación" style="font-size:13px;cursor:pointer;opacity:0.7;vertical-align:middle;user-select:none;">edit</span>'
+    : '';
   return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-family:\'Inter Tight\',sans-serif;font-size:11px;font-weight:700;background:' + c.bg + ';color:' + c.color + ';border:1px solid ' + c.border + ';white-space:nowrap;">'
-    + label
-    + '<span class="material-symbols-rounded" onclick="plantaCargoEditar(\'' + cargoEsc + '\')" title="Cambiar clasificación" style="font-size:13px;cursor:pointer;opacity:0.7;vertical-align:middle;user-select:none;">edit</span>'
+    + label + lapiz
     + '</span>';
 }
 
