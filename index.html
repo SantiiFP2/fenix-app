@@ -18843,6 +18843,12 @@ function plantaRenderTabla(datos) {
       di1.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">edit</span>Editar';
       (function(p){ di1.addEventListener('click', function(){ ddWrap.classList.remove('open'); plantaAbrirEditar(p); }); })(pid);
       ddMenu.appendChild(di1);
+
+      // Classify cargo type
+      var diTipo = document.createElement('button'); diTipo.className = 'pt-dditem';
+      diTipo.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">category</span>Clasificar tipo';
+      (function(cargo){ diTipo.addEventListener('click', function(){ ddWrap.classList.remove('open'); plantaCargoEditar(cargo); }); })(r['CARGO']||'');
+      ddMenu.appendChild(diTipo);
     }
 
     // Retire / Reactivate item
