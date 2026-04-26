@@ -9636,11 +9636,12 @@ function aplicarPermisosUI() {
   const sbModUsuarios = document.getElementById('sb-mod-usuarios');
   if (sbModUsuarios) sbModUsuarios.style.display = tieneModulo('usuarios') ? '' : 'none';
 
-  // Planta sidebar — módulo padre visible si tiene al menos uno de los dos sub-módulos
-  const sbModPlanta = document.getElementById('sb-mod-planta');
-  if (sbModPlanta) sbModPlanta.style.display = (tieneModulo('planta') || tieneModulo('analisis_personal')) ? '' : 'none';
+  // Planta sidebar — cada botón se controla de forma independiente
   showM('sb-sub-planta-detalle',  'planta');
   showM('sb-sub-planta-analisis', 'analisis_personal');
+  // El bloque PLANTA ACTIVA se muestra si tiene al menos uno de los dos módulos
+  const sbModPlanta = document.getElementById('sb-mod-planta');
+  if (sbModPlanta) sbModPlanta.style.display = (tieneModulo('planta') || tieneModulo('analisis_personal')) ? '' : 'none';
 
   // ══ BOTONES DE ACCIÓN: visibilidad por permiso ══
   // CVC
@@ -16764,21 +16765,18 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- MODULO: Planta Activa -->
   <div class="sb-nav-module" id="sb-mod-planta">
     <div class="sb-nav-module-title">PLANTA ACTIVA</div>
-    <div class="sb-nav-product" id="sb-nav-prod-planta">
-      <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('planta')">
-        <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#0B8043;">badge</span>
-        <span class="sb-nav-prod-label">Personal</span>
-        <span class="sb-nav-prod-arrow" id="sb-nav-parr-planta">▾</span>
-      </button>
-      <div class="sb-nav-submenu" id="sb-nav-sub-planta">
-        <button id="sb-sub-planta-detalle" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelPlanta();">
-          <span class="material-symbols-rounded" style="font-size:14px;color:#0B8043;">table_view</span> Detalle Personal
-        </button>
-        <button id="sb-sub-planta-analisis" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelPlantaAnalisis();">
-          <span class="material-symbols-rounded" style="font-size:14px;color:#34D399;">analytics</span> Análisis de Personal
-        </button>
-      </div>
-    </div>
+    <button id="sb-sub-planta-detalle" class="sb-nav-item" onclick="closeLauncher();mostrarPanelPlanta();"
+      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
+      onmouseover="this.style.background='rgba(11,128,67,0.08)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#0B8043;font-size:20px;">badge</span>
+      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Detalle Personal</span>
+    </button>
+    <button id="sb-sub-planta-analisis" class="sb-nav-item" onclick="closeLauncher();mostrarPanelPlantaAnalisis();"
+      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
+      onmouseover="this.style.background='rgba(52,211,153,0.08)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#34D399;font-size:20px;">analytics</span>
+      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Análisis de Personal</span>
+    </button>
   </div>
 
 </div>
