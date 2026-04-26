@@ -9321,8 +9321,9 @@ const MODULOS_DEF = [
   { key: 'cosechas',    label: 'Cosechas',         icon: 'inventory_2',  color: '#F59E0B' },
   { key: 'servicios',   label: 'Servicios',        icon: 'receipt_long', color: '#60A5FA' },
   { key: 'adicionales', label: 'Adicionales',      icon: 'add_box',      color: '#34D399' },
-  { key: 'planta',      label: 'Detalle Personal', icon: 'badge',        color: '#0B8043' },
-  { key: 'usuarios',    label: 'Usuarios',         icon: 'group',        color: '#7C3AED' },
+  { key: 'planta',            label: 'Detalle Personal',  icon: 'badge',     color: '#0B8043' },
+  { key: 'analisis_personal', label: 'Análisis Personal', icon: 'analytics', color: '#34D399' },
+  { key: 'usuarios',          label: 'Usuarios',           icon: 'group',     color: '#7C3AED' },
 ];
 const ROLES_DEF = [
   { value: 'admin',      label: 'Admin',     color: '#F97316' },
@@ -9635,9 +9636,11 @@ function aplicarPermisosUI() {
   const sbModUsuarios = document.getElementById('sb-mod-usuarios');
   if (sbModUsuarios) sbModUsuarios.style.display = tieneModulo('usuarios') ? '' : 'none';
 
-  // Planta sidebar
+  // Planta sidebar — módulo padre visible si tiene al menos uno de los dos sub-módulos
   const sbModPlanta = document.getElementById('sb-mod-planta');
-  if (sbModPlanta) sbModPlanta.style.display = tieneModulo('planta') ? '' : 'none';
+  if (sbModPlanta) sbModPlanta.style.display = (tieneModulo('planta') || tieneModulo('analisis_personal')) ? '' : 'none';
+  showM('sb-sub-planta-detalle',  'planta');
+  showM('sb-sub-planta-analisis', 'analisis_personal');
 
   // ══ BOTONES DE ACCIÓN: visibilidad por permiso ══
   // CVC
