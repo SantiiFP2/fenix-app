@@ -813,9 +813,10 @@ body.modo-claro .sb-nav-module-title { color: #9CA3AF; }
 body.modo-claro .sb-nav-client-btn { color: #202124; }
 body.modo-claro .sb-nav-client-btn:hover { background: rgba(0,0,0,0.04); }
 .sb-nav-client-logo {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: #DA0000; color: #fff; font-size: 11px; font-weight: 700;
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg,#DA0000,#FF4444); color: #fff; font-size: 18px;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(218,0,0,0.35);
 }
 .sb-nav-client-name { font-size: 13px; font-weight: 600; font-family: 'Inter Tight',sans-serif; flex: 1; text-align: left; }
 .sb-nav-client-arrow { font-size: 9px; color: #555; transition: transform 0.2s; }
@@ -16797,7 +16798,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Cliente: Claro Colombia -->
     <div class="sb-nav-client" id="sb-nav-client-claro">
       <button class="sb-nav-client-btn" onclick="toggleSbNavClient('claro')">
-        <div class="sb-nav-client-logo">C</div>
+        <div class="sb-nav-client-logo"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">cell_tower</span></div>
         <span class="sb-nav-client-name">Claro Colombia</span>
         <span class="sb-nav-client-arrow" id="sb-nav-arrow-claro">▶</span>
       </button>
