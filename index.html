@@ -1262,6 +1262,99 @@ body.modo-claro .planta-upload-zone{background:rgba(11,128,67,0.02);}
 body.modo-claro .planta-tabla thead th{background:#F8F9FA;}
 body.modo-claro .planta-tabla tbody tr:hover{background:rgba(11,128,67,0.04);}
 
+/* ═══════════════════════════════════════════════════════
+   PA — Análisis de Personal  (Lovable HR Design System)
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Semantic tokens (dark mode = default) ── */
+:root {
+  --pa-success:#4ADE80; --pa-success-soft:rgba(74,222,128,0.12);
+  --pa-destructive:#F87171; --pa-destructive-soft:rgba(248,113,113,0.12);
+  --pa-warning:#FBBF24; --pa-warning-soft:rgba(251,191,36,0.12);
+  --pa-info:#38BDF8; --pa-info-soft:rgba(56,189,248,0.12);
+  --pa-campaign:#A78BFA; --pa-campaign-soft:rgba(167,139,250,0.12);
+  --pa-role:#FCD34D; --pa-role-soft:rgba(252,211,77,0.12);
+  --pa-surface-1:var(--gris-medio);
+  --pa-surface-2:var(--gris-oscuro,#10101a);
+  --pa-border:rgba(255,255,255,0.08);
+  --pa-text:var(--blanco,#f1f1f1);
+  --pa-text-dim:var(--texto-dim,#6B7280);
+  --pa-muted:rgba(255,255,255,0.07);
+  --pa-shadow:0 1px 3px rgba(0,0,0,0.25),0 1px 2px rgba(0,0,0,0.15);
+  --pa-shadow-hover:0 4px 12px -2px rgba(0,0,0,0.35);
+  --pa-radius:14px;
+}
+body.modo-claro {
+  --pa-success:#16A34A; --pa-success-soft:rgba(22,163,74,0.1);
+  --pa-destructive:#DC2626; --pa-destructive-soft:rgba(220,38,38,0.1);
+  --pa-warning:#D97706; --pa-warning-soft:rgba(217,119,6,0.1);
+  --pa-info:#2563EB; --pa-info-soft:rgba(37,99,235,0.1);
+  --pa-campaign:#7C3AED; --pa-campaign-soft:rgba(124,58,237,0.1);
+  --pa-role:#B45309; --pa-role-soft:rgba(180,83,9,0.1);
+  --pa-surface-1:#ffffff;
+  --pa-surface-2:hsl(220,14%,98%);
+  --pa-border:rgba(0,0,0,0.08);
+  --pa-text:hsl(220,13%,10%);
+  --pa-text-dim:hsl(220,9%,46%);
+  --pa-muted:hsl(220,13%,94%);
+  --pa-shadow:0 1px 2px rgba(15,23,42,0.04),0 1px 3px rgba(15,23,42,0.06);
+  --pa-shadow-hover:0 4px 12px -2px rgba(15,23,42,0.1);
+}
+
+/* ── KPI Tile ── */
+.pa-kpi-tile{
+  background:var(--pa-surface-1);border-radius:var(--pa-radius);
+  padding:16px 16px 14px 16px;position:relative;overflow:hidden;
+  box-shadow:var(--pa-shadow);border:1px solid var(--pa-border);
+  transition:transform 0.15s,box-shadow 0.15s;
+  outline:1px solid var(--pa-ring,transparent);outline-offset:-1px;
+}
+.pa-kpi-tile:hover{transform:translateY(-2px);box-shadow:var(--pa-shadow-hover);}
+.pa-kpi-tile-label{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--pa-text-dim);}
+.pa-kpi-tile-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pa-kpi-tile-value{font-family:'Inter Tight',sans-serif;font-size:clamp(20px,2vw,28px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;line-height:1.1;}
+.pa-kpi-tile-sub{font-size:11px;color:var(--pa-text-dim);margin-top:5px;}
+.pa-kpi-tile-bar{margin-top:12px;height:3px;border-radius:2px;background:var(--pa-muted);overflow:hidden;}
+.pa-kpi-tile-bar-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+
+/* ── Chart Card ── */
+.pa-chart-card{
+  background:var(--pa-surface-1);border-radius:var(--pa-radius);padding:20px;
+  box-shadow:var(--pa-shadow);border:1px solid var(--pa-border);
+}
+.pa-chart-card-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--pa-text-dim);}
+.pa-chart-card-sub{font-size:12px;color:var(--pa-text);margin-top:2px;margin-bottom:14px;}
+
+/* ── City Stat List ── */
+.pa-stat-item{padding:0 0 14px;}
+.pa-stat-item:last-child{padding-bottom:0;}
+.pa-stat-bar{height:6px;border-radius:3px;background:var(--pa-muted);overflow:hidden;margin-top:6px;}
+.pa-stat-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
+
+/* ── Summary Table ── */
+.pa-table{width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:12px;}
+.pa-table th{
+  padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.8px;color:var(--pa-text-dim);background:var(--pa-surface-2);
+  border-bottom:1px solid var(--pa-border);
+}
+.pa-table td{padding:10px 14px;border-bottom:1px solid var(--pa-border);color:var(--pa-text);}
+.pa-table tbody tr:nth-child(even) td{background:var(--pa-surface-2);}
+.pa-table tfoot td{
+  padding:10px 14px;font-weight:700;background:var(--pa-surface-2);
+  border-top:2px solid var(--pa-border);border-bottom:none;color:var(--pa-text);
+}
+
+/* ── Movimiento List Item ── */
+.pa-mov-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 18px;border-bottom:1px solid var(--pa-border);
+  transition:background 0.12s;
+}
+.pa-mov-item:last-child{border-bottom:none;}
+.pa-mov-item:hover{background:var(--pa-surface-2);}
+.pa-mov-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Inter Tight',sans-serif;}
+
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -16467,125 +16560,197 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- ── Tab: Análisis de Personal ── -->
   <div id="planta-tab-analisis" style="display:none;">
 
-  <!-- Sub-header Análisis -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-    <div id="pa-subtitulo" style="font-size:12px;color:var(--texto-dim);"></div>
-    <button onclick="plantaAnalisisRender()" title="Actualizar análisis"
-      style="display:flex;align-items:center;gap:6px;background:rgba(52,211,153,0.1);color:#34D399;border:1px solid rgba(52,211,153,0.3);padding:7px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">
+  <!-- ── Sub-header ── -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--pa-border);">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="width:38px;height:38px;border-radius:10px;background:var(--pa-success-soft);color:var(--pa-success);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-rounded" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500;">groups</span>
+      </span>
+      <div>
+        <div style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:700;color:var(--pa-text);line-height:1.2;">Planta Activa</div>
+        <div id="pa-subtitulo" style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;"></div>
+      </div>
+    </div>
+    <button onclick="plantaAnalisisRender()" style="display:flex;align-items:center;gap:6px;background:var(--pa-success);color:#fff;border:none;padding:8px 18px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(74,222,128,0.3);">
       <span class="material-symbols-rounded" style="font-size:15px;">refresh</span> Actualizar
     </button>
   </div>
 
-  <!-- Estado vacío -->
-  <div id="pa-empty" style="display:none;text-align:center;padding:80px 24px;color:var(--texto-dim);">
-    <span class="material-symbols-rounded" style="font-size:48px;opacity:0.3;display:block;margin-bottom:12px;">badge</span>
-    <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;">Sin datos de planta</div>
-    <div style="font-size:12px;opacity:0.7;">Carga un archivo Excel en Detalle Personal primero.</div>
+  <!-- ── Estado vacío ── -->
+  <div id="pa-empty" style="display:none;text-align:center;padding:80px 24px;color:var(--pa-text-dim);">
+    <span class="material-symbols-rounded" style="font-size:52px;opacity:0.25;display:block;margin-bottom:14px;">badge</span>
+    <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;color:var(--pa-text);">Sin datos de planta</div>
+    <div style="font-size:12px;">Carga un archivo Excel en Detalle Personal primero.</div>
   </div>
 
-  <!-- Contenido del análisis -->
+  <!-- ── Contenido ── -->
   <div id="pa-contenido">
 
-    <!-- ── KPI Cards ── -->
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;" id="pa-kpi-grid">
-      <div class="planta-kpi-card" style="border-top:3px solid #6B7280;">
-        <div class="planta-kpi-label">Planta Total</div>
-        <div class="planta-kpi-value" id="pa-kpi-total" style="color:var(--blanco);">0</div>
-        <div class="planta-kpi-sub">registros cargados</div>
+    <!-- KPI Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:24px;">
+
+      <div class="pa-kpi-tile" style="--pa-ring:var(--pa-border);">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <div class="pa-kpi-tile-label">Planta Total</div>
+          <span class="pa-kpi-tile-icon" style="background:var(--pa-muted);color:var(--pa-text-dim);">
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">groups</span>
+          </span>
+        </div>
+        <div class="pa-kpi-tile-value" style="color:var(--pa-text);" id="pa-kpi-total">0</div>
+        <div class="pa-kpi-tile-sub">registros cargados</div>
       </div>
-      <div class="planta-kpi-card" style="border-top:3px solid #22C55E;">
-        <div class="planta-kpi-label">Activos</div>
-        <div class="planta-kpi-value" id="pa-kpi-activos" style="color:#22C55E;">0</div>
-        <div class="planta-kpi-sub" id="pa-kpi-activos-pct"></div>
+
+      <div class="pa-kpi-tile" style="--pa-ring:rgba(74,222,128,0.2);">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <div class="pa-kpi-tile-label">Activos</div>
+          <span class="pa-kpi-tile-icon" style="background:var(--pa-success-soft);color:var(--pa-success);">
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">person_check</span>
+          </span>
+        </div>
+        <div class="pa-kpi-tile-value" style="color:var(--pa-success);" id="pa-kpi-activos">0</div>
+        <div class="pa-kpi-tile-sub" id="pa-kpi-activos-pct">del total</div>
+        <div class="pa-kpi-tile-bar"><div class="pa-kpi-tile-bar-fill" id="pa-kpi-activos-bar" style="background:var(--pa-success);width:0%;"></div></div>
       </div>
-      <div class="planta-kpi-card" style="border-top:3px solid #EF4444;">
-        <div class="planta-kpi-label">Retirados</div>
-        <div class="planta-kpi-value" id="pa-kpi-retirados" style="color:#EF4444;">0</div>
-        <div class="planta-kpi-sub" id="pa-kpi-retirados-pct"></div>
+
+      <div class="pa-kpi-tile" style="--pa-ring:rgba(248,113,113,0.2);">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <div class="pa-kpi-tile-label">Retirados</div>
+          <span class="pa-kpi-tile-icon" style="background:var(--pa-destructive-soft);color:var(--pa-destructive);">
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">person_remove</span>
+          </span>
+        </div>
+        <div class="pa-kpi-tile-value" style="color:var(--pa-destructive);" id="pa-kpi-retirados">0</div>
+        <div class="pa-kpi-tile-sub" id="pa-kpi-retirados-pct">del total</div>
+        <div class="pa-kpi-tile-bar"><div class="pa-kpi-tile-bar-fill" id="pa-kpi-retirados-bar" style="background:var(--pa-destructive);width:0%;"></div></div>
       </div>
-      <div class="planta-kpi-card" style="border-top:3px solid #34D399;">
-        <div class="planta-kpi-label">FTE Total del Mes</div>
-        <div class="planta-kpi-value" id="pa-kpi-fte" style="color:#34D399;">0.00</div>
-        <div class="planta-kpi-sub" id="pa-kpi-fte-sub">equivalente tiempo completo</div>
+
+      <div class="pa-kpi-tile" style="--pa-ring:rgba(56,189,248,0.2);">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <div class="pa-kpi-tile-label">FTE Total</div>
+          <span class="pa-kpi-tile-icon" style="background:var(--pa-info-soft);color:var(--pa-info);">
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">gauge</span>
+          </span>
+        </div>
+        <div class="pa-kpi-tile-value" style="color:var(--pa-info);" id="pa-kpi-fte">0.00</div>
+        <div class="pa-kpi-tile-sub" id="pa-kpi-fte-sub">equivalente tiempo completo</div>
       </div>
-      <div class="planta-kpi-card" style="border-top:3px solid #F97316;">
-        <div class="planta-kpi-label">Ingresos / Retiros del Mes</div>
-        <div class="planta-kpi-value" id="pa-kpi-mov" style="color:#F97316;">0 / 0</div>
-        <div class="planta-kpi-sub" id="pa-kpi-mov-sub"></div>
+
+      <div class="pa-kpi-tile" style="--pa-ring:rgba(251,191,36,0.2);">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <div class="pa-kpi-tile-label">Movimientos</div>
+          <span class="pa-kpi-tile-icon" style="background:var(--pa-warning-soft);color:var(--pa-warning);">
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">swap_horiz</span>
+          </span>
+        </div>
+        <div class="pa-kpi-tile-value" style="color:var(--pa-warning);" id="pa-kpi-mov">0 / 0</div>
+        <div class="pa-kpi-tile-sub" id="pa-kpi-mov-sub">ingresos / retiros</div>
       </div>
     </div>
 
-    <!-- ── Fila 1: Gráficos principales ── -->
-    <div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;">
+    <!-- Fila 1: Donut + Ciudad Activos + Ciudad FTE -->
+    <div style="display:grid;grid-template-columns:230px 1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;">
+
       <!-- Doughnut: Estado -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución Estado</div>
-        <div style="position:relative;height:200px;"><canvas id="chart-pa-estado"></canvas></div>
+      <div class="pa-chart-card">
+        <div class="pa-chart-card-title">Distribución de Estado</div>
+        <div id="pa-donut-sub" class="pa-chart-card-sub"></div>
+        <div style="position:relative;height:175px;">
+          <canvas id="chart-pa-estado"></canvas>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding-bottom:10px;">
+            <div>
+              <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pa-text-dim);">Activos</div>
+              <div id="pa-donut-pct" style="font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:800;color:var(--pa-success);font-variant-numeric:tabular-nums;line-height:1.1;">0%</div>
+              <div id="pa-donut-label" style="font-size:10px;color:var(--pa-text-dim);">0 de 0</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid var(--pa-border);padding-top:12px;margin-top:8px;">
+          <div style="text-align:center;">
+            <div style="width:24px;height:3px;border-radius:2px;background:var(--pa-success);margin:0 auto 5px;"></div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--pa-text-dim);">Activos</div>
+            <div id="pa-leg-activos" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">0</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:24px;height:3px;border-radius:2px;background:var(--pa-destructive);margin:0 auto 5px;"></div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--pa-text-dim);">Retirados</div>
+            <div id="pa-leg-retirados" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">0</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:24px;height:3px;border-radius:2px;background:var(--pa-text-dim);margin:0 auto 5px;opacity:0.5;"></div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--pa-text-dim);">Otros</div>
+            <div id="pa-leg-otros" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">0</div>
+          </div>
+        </div>
       </div>
-      <!-- Bar: Personal por Ciudad -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Personal Activo por Ciudad</div>
-        <div style="position:relative;height:200px;"><canvas id="chart-pa-ciudad"></canvas></div>
+
+      <!-- Personal Activo por Ciudad: stat list -->
+      <div class="pa-chart-card">
+        <div class="pa-chart-card-title">Personal Activo por Ciudad</div>
+        <div id="pa-ciudad-list" style="margin-top:14px;"></div>
       </div>
-      <!-- Bar: FTE por Ciudad -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">FTE Total por Ciudad</div>
-        <div style="position:relative;height:200px;"><canvas id="chart-pa-fte-ciudad"></canvas></div>
+
+      <!-- FTE por Ciudad: stat list -->
+      <div class="pa-chart-card">
+        <div class="pa-chart-card-title">FTE Total por Ciudad</div>
+        <div id="pa-fte-ciudad-list" style="margin-top:14px;"></div>
       </div>
     </div>
 
-    <!-- ── Fila 2: Gráficos secundarios ── -->
+    <!-- Fila 2: Campaña + Cargo -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;align-items:start;">
-      <!-- Bar horizontal: Top Campañas -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución por Campaña (activos)</div>
-        <div style="position:relative;height:220px;"><canvas id="chart-pa-campana"></canvas></div>
+      <div class="pa-chart-card">
+        <div class="pa-chart-card-title">Distribución por Campaña (activos)</div>
+        <div style="position:relative;height:220px;margin-top:12px;"><canvas id="chart-pa-campana"></canvas></div>
       </div>
-      <!-- Bar horizontal: Top Cargos -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución por Cargo (activos)</div>
-        <div style="position:relative;height:220px;"><canvas id="chart-pa-cargos"></canvas></div>
+      <div class="pa-chart-card">
+        <div class="pa-chart-card-title">Distribución por Cargo (activos)</div>
+        <div style="position:relative;height:220px;margin-top:12px;"><canvas id="chart-pa-cargos"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Tabla: Resumen por Ciudad ── -->
-    <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;margin-bottom:16px;">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:var(--blanco);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-        <span class="material-symbols-rounded" style="font-size:16px;color:#34D399;">location_city</span>
-        Resumen por Ciudad
+    <!-- Resumen por Ciudad -->
+    <div class="pa-chart-card" style="margin-bottom:16px;padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--pa-border);">
+        <span style="width:32px;height:32px;border-radius:8px;background:var(--pa-success-soft);color:var(--pa-success);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">location_city</span>
+        </span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">Resumen por Ciudad</span>
       </div>
       <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:12px;">
+        <table class="pa-table">
           <thead>
-            <tr style="border-bottom:1px solid var(--gris-linea);">
-              <th style="text-align:left;padding:8px 12px;color:var(--texto-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Ciudad</th>
-              <th style="text-align:center;padding:8px 12px;color:#22C55E;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Activos</th>
-              <th style="text-align:center;padding:8px 12px;color:#EF4444;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Retirados</th>
-              <th style="text-align:center;padding:8px 12px;color:#34D399;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">FTE Total</th>
-              <th style="text-align:center;padding:8px 12px;color:#34D399;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">FTE Promedio</th>
-              <th style="text-align:center;padding:8px 12px;color:var(--texto-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">% Activos</th>
+            <tr>
+              <th style="padding-left:20px;">Ciudad</th>
+              <th style="text-align:right;color:var(--pa-success);">Activos</th>
+              <th style="text-align:right;color:var(--pa-destructive);">Retirados</th>
+              <th style="text-align:right;color:var(--pa-info);">FTE Total</th>
+              <th style="text-align:right;">FTE Promedio</th>
+              <th style="text-align:right;padding-right:20px;">% Activos</th>
             </tr>
           </thead>
           <tbody id="pa-tbody-ciudad"></tbody>
+          <tfoot id="pa-tfoot-ciudad"></tfoot>
         </table>
       </div>
     </div>
 
-    <!-- ── Tabla: Resumen por Campaña ── -->
-    <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;margin-bottom:16px;">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:var(--blanco);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-        <span class="material-symbols-rounded" style="font-size:16px;color:#A78BFA;">campaign</span>
-        Resumen por Campaña
+    <!-- Resumen por Campaña -->
+    <div class="pa-chart-card" style="margin-bottom:24px;padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--pa-border);">
+        <span style="width:32px;height:32px;border-radius:8px;background:var(--pa-campaign-soft);color:var(--pa-campaign);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">campaign</span>
+        </span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">Resumen por Campaña</span>
       </div>
       <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:12px;">
+        <table class="pa-table">
           <thead>
-            <tr style="border-bottom:1px solid var(--gris-linea);">
-              <th style="text-align:left;padding:8px 12px;color:var(--texto-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Campaña</th>
-              <th style="text-align:center;padding:8px 12px;color:#22C55E;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Activos</th>
-              <th style="text-align:center;padding:8px 12px;color:#EF4444;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Retirados</th>
-              <th style="text-align:center;padding:8px 12px;color:#34D399;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">FTE Total</th>
-              <th style="text-align:center;padding:8px 12px;color:var(--texto-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;font-size:10px;">Total Planta</th>
+            <tr>
+              <th style="padding-left:20px;">Campaña</th>
+              <th style="text-align:right;color:var(--pa-success);">Activos</th>
+              <th style="text-align:right;color:var(--pa-destructive);">Retirados</th>
+              <th style="text-align:right;color:var(--pa-info);">FTE Total</th>
+              <th style="text-align:right;padding-right:20px;">Total Planta</th>
             </tr>
           </thead>
           <tbody id="pa-tbody-campana"></tbody>
@@ -16593,52 +16758,34 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <!-- ── Movimientos del Mes ── -->
+    <!-- Movimientos del Mes -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
       <!-- Ingresos -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:var(--blanco);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:#22C55E;">person_add</span>
-          Ingresos del Mes
-          <span id="pa-badge-ingresos" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,0.15);color:#22C55E;">0</span>
+      <div class="pa-chart-card" style="padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--pa-border);">
+          <span style="width:32px;height:32px;border-radius:8px;background:var(--pa-success-soft);color:var(--pa-success);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">person_add</span>
+          </span>
+          <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);flex:1;">Ingresos del Mes</span>
+          <span id="pa-badge-ingresos" style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:12px;background:var(--pa-success-soft);color:var(--pa-success);">0</span>
         </div>
-        <div style="overflow-x:auto;max-height:280px;overflow-y:auto;">
-          <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:11px;">
-            <thead style="position:sticky;top:0;background:var(--gris-medio);z-index:1;">
-              <tr style="border-bottom:1px solid var(--gris-linea);">
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Nombre</th>
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Ciudad</th>
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Campaña</th>
-                <th style="text-align:center;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">F. Ingreso</th>
-                <th style="text-align:center;padding:6px 8px;color:#34D399;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">FTE</th>
-              </tr>
-            </thead>
-            <tbody id="pa-tbody-ingresos"></tbody>
-          </table>
-          <div id="pa-empty-ingresos" style="text-align:center;padding:20px;color:var(--texto-dim);font-size:12px;display:none;">Sin ingresos este mes</div>
+        <div style="max-height:340px;overflow-y:auto;" id="pa-list-ingresos">
+          <div id="pa-empty-ingresos" style="text-align:center;padding:32px 20px;color:var(--pa-text-dim);font-size:12px;display:none;">Sin ingresos este mes</div>
         </div>
       </div>
+
       <!-- Retiros -->
-      <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:var(--blanco);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:#EF4444;">person_remove</span>
-          Retiros del Mes
-          <span id="pa-badge-retiros" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,0.15);color:#EF4444;">0</span>
+      <div class="pa-chart-card" style="padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--pa-border);">
+          <span style="width:32px;height:32px;border-radius:8px;background:var(--pa-destructive-soft);color:var(--pa-destructive);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">person_remove</span>
+          </span>
+          <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);flex:1;">Retiros del Mes</span>
+          <span id="pa-badge-retiros" style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:12px;background:var(--pa-destructive-soft);color:var(--pa-destructive);">0</span>
         </div>
-        <div style="overflow-x:auto;max-height:280px;overflow-y:auto;">
-          <table style="width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:11px;">
-            <thead style="position:sticky;top:0;background:var(--gris-medio);z-index:1;">
-              <tr style="border-bottom:1px solid var(--gris-linea);">
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Nombre</th>
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Ciudad</th>
-                <th style="text-align:left;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Campaña</th>
-                <th style="text-align:center;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">F. Retiro</th>
-                <th style="text-align:center;padding:6px 8px;color:var(--texto-dim);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.7px;">Cargo</th>
-              </tr>
-            </thead>
-            <tbody id="pa-tbody-retiros"></tbody>
-          </table>
-          <div id="pa-empty-retiros" style="text-align:center;padding:20px;color:var(--texto-dim);font-size:12px;display:none;">Sin retiros este mes</div>
+        <div style="max-height:340px;overflow-y:auto;" id="pa-list-retiros">
+          <div id="pa-empty-retiros" style="text-align:center;padding:32px 20px;color:var(--pa-text-dim);font-size:12px;display:none;">Sin retiros este mes</div>
         </div>
       </div>
     </div>
@@ -17064,6 +17211,11 @@ function _plantaAnalisisRenderInterno() {
   _paSetEl('pa-kpi-fte-sub',      'sobre ' + activos.length + ' activos');
   _paSetEl('pa-kpi-mov',          ingresosMes.length + ' / ' + retirosMes.length);
   _paSetEl('pa-kpi-mov-sub',      'ingresos / retiros en ' + MESES_NOMBRES[mes]);
+  // Progress bars
+  var barAct = document.getElementById('pa-kpi-activos-bar');
+  var barRet = document.getElementById('pa-kpi-retirados-bar');
+  if (barAct) barAct.style.width = Math.min(100, parseFloat(pctAct)) + '%';
+  if (barRet) barRet.style.width = Math.min(100, parseFloat(pctRet)) + '%';
 
   // ── Colores del modo ──
   var isDark  = !document.body.classList.contains('modo-claro');
@@ -17071,6 +17223,16 @@ function _plantaAnalisisRenderInterno() {
   var gridCol = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
 
   // ══ Gráfico 1: Doughnut Estado ══
+  var totalPers = _plantaDatos.length;
+  var pctActNum = totalPers ? ((activos.length/totalPers)*100).toFixed(1) : 0;
+  // Overlay central
+  _paSetEl('pa-donut-pct',   pctActNum + '%');
+  _paSetEl('pa-donut-label', activos.length + ' de ' + totalPers);
+  _paSetEl('pa-donut-sub',   totalPers + ' colaboradores');
+  // Legend
+  _paSetEl('pa-leg-activos',   activos.length);
+  _paSetEl('pa-leg-retirados', retirados.length);
+  _paSetEl('pa-leg-otros',     otros.length);
   var ctxEst = document.getElementById('chart-pa-estado');
   if (ctxEst) {
     if (_paChartEstado) _paChartEstado.destroy();
@@ -17080,73 +17242,61 @@ function _plantaAnalisisRenderInterno() {
         labels: ['Activos', 'Retirados', 'Otros'],
         datasets: [{
           data: [activos.length, retirados.length, otros.length],
-          backgroundColor: ['rgba(34,197,94,0.8)','rgba(239,68,68,0.8)','rgba(107,114,128,0.7)'],
-          borderColor:      ['#22C55E','#EF4444','#6B7280'],
-          borderWidth: 2,
-          hoverOffset: 6
+          backgroundColor: ['rgba(74,222,128,0.85)','rgba(248,113,113,0.85)','rgba(107,114,128,0.5)'],
+          borderColor:     ['var(--pa-success)','var(--pa-destructive)','var(--pa-text-dim)'],
+          borderWidth: 2, hoverOffset: 5
         }]
       },
       options: {
-        responsive: true, maintainAspectRatio: true, cutout: '65%',
-        plugins: {
-          legend: { position:'bottom', labels:{ color:lblCol, font:{ size:10, family:"'Inter Tight'" }, boxWidth:10, padding:10 }},
-          tooltip: { callbacks: { label: function(ctx){ return ' ' + ctx.label + ': ' + ctx.parsed; }}}
-        }
+        responsive:true, maintainAspectRatio:false, cutout:'68%',
+        plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(ctx){ return ' '+ctx.label+': '+ctx.parsed; }}}}
       }
     });
   }
 
-  // ══ Gráfico 2: Activos por Ciudad ══
+  // ══ Stat List 2: Activos por Ciudad ══
   var ciudadesMap = {};
   activos.forEach(function(r){ var c=(r['CIUDAD']||'Sin ciudad').trim(); ciudadesMap[c]=(ciudadesMap[c]||0)+1; });
   var ciudadesSorted = Object.keys(ciudadesMap).sort(function(a,b){ return ciudadesMap[b]-ciudadesMap[a]; });
-  var ctxCiu = document.getElementById('chart-pa-ciudad');
-  if (ctxCiu) {
-    if (_paChartCiudad) _paChartCiudad.destroy();
-    _paChartCiudad = new Chart(ctxCiu.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: ciudadesSorted,
-        datasets: [{ label:'Activos', data: ciudadesSorted.map(function(c){ return ciudadesMap[c]; }),
-          backgroundColor:'rgba(34,197,94,0.7)', borderColor:'#22C55E', borderWidth:1, borderRadius:4 }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false, indexAxis:'x',
-        plugins:{ legend:{ display:false }},
-        scales:{
-          x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
-          y:{ ticks:{ color:lblCol, font:{ size:9 }, stepSize:1 }, grid:{ color:gridCol }}
-        }
-      }
-    });
+  var maxCiudad = ciudadesSorted.length ? ciudadesMap[ciudadesSorted[0]] : 1;
+  var listCiudad = document.getElementById('pa-ciudad-list');
+  if (listCiudad) {
+    listCiudad.innerHTML = ciudadesSorted.length ? ciudadesSorted.map(function(c){
+      var val = ciudadesMap[c];
+      var pct = Math.round((val / maxCiudad) * 100);
+      return '<div class="pa-stat-item">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">' +
+          '<span style="display:flex;align-items:center;gap:6px;font-weight:600;color:var(--pa-text);">' +
+            '<span class="material-symbols-rounded" style="font-size:13px;color:var(--pa-text-dim);">location_on</span>' + c + '</span>' +
+          '<span style="font-weight:700;color:var(--pa-success);font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + val + '</span>' +
+        '</div>' +
+        '<div class="pa-stat-bar"><div class="pa-stat-bar-fill" style="width:'+pct+'%;background:var(--pa-success);"></div></div>' +
+      '</div>';
+    }).join('') : '<div style="color:var(--pa-text-dim);font-size:12px;padding:20px 0;text-align:center;">Sin datos</div>';
   }
 
-  // ══ Gráfico 3: FTE por Ciudad ══
+  // ══ Stat List 3: FTE por Ciudad ══
   var fteCiudadMap = {};
   _plantaDatos.forEach(function(r){
     var c = (r['CIUDAD']||'Sin ciudad').trim();
     fteCiudadMap[c] = (fteCiudadMap[c]||0) + plantaCalcularFTE(r);
   });
   var fteCiuSorted = Object.keys(fteCiudadMap).sort(function(a,b){ return fteCiudadMap[b]-fteCiudadMap[a]; });
-  var ctxFteCiu = document.getElementById('chart-pa-fte-ciudad');
-  if (ctxFteCiu) {
-    if (_paChartFteCiudad) _paChartFteCiudad.destroy();
-    _paChartFteCiudad = new Chart(ctxFteCiu.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: fteCiuSorted,
-        datasets: [{ label:'FTE', data: fteCiuSorted.map(function(c){ return +fteCiudadMap[c].toFixed(2); }),
-          backgroundColor:'rgba(52,211,153,0.7)', borderColor:'#34D399', borderWidth:1, borderRadius:4 }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false }},
-        scales:{
-          x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
-          y:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }}
-        }
-      }
-    });
+  var maxFteCiu = fteCiuSorted.length ? fteCiudadMap[fteCiuSorted[0]] : 1;
+  var listFteCiu = document.getElementById('pa-fte-ciudad-list');
+  if (listFteCiu) {
+    listFteCiu.innerHTML = fteCiuSorted.length ? fteCiuSorted.map(function(c){
+      var val = +fteCiudadMap[c].toFixed(2);
+      var pct = Math.round((val / maxFteCiu) * 100);
+      return '<div class="pa-stat-item">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;">' +
+          '<span style="display:flex;align-items:center;gap:6px;font-weight:600;color:var(--pa-text);">' +
+            '<span class="material-symbols-rounded" style="font-size:13px;color:var(--pa-text-dim);">location_on</span>' + c + '</span>' +
+          '<span style="font-weight:700;color:var(--pa-info);font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + val + '</span>' +
+        '</div>' +
+        '<div class="pa-stat-bar"><div class="pa-stat-bar-fill" style="width:'+pct+'%;background:var(--pa-info);"></div></div>' +
+      '</div>';
+    }).join('') : '<div style="color:var(--pa-text-dim);font-size:12px;padding:20px 0;text-align:center;">Sin datos</div>';
   }
 
   // ══ Gráfico 4: Campaña (horizontal, top 10) ══
@@ -17161,14 +17311,14 @@ function _plantaAnalisisRenderInterno() {
       data: {
         labels: campanaSorted,
         datasets: [{ label:'Activos', data: campanaSorted.map(function(c){ return campanaMap[c]; }),
-          backgroundColor:'rgba(167,139,250,0.7)', borderColor:'#A78BFA', borderWidth:1, borderRadius:4 }]
+          backgroundColor:'rgba(167,139,250,0.75)', borderColor:'#A78BFA', borderWidth:0, borderRadius:5 }]
       },
       options: {
         responsive:true, maintainAspectRatio:false, indexAxis:'y',
         plugins:{ legend:{ display:false }},
         scales:{
           x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
-          y:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }}
+          y:{ ticks:{ color:lblCol, font:{ size:9 }, maxRotation:0 }, grid:{ display:false }}
         }
       }
     });
@@ -17186,14 +17336,14 @@ function _plantaAnalisisRenderInterno() {
       data: {
         labels: cargosSorted,
         datasets: [{ label:'Activos', data: cargosSorted.map(function(c){ return cargosMap[c]; }),
-          backgroundColor:'rgba(251,191,36,0.7)', borderColor:'#FBBF24', borderWidth:1, borderRadius:4 }]
+          backgroundColor:'rgba(252,211,77,0.75)', borderColor:'#FCD34D', borderWidth:0, borderRadius:5 }]
       },
       options: {
         responsive:true, maintainAspectRatio:false, indexAxis:'y',
         plugins:{ legend:{ display:false }},
         scales:{
           x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
-          y:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }}
+          y:{ ticks:{ color:lblCol, font:{ size:9 }, maxRotation:0 }, grid:{ display:false }}
         }
       }
     });
@@ -17210,22 +17360,41 @@ function _plantaAnalisisRenderInterno() {
     ciudadesAll[c].fte += plantaCalcularFTE(r);
   });
   var tbCiudad = document.getElementById('pa-tbody-ciudad');
+  var tfCiudad = document.getElementById('pa-tfoot-ciudad');
   if (tbCiudad) {
     var rowsCiu = Object.keys(ciudadesAll).sort(function(a,b){ return ciudadesAll[b].activos-ciudadesAll[a].activos; });
-    tbCiudad.innerHTML = rowsCiu.map(function(c){
+    var totAct=0, totRet=0, totFte=0;
+    tbCiudad.innerHTML = rowsCiu.map(function(c, idx){
       var d=ciudadesAll[c]; var tot=d.activos+d.retirados;
       var pct=tot?((d.activos/tot)*100).toFixed(1):0;
-      var pctCol=pct>=80?'#22C55E':pct>=50?'#F59E0B':'#EF4444';
       var fteProm=d.activos?(d.fte/d.activos).toFixed(2):'—';
-      return '<tr style="border-bottom:1px solid var(--gris-linea);">' +
-        '<td style="padding:8px 12px;font-weight:600;">' + c + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#22C55E;font-weight:700;">' + d.activos + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#EF4444;font-weight:700;">' + d.retirados + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#34D399;font-weight:700;">' + d.fte.toFixed(2) + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#34D399;">' + fteProm + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;"><span style="font-weight:700;color:'+pctCol+';">' + pct + '%</span></td>' +
+      totAct+=d.activos; totRet+=d.retirados; totFte+=d.fte;
+      var zebra = idx%2===1 ? 'background:var(--pa-surface-2);' : '';
+      return '<tr style="'+zebra+'">' +
+        '<td style="padding:10px 14px;padding-left:20px;font-weight:600;color:var(--pa-text);">' + c + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-success);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.activos + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-destructive);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.retirados + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-info);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.fte.toFixed(2) + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-text-dim);font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + fteProm + '</td>' +
+        '<td style="padding:10px 14px;padding-right:20px;text-align:right;">' +
+          '<span style="display:inline-flex;align-items:center;gap:8px;">' +
+            '<span style="width:48px;height:5px;border-radius:3px;background:var(--pa-muted);overflow:hidden;display:inline-block;vertical-align:middle;">' +
+              '<span style="display:block;height:100%;border-radius:3px;background:var(--pa-success);width:'+Math.min(100,parseFloat(pct))+'%;"></span>' +
+            '</span>' +
+            '<span style="font-weight:700;color:var(--pa-success);font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + pct + '%</span>' +
+          '</span>' +
+        '</td>' +
         '</tr>';
     }).join('');
+    if (tfCiudad) {
+      tfCiudad.innerHTML = '<tr>' +
+        '<td style="padding:10px 14px;padding-left:20px;font-weight:700;color:var(--pa-text);">Total</td>' +
+        '<td style="padding:10px 14px;text-align:right;font-weight:800;color:var(--pa-success);font-family:\'Inter Tight\',sans-serif;">' + totAct + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;font-weight:800;color:var(--pa-destructive);font-family:\'Inter Tight\',sans-serif;">' + totRet + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;font-weight:800;color:var(--pa-info);font-family:\'Inter Tight\',sans-serif;">' + totFte.toFixed(2) + '</td>' +
+        '<td colspan="2"></td>' +
+        '</tr>';
+    }
   }
 
   // ══ Tabla: Resumen por Campaña ══
@@ -17241,62 +17410,79 @@ function _plantaAnalisisRenderInterno() {
   var tbCamp = document.getElementById('pa-tbody-campana');
   if (tbCamp) {
     var rowsCamp = Object.keys(campanasAll).sort(function(a,b){ return campanasAll[b].activos-campanasAll[a].activos; });
-    tbCamp.innerHTML = rowsCamp.map(function(c){
+    tbCamp.innerHTML = rowsCamp.map(function(c, idx){
       var d=campanasAll[c]; var tot=d.activos+d.retirados;
-      return '<tr style="border-bottom:1px solid var(--gris-linea);">' +
-        '<td style="padding:8px 12px;font-weight:600;">' + c + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#22C55E;font-weight:700;">' + d.activos + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#EF4444;font-weight:700;">' + d.retirados + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:#34D399;font-weight:700;">' + d.fte.toFixed(2) + '</td>' +
-        '<td style="padding:8px 12px;text-align:center;color:var(--texto-dim);">' + tot + '</td>' +
+      var zebra = idx%2===1 ? 'background:var(--pa-surface-2);' : '';
+      return '<tr style="'+zebra+'">' +
+        '<td style="padding:10px 14px;padding-left:20px;font-weight:600;color:var(--pa-text);">' + c + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-success);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.activos + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-destructive);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.retirados + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--pa-info);font-weight:700;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + d.fte.toFixed(2) + '</td>' +
+        '<td style="padding:10px 14px;padding-right:20px;text-align:right;color:var(--pa-text-dim);font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;">' + tot + '</td>' +
         '</tr>';
     }).join('');
   }
 
-  // ══ Tabla: Ingresos del mes ══
-  var tbIng = document.getElementById('pa-tbody-ingresos');
-  var emIng = document.getElementById('pa-empty-ingresos');
+  // ══ Lista: Ingresos del mes ══
+  var listIng = document.getElementById('pa-list-ingresos');
+  var emIng   = document.getElementById('pa-empty-ingresos');
   var badgIng = document.getElementById('pa-badge-ingresos');
   if (badgIng) badgIng.textContent = ingresosMes.length;
-  if (tbIng) {
+  if (listIng) {
     if (!ingresosMes.length) {
-      tbIng.innerHTML = '';
       if (emIng) emIng.style.display = '';
     } else {
       if (emIng) emIng.style.display = 'none';
-      tbIng.innerHTML = ingresosMes.map(function(r){
-        var fte=plantaCalcularFTE(r);
-        var fteCol=fte>=1?'#22C55E':fte>=0.5?'#F59E0B':'#EF4444';
-        return '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">' +
-          '<td style="padding:5px 8px;font-weight:600;">' + (r['NOMBRE COMPLETO']||'—') + '</td>' +
-          '<td style="padding:5px 8px;color:var(--texto-dim);">' + (r['CIUDAD']||'—') + '</td>' +
-          '<td style="padding:5px 8px;color:var(--texto-dim);font-size:10px;">' + (r['CAMPANA']||'—') + '</td>' +
-          '<td style="padding:5px 8px;text-align:center;color:#22C55E;">' + _formatFechaPlanta(r['FECHA INGRESO']) + '</td>' +
-          '<td style="padding:5px 8px;text-align:center;font-weight:700;color:'+fteCol+';">' + fte.toFixed(2) + '</td>' +
-          '</tr>';
+      listIng.innerHTML = ingresosMes.map(function(r){
+        var nombre = r['NOMBRE COMPLETO'] || '—';
+        var fte = plantaCalcularFTE(r);
+        var fteCol = fte>=1 ? 'var(--pa-success)' : fte>=0.5 ? 'var(--pa-warning)' : 'var(--pa-destructive)';
+        var initials = nombre.split(' ').slice(0,2).map(function(n){ return (n[0]||''); }).join('').toUpperCase();
+        return '<div class="pa-mov-item">' +
+          '<div class="pa-mov-avatar" style="background:var(--pa-success-soft);color:var(--pa-success);">' + initials + '</div>' +
+          '<div style="min-width:0;flex:1;">' +
+            '<div style="font-size:13px;font-weight:600;color:var(--pa-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + nombre + '</div>' +
+            '<div style="font-size:11px;color:var(--pa-text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+              (r['CIUDAD']||'—') + ' · <span style="color:var(--pa-campaign);">' + (r['CAMPANA']||'—') + '</span>' +
+              (r['CARGO'] ? ' · ' + r['CARGO'] : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0;">' +
+            '<div style="font-size:11px;font-weight:700;color:var(--pa-success);font-variant-numeric:tabular-nums;">' + _formatFechaPlanta(r['FECHA INGRESO']) + '</div>' +
+            '<div style="font-size:10px;color:'+fteCol+';font-variant-numeric:tabular-nums;">FTE ' + fte.toFixed(2) + '</div>' +
+          '</div>' +
+        '</div>';
       }).join('');
     }
   }
 
-  // ══ Tabla: Retiros del mes ══
-  var tbRet  = document.getElementById('pa-tbody-retiros');
-  var emRet  = document.getElementById('pa-empty-retiros');
-  var badgRet= document.getElementById('pa-badge-retiros');
+  // ══ Lista: Retiros del mes ══
+  var listRet = document.getElementById('pa-list-retiros');
+  var emRet   = document.getElementById('pa-empty-retiros');
+  var badgRet = document.getElementById('pa-badge-retiros');
   if (badgRet) badgRet.textContent = retirosMes.length;
-  if (tbRet) {
+  if (listRet) {
     if (!retirosMes.length) {
-      tbRet.innerHTML = '';
       if (emRet) emRet.style.display = '';
     } else {
       if (emRet) emRet.style.display = 'none';
-      tbRet.innerHTML = retirosMes.map(function(r){
-        return '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">' +
-          '<td style="padding:5px 8px;font-weight:600;">' + (r['NOMBRE COMPLETO']||'—') + '</td>' +
-          '<td style="padding:5px 8px;color:var(--texto-dim);">' + (r['CIUDAD']||'—') + '</td>' +
-          '<td style="padding:5px 8px;color:var(--texto-dim);font-size:10px;">' + (r['CAMPANA']||'—') + '</td>' +
-          '<td style="padding:5px 8px;text-align:center;color:#EF4444;">' + _formatFechaPlanta(r['FECHA DE RETIRO']) + '</td>' +
-          '<td style="padding:5px 8px;color:var(--texto-dim);font-size:10px;">' + (r['CARGO']||'—') + '</td>' +
-          '</tr>';
+      listRet.innerHTML = retirosMes.map(function(r){
+        var nombre = r['NOMBRE COMPLETO'] || '—';
+        var initials = nombre.split(' ').slice(0,2).map(function(n){ return (n[0]||''); }).join('').toUpperCase();
+        return '<div class="pa-mov-item">' +
+          '<div class="pa-mov-avatar" style="background:var(--pa-destructive-soft);color:var(--pa-destructive);">' + initials + '</div>' +
+          '<div style="min-width:0;flex:1;">' +
+            '<div style="font-size:13px;font-weight:600;color:var(--pa-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + nombre + '</div>' +
+            '<div style="font-size:11px;color:var(--pa-text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+              (r['CIUDAD']||'—') + ' · <span style="color:var(--pa-campaign);">' + (r['CAMPANA']||'—') + '</span>' +
+              (r['CARGO'] ? ' · ' + r['CARGO'] : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0;">' +
+            '<div style="font-size:11px;font-weight:700;color:var(--pa-destructive);font-variant-numeric:tabular-nums;">' + _formatFechaPlanta(r['FECHA DE RETIRO']) + '</div>' +
+            (r['CARGO'] ? '<div style="font-size:10px;color:var(--pa-text-dim);">' + r['CARGO'] + '</div>' : '') +
+          '</div>' +
+        '</div>';
       }).join('');
     }
   }
