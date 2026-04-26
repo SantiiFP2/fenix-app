@@ -9603,7 +9603,8 @@ function mostrarApp() {
   cosInicializarStorage();
   // Restaurar proyección de Hogares: primero intenta BD (multi-usuario), cae en localStorage si no hay endpoint
   piCargarProyeccionHogarBD();
-  // Cargar planta activa desde servidor
+  // Cargar clasificación de cargos desde localStorage y luego planta desde servidor
+  _cargosMapLoad();
   plantaCargarDesdeServidor();
   // Siempre abrir en Panel de Inicio al entrar/refrescar
   mostrarPanelInicio();
@@ -16319,6 +16320,13 @@ document.addEventListener('DOMContentLoaded', function() {
       <select id="pf-subcampana" onchange="plantaFiltrar()"><option value="">Todas las sub-campanas</option></select>
       <select id="pf-jefe" onchange="plantaFiltrar()"><option value="">Todos los jefes</option></select>
       <select id="pf-cargo" onchange="plantaFiltrar()"><option value="">Todos los cargos</option></select>
+      <select id="pf-tipo" onchange="plantaFiltrar()">
+        <option value="">Todos los tipos</option>
+        <option value="LABOUR">LABOUR</option>
+        <option value="LOAD">LOAD</option>
+        <option value="OVERHEAD">OVERHEAD</option>
+        <option value="_sin">Sin clasificar</option>
+      </select>
       <input type="text" id="pf-buscar" placeholder="Buscar nombre o documento..." oninput="plantaFiltrar()">
       <button class="pf-btn-limpiar" onclick="plantaLimpiarFiltros()"
         style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;letter-spacing:0.5px;transition:all 0.15s;width:100%;"
@@ -16348,6 +16356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <th>Campana</th>
             <th class="sortable" onclick="plantaOrdenar('SUB CAMPANA')" title="Ordenar por Sub-Campana">Sub Campana <span id="planta-sort-SC"></span></th>
             <th>Cargo</th>
+            <th style="text-align:center;min-width:110px;">Tipo</th>
             <th style="text-align:center;width:96px;">Acciones</th>
           </tr>
         </thead>
@@ -16589,6 +16598,61 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- ===== PLANTA: Modal Fecha de Retiro ===== -->
+<!-- ===== PLANTA: Modal Clasificar Cargo (LABOUR / LOAD / OVERHEAD) ===== -->
+<div id="cargo-clas-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,0.55);">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span class="material-symbols-rounded" style="font-size:20px;color:#F59E0B;">category</span>
+      <span style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--blanco);">Clasificar Cargo</span>
+    </div>
+    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:18px;" id="cargo-clas-counter"></div>
+    <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;padding:12px 16px;margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--texto-dim);margin-bottom:4px;">Cargo detectado</div>
+      <div id="cargo-clas-nombre" style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--blanco);"></div>
+    </div>
+    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:14px;">¿A qué categoría pertenece este cargo?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="plantaCargoClasificar('LABOUR')"
+        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.08);cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(59,130,246,0.18)'" onmouseout="this.style.background='rgba(59,130,246,0.08)'">
+        <span style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.18);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;color:#3B82F6;">headset_mic</span>
+        </span>
+        <div style="text-align:left;">
+          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#3B82F6;">LABOUR</div>
+          <div style="font-size:11px;color:var(--texto-dim);">Personal operativo directo · Agentes, Asesores</div>
+        </div>
+      </button>
+      <button onclick="plantaCargoClasificar('LOAD')"
+        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(245,158,11,0.18)'" onmouseout="this.style.background='rgba(245,158,11,0.08)'">
+        <span style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.18);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;color:#F59E0B;">supervisor_account</span>
+        </span>
+        <div style="text-align:left;">
+          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#F59E0B;">LOAD</div>
+          <div style="font-size:11px;color:var(--texto-dim);">Soporte operativo · Supervisores, Líderes, Calidad</div>
+        </div>
+      </button>
+      <button onclick="plantaCargoClasificar('OVERHEAD')"
+        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(167,139,250,0.35);background:rgba(167,139,250,0.08);cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(167,139,250,0.18)'" onmouseout="this.style.background='rgba(167,139,250,0.08)'">
+        <span style="width:32px;height:32px;border-radius:8px;background:rgba(167,139,250,0.18);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;color:#A78BFA;">business_center</span>
+        </span>
+        <div style="text-align:left;">
+          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#A78BFA;">OVERHEAD</div>
+          <div style="font-size:11px;color:var(--texto-dim);">Administrativo indirecto · RRHH, TI, Formación</div>
+        </div>
+      </button>
+    </div>
+    <button onclick="plantaCargoClasificar(null)"
+      style="margin-top:14px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:12px;cursor:pointer;">
+      Omitir este cargo por ahora
+    </button>
+  </div>
+</div>
+
 <div id="planta-retiro-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
     <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;color:var(--blanco);">Registrar Retiro</div>
@@ -16762,7 +16826,7 @@ async function plantaCargarDesdeServidor() {
     if (nom) nom.textContent = j.nombre_archivo || 'Datos guardados';
     plantaActualizarKPIs(_plantaDatos);
     plantaPoblarFiltros();
-    plantaFiltrar();
+    _cargosDetectarNuevos(function() { plantaFiltrar(); });
   } catch(e) {
     // no server data — silently ignore
   }
@@ -17147,6 +17211,102 @@ function _paSetEl(id, val) {
   if (e) e.textContent = val;
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  CLASIFICACIÓN DE CARGOS: LABOUR / LOAD / OVERHEAD
+// ═══════════════════════════════════════════════════════════════
+
+var _cargosMap = {};          // { 'CARGO': 'LABOUR'|'LOAD'|'OVERHEAD' }
+var _cargosQueue = [];        // cargos pendientes de clasificar
+var _cargosQueueCallback = null; // función a llamar al terminar la queue
+
+function _cargosMapLoad() {
+  try {
+    var s = localStorage.getItem('fenix_cargos_map');
+    if (s) _cargosMap = JSON.parse(s);
+  } catch(e) { _cargosMap = {}; }
+}
+
+function _cargosMapSave() {
+  try { localStorage.setItem('fenix_cargos_map', JSON.stringify(_cargosMap)); }
+  catch(e) {}
+}
+
+// Devuelve el tipo de un cargo (o null si no está clasificado)
+function _cargosTipo(cargo) {
+  if (!cargo) return null;
+  return _cargosMap[cargo.trim()] || null;
+}
+
+// Devuelve el HTML del pill de tipo
+function _cargosTipoPill(cargo) {
+  var tipo = _cargosTipo(cargo);
+  var configs = {
+    'LABOUR':   { color:'#3B82F6', bg:'rgba(59,130,246,0.12)',  border:'rgba(59,130,246,0.3)'  },
+    'LOAD':     { color:'#F59E0B', bg:'rgba(245,158,11,0.12)',  border:'rgba(245,158,11,0.3)'  },
+    'OVERHEAD': { color:'#A78BFA', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.3)' }
+  };
+  var c = tipo ? configs[tipo] : { color:'#6B7280', bg:'rgba(107,114,128,0.1)', border:'rgba(107,114,128,0.25)' };
+  var label = tipo || '—';
+  var cargoEsc = (cargo||'').replace(/'/g,"\\'");
+  return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-family:\'Inter Tight\',sans-serif;font-size:11px;font-weight:700;background:' + c.bg + ';color:' + c.color + ';border:1px solid ' + c.border + ';white-space:nowrap;">'
+    + label
+    + '<span class="material-symbols-rounded" onclick="plantaCargoEditar(\'' + cargoEsc + '\')" title="Cambiar clasificación" style="font-size:13px;cursor:pointer;opacity:0.7;vertical-align:middle;user-select:none;">edit</span>'
+    + '</span>';
+}
+
+// Detecta cargos sin clasificar en _plantaDatos y abre la queue
+function _cargosDetectarNuevos(callback) {
+  var vistos = {};
+  _plantaDatos.forEach(function(r) {
+    var c = (r['CARGO']||'').trim();
+    if (c && !_cargosMap[c] && !vistos[c]) { vistos[c] = true; }
+  });
+  var nuevos = Object.keys(vistos);
+  if (!nuevos.length) { if (callback) callback(); return; }
+  _cargosQueue = nuevos;
+  _cargosQueueCallback = callback;
+  _cargosClasificarSiguiente();
+}
+
+// Muestra el modal para el próximo cargo en la queue
+function _cargosClasificarSiguiente() {
+  if (!_cargosQueue.length) {
+    document.getElementById('cargo-clas-modal').style.display = 'none';
+    _cargosMapSave();
+    if (_cargosQueueCallback) { _cargosQueueCallback(); _cargosQueueCallback = null; }
+    return;
+  }
+  var cargo = _cargosQueue[0];
+  document.getElementById('cargo-clas-nombre').textContent = cargo;
+  var total  = (_cargosQueue._total || _cargosQueue.length);
+  var actual = total - _cargosQueue.length + 1;
+  document.getElementById('cargo-clas-counter').textContent =
+    'Cargo ' + actual + ' de ' + total + ' sin clasificar';
+  document.getElementById('cargo-clas-modal').style.display = 'flex';
+  // Guardar el total en un atributo del array para el contador
+  if (!_cargosQueue._total) _cargosQueue._total = _cargosQueue.length;
+}
+
+// Llamado por los botones del modal (tipo = 'LABOUR'|'LOAD'|'OVERHEAD'|null)
+function plantaCargoClasificar(tipo) {
+  var cargo = _cargosQueue.shift();
+  if (cargo && tipo) _cargosMap[cargo] = tipo;
+  _cargosClasificarSiguiente();
+}
+
+// Llamado por el lápiz en la tabla para reclasificar un cargo existente
+function plantaCargoEditar(cargo) {
+  if (!cargo) return;
+  _cargosQueue = [cargo];
+  _cargosQueue._total = 1;
+  _cargosQueueCallback = function() { plantaFiltrar(); };
+  document.getElementById('cargo-clas-nombre').textContent = cargo;
+  document.getElementById('cargo-clas-counter').textContent = 'Cambiar clasificación del cargo';
+  document.getElementById('cargo-clas-modal').style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════════════════════
+
 function plantaCargarArchivo(file) {
   if (!file) return;
   if (typeof XLSX === 'undefined') {
@@ -17188,11 +17348,14 @@ function plantaInicializar() {
   document.getElementById('planta-contenido').style.display = 'block';
   plantaActualizarKPIs(_plantaDatos);
   plantaPoblarFiltros();
-  plantaFiltrar();
-  if (typeof plantaGuardarEnServidor === 'function') {
-    var nom = document.getElementById('planta-archivo-nombre');
-    plantaGuardarEnServidor(nom ? nom.textContent : '');
-  }
+  // Detectar cargos nuevos antes de renderizar (modal de clasificación)
+  _cargosDetectarNuevos(function() {
+    plantaFiltrar();
+    if (typeof plantaGuardarEnServidor === 'function') {
+      var nom = document.getElementById('planta-archivo-nombre');
+      plantaGuardarEnServidor(nom ? nom.textContent : '');
+    }
+  });
 }
 
 function plantaActualizarKPIs(datos) {
@@ -17252,6 +17415,7 @@ function plantaFiltrar() {
   var fSubcampana = (document.getElementById('pf-subcampana').value||'').toLowerCase();
   var fJefe       = (document.getElementById('pf-jefe').value||'').toLowerCase();
   var fCargo      = (document.getElementById('pf-cargo').value||'').toLowerCase();
+  var fTipo       = (document.getElementById('pf-tipo').value||'');
   var fBuscar     = (document.getElementById('pf-buscar').value||'').toLowerCase();
 
   var filtrado = _plantaDatos.filter(function(r) {
@@ -17261,6 +17425,11 @@ function plantaFiltrar() {
     if (fSubcampana && (r['SUB CAMPANA']||'').toLowerCase()    !== fSubcampana) return false;
     if (fJefe       && (r['JEFE INMEDIATO']||'').toLowerCase() !== fJefe)       return false;
     if (fCargo      && (r['CARGO']||'').toLowerCase()          !== fCargo)      return false;
+    if (fTipo) {
+      var tipo = _cargosTipo(r['CARGO']);
+      if (fTipo === '_sin') { if (tipo) return false; }
+      else { if (tipo !== fTipo) return false; }
+    }
     if (fBuscar) {
       var hay = ((r['NOMBRE COMPLETO']||'')+' '+(r['NUMERO DOC']||'')).toLowerCase();
       if (hay.indexOf(fBuscar) === -1) return false;
@@ -17308,7 +17477,7 @@ function plantaOrdenar(col) {
 }
 
 function plantaLimpiarFiltros() {
-  ['pf-estado','pf-ciudad','pf-campana','pf-subcampana','pf-jefe','pf-cargo'].forEach(function(id){
+  ['pf-estado','pf-ciudad','pf-campana','pf-subcampana','pf-jefe','pf-cargo','pf-tipo'].forEach(function(id){
     var el = document.getElementById(id); if (el) el.value = '';
   });
   var b = document.getElementById('pf-buscar'); if (b) b.value = '';
@@ -17388,7 +17557,7 @@ function plantaRenderTabla(datos) {
   if (!tbody) return;
   tbody.innerHTML = '';
   if (!datos.length) {
-    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
     return;
   }
   datos.forEach(function(r) {
@@ -17424,6 +17593,7 @@ function plantaRenderTabla(datos) {
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['CAMPANA']||'&#8212;') + '</td>' +
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['SUB CAMPANA']||'&#8212;') + '</td>' +
       '<td>' + (r['CARGO']||'&#8212;') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap;">' + _cargosTipoPill(r['CARGO']) + '</td>' +
       '<td style="text-align:center;white-space:nowrap;"></td>';
 
     var tdAcc = tr.lastElementChild;
@@ -17489,13 +17659,28 @@ function plantaGuardarEdicion() {
   _plantaDatos[idx]['CIUDAD']         = document.getElementById('planta-edit-ciudad').value;
   _plantaDatos[idx]['CAMPANA']        = document.getElementById('planta-edit-campana').value;
   _plantaDatos[idx]['SUB CAMPANA']    = document.getElementById('planta-edit-subcampana').value;
-  _plantaDatos[idx]['CARGO']          = document.getElementById('planta-edit-cargo').value;
+  var nuevoCargo = (document.getElementById('planta-edit-cargo').value||'').trim();
+  _plantaDatos[idx]['CARGO']          = nuevoCargo;
   document.getElementById('planta-edit-modal').style.display = 'none';
   plantaActualizarKPIs(_plantaDatos);
   plantaPoblarFiltros();
-  plantaFiltrar();
-  var nom = document.getElementById('planta-archivo-nombre');
-  plantaGuardarEnServidor(nom ? nom.textContent : '');
+  // Si el cargo nuevo no está clasificado, preguntar antes de renderizar
+  if (nuevoCargo && !_cargosMap[nuevoCargo]) {
+    _cargosQueue = [nuevoCargo];
+    _cargosQueue._total = 1;
+    _cargosQueueCallback = function() {
+      plantaFiltrar();
+      var nom = document.getElementById('planta-archivo-nombre');
+      plantaGuardarEnServidor(nom ? nom.textContent : '');
+    };
+    document.getElementById('cargo-clas-nombre').textContent = nuevoCargo;
+    document.getElementById('cargo-clas-counter').textContent = 'Cargo nuevo detectado al editar';
+    document.getElementById('cargo-clas-modal').style.display = 'flex';
+  } else {
+    plantaFiltrar();
+    var nom = document.getElementById('planta-archivo-nombre');
+    plantaGuardarEnServidor(nom ? nom.textContent : '');
+  }
 }
 
 function plantaCambiarEstado(pid) {
