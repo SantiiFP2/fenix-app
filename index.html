@@ -1409,6 +1409,78 @@ body.modo-claro {
 body.modo-claro .gu-search-input,body.modo-claro .gu-filter-sel{background:#fff;border-color:#DADCE0;color:#111;}
 body.modo-claro .gu-action-btn{color:#6B7280;}
 
+/* ── Planta Table v2 ── */
+.pt-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.pt-toolbar-info{font-size:12px;color:var(--pa-text-dim);}
+.pt-toolbar-info strong{color:var(--pa-text);font-weight:700;}
+.pt-density-toggle{display:flex;border:1px solid var(--pa-border);border-radius:8px;background:var(--pa-muted);padding:2px;gap:2px;}
+.pt-density-btn{padding:4px 10px;border:none;border-radius:6px;font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;cursor:pointer;background:none;color:var(--pa-text-dim);transition:all 0.15s;}
+.pt-density-btn.on{background:var(--pa-surface-1);color:var(--pa-text);box-shadow:var(--pa-shadow);}
+.pt-export-btn{display:flex;align-items:center;gap:5px;font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;transition:all 0.15s;}
+.pt-export-btn:hover{background:var(--pa-muted);color:var(--pa-text);}
+.pt-bulk-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;border-radius:10px;border:1px solid rgba(124,58,237,0.3);background:rgba(124,58,237,0.06);margin-bottom:8px;}
+.pt-bulk-btn{font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;transition:all 0.15s;}
+.pt-bulk-btn:hover{background:var(--pa-muted);color:var(--pa-text);}
+.pt-bulk-btn.danger{color:#F87171;border-color:rgba(248,113,113,0.3);}
+.pt-bulk-btn.danger:hover{background:rgba(248,113,113,0.08);}
+.pt-table-wrap{border-radius:14px;border:1px solid var(--pa-border);overflow:hidden;background:var(--pa-surface-1);box-shadow:var(--pa-shadow);}
+.pt-table{width:100%;border-collapse:collapse;font-size:13px;}
+.pt-table thead tr{border-bottom:1px solid var(--pa-border);background:rgba(255,255,255,0.02);}
+.pt-table th{padding:10px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--pa-text-dim);white-space:nowrap;}
+.pt-table th.pt-sort{cursor:pointer;user-select:none;transition:color 0.12s;}
+.pt-table th.pt-sort:hover{color:var(--pa-text);}
+.pt-table th.pt-sort.active{color:var(--pa-text);}
+.pt-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.1s;}
+.pt-table tbody tr:hover{background:rgba(255,255,255,0.025);}
+.pt-table tbody tr:last-child{border-bottom:none;}
+.pt-table tbody tr.pt-sel{background:rgba(124,58,237,0.06);}
+.pt-table tbody tr.pt-retirado:not(.pt-sel){background:rgba(0,0,0,0.12);}
+.pt-table td{padding:12px;color:var(--pa-text);vertical-align:middle;}
+.pt-table.compact td{padding:6px 12px;}
+.pt-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:800;flex-shrink:0;border:1px solid rgba(255,255,255,0.07);}
+.pt-actions{display:flex;align-items:center;gap:3px;opacity:0;transition:opacity 0.12s;}
+.pt-table tbody tr:hover .pt-actions{opacity:1;}
+.pt-table tbody tr.pt-sel .pt-actions{opacity:1;}
+.pt-icon-btn{width:28px;height:28px;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--pa-muted);color:var(--pa-text-dim);}
+.pt-icon-btn:hover{background:rgba(255,255,255,0.1);color:var(--pa-text);}
+.pt-tipo-sky{background:rgba(56,189,248,0.1);color:#38BDF8;border:1px solid rgba(56,189,248,0.2);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.pt-tipo-amber{background:rgba(251,191,36,0.1);color:#F59E0B;border:1px solid rgba(251,191,36,0.2);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.pt-tipo-violet{background:rgba(167,139,250,0.1);color:#A78BFA;border:1px solid rgba(167,139,250,0.2);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.pt-tipo-none{background:rgba(255,255,255,0.05);color:var(--pa-text-dim);border:1px solid rgba(255,255,255,0.08);font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.pt-chk{width:15px;height:15px;cursor:pointer;accent-color:#7C3AED;flex-shrink:0;}
+/* Dropdown for per-row actions */
+.pt-ddmenu{display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:10px;min-width:165px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,0.4);overflow:hidden;}
+.pt-ddwrap{position:relative;}
+.pt-ddwrap.open .pt-ddmenu{display:block;}
+.pt-dditem{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;border:none;background:none;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;}
+.pt-dditem:hover{background:var(--pa-muted);}
+.pt-dditem.danger{color:#F87171;}
+.pt-ddsep{height:1px;background:var(--pa-border);margin:3px 0;}
+/* Edit modal v2 */
+.pt-modal-section{margin-bottom:20px;}
+.pt-modal-section-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.pt-modal-section-icon{width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,0.12);color:#A78BFA;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pt-field label{font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;}
+.pt-field input,.pt-field select,.pt-field textarea{width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;resize:vertical;}
+.pt-field input:focus,.pt-field select:focus,.pt-field textarea:focus{border-color:#7C3AED;}
+/* Light mode */
+body.modo-claro .pt-table-wrap{background:#fff;border-color:#DADCE0;}
+body.modo-claro .pt-table thead tr{background:rgba(0,0,0,0.02);}
+body.modo-claro .pt-table tbody tr{border-color:rgba(0,0,0,0.05);}
+body.modo-claro .pt-table tbody tr:hover{background:rgba(0,0,0,0.015);}
+body.modo-claro .pt-table tbody tr.pt-sel{background:rgba(124,58,237,0.04);}
+body.modo-claro .pt-table tbody tr.pt-retirado:not(.pt-sel){background:rgba(0,0,0,0.04);}
+body.modo-claro .pt-table td,.body.modo-claro .pt-table th{color:#374151;}
+body.modo-claro .pt-icon-btn{background:rgba(0,0,0,0.04);color:#6B7280;}
+body.modo-claro .pt-icon-btn:hover{background:rgba(0,0,0,0.08);color:#111;}
+body.modo-claro .pt-ddmenu{background:#fff;border-color:#DADCE0;}
+body.modo-claro .pt-dditem{color:#111;}
+body.modo-claro .pt-dditem:hover{background:#F9FAFB;}
+body.modo-claro .pt-density-toggle{background:rgba(0,0,0,0.04);}
+body.modo-claro .pt-density-btn.on{background:#fff;}
+body.modo-claro .pt-bulk-bar{background:rgba(124,58,237,0.04);border-color:rgba(124,58,237,0.2);}
+body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro .pt-field textarea{background:#F9FAFB;border-color:#DADCE0;color:#111;}
+
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -16898,32 +16970,62 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
     </div>
 
-    <!-- Info de conteo -->
-    <div class="planta-tabla-info" id="planta-tabla-info"></div>
+    <!-- Toolbar -->
+    <div class="pt-toolbar">
+      <div class="pt-toolbar-info" id="planta-tabla-info">Cargando registros…</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="pt-density-toggle">
+          <button class="pt-density-btn on" id="pt-den-comf" onclick="ptSetDensity('comf')">Cómoda</button>
+          <button class="pt-density-btn"    id="pt-den-comp" onclick="ptSetDensity('comp')">Compacta</button>
+        </div>
+        <button class="pt-export-btn" onclick="plantaExportarCSV()">
+          <span class="material-symbols-rounded" style="font-size:14px;">download</span>Exportar
+        </button>
+      </div>
+    </div>
+
+    <!-- Bulk action bar (hidden by default) -->
+    <div class="pt-bulk-bar" id="pt-bulk-bar" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="pt-bulk-count" style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(124,58,237,0.2);color:#A78BFA;"></span>
+        <span style="font-size:12px;color:var(--pa-text-dim);">seleccionados</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="pt-bulk-btn" onclick="ptBulkCampana()">Cambiar campaña</button>
+        <button class="pt-bulk-btn danger" onclick="ptBulkDesactivar()">Desactivar</button>
+        <button class="pt-bulk-btn" onclick="ptClearSel()">Cancelar</button>
+      </div>
+    </div>
 
     <!-- Tabla -->
-    <div class="planta-tabla-wrap">
-      <table class="planta-tabla">
-        <thead>
-          <tr>
-            <th class="sortable" onclick="plantaOrdenar('ESTADO')" title="Ordenar por Estado">Estado <span id="planta-sort-ESTADO"></span></th>
-            <th class="sortable" onclick="plantaOrdenar('NOMBRE COMPLETO')" title="Ordenar por Nombre">Nombre Completo <span id="planta-sort-NC"></span></th>
-            <th>Documento</th>
-            <th class="sortable" onclick="plantaOrdenar('JEFE INMEDIATO')" title="Ordenar por Jefe">Jefe Inmediato <span id="planta-sort-JI"></span></th>
-            <th class="sortable" onclick="plantaOrdenar('FECHA INGRESO')" title="Ordenar por Fecha Ingreso">Fecha Ingreso <span id="planta-sort-FI"></span></th>
-            <th>Fecha Retiro</th>
-            <th style="text-align:center;">Horas</th>
-            <th style="text-align:center;" title="Full-Time Equivalent — proporción del mes trabajado">FTE</th>
-            <th class="sortable" onclick="plantaOrdenar('CIUDAD')" title="Ordenar por Ciudad">Ciudad <span id="planta-sort-CIU"></span></th>
-            <th>Campana</th>
-            <th class="sortable" onclick="plantaOrdenar('SUB CAMPANA')" title="Ordenar por Sub-Campana">Sub Campana <span id="planta-sort-SC"></span></th>
-            <th>Cargo</th>
-            <th style="text-align:center;min-width:110px;">Tipo</th>
-            <th style="text-align:center;width:96px;">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="planta-tbody"></tbody>
-      </table>
+    <div class="pt-table-wrap">
+      <div style="overflow-x:auto;">
+        <table class="pt-table" id="planta-tabla-el">
+          <thead>
+            <tr>
+              <th style="width:36px;padding-left:14px;">
+                <input type="checkbox" class="pt-chk" id="pt-chk-all" onchange="ptToggleAll(this.checked)">
+              </th>
+              <th class="pt-sort" id="pth-nombre" onclick="plantaOrdenar('NOMBRE COMPLETO')" style="min-width:240px;">
+                Persona <span id="planta-sort-NC" style="opacity:0.5;"></span>
+              </th>
+              <th class="pt-sort" id="pth-estado" onclick="plantaOrdenar('ESTADO')" style="min-width:130px;">
+                Estado <span id="planta-sort-ESTADO" style="opacity:0.5;"></span>
+              </th>
+              <th style="min-width:160px;">Asignación</th>
+              <th style="min-width:190px;">Campaña</th>
+              <th class="pt-sort" id="pth-fte" onclick="plantaOrdenar('_FTE')" style="text-align:right;min-width:90px;">
+                Capacidad <span id="planta-sort-FTE" style="opacity:0.5;"></span>
+              </th>
+              <th class="pt-sort" id="pth-ciudad" onclick="plantaOrdenar('CIUDAD')" style="min-width:110px;">
+                Ciudad <span id="planta-sort-CIU" style="opacity:0.5;"></span>
+              </th>
+              <th style="width:72px;padding-right:14px;"></th>
+            </tr>
+          </thead>
+          <tbody id="planta-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
   </div><!-- /planta-contenido -->
@@ -17182,126 +17284,318 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- ===== PLANTA: Modal Editar Registro ===== -->
-<div id="planta-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px 28px 20px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.5px;color:var(--blanco);">Editar Registro</div>
-      <button onclick="document.getElementById('planta-edit-modal').style.display='none'" style="background:none;border:none;color:var(--texto-dim);font-size:20px;cursor:pointer;line-height:1;">&times;</button>
+<div id="planta-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--pa-surface-1,var(--negro));border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:520px;display:flex;flex-direction:column;max-height:90vh;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+
+    <!-- Header -->
+    <div style="padding:20px 22px 16px;border-bottom:1px solid var(--pa-border);background:linear-gradient(135deg,rgba(11,128,67,0.08),transparent);">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="planta-edit-avatar" style="width:48px;height:48px;border-radius:14px;background:rgba(11,128,67,0.18);color:#0B8043;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--pa-text);">Editar Registro</span>
+            <span id="planta-edit-dirty" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(251,191,36,0.15);color:#FBBF24;border:1px solid rgba(251,191,36,0.3);">● Cambios</span>
+          </div>
+          <div id="planta-edit-header-nombre" style="font-size:12px;color:var(--pa-text-dim);margin-top:1px;"></div>
+        </div>
+        <button onclick="document.getElementById('planta-edit-modal').style.display='none'" style="width:30px;height:30px;border-radius:8px;background:var(--pa-muted);border:none;cursor:pointer;color:var(--pa-text-dim);display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-rounded" style="font-size:16px;">close</span>
+        </button>
+      </div>
     </div>
+
+    <!-- Body -->
     <input type="hidden" id="planta-edit-pid">
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div>
-        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Jefe Inmediato</label>
-        <input id="planta-edit-jefe" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+    <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+
+      <!-- Sección Asignación -->
+      <div class="pt-modal-section">
+        <div class="pt-modal-section-header">
+          <div class="pt-modal-section-icon"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">person</span></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--pa-text);line-height:1.2;">Asignación</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);">Quién supervisa y dónde trabaja</div>
+          </div>
+        </div>
+        <div style="padding-left:36px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="pt-field">
+            <label>Jefe Inmediato</label>
+            <input id="planta-edit-jefe" type="text" oninput="ptEditMarkDirty()">
+          </div>
+          <div class="pt-field">
+            <label>Ciudad</label>
+            <input id="planta-edit-ciudad" type="text" oninput="ptEditMarkDirty()">
+          </div>
+        </div>
       </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Ciudad</label>
-        <input id="planta-edit-ciudad" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+
+      <!-- Sección Campaña -->
+      <div class="pt-modal-section">
+        <div class="pt-modal-section-header">
+          <div class="pt-modal-section-icon"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">location_on</span></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--pa-text);line-height:1.2;">Campaña</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);">Cliente y línea de negocio</div>
+          </div>
+        </div>
+        <div style="padding-left:36px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="pt-field">
+            <label>Campaña</label>
+            <input id="planta-edit-campana" type="text" oninput="ptEditMarkDirty()">
+          </div>
+          <div class="pt-field">
+            <label>Sub Campaña</label>
+            <input id="planta-edit-subcampana" type="text" oninput="ptEditMarkDirty()">
+          </div>
+        </div>
       </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Campana</label>
-        <input id="planta-edit-campana" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+
+      <!-- Sección Cargo -->
+      <div class="pt-modal-section" style="margin-bottom:0;">
+        <div class="pt-modal-section-header">
+          <div class="pt-modal-section-icon"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">work</span></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--pa-text);line-height:1.2;">Cargo</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);">Posición operativa</div>
+          </div>
+        </div>
+        <div style="padding-left:36px;">
+          <div class="pt-field">
+            <label>Cargo</label>
+            <input id="planta-edit-cargo" type="text" oninput="ptEditMarkDirty()">
+          </div>
+        </div>
       </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Sub Campana</label>
-        <input id="planta-edit-subcampana" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+
+    </div>
+
+    <!-- Footer sticky -->
+    <div style="flex-shrink:0;padding:12px 22px;border-top:1px solid var(--pa-border);display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--pa-surface-1,var(--negro));">
+      <div id="planta-edit-footer-status" style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--pa-text-dim);">
+        <span class="material-symbols-rounded" style="font-size:13px;">info</span>Sin cambios
       </div>
-      <div>
-        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:4px;">Cargo</label>
-        <input id="planta-edit-cargo" type="text" style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById('planta-edit-modal').style.display='none'" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Cancelar</button>
+        <button onclick="plantaGuardarEdicion()" style="display:flex;align-items:center;gap:5px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#0B8043,#137333);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(11,128,67,0.3);">
+          <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">save</span>Guardar cambios
+        </button>
       </div>
     </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-      <button onclick="document.getElementById('planta-edit-modal').style.display='none'"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 20px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">
-        Cancelar
-      </button>
-      <button onclick="plantaGuardarEdicion()"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:20px;border:none;background:#0B8043;color:#fff;cursor:pointer;transition:background 0.15s;"
-        onmouseover="this.style.background='#137333'" onmouseout="this.style.background='#0B8043'">
-        Guardar
-      </button>
-    </div>
+
   </div>
 </div>
 
-<!-- ===== PLANTA: Modal Fecha de Retiro ===== -->
-<!-- ===== PLANTA: Modal Clasificar Cargo (LABOUR / LOAD / OVERHEAD) ===== -->
-<div id="cargo-clas-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;align-items:center;justify-content:center;">
-  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,0.55);">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-      <span class="material-symbols-rounded" style="font-size:20px;color:#F59E0B;">category</span>
-      <span style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--blanco);">Clasificar Cargo</span>
-    </div>
-    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:18px;" id="cargo-clas-counter"></div>
-    <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:10px;padding:12px 16px;margin-bottom:20px;">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--texto-dim);margin-bottom:4px;">Cargo detectado</div>
-      <div id="cargo-clas-nombre" style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--blanco);"></div>
-    </div>
-    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:14px;">¿A qué categoría pertenece este cargo?</div>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <button onclick="plantaCargoClasificar('LABOUR')"
-        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(59,130,246,0.35);background:rgba(59,130,246,0.08);cursor:pointer;transition:all 0.15s;"
-        onmouseover="this.style.background='rgba(59,130,246,0.18)'" onmouseout="this.style.background='rgba(59,130,246,0.08)'">
-        <span style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.18);display:flex;align-items:center;justify-content:center;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:#3B82F6;">headset_mic</span>
-        </span>
-        <div style="text-align:left;">
-          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#3B82F6;">LABOUR</div>
-          <div style="font-size:11px;color:var(--texto-dim);">Personal operativo directo · Agentes, Asesores</div>
+<!-- ===== PLANTA: Modal Clasificar Cargo ===== -->
+<div id="cargo-clas-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:10000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--pa-surface-1,var(--negro));border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.55);">
+
+    <!-- Header -->
+    <div style="padding:18px 22px 16px;border-bottom:1px solid var(--pa-border);background:rgba(245,158,11,0.04);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.15);color:#F59E0B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">auto_awesome</span>
         </div>
-      </button>
-      <button onclick="plantaCargoClasificar('LOAD')"
-        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(245,158,11,0.35);background:rgba(245,158,11,0.08);cursor:pointer;transition:all 0.15s;"
-        onmouseover="this.style.background='rgba(245,158,11,0.18)'" onmouseout="this.style.background='rgba(245,158,11,0.08)'">
-        <span style="width:32px;height:32px;border-radius:8px;background:rgba(245,158,11,0.18);display:flex;align-items:center;justify-content:center;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:#F59E0B;">supervisor_account</span>
-        </span>
-        <div style="text-align:left;">
-          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#F59E0B;">LOAD</div>
-          <div style="font-size:11px;color:var(--texto-dim);">Soporte operativo · Supervisores, Líderes, Calidad</div>
+        <div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--pa-text);">Clasificar Cargo</div>
+          <div style="font-size:11px;color:var(--pa-text-dim);" id="cargo-clas-counter">Asigna una categoría operativa</div>
         </div>
-      </button>
-      <button onclick="plantaCargoClasificar('OVERHEAD')"
-        style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid rgba(167,139,250,0.35);background:rgba(167,139,250,0.08);cursor:pointer;transition:all 0.15s;"
-        onmouseover="this.style.background='rgba(167,139,250,0.18)'" onmouseout="this.style.background='rgba(167,139,250,0.08)'">
-        <span style="width:32px;height:32px;border-radius:8px;background:rgba(167,139,250,0.18);display:flex;align-items:center;justify-content:center;">
-          <span class="material-symbols-rounded" style="font-size:16px;color:#A78BFA;">business_center</span>
-        </span>
-        <div style="text-align:left;">
-          <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#A78BFA;">OVERHEAD</div>
-          <div style="font-size:11px;color:var(--texto-dim);">Administrativo indirecto · RRHH, TI, Formación</div>
-        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:18px 22px 14px;">
+
+      <!-- Cargo detectado -->
+      <div style="border-radius:10px;border:1px solid var(--pa-border);background:var(--pa-muted);padding:12px 16px;margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pa-text-dim);margin-bottom:4px;">Cargo detectado</div>
+        <div id="cargo-clas-nombre" style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--pa-text);"></div>
+      </div>
+
+      <div style="font-size:12px;color:var(--pa-text-dim);margin-bottom:12px;">¿A qué categoría pertenece este cargo?</div>
+
+      <!-- Opciones -->
+      <div style="display:flex;flex-direction:column;gap:8px;" id="cargo-clas-opciones">
+
+        <button onclick="plantaCargoClasificar('LABOUR')"
+          style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:2px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.06);cursor:pointer;text-align:left;transition:all 0.15s;width:100%;"
+          onmouseover="this.style.borderColor='rgba(56,189,248,0.55)';this.style.background='rgba(56,189,248,0.12)'" onmouseout="this.style.borderColor='rgba(56,189,248,0.3)';this.style.background='rgba(56,189,248,0.06)'">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(56,189,248,0.15);color:#38BDF8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">headset_mic</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#38BDF8;text-transform:uppercase;letter-spacing:0.5px;">Labour</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">Personal operativo directo · <span style="color:var(--pa-text);opacity:0.7;">Agentes, Asesores</span></div>
+          </div>
+          <span id="cargo-clas-check-LABOUR" style="display:none;color:#38BDF8;"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 700;">check_circle</span></span>
+        </button>
+
+        <button onclick="plantaCargoClasificar('LOAD')"
+          style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:2px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);cursor:pointer;text-align:left;transition:all 0.15s;width:100%;"
+          onmouseover="this.style.borderColor='rgba(245,158,11,0.55)';this.style.background='rgba(245,158,11,0.12)'" onmouseout="this.style.borderColor='rgba(245,158,11,0.3)';this.style.background='rgba(245,158,11,0.06)'">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,0.15);color:#F59E0B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">groups</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#F59E0B;text-transform:uppercase;letter-spacing:0.5px;">Load</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">Soporte operativo · <span style="color:var(--pa-text);opacity:0.7;">Supervisores, Líderes, Calidad</span></div>
+          </div>
+          <span id="cargo-clas-check-LOAD" style="display:none;color:#F59E0B;"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 700;">check_circle</span></span>
+        </button>
+
+        <button onclick="plantaCargoClasificar('OVERHEAD')"
+          style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:2px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.06);cursor:pointer;text-align:left;transition:all 0.15s;width:100%;"
+          onmouseover="this.style.borderColor='rgba(167,139,250,0.55)';this.style.background='rgba(167,139,250,0.12)'" onmouseout="this.style.borderColor='rgba(167,139,250,0.3)';this.style.background='rgba(167,139,250,0.06)'">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,0.15);color:#A78BFA;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">business_center</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;color:#A78BFA;text-transform:uppercase;letter-spacing:0.5px;">Overhead</div>
+            <div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">Administrativo indirecto · <span style="color:var(--pa-text);opacity:0.7;">RRHH, TI, Formación</span></div>
+          </div>
+          <span id="cargo-clas-check-OVERHEAD" style="display:none;color:#A78BFA;"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 700;">check_circle</span></span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:12px 22px;border-top:1px solid var(--pa-border);">
+      <button onclick="plantaCargoClasificar(null)" style="width:100%;padding:9px;border-radius:8px;border:none;background:none;color:var(--pa-text-dim);font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:color 0.15s;" onmouseover="this.style.color='var(--pa-text)'" onmouseout="this.style.color='var(--pa-text-dim)'">
+        Omitir este cargo por ahora
       </button>
     </div>
-    <button onclick="plantaCargoClasificar(null)"
-      style="margin-top:14px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:12px;cursor:pointer;">
-      Omitir este cargo por ahora
-    </button>
+
   </div>
 </div>
 
-<div id="planta-retiro-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:16px;padding:28px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
-    <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;color:var(--blanco);">Registrar Retiro</div>
-    <div style="font-size:12px;color:var(--texto-dim);margin-bottom:20px;" id="planta-retiro-nombre-label"></div>
+<div id="planta-retiro-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--pa-surface-1,var(--negro));border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+
+    <!-- Header -->
+    <div style="padding:18px 22px 16px;border-bottom:1px solid var(--pa-border);background:rgba(239,68,68,0.04);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.15);color:#F87171;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">person_remove</span>
+        </div>
+        <div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--pa-text);">Registrar Retiro</div>
+          <div style="font-size:11px;color:var(--pa-text-dim);">El estado cambiará a "Retirado"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
     <input type="hidden" id="planta-retiro-pid">
-    <div>
-      <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);display:block;margin-bottom:6px;">Fecha de Retiro</label>
-      <input id="planta-retiro-fecha" type="date"
-        style="width:100%;box-sizing:border-box;background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:8px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;padding:10px 12px;outline:none;">
+    <div style="padding:18px 22px;">
+
+      <!-- Persona info card -->
+      <div style="display:flex;align-items:center;gap:10px;border-radius:10px;border:1px solid var(--pa-border);background:var(--pa-muted);padding:10px 14px;margin-bottom:16px;">
+        <div id="planta-retiro-avatar" style="width:38px;height:38px;border-radius:10px;background:rgba(124,58,237,0.15);color:#A78BFA;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:800;flex-shrink:0;"></div>
+        <div style="min-width:0;">
+          <div id="planta-retiro-nombre-label" style="font-size:13px;font-weight:700;color:var(--pa-text);line-height:1.2;"></div>
+          <div id="planta-retiro-cargo-label" style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;"></div>
+        </div>
+      </div>
+
+      <!-- Fecha -->
+      <div class="pt-field" style="margin-bottom:12px;">
+        <label>Fecha de retiro</label>
+        <input id="planta-retiro-fecha" type="date" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+      </div>
+
+      <!-- Motivo -->
+      <div class="pt-field" style="margin-bottom:12px;">
+        <label>Motivo del retiro <span style="color:#F87171;">*</span></label>
+        <select id="planta-retiro-motivo" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;cursor:pointer;">
+          <option value="">Selecciona un motivo</option>
+          <option value="Renuncia voluntaria">Renuncia voluntaria</option>
+          <option value="Fin de contrato">Fin de contrato</option>
+          <option value="Despido">Despido</option>
+          <option value="Abandono">Abandono</option>
+          <option value="Mutuo acuerdo">Mutuo acuerdo</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+
+      <!-- Observaciones -->
+      <div class="pt-field" style="margin-bottom:14px;">
+        <label>Observaciones <span style="color:var(--pa-text-dim);font-weight:400;text-transform:none;">(opcional)</span></label>
+        <textarea id="planta-retiro-obs" rows="2" placeholder="Añade notas adicionales…" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;resize:none;"></textarea>
+      </div>
+
+      <!-- Aviso -->
+      <div style="display:flex;gap:8px;border-radius:8px;border:1px solid rgba(251,191,36,0.3);background:rgba(251,191,36,0.08);padding:10px 12px;">
+        <span class="material-symbols-rounded" style="font-size:15px;color:#FBBF24;flex-shrink:0;margin-top:1px;">warning</span>
+        <p style="font-size:11px;color:var(--pa-text-dim);margin:0;line-height:1.5;">El empleado dejará de contar en la planta activa y los reportes a partir de la fecha indicada.</p>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-      <button onclick="document.getElementById('planta-retiro-modal').style.display='none'"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 20px;border-radius:20px;border:1px solid var(--gris-linea);background:none;color:var(--texto-dim);cursor:pointer;">
-        Cancelar
-      </button>
-      <button onclick="plantaConfirmarRetiro()"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:9px 24px;border-radius:20px;border:none;background:#EF4444;color:#fff;cursor:pointer;transition:background 0.15s;"
-        onmouseover="this.style.background='#DC2626'" onmouseout="this.style.background='#EF4444'">
-        Confirmar Retiro
+
+    <!-- Footer -->
+    <div style="padding:12px 22px;border-top:1px solid var(--pa-border);display:flex;justify-content:flex-end;gap:8px;">
+      <button onclick="document.getElementById('planta-retiro-modal').style.display='none'" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Cancelar</button>
+      <button onclick="plantaConfirmarRetiro()" id="btn-confirmar-retiro" style="display:flex;align-items:center;gap:5px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;border:none;background:#EF4444;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(239,68,68,0.3);">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">person_remove</span>Confirmar Retiro
       </button>
     </div>
+
+  </div>
+</div>
+
+<!-- ===== PLANTA: Modal Eliminar Empleado ===== -->
+<div id="planta-eliminar-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--pa-surface-1,var(--negro));border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+
+    <!-- Header -->
+    <div style="padding:18px 22px 16px;border-bottom:1px solid rgba(239,68,68,0.2);background:rgba(239,68,68,0.04);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(239,68,68,0.15);color:#F87171;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 500;">warning</span>
+        </div>
+        <div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--pa-text);">Eliminar empleado</div>
+          <div style="font-size:11px;color:var(--pa-text-dim);">Esta acción no se puede deshacer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <input type="hidden" id="planta-eliminar-pid">
+    <div style="padding:18px 22px;">
+
+      <p style="font-size:13px;color:var(--pa-text);margin-bottom:12px;">Estás a punto de eliminar permanentemente a:</p>
+
+      <div style="border-radius:10px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);padding:12px 16px;margin-bottom:14px;">
+        <div id="planta-eliminar-nombre" style="font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--pa-text);"></div>
+        <div id="planta-eliminar-doc" style="font-size:11px;color:var(--pa-text-dim);font-family:monospace;margin-top:3px;"></div>
+      </div>
+
+      <ul style="margin:0 0 14px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;">
+        <li style="display:flex;align-items:start;gap:8px;font-size:12px;color:var(--pa-text-dim);">
+          <span style="color:#F87171;margin-top:1px;">•</span>Se borrarán todos sus registros históricos
+        </li>
+        <li style="display:flex;align-items:start;gap:8px;font-size:12px;color:var(--pa-text-dim);">
+          <span style="color:#F87171;margin-top:1px;">•</span>No podrá recuperarse después
+        </li>
+        <li style="display:flex;align-items:start;gap:8px;font-size:12px;color:var(--pa-text-dim);">
+          <span style="color:#F87171;margin-top:1px;">•</span>Si solo deseas marcarlo inactivo, usa <strong style="color:var(--pa-text);">"Registrar Retiro"</strong>
+        </li>
+      </ul>
+
+      <!-- Confirmación por nombre -->
+      <div class="pt-field">
+        <label>Para confirmar, escribe <span id="planta-eliminar-conf-nombre" style="font-family:monospace;font-weight:700;color:#F87171;"></span></label>
+        <input id="planta-eliminar-conf-input" type="text" placeholder="Escribe el nombre completo" autocomplete="off" oninput="ptEliminarCheckConf()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:monospace;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;">
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:12px 22px;border-top:1px solid var(--pa-border);display:flex;justify-content:flex-end;gap:8px;">
+      <button onclick="document.getElementById('planta-eliminar-modal').style.display='none';document.getElementById('planta-eliminar-conf-input').value='';" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;border:1px solid var(--pa-border);background:none;color:var(--pa-text-dim);cursor:pointer;">Cancelar</button>
+      <button onclick="plantaConfirmarEliminar()" id="btn-confirmar-eliminar" disabled style="display:flex;align-items:center;gap:5px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;border-radius:10px;border:none;background:#EF4444;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(239,68,68,0.3);opacity:0.4;transition:opacity 0.15s;">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">delete</span>Eliminar definitivamente
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -18023,6 +18317,11 @@ function plantaCargoEditar(cargo) {
   _cargosQueueCallback = function() { plantaFiltrar(); };
   document.getElementById('cargo-clas-nombre').textContent = cargo;
   document.getElementById('cargo-clas-counter').textContent = 'Cambiar clasificación del cargo';
+  // Mark current type in new modal
+  ['LABOUR','LOAD','OVERHEAD'].forEach(function(t){
+    var el = document.getElementById('cargo-clas-check-' + t);
+    if (el) el.style.display = _cargosMap[cargo] === t ? 'inline' : 'none';
+  });
   document.getElementById('cargo-clas-modal').style.display = 'flex';
 }
 
@@ -18160,8 +18459,13 @@ function plantaFiltrar() {
 
   if (_plantaSortCol) {
     filtrado = filtrado.slice().sort(function(a,b){
-      var va = (a[_plantaSortCol]||'').toString().toLowerCase();
-      var vb = (b[_plantaSortCol]||'').toString().toLowerCase();
+      var va, vb;
+      if (_plantaSortCol === '_FTE') {
+        va = plantaCalcularFTE(a); vb = plantaCalcularFTE(b);
+      } else {
+        va = (a[_plantaSortCol]||'').toString().toLowerCase();
+        vb = (b[_plantaSortCol]||'').toString().toLowerCase();
+      }
       if (va < vb) return _plantaSortAsc ? -1 : 1;
       if (va > vb) return _plantaSortAsc ?  1 : -1;
       return 0;
@@ -18170,12 +18474,12 @@ function plantaFiltrar() {
 
   plantaRenderTabla(filtrado);
   var info = document.getElementById('planta-tabla-info');
-  if (info) info.textContent = 'Mostrando ' + filtrado.length + ' de ' + _plantaDatos.length + ' registros';
+  if (info) info.innerHTML = 'Mostrando <strong>' + filtrado.length + '</strong> de <strong>' + _plantaDatos.length + '</strong> registros';
 }
 
 var _plantaSortKeys = {
   'ESTADO':'ESTADO','NOMBRE COMPLETO':'NC','JEFE INMEDIATO':'JI',
-  'FECHA INGRESO':'FI','CIUDAD':'CIU','SUB CAMPANA':'SC'
+  'FECHA INGRESO':'FI','CIUDAD':'CIU','SUB CAMPANA':'SC','_FTE':'FTE'
 };
 
 function plantaOrdenar(col) {
@@ -18185,15 +18489,22 @@ function plantaOrdenar(col) {
     _plantaSortCol = col;
     _plantaSortAsc = true;
   }
+  // Clear all sort indicators and active classes
   for (var c in _plantaSortKeys) {
     var el = document.getElementById('planta-sort-' + _plantaSortKeys[c]);
     if (el) el.textContent = '';
   }
+  ['pth-nombre','pth-estado','pth-fte','pth-ciudad'].forEach(function(id){
+    var th = document.getElementById(id); if (th) th.classList.remove('active');
+  });
   var key = _plantaSortKeys[col];
   if (key) {
     var ico = document.getElementById('planta-sort-' + key);
     if (ico) ico.textContent = _plantaSortAsc ? ' ↑' : ' ↓';
   }
+  // Highlight active header
+  var thMap = {'NOMBRE COMPLETO':'pth-nombre','ESTADO':'pth-estado','_FTE':'pth-fte','CIUDAD':'pth-ciudad'};
+  if (thMap[col]) { var th2 = document.getElementById(thMap[col]); if (th2) th2.classList.add('active'); }
   plantaFiltrar();
 }
 
@@ -18273,102 +18584,324 @@ function _formatFechaPlanta(val) {
   return dd + '/' + mm + '/' + yy;
 }
 
+// ── Selection state ──
+var _ptSelected = new Set();
+
+function ptToggleAll(checked) {
+  _ptSelected = checked ? new Set(_plantaDatosActuales.map(function(r){ return r._pid; })) : new Set();
+  document.querySelectorAll('.pt-row-chk').forEach(function(chk){
+    chk.checked = checked;
+    chk.closest('tr').classList.toggle('pt-sel', checked);
+  });
+  ptUpdateBulkBar();
+}
+
+function ptToggleRow(pid, checked) {
+  if (checked) _ptSelected.add(pid); else _ptSelected.delete(pid);
+  ptUpdateBulkBar();
+  var allChk = document.getElementById('pt-chk-all');
+  if (allChk) allChk.checked = _ptSelected.size === _plantaDatosActuales.length && _plantaDatosActuales.length > 0;
+}
+
+function ptUpdateBulkBar() {
+  var bar = document.getElementById('pt-bulk-bar');
+  var cnt = document.getElementById('pt-bulk-count');
+  if (bar) bar.style.display = _ptSelected.size > 0 ? 'flex' : 'none';
+  if (cnt) cnt.textContent = _ptSelected.size + ' seleccionado' + (_ptSelected.size !== 1 ? 's' : '');
+}
+
+function ptClearSel() {
+  _ptSelected.clear();
+  document.querySelectorAll('.pt-row-chk').forEach(function(c){ c.checked = false; c.closest('tr').classList.remove('pt-sel'); });
+  var allChk = document.getElementById('pt-chk-all');
+  if (allChk) allChk.checked = false;
+  ptUpdateBulkBar();
+}
+
+function ptBulkDesactivar() {
+  if (!_ptSelected.size) return;
+  if (!confirm('¿Desactivar ' + _ptSelected.size + ' empleado(s)? Se les registrará la fecha actual como retiro.')) return;
+  var hoy = new Date(); var dd=String(hoy.getDate()).padStart(2,'0'); var mm=String(hoy.getMonth()+1).padStart(2,'0');
+  var fecha = hoy.getFullYear()+'-'+mm+'-'+dd;
+  _ptSelected.forEach(function(pid){
+    var idx = _plantaDatos.findIndex(function(x){ return x._pid === pid; });
+    if (idx !== -1 && (_plantaDatos[idx]['ESTADO']||'').toUpperCase() === 'ACTIVO') {
+      _plantaDatos[idx]['ESTADO'] = 'RETIRADO';
+      _plantaDatos[idx]['FECHA DE RETIRO'] = fecha;
+    }
+  });
+  ptClearSel(); plantaActualizarKPIs(_plantaDatos); plantaFiltrar();
+  var nom = document.getElementById('planta-archivo-nombre');
+  plantaGuardarEnServidor(nom ? nom.textContent : '');
+}
+
+function ptBulkCampana() { alert('Funcionalidad de cambio masivo de campaña próximamente.'); }
+
+// ── Density ──
+var _ptDensity = 'comf';
+function ptSetDensity(d) {
+  _ptDensity = d;
+  var tabla = document.getElementById('planta-tabla-el');
+  if (tabla) { tabla.classList.toggle('compact', d === 'comp'); }
+  document.getElementById('pt-den-comf').classList.toggle('on', d === 'comf');
+  document.getElementById('pt-den-comp').classList.toggle('on', d === 'comp');
+}
+
+// ── Dirty tracking for edit modal ──
+function ptEditMarkDirty() {
+  var d = document.getElementById('planta-edit-dirty');
+  var s = document.getElementById('planta-edit-footer-status');
+  if (d) d.style.display = 'inline-flex';
+  if (s) s.innerHTML = '<span class="material-symbols-rounded" style="font-size:13px;color:#FBBF24;">edit</span><span style="color:#FBBF24;">Tienes cambios pendientes</span>';
+}
+
+// ── Delete confirmation ──
+function ptEliminarCheckConf() {
+  var inp  = document.getElementById('planta-eliminar-conf-input');
+  var btn  = document.getElementById('btn-confirmar-eliminar');
+  var nombre = (document.getElementById('planta-eliminar-nombre')||{}).textContent || '';
+  if (!inp || !btn) return;
+  var match = inp.value.trim().toUpperCase() === nombre.trim().toUpperCase();
+  btn.disabled = !match;
+  btn.style.opacity = match ? '1' : '0.4';
+  inp.style.borderColor = match ? 'rgba(239,68,68,0.5)' : '';
+}
+
+function plantaConfirmarEliminar() {
+  var pid = parseInt(document.getElementById('planta-eliminar-pid').value);
+  document.getElementById('planta-eliminar-modal').style.display = 'none';
+  document.getElementById('planta-eliminar-conf-input').value = '';
+  _plantaDatos = _plantaDatos.filter(function(x){ return x._pid !== pid; });
+  _ptSelected.delete(pid);
+  ptUpdateBulkBar();
+  plantaActualizarKPIs(_plantaDatos);
+  plantaPoblarFiltros();
+  plantaFiltrar();
+  var nom = document.getElementById('planta-archivo-nombre');
+  plantaGuardarEnServidor(nom ? nom.textContent : '');
+}
+
+// ── Export CSV ──
+function plantaExportarCSV() {
+  if (!_plantaDatosActuales || !_plantaDatosActuales.length) { alert('No hay datos para exportar.'); return; }
+  var cols = ['ESTADO','NOMBRE COMPLETO','TIPO DOC','NUMERO DOC','JEFE INMEDIATO','CARGO','CIUDAD','CAMPANA','SUB CAMPANA','FECHA INGRESO','FECHA DE RETIRO'];
+  var rows = [cols.join(',')];
+  _plantaDatosActuales.forEach(function(r){
+    rows.push(cols.map(function(c){ var v=(r[c]||'').toString().replace(/,/g,' '); return '"'+v+'"'; }).join(','));
+  });
+  var blob = new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'planta_activa.csv'; a.click();
+}
+
+// ── Helpers ──
+var _plantaDatosActuales = [];
+
+function _ptInitials(nombre) {
+  return (nombre||'?').split(' ').filter(function(p){ return p.length>0; }).slice(0,2).map(function(p){ return p[0].toUpperCase(); }).join('');
+}
+
+function _ptTipoPill(cargo) {
+  var t = _cargosTipo(cargo);
+  if (!t) return '<span class="pt-tipo-none">Sin tipo</span>';
+  var map = { LABOUR:'pt-tipo-sky', LOAD:'pt-tipo-amber', OVERHEAD:'pt-tipo-violet' };
+  var labels = { LABOUR:'Labour', LOAD:'Load', OVERHEAD:'Overhead' };
+  return '<span class="' + (map[t]||'pt-tipo-none') + '">' + (labels[t]||t) + '</span>';
+}
+
+function _ptAvatarColor(nombre) {
+  var colors = ['#38BDF8','#4ADE80','#F59E0B','#A78BFA','#F87171','#34D399','#FB923C','#60A5FA'];
+  var h = 0; for (var i=0; i<(nombre||'').length; i++) h = (h*31 + nombre.charCodeAt(i)) & 0xFFFFFF;
+  return colors[Math.abs(h) % colors.length];
+}
+
 function plantaRenderTabla(datos) {
+  _plantaDatosActuales = datos;
   var tbody = document.getElementById('planta-tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
   if (!datos.length) {
-    tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:52px;color:var(--pa-text-dim);font-size:13px;"><span class="material-symbols-rounded" style="font-size:36px;display:block;margin:0 auto 10px;opacity:0.3;">search_off</span>Sin resultados con los filtros actuales</td></tr>';
+    // Reset select-all
+    var allChk = document.getElementById('pt-chk-all'); if (allChk) allChk.checked = false;
     return;
   }
+
+  // Update select-all state
+  var allChk = document.getElementById('pt-chk-all');
+  if (allChk) allChk.checked = _ptSelected.size === datos.length && datos.length > 0;
+
   datos.forEach(function(r) {
     var pid    = r._pid !== undefined ? r._pid : _plantaDatos.indexOf(r);
     var estado = (r['ESTADO']||'').toUpperCase();
-    var badgeCls = estado === 'ACTIVO' ? 'planta-badge-activo' : estado === 'RETIRADO' ? 'planta-badge-retirado' : 'planta-badge-otro';
-    var doc      = ((r['TIPO DOC']||'') + ' ' + (r['NUMERO DOC']||'')).trim();
-    var retiro   = r['FECHA DE RETIRO'];
-    var retiroStr= _formatFechaPlanta(retiro);
-    var retiroColor = retiro ? '#EF4444' : 'var(--texto-dim)';
+    var isActivo   = estado === 'ACTIVO';
+    var isRetirado = estado === 'RETIRADO';
+    var doc    = ((r['TIPO DOC']||'') + ' ' + (r['NUMERO DOC']||'')).trim();
+    var nombre = r['NOMBRE COMPLETO'] || '—';
+    var ini    = _ptInitials(nombre);
+    var avCol  = _ptAvatarColor(nombre);
+    var isSel  = _ptSelected.has(pid);
 
-    // ── FTE del mes actual ──
+    // FTE
     var fte      = plantaCalcularFTE(r);
     var fteStr   = fte.toFixed(2);
-    var fteColor = fte >= 1   ? '#22C55E'
-                 : fte >= 0.5 ? '#F59E0B'
-                 :              '#EF4444';
-    var fteBg    = fte >= 1   ? 'rgba(34,197,94,0.12)'
-                 : fte >= 0.5 ? 'rgba(245,158,11,0.12)'
-                 :              'rgba(239,68,68,0.12)';
+    var fteColor = fte >= 1 ? '#4ADE80' : fte >= 0.5 ? '#F59E0B' : '#F87171';
+    var horas    = r['HORAS'] || '—';
+
+    // Estado badge
+    var estadoBadge = isActivo
+      ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.1);color:#4ADE80;white-space:nowrap;"><span style="width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;"></span>Activo</span>'
+      : isRetirado
+      ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.1);color:#F87171;white-space:nowrap;"><span style="width:6px;height:6px;border-radius:50%;background:#F87171;flex-shrink:0;"></span>Retirado</span>'
+      : '<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid var(--pa-border);color:var(--pa-text-dim);">' + (r['ESTADO']||'—') + '</span>';
+
+    var fechaStr = isActivo
+      ? '<div style="font-size:10px;color:var(--pa-text-dim);margin-top:3px;">desde ' + _formatFechaPlanta(r['FECHA INGRESO']) + '</div>'
+      : (r['FECHA DE RETIRO'] ? '<div style="font-size:10px;color:#F87171;margin-top:3px;">' + _formatFechaPlanta(r['FECHA DE RETIRO']) + '</div>' : '');
 
     var tr = document.createElement('tr');
+    tr.className = (isSel ? 'pt-sel ' : '') + (isRetirado && !isSel ? 'pt-retirado ' : '');
+
     tr.innerHTML =
-      '<td><span class="planta-badge ' + badgeCls + '">' + (r['ESTADO']||'&#8212;') + '</span></td>' +
-      '<td style="font-weight:600;min-width:170px;">' + (r['NOMBRE COMPLETO']||'&#8212;') + '</td>' +
-      '<td style="color:var(--texto-dim);font-size:11px;">' + (doc||'&#8212;') + '</td>' +
-      '<td style="min-width:130px;">' + (r['JEFE INMEDIATO']||'&#8212;') + '</td>' +
-      '<td>' + _formatFechaPlanta(r['FECHA INGRESO']) + '</td>' +
-      '<td style="color:' + retiroColor + ';">' + retiroStr + '</td>' +
-      '<td style="text-align:center;">' + (r['HORAS']||'&#8212;') + '</td>' +
-      '<td style="text-align:center;"><span style="display:inline-block;min-width:46px;padding:3px 8px;border-radius:5px;font-family:\'Inter Tight\',sans-serif;font-size:12px;font-weight:700;background:' + fteBg + ';color:' + fteColor + ';">' + fteStr + '</span></td>' +
-      '<td>' + (r['CIUDAD']||'&#8212;') + '</td>' +
-      '<td style="font-size:11px;color:var(--texto-dim);">' + (r['CAMPANA']||'&#8212;') + '</td>' +
-      '<td style="font-size:11px;color:var(--texto-dim);">' + (r['SUB CAMPANA']||'&#8212;') + '</td>' +
-      '<td>' + (r['CARGO']||'&#8212;') + '</td>' +
-      '<td style="text-align:center;white-space:nowrap;">' + _cargosTipoPill(r['CARGO']) + '</td>' +
-      '<td style="text-align:center;white-space:nowrap;"></td>';
+      // Checkbox
+      '<td style="padding-left:14px;width:36px;">' +
+        '<input type="checkbox" class="pt-chk pt-row-chk" ' + (isSel?'checked':'') + '>' +
+      '</td>' +
+      // Persona
+      '<td>' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<div class="pt-avatar" style="background:' + avCol + '20;color:' + avCol + ';' + (isRetirado?'opacity:0.55;':'') + '">' + ini + '</div>' +
+          '<div style="min-width:0;">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--pa-text);' + (isRetirado?'text-decoration:line-through;opacity:0.55;':'') + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">' + nombre + '</div>' +
+            '<div style="font-size:11px;color:var(--pa-text-dim);font-family:monospace;margin-top:1px;">' + (doc||'—') + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      // Estado
+      '<td>' +
+        estadoBadge + fechaStr +
+      '</td>' +
+      // Asignación
+      '<td>' +
+        '<div style="font-size:13px;font-weight:600;color:var(--pa-text);line-height:1.3;">' + (r['JEFE INMEDIATO']||'—') + '</div>' +
+        '<div style="font-size:11px;color:var(--pa-text-dim);margin-top:1px;">' + (r['CARGO']||'—') + '</div>' +
+      '</td>' +
+      // Campaña
+      '<td>' +
+        '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
+          '<span style="font-size:13px;font-weight:600;color:var(--pa-text);">' + (r['CAMPANA']||'—') + '</span>' +
+          _ptTipoPill(r['CARGO']) +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">' + (r['SUB CAMPANA']||'') + '</div>' +
+      '</td>' +
+      // Capacidad
+      '<td style="text-align:right;">' +
+        '<div style="font-family:monospace;font-size:13px;font-weight:700;color:' + fteColor + ';">' + fteStr + '</div>' +
+        '<div style="font-size:10px;color:var(--pa-text-dim);margin-top:1px;">' + horas + 'h</div>' +
+      '</td>' +
+      // Ciudad
+      '<td>' +
+        '<span style="font-size:13px;color:var(--pa-text);">' + (r['CIUDAD']||'—') + '</span>' +
+      '</td>' +
+      // Acciones
+      '<td style="padding-right:14px;">' +
+        '<div class="pt-actions" style="justify-content:flex-end;"></div>' +
+      '</td>';
 
-    var tdAcc = tr.lastElementChild;
+    // Wire checkbox
+    var chk = tr.querySelector('.pt-row-chk');
+    (function(p, row){ chk.addEventListener('change', function(){ row.classList.toggle('pt-sel', this.checked); ptToggleRow(p, this.checked); }); })(pid, tr);
 
-    /* ---- Edit button ---- */
-    var bEdit = document.createElement('button');
-    bEdit.title = 'Editar';
-    bEdit.style.cssText = 'width:28px;height:28px;border:none;background:rgba(96,165,250,0.12);color:#60A5FA;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;';
-    bEdit.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">edit</span>';
-    bEdit.addEventListener('mouseover', function(){ this.style.background='rgba(96,165,250,0.25)'; });
-    bEdit.addEventListener('mouseout',  function(){ this.style.background='rgba(96,165,250,0.12)'; });
-    (function(p){ bEdit.addEventListener('click', function(){ plantaAbrirEditar(p); }); })(pid);
-    if (!window._perm_editar_personal) { bEdit.style.display='none'; }
+    // Actions div
+    var actDiv = tr.querySelector('.pt-actions');
 
-    /* ---- Status button ---- */
-    var bSt   = document.createElement('button');
-    bSt.title = 'Cambiar estado';
-    var stBg  = estado === 'ACTIVO' ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)';
-    var stBg2 = estado === 'ACTIVO' ? 'rgba(239,68,68,0.25)' : 'rgba(34,197,94,0.25)';
-    var stCol = estado === 'ACTIVO' ? '#EF4444' : '#22C55E';
-    var stIcon= estado === 'ACTIVO' ? 'person_off' : 'person_check';
-    bSt.style.cssText = 'width:28px;height:28px;border:none;background:' + stBg + ';color:' + stCol + ';border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;';
-    bSt.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">' + stIcon + '</span>';
-    bSt.addEventListener('mouseover', function(){ this.style.background=stBg2; });
-    bSt.addEventListener('mouseout',  function(){ this.style.background=stBg; });
-    (function(p){ bSt.addEventListener('click', function(){ plantaCambiarEstado(p); }); })(pid);
-    if (!window._perm_cambiar_estado_personal) { bSt.style.display='none'; }
+    // Edit btn (pencil)
+    if (window._perm_editar_personal !== false) {
+      var bEdit = document.createElement('button');
+      bEdit.className = 'pt-icon-btn'; bEdit.title = 'Editar';
+      bEdit.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">edit</span>';
+      (function(p){ bEdit.addEventListener('click', function(e){ e.stopPropagation(); plantaAbrirEditar(p); }); })(pid);
+      actDiv.appendChild(bEdit);
+    }
 
-    /* ---- Delete button ---- */
-    var bDel  = document.createElement('button');
-    bDel.title = 'Eliminar';
-    bDel.style.cssText = 'width:28px;height:28px;border:none;background:rgba(239,68,68,0.08);color:#EF4444;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;';
-    bDel.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;">delete</span>';
-    bDel.addEventListener('mouseover', function(){ this.style.background='rgba(239,68,68,0.22)'; });
-    bDel.addEventListener('mouseout',  function(){ this.style.background='rgba(239,68,68,0.08)'; });
-    (function(p){ bDel.addEventListener('click', function(){ plantaEliminar(p); }); })(pid);
-    if (!window._perm_eliminar_personal) { bDel.style.display='none'; }
+    // Dropdown (more actions)
+    var ddWrap = document.createElement('div');
+    ddWrap.className = 'pt-ddwrap';
+    var ddBtn = document.createElement('button');
+    ddBtn.className = 'pt-icon-btn'; ddBtn.title = 'Más acciones';
+    ddBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;">more_horiz</span>';
+    ddBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.pt-ddwrap.open').forEach(function(d){ if(d!==ddWrap) d.classList.remove('open'); });
+      ddWrap.classList.toggle('open');
+    });
+    var ddMenu = document.createElement('div');
+    ddMenu.className = 'pt-ddmenu';
 
-    tdAcc.appendChild(bEdit);
-    tdAcc.appendChild(bSt);
-    tdAcc.appendChild(bDel);
+    // Edit item
+    if (window._perm_editar_personal !== false) {
+      var di1 = document.createElement('button'); di1.className = 'pt-dditem';
+      di1.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">edit</span>Editar';
+      (function(p){ di1.addEventListener('click', function(){ ddWrap.classList.remove('open'); plantaAbrirEditar(p); }); })(pid);
+      ddMenu.appendChild(di1);
+    }
+
+    // Retire / Reactivate item
+    if (window._perm_cambiar_estado_personal !== false) {
+      var di2 = document.createElement('button'); di2.className = 'pt-dditem';
+      if (isActivo) {
+        di2.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">person_remove</span>Registrar retiro';
+      } else {
+        di2.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">person_check</span>Reactivar';
+      }
+      (function(p){ di2.addEventListener('click', function(){ ddWrap.classList.remove('open'); plantaCambiarEstado(p); }); })(pid);
+      ddMenu.appendChild(di2);
+    }
+
+    // Separator + Delete
+    if (window._perm_eliminar_personal !== false) {
+      var sep = document.createElement('div'); sep.className = 'pt-ddsep'; ddMenu.appendChild(sep);
+      var di3 = document.createElement('button'); di3.className = 'pt-dditem danger';
+      di3.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:\'FILL\' 1,\'wght\' 500;">delete</span>Eliminar';
+      (function(p){ di3.addEventListener('click', function(){ ddWrap.classList.remove('open'); plantaEliminar(p); }); })(pid);
+      ddMenu.appendChild(di3);
+    }
+
+    ddWrap.appendChild(ddBtn);
+    ddWrap.appendChild(ddMenu);
+    actDiv.appendChild(ddWrap);
+
     tbody.appendChild(tr);
   });
+
+  // Close dropdowns on outside click
+  if (!document._ptDdListenerAdded) {
+    document.addEventListener('click', function(){ document.querySelectorAll('.pt-ddwrap.open').forEach(function(d){ d.classList.remove('open'); }); });
+    document._ptDdListenerAdded = true;
+  }
 }
 
 function plantaAbrirEditar(pid) {
   var r = _plantaDatos.find(function(x){ return x._pid === pid; });
   if (!r) return;
+  var nombre = r['NOMBRE COMPLETO'] || '—';
   document.getElementById('planta-edit-pid').value = pid;
   document.getElementById('planta-edit-jefe').value       = r['JEFE INMEDIATO']||'';
   document.getElementById('planta-edit-ciudad').value     = r['CIUDAD']||'';
   document.getElementById('planta-edit-campana').value    = r['CAMPANA']||'';
   document.getElementById('planta-edit-subcampana').value = r['SUB CAMPANA']||'';
   document.getElementById('planta-edit-cargo').value      = r['CARGO']||'';
+  // New modal header
+  var ini = _ptInitials(nombre); var col = _ptAvatarColor(nombre);
+  var av = document.getElementById('planta-edit-avatar');
+  if (av) { av.textContent = ini; av.style.background = col + '25'; av.style.color = col; }
+  var hn = document.getElementById('planta-edit-header-nombre');
+  if (hn) hn.textContent = nombre + ' · ' + (r['CARGO']||'');
+  // Reset dirty state
+  var d = document.getElementById('planta-edit-dirty');
+  var s = document.getElementById('planta-edit-footer-status');
+  if (d) d.style.display = 'none';
+  if (s) s.innerHTML = '<span class="material-symbols-rounded" style="font-size:13px;">info</span>Sin cambios';
   document.getElementById('planta-edit-modal').style.display = 'flex';
 }
 
@@ -18409,9 +18942,19 @@ function plantaCambiarEstado(pid) {
   if (idx === -1) return;
   var actual = (_plantaDatos[idx]['ESTADO']||'').toUpperCase();
   if (actual === 'ACTIVO') {
+    var r = _plantaDatos[idx];
+    var nombre = r['NOMBRE COMPLETO']||'';
+    // Populate new retiro modal
     document.getElementById('planta-retiro-pid').value = pid;
     var lbl = document.getElementById('planta-retiro-nombre-label');
-    if (lbl) lbl.textContent = _plantaDatos[idx]['NOMBRE COMPLETO']||'';
+    if (lbl) lbl.textContent = nombre;
+    var crgLbl = document.getElementById('planta-retiro-cargo-label');
+    if (crgLbl) crgLbl.textContent = (r['CARGO']||'') + (r['NUMERO DOC'] ? ' · ' + r['NUMERO DOC'] : '');
+    var av = document.getElementById('planta-retiro-avatar');
+    if (av) { var ini = _ptInitials(nombre); var col = _ptAvatarColor(nombre); av.textContent = ini; av.style.background = col + '25'; av.style.color = col; }
+    // Reset motivo/obs
+    var mot = document.getElementById('planta-retiro-motivo'); if (mot) mot.value = '';
+    var obs = document.getElementById('planta-retiro-obs'); if (obs) obs.value = '';
     document.getElementById('planta-retiro-modal').style.display = 'flex';
     var today = new Date();
     var dd=String(today.getDate()).padStart(2,'0'), mm=String(today.getMonth()+1).padStart(2,'0'), yyyy=today.getFullYear();
@@ -18427,13 +18970,18 @@ function plantaCambiarEstado(pid) {
 }
 
 function plantaConfirmarRetiro() {
-  var pid   = parseInt(document.getElementById('planta-retiro-pid').value);
-  var fecha = document.getElementById('planta-retiro-fecha').value;
-  if (!fecha) { alert('Por favor ingresa la fecha de retiro.'); return; }
+  var pid    = parseInt(document.getElementById('planta-retiro-pid').value);
+  var fecha  = document.getElementById('planta-retiro-fecha').value;
+  var motivo = (document.getElementById('planta-retiro-motivo')||{}).value || '';
+  if (!fecha)  { alert('Por favor ingresa la fecha de retiro.'); return; }
+  if (!motivo) { alert('Por favor selecciona el motivo del retiro.'); return; }
   var idx = _plantaDatos.findIndex(function(x){ return x._pid === pid; });
   if (idx === -1) return;
   _plantaDatos[idx]['ESTADO'] = 'RETIRADO';
   _plantaDatos[idx]['FECHA DE RETIRO'] = fecha;
+  if (motivo) _plantaDatos[idx]['MOTIVO RETIRO'] = motivo;
+  var obs = (document.getElementById('planta-retiro-obs')||{}).value;
+  if (obs) _plantaDatos[idx]['OBS RETIRO'] = obs;
   document.getElementById('planta-retiro-modal').style.display = 'none';
   plantaActualizarKPIs(_plantaDatos);
   plantaFiltrar();
@@ -18444,13 +18992,15 @@ function plantaConfirmarRetiro() {
 function plantaEliminar(pid) {
   var r = _plantaDatos.find(function(x){ return x._pid === pid; });
   var nombre = r ? (r['NOMBRE COMPLETO']||'este registro') : 'este registro';
-  if (!confirm('¿Eliminar a ' + nombre + '? Esta acción no se puede deshacer.')) return;
-  _plantaDatos = _plantaDatos.filter(function(x){ return x._pid !== pid; });
-  plantaActualizarKPIs(_plantaDatos);
-  plantaPoblarFiltros();
-  plantaFiltrar();
-  var nom = document.getElementById('planta-archivo-nombre');
-  plantaGuardarEnServidor(nom ? nom.textContent : '');
+  var doc    = r ? ((r['TIPO DOC']||'') + ' ' + (r['NUMERO DOC']||'')).trim() : '';
+  // Show new confirm modal
+  document.getElementById('planta-eliminar-pid').value = pid;
+  var nEl = document.getElementById('planta-eliminar-nombre'); if (nEl) nEl.textContent = nombre;
+  var dEl = document.getElementById('planta-eliminar-doc');    if (dEl) dEl.textContent = doc;
+  var cnEl = document.getElementById('planta-eliminar-conf-nombre'); if (cnEl) cnEl.textContent = nombre;
+  var inEl = document.getElementById('planta-eliminar-conf-input');  if (inEl) inEl.value = '';
+  var btn  = document.getElementById('btn-confirmar-eliminar'); if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
+  document.getElementById('planta-eliminar-modal').style.display = 'flex';
 }
 </script>
 </body>
