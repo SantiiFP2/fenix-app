@@ -11753,8 +11753,6 @@ poblarSelectMadre();
 function _ocultarPanelPlanta() {
   var pp = document.getElementById('panel-planta');
   if (pp) pp.style.display = 'none';
-  var pa = document.getElementById('panel-planta-analisis');
-  if (pa) pa.style.display = 'none';
   _ocultarPanelUsuarios();
 }
 
@@ -16272,15 +16270,14 @@ document.addEventListener('DOMContentLoaded', function() {
 <div style="padding:24px;max-width:1400px;margin:0 auto;">
 
   <!-- Header -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
     <div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <span class="material-symbols-rounded" style="font-size:22px;color:#0B8043;">badge</span>
-        <span style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--blanco);">Detalle Personal</span>
+        <span class="material-symbols-rounded" style="font-size:22px;color:#0B8043;">groups</span>
+        <span style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--blanco);">Planta Activa</span>
       </div>
-
     </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <div id="planta-header-actions" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <span id="planta-archivo-nombre" style="font-size:11px;color:var(--texto-dim);font-style:italic;"></span>
       <button id="btn-planta-cargar" onclick="document.getElementById('planta-file-input').click()"
         style="display:flex;align-items:center;gap:6px;background:#0B8043;color:#fff;border:none;padding:9px 18px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;"
@@ -16290,6 +16287,23 @@ document.addEventListener('DOMContentLoaded', function() {
       </button>
     </div>
   </div>
+
+  <!-- ── Tab Bar ── -->
+  <div style="display:flex;gap:0;border-bottom:1px solid var(--gris-linea);margin-bottom:24px;">
+    <button id="planta-tab-btn-detalle" onclick="plantaTabSwitch('detalle')"
+      style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;background:none;border:none;border-bottom:2px solid #0B8043;color:#0B8043;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;margin-bottom:-1px;">
+      <span class="material-symbols-rounded" style="font-size:16px;">badge</span>
+      Detalle Personal
+    </button>
+    <button id="planta-tab-btn-analisis" onclick="plantaTabSwitch('analisis')"
+      style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;background:none;border:none;border-bottom:2px solid transparent;color:var(--texto-dim);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;margin-bottom:-1px;">
+      <span class="material-symbols-rounded" style="font-size:16px;">analytics</span>
+      Análisis de Personal
+    </button>
+  </div>
+
+  <!-- ── Tab: Detalle Personal ── -->
+  <div id="planta-tab-detalle">
 
   <!-- Zona upload inicial -->
   <div id="planta-upload-zone-box" class="planta-upload-zone"
@@ -16390,26 +16404,16 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
   </div><!-- /planta-contenido -->
-</div><!-- /panel-planta -->
+  </div><!-- /planta-tab-detalle -->
 
+  <!-- ── Tab: Análisis de Personal ── -->
+  <div id="planta-tab-analisis" style="display:none;">
 
-<!-- ===================================================================
-     PANEL: Análisis de Personal
-     =================================================================== -->
-<div id="panel-planta-analisis" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div style="padding:24px;max-width:1400px;margin:0 auto;">
-
-  <!-- Header -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-    <div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <span class="material-symbols-rounded" style="font-size:22px;color:#34D399;">analytics</span>
-        <span style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--blanco);">Análisis de Personal</span>
-      </div>
-      <div id="pa-subtitulo" style="font-size:12px;color:var(--texto-dim);padding-left:32px;"></div>
-    </div>
+  <!-- Sub-header Análisis -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+    <div id="pa-subtitulo" style="font-size:12px;color:var(--texto-dim);"></div>
     <button onclick="plantaAnalisisRender()" title="Actualizar análisis"
-      style="display:flex;align-items:center;gap:6px;background:rgba(52,211,153,0.1);color:#34D399;border:1px solid rgba(52,211,153,0.3);padding:8px 16px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">
+      style="display:flex;align-items:center;gap:6px;background:rgba(52,211,153,0.1);color:#34D399;border:1px solid rgba(52,211,153,0.3);padding:7px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">
       <span class="material-symbols-rounded" style="font-size:15px;">refresh</span> Actualizar
     </button>
   </div>
@@ -16422,7 +16426,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 
   <!-- Contenido del análisis -->
-  <div id="pa-contenido" style="display:none;">
+  <div id="pa-contenido">
 
     <!-- ── KPI Cards ── -->
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;" id="pa-kpi-grid">
@@ -16582,10 +16586,10 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
   </div><!-- /pa-contenido -->
+  </div><!-- /planta-tab-analisis -->
+
 </div><!-- /inner padding -->
-</div><!-- /panel-planta-analisis -->
-
-
+</div><!-- /panel-planta -->
 
 
 <!-- ===== PLANTA: Modal Editar Registro ===== -->
@@ -16826,7 +16830,7 @@ function mostrarPanelPlanta() {
   setHeaderModulo('Planta Activa', null);
   // Ocultar todos los paneles posibles
   var toHide = ['main-content','panel-hogar','panel-metas','panel-cosechas',
-                'panel-codigos-cvc','panel-nuevo-cvc','panel-planta-analisis'];
+                'panel-codigos-cvc','panel-nuevo-cvc'];
   toHide.forEach(function(id) {
     var e = document.getElementById(id);
     if (e) e.style.display = 'none';
@@ -16845,6 +16849,34 @@ function mostrarPanelPlanta() {
       if (con) { con.style.display = 'block'; plantaFiltrar(); }
     }
   }
+  // Activa tab detalle por defecto
+  plantaTabSwitch('detalle');
+}
+
+// ── Tabs de Planta Activa ──
+function plantaTabSwitch(tab) {
+  var tabDetalle  = document.getElementById('planta-tab-detalle');
+  var tabAnalisis = document.getElementById('planta-tab-analisis');
+  var btnDet = document.getElementById('planta-tab-btn-detalle');
+  var btnAna = document.getElementById('planta-tab-btn-analisis');
+  var actions = document.getElementById('planta-header-actions');
+  var isDetalle = (tab === 'detalle');
+
+  if (tabDetalle)  tabDetalle.style.display  = isDetalle ? 'block' : 'none';
+  if (tabAnalisis) tabAnalisis.style.display = isDetalle ? 'none'  : 'block';
+
+  if (btnDet) {
+    btnDet.style.borderBottom = isDetalle ? '2px solid #0B8043' : '2px solid transparent';
+    btnDet.style.color        = isDetalle ? '#0B8043' : 'var(--texto-dim)';
+  }
+  if (btnAna) {
+    btnAna.style.borderBottom = !isDetalle ? '2px solid #34D399' : '2px solid transparent';
+    btnAna.style.color        = !isDetalle ? '#34D399' : 'var(--texto-dim)';
+  }
+  // Cargar Excel button only in detalle tab
+  if (actions) actions.style.display = isDetalle ? '' : 'none';
+
+  if (!isDetalle) plantaAnalisisRender();
 }
 
 // ── Análisis de Personal: instancias de Chart.js ──
@@ -16855,15 +16887,8 @@ var _paChartCampana    = null;
 var _paChartCargos     = null;
 
 function mostrarPanelPlantaAnalisis() {
-  setHeaderModulo('Planta Activa', null);
-  var toHide = ['main-content','panel-hogar','panel-metas','panel-cosechas',
-                'panel-codigos-cvc','panel-nuevo-cvc','panel-planta'];
-  toHide.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
-  var pi = document.getElementById('panel-inicio');
-  if (pi) { pi.classList.remove('visible'); pi.style.display='none'; }
-  var pa = document.getElementById('panel-planta-analisis');
-  if (pa) pa.style.display = 'block';
-  plantaAnalisisRender();
+  mostrarPanelPlanta();
+  plantaTabSwitch('analisis');
 }
 
 function plantaAnalisisRender() {
