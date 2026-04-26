@@ -16288,20 +16288,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
-  <!-- ── Tab Bar ── -->
-  <div style="display:flex;gap:0;border-bottom:1px solid var(--gris-linea);margin-bottom:24px;">
-    <button id="planta-tab-btn-detalle" onclick="plantaTabSwitch('detalle')"
-      style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;background:none;border:none;border-bottom:2px solid #0B8043;color:#0B8043;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;margin-bottom:-1px;">
-      <span class="material-symbols-rounded" style="font-size:16px;">badge</span>
-      Detalle Personal
-    </button>
-    <button id="planta-tab-btn-analisis" onclick="plantaTabSwitch('analisis')"
-      style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;background:none;border:none;border-bottom:2px solid transparent;color:var(--texto-dim);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;margin-bottom:-1px;">
-      <span class="material-symbols-rounded" style="font-size:16px;">analytics</span>
-      Análisis de Personal
-    </button>
-  </div>
-
   <!-- ── Tab: Detalle Personal ── -->
   <div id="planta-tab-detalle">
 
@@ -16462,17 +16448,17 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Doughnut: Estado -->
       <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución Estado</div>
-        <canvas id="chart-pa-estado" height="180"></canvas>
+        <div style="position:relative;height:200px;"><canvas id="chart-pa-estado"></canvas></div>
       </div>
       <!-- Bar: Personal por Ciudad -->
       <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Personal Activo por Ciudad</div>
-        <canvas id="chart-pa-ciudad" height="160"></canvas>
+        <div style="position:relative;height:200px;"><canvas id="chart-pa-ciudad"></canvas></div>
       </div>
       <!-- Bar: FTE por Ciudad -->
       <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">FTE Total por Ciudad</div>
-        <canvas id="chart-pa-fte-ciudad" height="160"></canvas>
+        <div style="position:relative;height:200px;"><canvas id="chart-pa-fte-ciudad"></canvas></div>
       </div>
     </div>
 
@@ -16481,12 +16467,12 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- Bar horizontal: Top Campañas -->
       <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución por Campaña (activos)</div>
-        <canvas id="chart-pa-campana" height="200"></canvas>
+        <div style="position:relative;height:220px;"><canvas id="chart-pa-campana"></canvas></div>
       </div>
       <!-- Bar horizontal: Top Cargos -->
       <div style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:14px;padding:18px;">
         <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Distribución por Cargo (activos)</div>
-        <canvas id="chart-pa-cargos" height="200"></canvas>
+        <div style="position:relative;height:220px;"><canvas id="chart-pa-cargos"></canvas></div>
       </div>
     </div>
 
@@ -16853,27 +16839,16 @@ function mostrarPanelPlanta() {
   plantaTabSwitch('detalle');
 }
 
-// ── Tabs de Planta Activa ──
+// ── Alternancia de vistas dentro de Planta Activa ──
 function plantaTabSwitch(tab) {
   var tabDetalle  = document.getElementById('planta-tab-detalle');
   var tabAnalisis = document.getElementById('planta-tab-analisis');
-  var btnDet = document.getElementById('planta-tab-btn-detalle');
-  var btnAna = document.getElementById('planta-tab-btn-analisis');
-  var actions = document.getElementById('planta-header-actions');
-  var isDetalle = (tab === 'detalle');
+  var actions     = document.getElementById('planta-header-actions');
+  var isDetalle   = (tab === 'detalle');
 
   if (tabDetalle)  tabDetalle.style.display  = isDetalle ? 'block' : 'none';
   if (tabAnalisis) tabAnalisis.style.display = isDetalle ? 'none'  : 'block';
-
-  if (btnDet) {
-    btnDet.style.borderBottom = isDetalle ? '2px solid #0B8043' : '2px solid transparent';
-    btnDet.style.color        = isDetalle ? '#0B8043' : 'var(--texto-dim)';
-  }
-  if (btnAna) {
-    btnAna.style.borderBottom = !isDetalle ? '2px solid #34D399' : '2px solid transparent';
-    btnAna.style.color        = !isDetalle ? '#34D399' : 'var(--texto-dim)';
-  }
-  // Cargar Excel button only in detalle tab
+  // Mostrar Cargar Excel solo en vista detalle
   if (actions) actions.style.display = isDetalle ? '' : 'none';
 
   if (!isDetalle) plantaAnalisisRender();
