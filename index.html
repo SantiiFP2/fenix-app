@@ -7521,12 +7521,10 @@ function mostrarPanelInicio() {
   setHeaderModulo('Panel de Inicio', null);
   _panelInicioVisible = true;
   // Ocultar todos los paneles antes de mostrar inicio
-  document.getElementById('main-content').style.display = 'none';
-  document.getElementById('panel-codigos-cvc').style.display = 'none';
-  document.getElementById('panel-metas').style.display = 'none';
-  const _ph = document.getElementById('panel-hogar'); if(_ph) _ph.style.display = 'none';
-  const pc = document.getElementById('panel-cosechas');
-  if (pc) pc.style.display = 'none';
+  ['main-content','panel-codigos-cvc','panel-nuevo-cvc','panel-metas',
+   'panel-cosechas','panel-hogar','panel-planta','panel-usuarios'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.style.display='none';
+  });
   document.getElementById('panel-inicio').classList.add('visible');
   (document.getElementById('sb-metas-btn')||document.createElement('span')).classList.remove('active');
   actualizarPanelInicio();
@@ -16587,7 +16585,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div id="pa-contenido">
 
     <!-- KPI Grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;">
 
       <div class="pa-kpi-tile" style="--pa-ring:var(--pa-border);">
         <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
@@ -16628,7 +16626,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div style="display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:10px;">
           <div class="pa-kpi-tile-label">FTE Total</div>
           <span class="pa-kpi-tile-icon" style="background:var(--pa-info-soft);color:var(--pa-info);">
-            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">gauge</span>
+            <span class="material-symbols-rounded" style="font-size:17px;font-variation-settings:'FILL' 1,'wght' 500;">speed</span>
           </span>
         </div>
         <div class="pa-kpi-tile-value" style="color:var(--pa-info);" id="pa-kpi-fte">0.00</div>
@@ -16647,7 +16645,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <!-- Fila 1: Donut + Ciudad Activos + Ciudad FTE -->
+    <!-- Fila 1: Donut + Ciudad Activos + Ciudad FTE + Tipo charts -->
     <div style="display:grid;grid-template-columns:230px 1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;">
 
       <!-- Doughnut: Estado -->
@@ -16683,16 +16681,28 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
-      <!-- Personal Activo por Ciudad: stat list -->
-      <div class="pa-chart-card">
-        <div class="pa-chart-card-title">Personal Activo por Ciudad</div>
-        <div id="pa-ciudad-list" style="margin-top:14px;"></div>
+      <!-- Col 2: Ciudad Activos + Tipo Count -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="pa-chart-card">
+          <div class="pa-chart-card-title">Personal Activo por Ciudad</div>
+          <div id="pa-ciudad-list" style="margin-top:14px;"></div>
+        </div>
+        <div class="pa-chart-card">
+          <div class="pa-chart-card-title">Activos por Tipo de Cargo</div>
+          <div style="position:relative;height:130px;margin-top:12px;"><canvas id="chart-pa-tipo-count"></canvas></div>
+        </div>
       </div>
 
-      <!-- FTE por Ciudad: stat list -->
-      <div class="pa-chart-card">
-        <div class="pa-chart-card-title">FTE Total por Ciudad</div>
-        <div id="pa-fte-ciudad-list" style="margin-top:14px;"></div>
+      <!-- Col 3: Ciudad FTE + Tipo FTE -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="pa-chart-card">
+          <div class="pa-chart-card-title">FTE Total por Ciudad</div>
+          <div id="pa-fte-ciudad-list" style="margin-top:14px;"></div>
+        </div>
+        <div class="pa-chart-card">
+          <div class="pa-chart-card-title">FTE por Tipo de Cargo</div>
+          <div style="position:relative;height:130px;margin-top:12px;"><canvas id="chart-pa-tipo-fte"></canvas></div>
+        </div>
       </div>
     </div>
 
@@ -17134,6 +17144,8 @@ var _paChartCiudad     = null;
 var _paChartFteCiudad  = null;
 var _paChartCampana    = null;
 var _paChartCargos     = null;
+var _paChartTipoCount  = null;
+var _paChartTipoFte    = null;
 
 function mostrarPanelPlantaAnalisis() {
   mostrarPanelPlanta();
@@ -17242,9 +17254,8 @@ function _plantaAnalisisRenderInterno() {
         labels: ['Activos', 'Retirados', 'Otros'],
         datasets: [{
           data: [activos.length, retirados.length, otros.length],
-          backgroundColor: ['rgba(74,222,128,0.85)','rgba(248,113,113,0.85)','rgba(107,114,128,0.5)'],
-          borderColor:     ['var(--pa-success)','var(--pa-destructive)','var(--pa-text-dim)'],
-          borderWidth: 2, hoverOffset: 5
+          backgroundColor: ['rgba(74,222,128,0.9)','rgba(248,113,113,0.9)','rgba(107,114,128,0.45)'],
+          borderWidth: 0, hoverOffset: 5
         }]
       },
       options: {
@@ -17344,6 +17355,57 @@ function _plantaAnalisisRenderInterno() {
         scales:{
           x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }},
           y:{ ticks:{ color:lblCol, font:{ size:9 }, maxRotation:0 }, grid:{ display:false }}
+        }
+      }
+    });
+  }
+
+  // ══ Gráficos 6+7: Activos y FTE por Tipo de Cargo ══
+  var tipoCount = { 'LABOUR':0, 'LOAD':0, 'OVERHEAD':0, 'Sin tipo':0 };
+  var tipoFte   = { 'LABOUR':0, 'LOAD':0, 'OVERHEAD':0, 'Sin tipo':0 };
+  activos.forEach(function(r){
+    var cargo = (r['CARGO']||'').trim();
+    var tipo  = _cargosMap[cargo] || 'Sin tipo';
+    tipoCount[tipo] = (tipoCount[tipo]||0) + 1;
+    tipoFte[tipo]   = (tipoFte[tipo]||0) + plantaCalcularFTE(r);
+  });
+  var tipoLabels = ['LABOUR','LOAD','OVERHEAD','Sin tipo'];
+  var tipoBgCount = ['rgba(59,130,246,0.8)','rgba(245,158,11,0.8)','rgba(167,139,250,0.8)','rgba(107,114,128,0.5)'];
+  var tipoBorders = ['rgba(59,130,246,0)','rgba(245,158,11,0)','rgba(167,139,250,0)','rgba(107,114,128,0)'];
+  var ctxTipoC = document.getElementById('chart-pa-tipo-count');
+  if (ctxTipoC) {
+    if (_paChartTipoCount) _paChartTipoCount.destroy();
+    _paChartTipoCount = new Chart(ctxTipoC.getContext('2d'), {
+      type:'bar',
+      data:{ labels:tipoLabels, datasets:[{
+        label:'Activos', data:tipoLabels.map(function(t){ return tipoCount[t]||0; }),
+        backgroundColor:tipoBgCount, borderWidth:0, borderRadius:6
+      }]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false }},
+        scales:{
+          x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ display:false }},
+          y:{ ticks:{ color:lblCol, font:{ size:9 }, stepSize:1 }, grid:{ color:gridCol }}
+        }
+      }
+    });
+  }
+  var ctxTipoF = document.getElementById('chart-pa-tipo-fte');
+  if (ctxTipoF) {
+    if (_paChartTipoFte) _paChartTipoFte.destroy();
+    _paChartTipoFte = new Chart(ctxTipoF.getContext('2d'), {
+      type:'bar',
+      data:{ labels:tipoLabels, datasets:[{
+        label:'FTE', data:tipoLabels.map(function(t){ return +((tipoFte[t]||0).toFixed(2)); }),
+        backgroundColor:tipoBgCount, borderWidth:0, borderRadius:6
+      }]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false }},
+        scales:{
+          x:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ display:false }},
+          y:{ ticks:{ color:lblCol, font:{ size:9 }}, grid:{ color:gridCol }}
         }
       }
     });
