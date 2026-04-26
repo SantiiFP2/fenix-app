@@ -16371,6 +16371,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <th class="sortable" onclick="plantaOrdenar('FECHA INGRESO')" title="Ordenar por Fecha Ingreso">Fecha Ingreso <span id="planta-sort-FI"></span></th>
             <th>Fecha Retiro</th>
             <th style="text-align:center;">Horas</th>
+            <th style="text-align:center;" title="Full-Time Equivalent — proporción del mes trabajado">FTE</th>
             <th class="sortable" onclick="plantaOrdenar('CIUDAD')" title="Ordenar por Ciudad">Ciudad <span id="planta-sort-CIU"></span></th>
             <th>Campana</th>
             <th class="sortable" onclick="plantaOrdenar('SUB CAMPANA')" title="Ordenar por Sub-Campana">Sub Campana <span id="planta-sort-SC"></span></th>
@@ -16814,6 +16815,47 @@ function plantaLimpiarFiltros() {
   plantaFiltrar();
 }
 
+// ── Convierte cualquier valor de fecha de planta a un objeto Date (solo día, sin hora) ──
+function _plantaToDate(val) {
+  if (!val) return null;
+  if (val instanceof Date) {
+    return new Date(val.getFullYear(), val.getMonth(), val.getDate());
+  }
+  var s = String(val).substring(0, 10); // "YYYY-MM-DD"
+  var parts = s.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  }
+  var d = new Date(val);
+  return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+// ── Calcula el FTE del asesor en el mes actual ──
+// FTE = días trabajados dentro del mes / días totales del mes
+function plantaCalcularFTE(r) {
+  var hoy      = new Date();
+  var anio     = hoy.getFullYear();
+  var mes      = hoy.getMonth(); // 0-based
+  var primerDia = new Date(anio, mes, 1);
+  var ultimoDia = new Date(anio, mes + 1, 0); // último día del mes
+  var diasMes   = ultimoDia.getDate();
+
+  var fechaIng = _plantaToDate(r['FECHA INGRESO']);
+  var fechaRet = _plantaToDate(r['FECHA DE RETIRO']);
+
+  // Ventana de inicio: el mayor entre el primer día del mes y la fecha de ingreso
+  var inicio = fechaIng && fechaIng > primerDia ? fechaIng : primerDia;
+  // Ventana de fin: el menor entre el último día del mes y la fecha de retiro (si existe)
+  var fin    = fechaRet && fechaRet < ultimoDia  ? fechaRet : ultimoDia;
+
+  // Si el asesor ingresa después del mes o se retiró antes de que empezara → 0
+  if (inicio > ultimoDia || fin < primerDia) return 0;
+
+  var msPerDay      = 86400000;
+  var diasTrabajados = Math.round((fin - inicio) / msPerDay) + 1;
+  return Math.max(0, Math.min(1, diasTrabajados / diasMes));
+}
+
 function _formatFechaPlanta(val) {
   if (!val) return '—';
   var d;
@@ -16841,7 +16883,7 @@ function plantaRenderTabla(datos) {
   if (!tbody) return;
   tbody.innerHTML = '';
   if (!datos.length) {
-    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:44px;color:var(--texto-dim);">Sin resultados con los filtros actuales</td></tr>';
     return;
   }
   datos.forEach(function(r) {
@@ -16853,6 +16895,16 @@ function plantaRenderTabla(datos) {
     var retiroStr= _formatFechaPlanta(retiro);
     var retiroColor = retiro ? '#EF4444' : 'var(--texto-dim)';
 
+    // ── FTE del mes actual ──
+    var fte      = plantaCalcularFTE(r);
+    var fteStr   = fte.toFixed(2);
+    var fteColor = fte >= 1   ? '#22C55E'
+                 : fte >= 0.5 ? '#F59E0B'
+                 :              '#EF4444';
+    var fteBg    = fte >= 1   ? 'rgba(34,197,94,0.12)'
+                 : fte >= 0.5 ? 'rgba(245,158,11,0.12)'
+                 :              'rgba(239,68,68,0.12)';
+
     var tr = document.createElement('tr');
     tr.innerHTML =
       '<td><span class="planta-badge ' + badgeCls + '">' + (r['ESTADO']||'&#8212;') + '</span></td>' +
@@ -16862,6 +16914,7 @@ function plantaRenderTabla(datos) {
       '<td>' + _formatFechaPlanta(r['FECHA INGRESO']) + '</td>' +
       '<td style="color:' + retiroColor + ';">' + retiroStr + '</td>' +
       '<td style="text-align:center;">' + (r['HORAS']||'&#8212;') + '</td>' +
+      '<td style="text-align:center;"><span style="display:inline-block;min-width:46px;padding:3px 8px;border-radius:5px;font-family:\'Inter Tight\',sans-serif;font-size:12px;font-weight:700;background:' + fteBg + ';color:' + fteColor + ';">' + fteStr + '</span></td>' +
       '<td>' + (r['CIUDAD']||'&#8212;') + '</td>' +
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['CAMPANA']||'&#8212;') + '</td>' +
       '<td style="font-size:11px;color:var(--texto-dim);">' + (r['SUB CAMPANA']||'&#8212;') + '</td>' +
