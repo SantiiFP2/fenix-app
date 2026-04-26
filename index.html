@@ -16422,7 +16422,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 
   <!-- Contenido del análisis -->
-  <div id="pa-contenido">
+  <div id="pa-contenido" style="display:none;">
 
     <!-- ── KPI Cards ── -->
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;" id="pa-kpi-grid">
@@ -16867,15 +16867,29 @@ function mostrarPanelPlantaAnalisis() {
 }
 
 function plantaAnalisisRender() {
-  var empty   = document.getElementById('pa-empty');
-  var cont    = document.getElementById('pa-contenido');
+  var empty = document.getElementById('pa-empty');
+  var cont  = document.getElementById('pa-contenido');
   if (!_plantaDatos || !_plantaDatos.length) {
-    if (empty) empty.style.display = '';
+    if (empty) empty.style.display = 'block';
     if (cont)  cont.style.display  = 'none';
     return;
   }
   if (empty) empty.style.display = 'none';
-  if (cont)  cont.style.display  = '';
+  if (cont)  cont.style.display  = 'block';
+  try { _plantaAnalisisRenderInterno(); }
+  catch(e) {
+    console.error('[Análisis Personal] Error al renderizar:', e);
+    var errDiv = document.getElementById('pa-error-msg');
+    if (!errDiv) {
+      errDiv = document.createElement('div');
+      errDiv.id = 'pa-error-msg';
+      errDiv.style.cssText = 'margin:20px;padding:14px 18px;border-radius:10px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#EF4444;font-family:\'Inter Tight\',sans-serif;font-size:13px;';
+      if (cont) cont.prepend(errDiv);
+    }
+    errDiv.textContent = 'Error al generar el análisis: ' + e.message;
+  }
+}
+function _plantaAnalisisRenderInterno() {
 
   // ── Mes de referencia ──
   var hoy    = new Date();
