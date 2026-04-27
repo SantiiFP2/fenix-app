@@ -667,81 +667,102 @@ body.modo-claro .proy-stat{background:#F1F3F4;}
 body.modo-claro .festivos-panel{background:#FFFFFF;}
 
 /* ══ MÓDULO METAS ══ */
-.metas-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px;}
-.metas-header h1{font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
-.metas-header p{font-size:11px;color:var(--texto-dim);letter-spacing:1px;margin:4px 0 0;}
-.metas-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;}
-.metas-filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
-.metas-filtro-sel{background:var(--negro);border:1px solid var(--gris-linea);border-radius:4px;color:var(--texto);font-size:12px;padding:7px 12px;outline:none;cursor:pointer;}
-.metas-filtro-sel:focus{border-color:rgba(218,0,0,0.5);}
-.metas-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
-.metas-stat{background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:10px 16px;min-width:110px;}
-.metas-stat .msv{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--texto);}
-.metas-stat .msl{font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;}
+.metas-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:14px;}
+.metas-header-left{display:flex;align-items:center;gap:14px;}
+.metas-header-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(109,40,217,0.12));border:1px solid rgba(124,58,237,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#A78BFA;}
+.metas-header h1{font-family:'Inter Tight',sans-serif;font-size:21px;font-weight:700;letter-spacing:-0.3px;color:var(--pa-text);margin:0;}
+.metas-header-sub{font-size:11px;color:var(--pa-text-dim);letter-spacing:0.5px;margin:3px 0 0;}
+.metas-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+/* Filter bar */
+.metas-filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px;padding:10px 14px;background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:12px;box-shadow:var(--pa-shadow);}
+.metas-filtro-sel{background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:12px;font-family:'Inter Tight',sans-serif;font-weight:500;padding:7px 12px;outline:none;cursor:pointer;transition:border-color 0.15s;}
+.metas-filtro-sel:focus{border-color:rgba(124,58,237,0.5);}
+/* Stats bar */
+.metas-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
+.metas-stat{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:12px;padding:14px 16px;box-shadow:var(--pa-shadow);}
+.metas-stat .msv{font-family:'Inter Tight',sans-serif;font-size:26px;font-weight:800;color:var(--pa-text);letter-spacing:-0.5px;line-height:1;}
+.metas-stat .msl{font-size:10px;font-weight:700;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;margin-top:5px;}
+/* Product section */
 .metas-product-section{margin-bottom:28px;}
-.metas-product-title{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gris-linea);}
-.metas-product-title span{font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;}
-.metas-product-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;}
-.metas-badge-movil{background:rgba(239,68,68,0.15);color:#FCA5A5;border:1px solid rgba(239,68,68,0.2);}
-.metas-badge-hogar{background:rgba(59,130,246,0.15);color:#93C5FD;border:1px solid rgba(59,130,246,0.2);}
-.metas-badge-tyt{background:rgba(251,191,36,0.15);color:#FCD34D;border:1px solid rgba(251,191,36,0.2);}
-.metas-badge-dedicadas{background:rgba(167,139,250,0.15);color:#C4B5FD;border:1px solid rgba(167,139,250,0.2);}
-.metas-table-wrap{overflow-x:auto;border-radius:6px;border:1px solid var(--gris-linea);margin-bottom:12px;}
+.metas-product-title{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:10px;box-shadow:var(--pa-shadow);}
+.metas-product-title-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;}
+.metas-product-title-text{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.2px;color:var(--pa-text);}
+.metas-product-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;}
+.metas-badge-movil{background:rgba(239,68,68,0.1);color:#FCA5A5;border:1px solid rgba(239,68,68,0.2);}
+.metas-badge-hogar{background:rgba(59,130,246,0.1);color:#93C5FD;border:1px solid rgba(59,130,246,0.2);}
+.metas-badge-tyt{background:rgba(251,191,36,0.1);color:#FCD34D;border:1px solid rgba(251,191,36,0.2);}
+.metas-badge-dedicadas{background:rgba(167,139,250,0.1);color:#C4B5FD;border:1px solid rgba(167,139,250,0.2);}
+/* Table */
+.metas-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--pa-border);margin-bottom:8px;background:var(--pa-surface-1);box-shadow:var(--pa-shadow);}
 .metas-table{width:100%;border-collapse:collapse;font-size:12px;}
-.metas-table th{padding:9px 14px;text-align:left;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--texto-dim);background:rgba(255,255,255,0.03);border-bottom:1px solid var(--gris-linea);font-weight:700;white-space:nowrap;}
-.metas-table td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--texto);vertical-align:middle;}
+.metas-table th{padding:10px 14px;text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--pa-text-dim);background:var(--pa-muted);border-bottom:1px solid var(--pa-border);font-weight:700;white-space:nowrap;}
+.metas-table td{padding:9px 14px;border-bottom:1px solid var(--pa-border);color:var(--pa-text);vertical-align:middle;}
 .metas-table tr:last-child td{border-bottom:none;}
-.metas-table tr:hover td{background:rgba(255,255,255,0.02);}
-.metas-table .meta-val-input{background:transparent;border:none;border-bottom:1px solid transparent;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;width:90px;text-align:right;padding:2px 4px;outline:none;transition:border-color 0.2s;}
-.metas-table .meta-val-input:focus{border-bottom-color:var(--rojo);background:rgba(218,0,0,0.05);}
-.meta-tipo-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;}
-.meta-tipo-primaria{background:rgba(74,222,128,0.12);color:#4ADE80;border:1px solid rgba(74,222,128,0.25);}
-.meta-tipo-secundaria{background:rgba(100,116,139,0.12);color:#94A3B8;border:1px solid rgba(100,116,139,0.2);}
-.metas-empty{text-align:center;padding:60px 20px;color:var(--texto-dim);}
-.metas-empty .me-icon{font-size:48px;margin-bottom:14px;}
-.metas-empty .me-title{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.metas-table tbody tr:hover td{background:var(--pa-muted);}
+.metas-table .meta-val-input{background:transparent;border:none;border-bottom:1px solid transparent;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;width:90px;text-align:right;padding:2px 4px;outline:none;transition:border-color 0.2s;}
+.metas-table .meta-val-input:focus{border-bottom-color:rgba(124,58,237,0.6);background:rgba(124,58,237,0.05);}
+.meta-tipo-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+.meta-tipo-primaria{background:rgba(74,222,128,0.1);color:#4ADE80;border:1px solid rgba(74,222,128,0.2);}
+.meta-tipo-secundaria{background:rgba(100,116,139,0.1);color:#94A3B8;border:1px solid rgba(100,116,139,0.15);}
+.metas-empty{text-align:center;padding:60px 20px;color:var(--pa-text-dim);background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;box-shadow:var(--pa-shadow);}
+.metas-empty .me-icon{font-size:36px;margin-bottom:12px;color:var(--pa-text-dim);}
+.metas-empty .me-title{font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.3px;margin-bottom:8px;color:var(--pa-text);}
+/* Metas action buttons */
+.meta-row-actions{display:flex;gap:3px;justify-content:center;}
+.meta-act-btn{width:26px;height:26px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--pa-muted);color:var(--pa-text-dim);font-size:13px;}
+.meta-act-btn:hover{background:rgba(255,255,255,0.12);color:var(--pa-text);}
+.meta-act-btn.del:hover{background:rgba(239,68,68,0.15);color:#F87171;}
 /* Modal indicadores nuevos */
 #modal-ind-nuevo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:4000;align-items:center;justify-content:center;}
 #modal-ind-nuevo.open{display:flex;}
-.min-box{background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:8px;padding:28px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;}
-.min-title{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;color:var(--amarillo);}
-.min-sub{font-size:12px;color:var(--texto-dim);margin-bottom:20px;line-height:1.6;}
-.min-row{display:grid;grid-template-columns:1fr 140px 120px;gap:10px;align-items:center;margin-bottom:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:4px;border:1px solid var(--gris-linea);}
-.min-ind-name{font-size:12px;font-weight:600;color:var(--texto);}
-.min-sel{background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:11px;padding:5px 8px;outline:none;width:100%;}
+.min-box{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:16px;padding:28px;width:100%;max-width:580px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.min-title{font-family:'Inter Tight',sans-serif;font-size:17px;font-weight:700;letter-spacing:0.2px;margin-bottom:6px;color:var(--pa-text);}
+.min-sub{font-size:12px;color:var(--pa-text-dim);margin-bottom:20px;line-height:1.6;}
+.min-row{display:grid;grid-template-columns:1fr 140px 120px;gap:10px;align-items:center;margin-bottom:8px;padding:10px 12px;background:var(--pa-muted);border-radius:8px;border:1px solid var(--pa-border);}
+.min-ind-name{font-size:12px;font-weight:600;color:var(--pa-text);}
+.min-sel{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:6px;color:var(--pa-text);font-size:11px;padding:5px 8px;outline:none;width:100%;}
 .min-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
-body.modo-claro .metas-stat{background:#fff;border-color:#E5E7EB;}
-body.modo-claro .metas-product-title{border-bottom-color:#E5E7EB;}
-body.modo-claro .metas-table-wrap{border-color:#E5E7EB;}
-body.modo-claro .metas-table th{background:rgba(0,0,0,0.02);}
-body.modo-claro .metas-table td{border-bottom-color:rgba(0,0,0,0.05);}
-body.modo-claro .min-box{background:#fff;}
-
-
 /* Resumen visual metas */
-.mv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
-.mv-card{background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:8px;padding:18px;position:relative;overflow:hidden;}
-.mv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.mv-card.movil::before{background:linear-gradient(90deg,#EF4444,#F87171);}
-.mv-card.hogar::before{background:linear-gradient(90deg,#3B82F6,#60A5FA);}
-.mv-card.tyt::before{background:linear-gradient(90deg,#F59E0B,#FCD34D);}
-.mv-card.dedicadas::before{background:linear-gradient(90deg,#8B5CF6,#C4B5FD);}
+.mv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px;}
+.mv-card{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:0;position:relative;overflow:hidden;box-shadow:var(--pa-shadow);}
+.mv-card-accent{height:3px;width:100%;}
+.mv-card.movil .mv-card-accent{background:linear-gradient(90deg,#EF4444,#F87171);}
+.mv-card.hogar .mv-card-accent{background:linear-gradient(90deg,#3B82F6,#60A5FA);}
+.mv-card.tyt .mv-card-accent{background:linear-gradient(90deg,#F59E0B,#FCD34D);}
+.mv-card.dedicadas .mv-card-accent{background:linear-gradient(90deg,#8B5CF6,#C4B5FD);}
+.mv-card-body{padding:16px 18px 18px;}
 .mv-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.mv-card-title{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto);}
-.mv-card-ico{font-size:22px;}
-.mv-ind-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.mv-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.mv-card.movil .mv-card-icon{background:rgba(239,68,68,0.12);color:#F87171;}
+.mv-card.hogar .mv-card-icon{background:rgba(59,130,246,0.12);color:#60A5FA;}
+.mv-card.tyt .mv-card-icon{background:rgba(245,158,11,0.12);color:#FCD34D;}
+.mv-card.dedicadas .mv-card-icon{background:rgba(139,92,246,0.12);color:#C4B5FD;}
+.mv-card-title{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.2px;color:var(--pa-text);}
+.mv-card-total{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;line-height:1;letter-spacing:-0.5px;}
+.mv-card-count{font-size:10px;color:var(--pa-text-dim);margin-top:2px;text-align:right;}
+.mv-ind-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--pa-border);}
 .mv-ind-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
-.mv-ind-name{font-size:11px;font-weight:600;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;flex:1;}
-.mv-ind-val{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;text-align:right;}
-.mv-ind-sub{font-size:10px;color:var(--texto-dim);text-align:right;margin-top:1px;}
-.mv-barra-wrap{margin-top:6px;}
-.mv-barra-track{background:rgba(255,255,255,0.06);border-radius:20px;height:4px;overflow:hidden;margin-top:3px;}
+.mv-ind-name{font-size:10px;font-weight:700;color:var(--pa-text-dim);letter-spacing:0.5px;text-transform:uppercase;flex:1;}
+.mv-ind-val{font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;text-align:right;}
+.mv-ind-sub{font-size:10px;color:var(--pa-text-dim);text-align:right;margin-top:1px;}
+.mv-barra-wrap{margin-top:4px;}
+.mv-barra-track{background:var(--pa-muted);border-radius:20px;height:3px;overflow:hidden;margin-top:3px;}
 .mv-barra-fill{height:100%;border-radius:20px;}
-/* Sede chips */
-.mv-sedes-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);}
-.mv-sede-chip{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.5px;background:rgba(255,255,255,0.06);color:var(--texto-dim);border:1px solid rgba(255,255,255,0.08);}
+.mv-sedes-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid var(--pa-border);}
+.mv-sede-chip{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.3px;background:var(--pa-muted);color:var(--pa-text-dim);border:1px solid var(--pa-border);}
+/* Light mode overrides */
+body.modo-claro .metas-stat{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .metas-product-title{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .metas-filtros{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .metas-table-wrap{border-color:#E5E7EB;background:#fff;}
+body.modo-claro .metas-table th{background:#F9FAFB;}
+body.modo-claro .metas-table td{border-bottom-color:#F3F4F6;}
+body.modo-claro .metas-empty{background:#fff;border-color:#E5E7EB;}
 body.modo-claro .mv-card{background:#fff;border-color:#E5E7EB;}
 body.modo-claro .mv-ind-row{border-bottom-color:#F3F4F6;}
+body.modo-claro .min-box{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .meta-act-btn{background:rgba(0,0,0,0.04);color:#6B7280;}
+body.modo-claro .meta-act-btn:hover{background:rgba(0,0,0,0.08);color:#111;}
 
 
 body.modo-claro .sb-product.active{color:var(--g-blue);background:rgba(26,115,232,0.08);}
@@ -2160,21 +2181,51 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 <div id="panel-metas" style="display:none;padding:28px 32px;">
 
   <div class="metas-header">
-    <div>
-      <h1>🎯 Metas</h1>
-      <p id="metas-header-sub">HISTORIAL DE METAS · CLARO COLOMBIA · TODOS LOS PRODUCTOS</p>
+    <div class="metas-header-left">
+      <div class="metas-header-icon">
+        <span class="material-symbols-rounded" style="font-size:22px;font-variation-settings:'FILL' 1,'wght' 500;">flag</span>
+      </div>
+      <div>
+        <h1>Metas</h1>
+        <div class="metas-header-sub" id="metas-header-sub">HISTORIAL DE METAS · CLARO COLOMBIA · TODOS LOS PRODUCTOS</div>
+      </div>
     </div>
     <div class="metas-toolbar">
-      <button id="btn-metas-plantilla" class="btn-sm" style="background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.4);color:#4ADE80;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="descargarPlantillaMetas()">⬇ Plantilla Excel</button>
+      <button id="btn-metas-plantilla"
+        style="display:flex;align-items:center;gap:6px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ADE80;padding:8px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(74,222,128,0.18)'" onmouseout="this.style.background='rgba(74,222,128,0.1)'"
+        onclick="descargarPlantillaMetas()">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">download</span>
+        Plantilla Excel
+      </button>
       <input type="file" id="metas-file-input" accept=".xlsx,.xls" style="display:none;" onchange="cargarArchivoMetas(this)">
-      <button id="btn-metas-cargar" class="btn-sm" style="background:rgba(218,0,0,0.1);border-color:rgba(218,0,0,0.4);color:var(--rojo);padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="document.getElementById('metas-file-input').click()">📂 Cargar Excel</button>
-      <button id="btn-metas-manual" class="btn-sm" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4);color:#93C5FD;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="abrirModalMetaManual()">➕ Meta Manual</button>
-      <button id="btn-metas-vaciar" class="btn-sm" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#FCA5A5;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarMesMetas()">🗑 Vaciar Mes</button>
+      <button id="btn-metas-cargar"
+        style="display:flex;align-items:center;gap:6px;background:rgba(218,0,0,0.1);border:1px solid rgba(218,0,0,0.3);color:#F87171;padding:8px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(218,0,0,0.18)'" onmouseout="this.style.background='rgba(218,0,0,0.1)'"
+        onclick="document.getElementById('metas-file-input').click()">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">upload_file</span>
+        Cargar Excel
+      </button>
+      <button id="btn-metas-manual"
+        style="display:flex;align-items:center;gap:6px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#A78BFA;padding:8px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(124,58,237,0.2)'" onmouseout="this.style.background='rgba(124,58,237,0.12)'"
+        onclick="abrirModalMetaManual()">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">add_circle</span>
+        Meta Manual
+      </button>
+      <button id="btn-metas-vaciar"
+        style="display:flex;align-items:center;gap:6px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#F87171;padding:8px 14px;border-radius:20px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(239,68,68,0.16)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'"
+        onclick="vaciarMesMetas()">
+        <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">delete_sweep</span>
+        Vaciar Mes
+      </button>
     </div>
   </div>
 
   <!-- Filtros -->
   <div class="metas-filtros">
+    <span class="material-symbols-rounded" style="font-size:16px;color:var(--pa-text-dim);font-variation-settings:'FILL' 0,'wght' 400;">filter_list</span>
     <select class="metas-filtro-sel" id="metas-filtro-mes" onchange="onMesFiltroChange()">
       <option value="">— Mes —</option>
     </select>
@@ -2460,54 +2511,101 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
 <!-- MODAL META MANUAL -->
 <div id="modal-meta-manual" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:4000;align-items:center;justify-content:center;">
-  <div class="mcf-box" style="max-width:480px;">
-    <div class="mcf-title">➕ Añadir Meta Manual</div>
-    <div class="mcf-grid">
-      <div class="mcf-field">
-        <div class="mcf-label">Mes <span style="color:var(--rojo);">*</span></div>
-        <input type="month" class="mcf-input" id="mmm-mes">
+  <div style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:18px;width:100%;max-width:500px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+
+    <!-- Header -->
+    <div style="padding:20px 24px 0;display:flex;align-items:center;gap:14px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(109,40,217,0.12));border:1px solid rgba(124,58,237,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-rounded" style="font-size:22px;color:#A78BFA;font-variation-settings:'FILL' 1,'wght' 500;">add_chart</span>
       </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Producto <span style="color:var(--rojo);">*</span></div>
-        <select class="mcf-input" id="mmm-producto">
-          <option value="MOVIL">📱 Móvil</option>
-          <option value="HOGAR">🏠 Hogar</option>
-          <option value="T&T">📺 T&T</option>
-          <option value="DEDICADAS">🎬 Dedicadas</option>
-        </select>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:17px;font-weight:700;color:var(--pa-text);">Añadir Meta Manual</div>
+        <div style="font-size:11px;color:var(--pa-text-dim);margin-top:2px;">Registra una meta individual por indicador</div>
       </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Indicador <span style="color:var(--rojo);">*</span></div>
-        <input class="mcf-input" id="mmm-indicador" placeholder="Ej: PORTABILIDAD" oninput="this.value=this.value.toUpperCase()">
-      </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Tipo</div>
-        <select class="mcf-input" id="mmm-tipo">
-          <option value="PRIMARIA">Primaria</option>
-          <option value="SECUNDARIA">Secundaria</option>
-        </select>
-      </div>
-      <div class="mcf-field">
-        <div class="mcf-label">CVC / Sede</div>
-        <input class="mcf-input" id="mmm-cvc" placeholder="Código CVC o nombre sede">
-      </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Meta <span style="color:var(--rojo);">*</span></div>
-        <input type="number" class="mcf-input" id="mmm-meta" placeholder="0" min="0">
-      </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Región</div>
-        <input class="mcf-input" id="mmm-region" placeholder="Ej: REGION CENTRO">
-      </div>
-      <div class="mcf-field">
-        <div class="mcf-label">Subcanal <span style="color:var(--texto-dim);font-weight:400;">(canal Hogar)</span></div>
-        <input class="mcf-input" id="mmm-subcanal" placeholder="Ej: TMK OUT BOUND" oninput="this.value=this.value.toUpperCase()">
-      </div>
+      <button onclick="cerrarModalMetaManual()" style="width:32px;height:32px;border:none;border-radius:8px;background:var(--pa-muted);color:var(--pa-text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span class="material-symbols-rounded" style="font-size:18px;">close</span>
+      </button>
     </div>
-    <div class="mcf-actions">
-      <button class="btn-sm" onclick="cerrarModalMetaManual()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarMetaManual()">💾 Guardar</button>
+
+    <!-- Divider -->
+    <div style="height:1px;background:var(--pa-border);margin:16px 0 0;"></div>
+
+    <!-- Body -->
+    <div style="padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Row 1: Mes + Producto -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="pt-field">
+          <label class="pt-field-label">Mes <span style="color:#F87171;">*</span></label>
+          <input type="month" id="mmm-mes" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+        <div class="pt-field">
+          <label class="pt-field-label">Producto <span style="color:#F87171;">*</span></label>
+          <select id="mmm-producto" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;cursor:pointer;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+            <option value="MOVIL">📱 Móvil</option>
+            <option value="HOGAR">🏠 Hogar</option>
+            <option value="T&T">📺 T&T</option>
+            <option value="DEDICADAS">🎬 Dedicadas</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 2: Indicador + Tipo -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="pt-field">
+          <label class="pt-field-label">Indicador <span style="color:#F87171;">*</span></label>
+          <input id="mmm-indicador" placeholder="Ej: PORTABILIDAD" oninput="this.value=this.value.toUpperCase()" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+        <div class="pt-field">
+          <label class="pt-field-label">Tipo</label>
+          <select id="mmm-tipo" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;cursor:pointer;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+            <option value="PRIMARIA">Primaria</option>
+            <option value="SECUNDARIA">Secundaria</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 3: CVC/Sede + Meta -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="pt-field">
+          <label class="pt-field-label">CVC / Sede</label>
+          <input id="mmm-cvc" placeholder="Código CVC o nombre sede" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+        <div class="pt-field">
+          <label class="pt-field-label">Meta <span style="color:#F87171;">*</span></label>
+          <input type="number" id="mmm-meta" placeholder="0" min="0" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+      </div>
+
+      <!-- Row 4: Región + Subcanal -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="pt-field">
+          <label class="pt-field-label">Región</label>
+          <input id="mmm-region" placeholder="Ej: REGION CENTRO" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+        <div class="pt-field">
+          <label class="pt-field-label">Subcanal <span style="font-weight:400;color:var(--pa-text-dim);">(Hogar)</span></label>
+          <input id="mmm-subcanal" placeholder="Ej: TMK OUT BOUND" oninput="this.value=this.value.toUpperCase()" style="width:100%;background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='rgba(124,58,237,0.5)'" onblur="this.style.borderColor=''">
+        </div>
+      </div>
+
     </div>
+
+    <!-- Footer -->
+    <div style="padding:14px 24px;border-top:1px solid var(--pa-border);display:flex;align-items:center;justify-content:flex-end;gap:10px;">
+      <button onclick="cerrarModalMetaManual()"
+        style="padding:9px 20px;border-radius:20px;border:1px solid var(--pa-border);background:var(--pa-muted);color:var(--pa-text-dim);font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='var(--pa-muted)'">
+        Cancelar
+      </button>
+      <button onclick="guardarMetaManual()"
+        style="display:flex;align-items:center;gap:7px;padding:9px 20px;border-radius:20px;border:none;background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+        <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">save</span>
+        Guardar Meta
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -10889,15 +10987,21 @@ function renderResumenVisual(todosMes, sedeFil) {
       : '';
 
     return `<div class="mv-card ${p.cls}">
-      <div class="mv-card-header">
-        <div class="mv-card-title">${p.ico} ${p.key}</div>
-        <div style="text-align:right;">
-          <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:900;color:${p.col};">${fmt(totalProd)}</div>
-          <div style="font-size:10px;color:var(--texto-dim);">${Object.keys(porInd).length} indicador(es)</div>
+      <div class="mv-card-accent"></div>
+      <div class="mv-card-body">
+        <div class="mv-card-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="mv-card-icon">${p.ico}</div>
+            <div class="mv-card-title">${p.key}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mv-card-total" style="color:${p.col};">${fmt(totalProd)}</div>
+            <div class="mv-card-count">${Object.keys(porInd).length} indicador(es)</div>
+          </div>
         </div>
+        ${indsHTML}
+        ${sedesHTML}
       </div>
-      ${indsHTML}
-      ${sedesHTML}
     </div>`;
   }).filter(Boolean);
 
@@ -10924,12 +11028,12 @@ function renderPanelMetas() {
   if (!mes) {
     const meses = Object.keys(historialMetas);
     if (!meses.length) {
-      cont.innerHTML = `<div class="metas-empty"><div class="me-icon">📋</div><div class="me-title">Sin metas cargadas</div><div style="font-size:13px;">Carga un archivo Excel o añade metas manualmente.</div></div>`;
+      cont.innerHTML = `<div class="metas-empty"><div class="me-icon"><span class="material-symbols-rounded" style="font-size:40px;font-variation-settings:'FILL' 0,'wght' 300;">assignment</span></div><div class="me-title">Sin metas cargadas</div><div style="font-size:13px;color:var(--pa-text-dim);">Carga un archivo Excel o añade metas manualmente.</div></div>`;
       statsEl.innerHTML = '';
       if (resumEl) resumEl.innerHTML = '';
       return;
     }
-    cont.innerHTML = `<div class="metas-empty"><div class="me-icon">📅</div><div class="me-title">Selecciona un mes</div><div style="font-size:13px;">Tienes <b style="color:var(--rojo);">${meses.length}</b> mes(es) con metas cargadas: ${meses.sort().map(m=>`<b>${m}</b>`).join(', ')}</div></div>`;
+    cont.innerHTML = `<div class="metas-empty"><div class="me-icon"><span class="material-symbols-rounded" style="font-size:40px;font-variation-settings:'FILL' 0,'wght' 300;">calendar_month</span></div><div class="me-title">Selecciona un mes</div><div style="font-size:13px;color:var(--pa-text-dim);">Tienes <b style="color:#A78BFA;">${meses.length}</b> mes(es) con metas cargadas: ${meses.sort().map(m=>`<b>${m}</b>`).join(', ')}</div></div>`;
     statsEl.innerHTML = '';
     if (resumEl) resumEl.innerHTML = '';
     return;
@@ -10959,14 +11063,14 @@ function renderPanelMetas() {
   const porProd  = {};
   todosMes.forEach(f => { porProd[f.producto]=(porProd[f.producto]||0)+1; });
   statsEl.innerHTML = [
-    {lbl:'Total registros', val:total,          col:'var(--texto)'},
+    {lbl:'Total registros', val:total,          col:'var(--pa-text)'},
     {lbl:'Primarias',       val:primarias,       col:'#4ADE80'},
     {lbl:'Secundarias',     val:total-primarias, col:'#94A3B8'},
     ...Object.entries(porProd).map(([p,n])=>({lbl:p, val:n, col:prodColor(p)})),
   ].map(s=>`<div class="metas-stat"><div class="msv" style="color:${s.col};">${s.val}</div><div class="msl">${s.lbl}</div></div>`).join('');
 
   if (!filas.length) {
-    cont.innerHTML = `<div class="metas-empty"><div class="me-icon">🔍</div><div class="me-title">Sin resultados</div><div style="font-size:13px;">Ajusta los filtros o añade metas.</div></div>`;
+    cont.innerHTML = `<div class="metas-empty"><div class="me-icon"><span class="material-symbols-rounded" style="font-size:40px;font-variation-settings:'FILL' 0,'wght' 300;">search_off</span></div><div class="me-title">Sin resultados</div><div style="font-size:13px;color:var(--pa-text-dim);">Ajusta los filtros o añade metas.</div></div>`;
     return;
   }
 
@@ -10978,11 +11082,13 @@ function renderPanelMetas() {
     const rows = grupos[prod];
     const icoMap = {MOVIL:'📱',HOGAR:'🏠','T&T':'📺',DEDICADAS:'🎬'};
     const badgeClass = {MOVIL:'metas-badge-movil',HOGAR:'metas-badge-hogar','T&T':'metas-badge-tyt',DEDICADAS:'metas-badge-dedicadas'};
+    const titleNames = {MOVIL:'Móvil',HOGAR:'Hogar','T&T':'T&T',DEDICADAS:'Dedicadas'};
     const esMovil = prod === 'MOVIL';
     const esHogar = prod === 'HOGAR';
     return `<div class="metas-product-section">
       <div class="metas-product-title">
-        <span>${icoMap[prod]||'📦'} ${prod}</span>
+        <div class="metas-product-title-icon">${icoMap[prod]||'📦'}</div>
+        <div class="metas-product-title-text">${titleNames[prod]||prod}</div>
         <span class="metas-product-badge ${badgeClass[prod]||''}">${rows.length} registros</span>
       </div>
       <div class="metas-table-wrap">
@@ -11018,9 +11124,9 @@ function renderPanelMetas() {
                           : `<span style="font-family:'Inter Tight',sans-serif;font-weight:700;">${fmtN(f.meta)}</span>`}
                       </td>
                       <td style="text-align:center;">
-                        ${canEdit ? `<div style="display:flex;gap:4px;justify-content:center;">
-                          <button class="cvc-action-btn edit" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar">✏️</button>
-                          <button class="cvc-action-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar">🗑</button>
+                        ${canEdit ? `<div class="meta-row-actions">
+                          <button class="meta-act-btn" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 400;">edit</span></button>
+                          <button class="meta-act-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 400;">delete</span></button>
                         </div>` : ''}
                       </td>
                     </tr>`;
@@ -11066,9 +11172,9 @@ function renderPanelMetas() {
                             : `<span style="font-family:'Inter Tight',sans-serif;font-weight:700;">${fmtN(f.meta)}</span>`}
                         </td>
                         <td style="text-align:center;">
-                          ${canEditM ? `<div style="display:flex;gap:4px;justify-content:center;">
-                            <button class="cvc-action-btn edit" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar">✏️</button>
-                            <button class="cvc-action-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar">🗑</button>
+                          ${canEditM ? `<div class="meta-row-actions">
+                            <button class="meta-act-btn" onclick="abrirEditarMeta('${mes}',${globalIdx})" title="Editar"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 400;">edit</span></button>
+                            <button class="meta-act-btn del" onclick="eliminarMetaFila('${mes}',${globalIdx})" title="Eliminar"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 0,'wght' 400;">delete</span></button>
                           </div>` : ''}
                         </td>
                       </tr>`;
