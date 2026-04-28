@@ -8852,8 +8852,11 @@ function _piCalcularBreakdownPorProducto() {
   const opEfectMigra  = finEfectMigra;
 
   // ── 8. PRESUPUESTO — exacto por fracción porta/migra en cada CVC ──
+  // Financiero = bruto / 3 (igual que actualizarKpiTotal)
+  // Operativo  = bruto completo (igual que actualizarKpiOperativo)
   const presupuestoVal = parseFloat(kpiEl.dataset.presupuestoP1Val || '0');
   let finPresPorta = 0, finPresMigra = 0;
+  let opPresPorta  = 0, opPresMigra  = 0;
   const _madresDkPres = _sedeFiltroActual
     ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean)) : null;
   const _cvcDkPres = _madresDkPres ? cvcConfigs.filter(c => _madresDkPres.has(c.madre)) : cvcConfigs;
@@ -8873,18 +8876,18 @@ function _piCalcularBreakdownPorProducto() {
     if (!pcEfect) return;
     const fraccion = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
     const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado || ej);
-    const contrib = Math.round(unidadesPagoGlobal * fraccion) * cfmProm * (pcEfect / 100);
+    const contribBruto = Math.round(unidadesPagoGlobal * fraccion) * cfmProm * (pcEfect / 100);
     // Split por fracción porta/migra de las líneas de este CVC
     const lcP = lc.filter(r=>norm(r.producto).includes('port')).length;
     const lcM = lc.filter(r=>norm(r.producto).includes('migr')).length;
     const lcT = lcP + lcM;
     const pPresPor = lcT > 0 ? lcP / lcT : pPor;
     const pPresMig = lcT > 0 ? lcM / lcT : pMig;
-    finPresPorta += contrib * pPresPor;
-    finPresMigra += contrib * pPresMig;
+    finPresPorta += contribBruto / 3 * pPresPor; // financiero = /3
+    finPresMigra += contribBruto / 3 * pPresMig;
+    opPresPorta  += contribBruto * pPresPor;      // operativo = completo
+    opPresMigra  += contribBruto * pPresMig;
   });
-  const opPresPorta = finPresPorta;
-  const opPresMigra = finPresMigra;
 
   // ── 9. BONO — exacto por desglose inbPorta/inbMigra/digPorta/outbPorta/outbMigra ──
   const bonoVal = parseFloat(kpiEl.dataset.bonoValCalc || '0');
