@@ -160,20 +160,23 @@ select:focus,input:focus{border-color:var(--g-blue);background:var(--g-surface);
 .btn-calcular::after{content:none;}
 
 /* RESULTADO */
-.panel-resultado{display:flex;flex-direction:column;gap:20px;min-width:0;}
+.panel-resultado{display:flex;flex-direction:column;gap:16px;min-width:0;}
 .kpi-grid{display:grid;grid-template-columns:2fr repeat(auto-fit,minmax(160px,1fr));gap:12px;}
-.kpi-card{background:var(--g-surface);border:none;border-radius:var(--g-radius-md);padding:20px;position:relative;overflow:hidden;box-shadow:var(--g-shadow);}
-.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--g-blue);}
-.kpi-card.total::before{background:var(--g-blue);}
-.kpi-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:10px;}
-.sede-tab{display:inline-block;padding:6px 14px;margin-right:4px;border:1px solid var(--g-outline);border-bottom:none;border-radius:var(--g-radius-sm) var(--g-radius-sm) 0 0;background:transparent;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.8px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.sede-tab:hover{color:var(--g-on-surface);border-color:var(--g-blue);}
-.sede-tab.active{background:var(--g-blue);border-color:var(--g-blue);color:#fff;font-weight:700;}
-body.modo-claro .sede-tab{border-color:#D0D5DD;color:#64748B;}
-body.modo-claro .sede-tab.active{background:var(--g-blue);border-color:var(--g-blue);color:#fff;}
-body.modo-claro .sede-tab:hover{color:#1A1A2E;}
-.kpi-card.total .kpi-value{font-size:clamp(14px,2.2vw,30px);color:var(--g-blue);word-break:break-all;overflow-wrap:anywhere;}
-.kpi-sub{font-size:11px;color:var(--texto-dim);margin-top:6px;line-height:1.5;word-break:break-word;}
+.kpi-card{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:18px 20px 16px;position:relative;overflow:hidden;box-shadow:var(--pa-shadow);transition:transform 0.15s,box-shadow 0.15s;}
+.kpi-card:hover{transform:translateY(-1px);box-shadow:var(--pa-shadow-hover);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pa-border);}
+.kpi-card.total::before{background:linear-gradient(90deg,#EF4444,#F87171);}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:10px;}
+.kpi-value{font-family:'Inter Tight',sans-serif;font-size:clamp(20px,2vw,28px);font-weight:800;color:var(--pa-text);letter-spacing:-0.03em;line-height:1.05;}
+.kpi-card.total .kpi-value{font-size:clamp(18px,2.2vw,30px);color:#EF4444;word-break:break-all;overflow-wrap:anywhere;}
+.kpi-sub{font-size:11px;color:var(--pa-text-dim);margin-top:6px;line-height:1.5;word-break:break-word;}
+/* Sede tabs */
+.sede-tab{display:inline-block;padding:6px 14px;margin-right:4px;border:1px solid var(--pa-border);border-radius:20px;background:var(--pa-muted);color:var(--pa-text-dim);font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.sede-tab:hover{color:var(--pa-text);border-color:rgba(239,68,68,0.4);}
+.sede-tab.active{background:#EF4444;border-color:#EF4444;color:#fff;font-weight:700;}
+body.modo-claro .sede-tab{background:#F3F4F6;border-color:#E5E7EB;color:#6B7280;}
+body.modo-claro .sede-tab.active{background:#EF4444;border-color:#EF4444;color:#fff;}
+body.modo-claro .kpi-card{background:#fff;border-color:#E5E7EB;}
 
 /* CRONOGRAMA */
 .cronograma-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;}
@@ -201,15 +204,17 @@ body.modo-claro .sede-tab:hover{color:#1A1A2E;}
 .cvc-stat-lbl{font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 
 /* FILTROS */
-.filtros-bar{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px;background:var(--gris-medio);border-bottom:1px solid var(--gris-linea);align-items:center;}
-.filtro-label{font-size:11px;color:var(--texto-dim);white-space:nowrap;letter-spacing:1px;text-transform:uppercase;}
-.filtro-select{background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;padding:6px 28px 6px 10px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
-.filtro-select:focus{border-color:var(--rojo);}
+.filtros-bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;background:var(--pa-muted);border-bottom:1px solid var(--pa-border);align-items:center;}
+.filtro-label{font-size:10px;color:var(--pa-text-dim);white-space:nowrap;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;}
+.filtro-select{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;padding:6px 12px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:12px;outline:none;cursor:pointer;}
+.filtro-select:focus{border-color:rgba(239,68,68,0.5);}
 
 /* TABLA */
-.tabla-card{background:var(--g-surface);border:none;border-radius:var(--g-radius-md);overflow:hidden;box-shadow:var(--g-shadow);}
-.tabla-header{background:var(--g-surface-variant);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g-outline);}
-.tabla-title{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;color:var(--g-on-surface);}
+.tabla-card{background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;overflow:hidden;box-shadow:var(--pa-shadow);}
+.tabla-header{background:var(--pa-muted);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--pa-border);}
+.tabla-title{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--pa-text);}
+body.modo-claro .tabla-card{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .tabla-header{background:#F9FAFB;border-bottom-color:#E5E7EB;}
 .btn-sm{background:transparent;border:1px solid var(--g-outline);color:var(--g-on-surface);padding:8px 16px;font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;border-radius:var(--g-radius-sm);transition:all 0.2s;}
 .btn-sm:hover{background:rgba(26,115,232,0.08);border-color:var(--g-blue);color:var(--g-blue);}
 .tabla-wrap{overflow-x:auto;max-height:420px;overflow-y:auto;}
@@ -637,9 +642,9 @@ body.modo-claro .sb-divider{background:#DADCE0;}
 body.modo-claro #sidebar-toggle{background:var(--g-blue);}
 
 /* ── PROYECCIÓN DE UNIDADES ── */
-.proy-section{padding:20px;border-bottom:1px solid var(--g-outline);}
+.proy-section{padding:18px 20px;border-bottom:1px solid var(--pa-border);}
 .proy-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.proy-titulo{font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:var(--g-on-surface);}
+.proy-titulo{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--pa-text);}
 .proy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
 .proy-card{background:var(--g-surface);border:none;border-radius:var(--g-radius-md);padding:14px 16px;position:relative;overflow:hidden;box-shadow:var(--g-shadow);}
 .proy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
@@ -4545,53 +4550,59 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <div id="resultado-content" style="display:none;">
 
       <!-- TABS POR SEDE -->
-      <div id="sede-tabs-bar" style="display:none;padding:10px 20px 0;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);overflow-x:auto;white-space:nowrap;">
+      <div id="sede-tabs-bar" style="display:none;padding:10px 20px 0;background:var(--pa-surface-1);border-bottom:1px solid var(--pa-border);overflow-x:auto;white-space:nowrap;">
         <button id="sede-tab-general" class="sede-tab active" onclick="seleccionarSedeFiltro(null)">🌐 General</button>
         <span id="sede-tabs-list"></span>
       </div>
 
       <!-- KPIs -->
-      <div class="kpi-grid" style="padding:20px;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);">
-        <div class="kpi-card total">
-          <div class="kpi-label">Cobro Neto Proyectado — <span id="kpi-mes-label" style="color:var(--rojo-light);"></span></div>
-          <div class="kpi-value" id="kpi-total">$0</div>
-          <div class="kpi-sub" id="kpi-sub-total">—</div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;">
-            <span style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;">% Vtas.C1</span>
-            <input type="number" id="kpi-c1-pct" value="100" min="0" max="200" step="1"
-              style="width:58px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.4);border-radius:3px;color:var(--texto);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-align:center;padding:2px 4px;outline:none;"
-              oninput="actualizarKpiTotal()">
-            <span style="font-size:10px;color:var(--texto-dim);">%</span>
-            <span id="kpi-c1-valor" style="font-size:11px;color:var(--rojo-light);font-weight:700;"></span>
+      <div style="padding:18px 20px;background:var(--pa-surface-1);border-bottom:1px solid var(--pa-border);">
+        <div class="kpi-grid">
+          <!-- Total financiero -->
+          <div class="kpi-card total">
+            <div class="kpi-label">Cobro Neto Proyectado — <span id="kpi-mes-label" style="color:#F87171;"></span></div>
+            <div class="kpi-value" id="kpi-total">$0</div>
+            <div class="kpi-sub" id="kpi-sub-total">—</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;">
+              <span style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;font-weight:700;">% Vtas.C1</span>
+              <input type="number" id="kpi-c1-pct" value="100" min="0" max="200" step="1"
+                style="width:58px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-align:center;padding:3px 4px;outline:none;"
+                oninput="actualizarKpiTotal()">
+              <span style="font-size:10px;color:var(--pa-text-dim);">%</span>
+              <span id="kpi-c1-valor" style="font-size:11px;color:#F87171;font-weight:700;"></span>
+            </div>
           </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Líneas Procesadas</div>
-          <div class="kpi-value" id="kpi-lineas">0</div>
-          <div class="kpi-sub" id="kpi-sub-lineas">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">CFM Promedio</div>
-          <div class="kpi-value" id="kpi-cfm">$0</div>
-          <div class="kpi-sub">por línea</div>
-        </div>
-        <div class="kpi-card" id="kpi-cpm-card" style="display:none;border-color:rgba(56,189,248,0.4);">
-          <div class="kpi-label" style="color:#38BDF8;">Comisión Próximo Mes</div>
-          <div class="kpi-value" id="kpi-cpm-val" style="color:#38BDF8;">$0</div>
-          <div class="kpi-sub" id="kpi-cpm-sub">C1 · P1 mes siguiente</div>
+          <!-- Líneas -->
+          <div class="kpi-card">
+            <div class="kpi-label">Líneas Procesadas</div>
+            <div class="kpi-value" id="kpi-lineas">0</div>
+            <div class="kpi-sub" id="kpi-sub-lineas">—</div>
+          </div>
+          <!-- CFM -->
+          <div class="kpi-card">
+            <div class="kpi-label">CFM Promedio</div>
+            <div class="kpi-value" id="kpi-cfm">$0</div>
+            <div class="kpi-sub">por línea</div>
+          </div>
+          <!-- CPM (oculto por defecto) -->
+          <div class="kpi-card" id="kpi-cpm-card" style="display:none;border-color:rgba(56,189,248,0.3);">
+            <div class="kpi-label" style="color:#38BDF8;">Comisión Próximo Mes</div>
+            <div class="kpi-value" id="kpi-cpm-val" style="color:#38BDF8;">$0</div>
+            <div class="kpi-sub" id="kpi-cpm-sub">C1 · P1 mes siguiente</div>
+          </div>
         </div>
       </div>
 
-
       <!-- FACTURA OPERATIVA -->
-      <div id="kpi-operativo-wrap" style="display:none;padding:16px 20px;background:var(--gris-oscuro);border-bottom:1px solid var(--gris-linea);">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:8px;">
-          Factura Operativa — <span id="kpi-op-mes-label" style="color:#a78bfa;"></span>
+      <div id="kpi-operativo-wrap" style="display:none;padding:14px 20px;background:var(--pa-muted);border-bottom:1px solid var(--pa-border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="material-symbols-rounded" style="font-size:15px;color:#A78BFA;font-variation-settings:'FILL' 1,'wght' 500;">settings</span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--pa-text-dim);">Factura Operativa — <span id="kpi-op-mes-label" style="color:#A78BFA;"></span></span>
         </div>
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
-          <div id="kpi-op-total" style="font-size:32px;font-weight:800;color:#a78bfa;line-height:1;">$0</div>
+          <div id="kpi-op-total" style="font-family:'Inter Tight',sans-serif;font-size:28px;font-weight:800;color:#A78BFA;line-height:1;letter-spacing:-0.03em;">$0</div>
         </div>
-        <div id="kpi-op-sub" style="font-size:11px;color:var(--texto-dim);margin-top:6px;line-height:1.6;">—</div>
+        <div id="kpi-op-sub" style="font-size:11px;color:var(--pa-text-dim);margin-top:6px;line-height:1.6;">—</div>
       </div>
 
       <!-- PROYECCIÓN DE UNIDADES -->
@@ -4601,10 +4612,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;">HOY:</span>
             <input type="date" id="proy-fecha-hoy"
-              style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:4px 8px;outline:none;width:145px;"
+              style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:12px;padding:4px 8px;outline:none;width:145px;"
               onchange="calcularProyeccion()">
             <button onclick="toggleFestivos()"
-              style="background:var(--gris-medio);border:1px solid var(--gris-linea);border-radius:3px;padding:4px 10px;color:var(--texto-dim);font-size:11px;cursor:pointer;letter-spacing:0.5px;">
+              style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;padding:4px 10px;color:var(--pa-text-dim);font-size:11px;cursor:pointer;letter-spacing:0.5px;">
               📅 Festivos
             </button>
           </div>
@@ -4617,20 +4628,20 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
         <div id="panel-festivos" class="festivos-panel" style="display:none;margin-top:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <div style="font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);">
-                Festivos Colombia <span id="festivos-anio-label" style="color:var(--rojo-light);"></span>
+              <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);">
+                Festivos Colombia <span id="festivos-anio-label" style="color:#F87171;"></span>
               </div>
               <button id="btn-actualizar-festivos" onclick="actualizarFestivosAnio()"
                 title="Recalcular festivos para el año del período seleccionado"
-                style="background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:3px;color:var(--texto-dim);font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;letter-spacing:0.5px;">
+                style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text-dim);font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;letter-spacing:0.5px;">
                 ↺ Actualizar año
               </button>
             </div>
             <div style="display:flex;gap:6px;">
               <input type="date" id="festivo-nuevo-input"
-                style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:11px;padding:3px 7px;outline:none;">
+                style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:11px;padding:3px 7px;outline:none;">
               <button onclick="agregarFestivo()"
-                style="background:var(--rojo);border:none;border-radius:3px;color:white;font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;">
+                style="background:#EF4444;border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;">
                 ＋ Añadir
               </button>
             </div>
@@ -4640,13 +4651,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
       </div>
 
       <!-- METAS POR CVC MADRE -->
-      <div id="sec-cvc-metas" style="padding:20px;border-bottom:1px solid var(--gris-linea);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:12px;">Cumplimiento de Metas por CVC Madre</div>
+      <div id="sec-cvc-metas" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Cumplimiento de Metas por CVC Madre</div>
         <div class="cvc-metas-grid" id="cvc-metas-grid"></div>
       </div>
 
       <!-- INDICADORES - ACELERADOR CFM ALTO -->
-      <div id="sec-acelerador" style="padding:20px;border-bottom:1px solid var(--gris-linea);display:none;">
+      <div id="sec-acelerador" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
         <div class="indicador-header">
           <div class="indicador-titulo">● Indicadores de Cumplimiento</div>
         </div>
@@ -4654,32 +4665,32 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
       </div>
 
       <!-- INCENTIVO EFECTIVIDAD RESULTADOS -->
-      <div id="sec-efectividad" style="padding:20px;border-bottom:1px solid var(--gris-linea);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#60A5FA"/></svg> Incentivo Efectividad</div>
+      <div id="sec-efectividad" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#60A5FA"/></svg> Incentivo Efectividad</div>
         <div id="efectividad-contenido"></div>
       </div>
 
       <!-- ACELERADOR CUMPLIMIENTO RESULTADOS -->
-      <div id="sec-presupuesto" style="padding:20px;border-bottom:1px solid var(--gris-linea);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#C084FC"/></svg> Acelerador Cumplimiento de Presupuesto</div>
+      <div id="sec-presupuesto" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#C084FC"/></svg> Acelerador Cumplimiento de Presupuesto</div>
         <div id="presupuesto-contenido"></div>
       </div>
 
       <!-- BONO CUMPLIMIENTO RESULTADOS -->
-      <div id="sec-bono" style="padding:20px;border-bottom:1px solid var(--gris-linea);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#34D399"/></svg> Bono de Cumplimiento</div>
+      <div id="sec-bono" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#34D399"/></svg> Bono de Cumplimiento</div>
         <div id="bono-contenido"></div>
       </div>
 
       <!-- CRONOGRAMA -->
-      <div style="padding:20px;border-bottom:1px solid var(--gris-linea);">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:12px;">Cronograma de Cobros Netos por Mes</div>
+      <div style="padding:20px;border-bottom:1px solid var(--pa-border);">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Cronograma de Cobros Netos por Mes</div>
         <div class="cronograma-grid" id="cronograma-cobros"></div>
       </div>
 
       <!-- SEDES -->
-      <div style="padding:20px;border-bottom:1px solid var(--gris-linea);">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:12px;">Desglose por Sede (CVC) — Cobro Neto Proyectado</div>
+      <div style="padding:20px;border-bottom:1px solid var(--pa-border);">
+        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Desglose por Sede (CVC) — Cobro Neto Proyectado</div>
         <div class="resumen-grid" id="resumen-sede"></div>
       </div>
 
@@ -6462,10 +6473,10 @@ function refrescarCumplimientoConMigraPower() {
 
 // INCENTIVOS ADICIONALES (sección 10)
 // ══════════════════════════════════════
-let incentivos = []; // [{descripcion, valor, sede}]  sede=null → todas las sedes
+let incentivos = []; // [{descripcion, valor, sede, producto}]  sede=null → todas las sedes | producto: 'porta'|'migra'|'general'
 
 function agregarIncentivo() {
-  incentivos.push({ descripcion: '', valor: 0, sede: null });
+  incentivos.push({ descripcion: '', valor: 0, sede: null, producto: 'general' });
   renderIncentivosLista();
 }
 
@@ -6494,10 +6505,16 @@ function renderIncentivosLista() {
       <input type="text" placeholder="Descripción" value="${inc.descripcion}"
         style="flex:1;min-width:120px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:5px 8px;outline:none;"
         oninput="incentivos[${i}].descripcion=this.value;">
+      <select style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto-dim);font-size:11px;padding:5px 6px;outline:none;cursor:pointer;"
+        onchange="incentivos[${i}].producto=this.value;actualizarTotalIncentivos();">
+        <option value="general" ${(!inc.producto||inc.producto==='general')?'selected':''}>🌐 General</option>
+        <option value="porta" ${inc.producto==='porta'?'selected':''}>📲 Portabilidad</option>
+        <option value="migra" ${inc.producto==='migra'?'selected':''}>🔄 Migración</option>
+      </select>
       ${hayMultiSite ? `
       <select style="background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto-dim);font-size:11px;padding:5px 6px;outline:none;cursor:pointer;"
         onchange="incentivos[${i}].sede=this.value||null;actualizarTotalIncentivos();">
-        <option value="" ${!inc.sede?'selected':''}>🌐 General</option>
+        <option value="" ${!inc.sede?'selected':''}>🏢 Todas las sedes</option>
         ${sites.map(s=>`<option value="${s}" ${inc.sede===s?'selected':''}>${s}</option>`).join('')}
       </select>` : ''}
       <input type="number" placeholder="Valor" value="${inc.valor || ''}" min="0" step="1000"
@@ -6521,6 +6538,18 @@ function getTotalIncentivos() {
   return incentivos.reduce((s, inc) => {
     if (!_sedeFiltroActual) return s + (inc.valor || 0); // General: todos
     if (!inc.sede || inc.sede === _sedeFiltroActual) return s + (inc.valor || 0); // sin sede o de este SITE
+    return s;
+  }, 0);
+}
+
+// Suma incentivos por producto: prod='porta'|'migra'|'general'
+// Los "general" se excluyen aquí (se distribuyen proporcionalmente en el breakdown)
+function getTotalIncentivosProducto(prod) {
+  return incentivos.reduce((s, inc) => {
+    const p = inc.producto || 'general';
+    if (p !== prod) return s;
+    if (!_sedeFiltroActual) return s + (inc.valor || 0);
+    if (!inc.sede || inc.sede === _sedeFiltroActual) return s + (inc.valor || 0);
     return s;
   }, 0);
 }
@@ -7467,6 +7496,10 @@ function actualizarKpiOperativo() {
   if (presupuestoVal > 0) partes.push('Ind. Cumpl.: '  + fmt(presupuestoVal));
   if (incentivosVal  > 0) partes.push('Incentivos: '   + fmt(incentivosVal));
   if (subEl) subEl.textContent = partes.join(' · ') || '—';
+
+  // ── Actualizar desglose Porta / Migra en las cards de factura ──
+  const _bd = _piCalcularBreakdownPorProducto();
+  if (_bd) _piActualizarBreakdownProdCards(_bd.finPorta, _bd.finMigra, _bd.opPorta, _bd.opMigra);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -8526,40 +8559,178 @@ async function piCargarMeses() {
 // ════════════════════════════════════════════════════════════════
 // DESGLOSE PORTA / MIGRA EN CARDS FACTURA FINANCIERA Y OPERATIVA
 // ════════════════════════════════════════════════════════════════
+
+/**
+ * Calcula el desglose preciso Portabilidad / Migración para las cards de factura.
+ * Retorna { finPorta, finMigra, opPorta, opMigra } con valores absolutos.
+ * Se llama cuando hay datos en vivo (_resultadosCache.length > 0).
+ */
+function _piCalcularBreakdownPorProducto() {
+  const kpiEl = document.getElementById('kpi-total');
+  if (!kpiEl || !_resultadosCache.length) return null;
+
+  const _dk     = (_sedeFiltroActual && _ultimosDatosKpi) ? _ultimosDatosKpi : _resultadosCache;
+  const _global = _resultadosCacheGlobal.length ? _resultadosCacheGlobal : _resultadosCache;
+  if (!_dk.length) return null;
+
+  // ── Proporciones CFM (base para componentes sin split exacto) ──
+  const cfmPortaVal = _dk.filter(r => norm(r.producto).includes('port')).reduce((s, r) => s + (r.cfm || 0), 0);
+  const cfmMigraVal = _dk.filter(r => norm(r.producto).includes('migr')).reduce((s, r) => s + (r.cfm || 0), 0);
+  const cfmTotVal   = cfmPortaVal + cfmMigraVal;
+  const pPor = cfmTotVal > 0 ? cfmPortaVal / cfmTotVal : 0.5;
+  const pMig = cfmTotVal > 0 ? cfmMigraVal / cfmTotVal : 0.5;
+  if (cfmTotVal === 0) return null;
+
+  // ── 1. VENTAS FINANCIERAS — proporcional por CFM real ──
+  const totalVentasProyVal = parseFloat(kpiEl.dataset.proyVentas   || '0');
+  const totalNeto_base     = parseFloat(kpiEl.dataset.base         || '0');
+  const pctC1Ajuste = parseFloat((document.getElementById('kpi-c1-pct') || { value: '100' }).value || 100) / 100;
+  const totalVentasProyC1  = parseFloat(kpiEl.dataset.proyVentasC1 || '0');
+  const totalVentasProyC2  = parseFloat(kpiEl.dataset.proyVentasC2 || '0');
+  const ventasKpi = totalVentasProyVal > 0
+    ? (totalVentasProyC1 * pctC1Ajuste + totalVentasProyC2)
+    : totalNeto_base;
+  const finVentasPorta = ventasKpi * pPor;
+  const finVentasMigra = ventasKpi * pMig;
+
+  // ── 2. COMISIÓN OPERATIVA — exacta por valorBase del producto ──
+  const factorProy = (totalVentasProyVal > 0 && totalNeto_base > 0)
+    ? totalVentasProyVal / totalNeto_base : 1;
+  const opComPorta = _dk.filter(r => norm(r.producto).includes('port')).reduce((s, r) => s + (r.valorBase || 0), 0) * factorProy;
+  const opComMigra = _dk.filter(r => norm(r.producto).includes('migr')).reduce((s, r) => s + (r.valorBase || 0), 0) * factorProy;
+
+  // ── 3. COSECHAS — proporcional (acordado) ──
+  const cosechasVal    = parseFloat(kpiEl.dataset.cosechasValCalc   || '0');
+  const finCosPorta    = cosechasVal * pPor;
+  const finCosMigra    = cosechasVal * pMig;
+
+  // ── 4. SEMILLEROS — exacto por campo campana ──
+  let finSemPorta = 0, finSemMigra = 0;
+  if (semillerosHabilitado) {
+    semilleros.forEach(s => {
+      const t = s.total || 0;
+      const c = norm(s.campana || '');
+      if (c.includes('port'))      finSemPorta += t;
+      else if (c.includes('migr')) finSemMigra += t;
+      else { finSemPorta += t * pPor; finSemMigra += t * pMig; }
+    });
+  }
+
+  // ── 5. CPM — exacto por campo producto del segmento ──
+  let finCpmPorta = 0, finCpmMigra = 0;
+  if (cpmHabilitado) {
+    const datosCpm = getCpmDatosSegmentos();
+    CPM_SEGMENTOS.forEach(seg => {
+      const d  = datosCpm[seg.key] || { proyC1Sig: 0, cfmProm: 0, pctProm: 0 };
+      const ov = cpmOverrides[seg.key] || {};
+      const pctAjuste2 = parseFloat((document.getElementById('cpm-pct') || { value: '100' }).value || 100) / 100;
+      const cfmUsado = ov.cfm !== undefined ? ov.cfm : d.cfmProm;
+      const pctUsado = ov.pct !== undefined ? ov.pct : d.pctProm;
+      const proyUnid = ov.unidades !== undefined ? ov.unidades : Math.round((d.proyC1Sig || 0) * pctAjuste2);
+      const isPow = seg.tipo === 'power';
+      const pp1   = isPow
+        ? (+(document.getElementById('pow_p1')  || { value: '46' }).value || 46) / 100
+        : (+(document.getElementById('post_p1') || { value: '55' }).value || 55) / 100;
+      const caidas = getCaidas();
+      const caida1 = isPow ? (caidas.pow[0] || 0) : (caidas.post[0] || 0);
+      const segVal = cfmUsado * (pctUsado / 100) * pp1 * (1 - caida1) * proyUnid;
+      const pNorm  = norm(seg.producto || '');
+      if (pNorm.includes('port'))      finCpmPorta += segVal;
+      else if (pNorm.includes('migr')) finCpmMigra += segVal;
+      else { finCpmPorta += segVal * pPor; finCpmMigra += segVal * pMig; }
+    });
+  }
+
+  // ── 6-9. ACELERADOR, EFECTIVIDAD, PRESUPUESTO, BONO — proporcional ──
+  const aceleradorVal  = parseFloat(kpiEl.dataset.aceleradorValCalc || '0');
+  const efectividadVal = parseFloat(kpiEl.dataset.efectividadVal    || '0');
+  const presupuestoVal = parseFloat(kpiEl.dataset.presupuestoP1Val  || '0');
+  const bonoVal        = parseFloat(kpiEl.dataset.bonoValCalc       || '0');
+
+  const finAcelPorta = aceleradorVal  * pPor;  const finAcelMigra = aceleradorVal  * pMig;
+  const finEfectPorta= efectividadVal * pPor;  const finEfectMigra= efectividadVal * pMig;
+  const finPresPorta = presupuestoVal * pPor;  const finPresMigra = presupuestoVal * pMig;
+  const finBonoPorta = bonoVal        * pPor;  const finBonoMigra = bonoVal        * pMig;
+
+  // Operativa: presupuesto y efectividad sin /3 — usar mismas proporciones
+  // (Los totales operativos no están cacheados en dataset; usamos proporciones)
+  const opAcelPorta  = aceleradorVal  * pPor;  const opAcelMigra  = aceleradorVal  * pMig;
+  const opEfectPorta = efectividadVal * pPor;  const opEfectMigra = efectividadVal * pMig;
+  // Presupuesto operativo = presupuesto sin /3 → recalculamos la proporción con el mismo pPor
+  const presupuestoOpVal = (() => {
+    const _madresDk = _sedeFiltroActual
+      ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean)) : null;
+    const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
+    return _cvcDk.reduce((s, cvc) => {
+      const lcGlobal = getLineasCvcParaMeta(cvc, _global);
+      const ej = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined) ? cvc.ejecutadoOverride : lcGlobal.length;
+      const mt = cvc.meta || 0;
+      const proyD    = calcularProyeccionCvc(cvc.madre, _global);
+      const cpProy   = mt > 0 ? ((proyD.proyectado || ej) / mt * 100) : 0;
+      const cpEfect  = Math.max(mt > 0 ? (ej / mt * 100) : 0, cpProy);
+      const lc       = getLineasCvcParaMeta(cvc, _dk);
+      const cfmProm  = lc.length > 0 ? lc.reduce((a, r) => a + (r.cfm || 0), 0) / lc.length : 0;
+      const contCanal= {}; lc.forEach(r => { const k = norm(r.canal); contCanal[k] = (contCanal[k] || 0) + 1; });
+      const canalPred= Object.entries(contCanal).sort((a, b) => b[1] - a[1])[0]?.[0] || 'tmk outbound';
+      const tablaC   = tablaPresupuestoPorCanal(canalPred) || tablaPresupuestoPorCanal('tmk outbound');
+      const pcEfect  = tablaC ? getPctPresupuesto(cpEfect, tablaC) : 0;
+      if (!pcEfect) return s;
+      const fraccion = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
+      const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado || ej);
+      return s + Math.round(unidadesPagoGlobal * fraccion) * cfmProm * (pcEfect / 100);
+    }, 0);
+  })();
+  const opPresPorta  = presupuestoOpVal * pPor; const opPresMigra  = presupuestoOpVal * pMig;
+  const opBonoPorta  = bonoVal          * pPor; const opBonoMigra  = bonoVal          * pMig;
+
+  // ── 10. INCENTIVOS — exacto por producto, proporcional para "general" ──
+  const incPortaEx = getTotalIncentivosProducto('porta');
+  const incMigraEx = getTotalIncentivosProducto('migra');
+  const incGeneral = getTotalIncentivosProducto('general');
+  const finIncPorta = incPortaEx + incGeneral * pPor;
+  const finIncMigra = incMigraEx + incGeneral * pMig;
+
+  // ── TOTALES ──
+  const finPorta = finVentasPorta + finCosPorta + finSemPorta + finCpmPorta
+    + finAcelPorta + finEfectPorta + finPresPorta + finBonoPorta + finIncPorta;
+  const finMigra = finVentasMigra + finCosMigra + finSemMigra + finCpmMigra
+    + finAcelMigra + finEfectMigra + finPresMigra + finBonoMigra + finIncMigra;
+
+  const opPorta = opComPorta + opBonoPorta + opAcelPorta + opEfectPorta + opPresPorta + finIncPorta;
+  const opMigra = opComMigra + opBonoMigra + opAcelMigra + opEfectMigra + opPresMigra + finIncMigra;
+
+  return { finPorta, finMigra, opPorta, opMigra };
+}
+
 /**
  * Actualiza los elementos de desglose Portabilidad/Migración en las dos cards.
- * @param {number} finTotal   — total factura financiera
- * @param {number} opTotal    — total factura operativa
- * @param {number} portaPct   — fracción 0-1 atribuible a portabilidad  (basada en CFM)
- * @param {number} migraPct   — fracción 0-1 atribuible a migración
+ * Acepta valores absolutos directamente.
  */
-function _piActualizarBreakdownProdCards(finTotal, opTotal, portaPct, migraPct) {
-  const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
-  const fmtPct = p => Math.round(p * 100) + '%';
+function _piActualizarBreakdownProdCards(finPorta, finMigra, opPorta, opMigra) {
+  const fmt    = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const fmtPct = (a, b) => {
+    const tot = a + b;
+    return tot > 0 ? Math.round(a / tot * 100) + '%' : '—';
+  };
 
-  const finPorta = finTotal * portaPct;
-  const finMigra = finTotal * migraPct;
-  const opPorta  = opTotal  * portaPct;
-  const opMigra  = opTotal  * migraPct;
-
-  const show = portaPct > 0 || migraPct > 0;
+  const show = (finPorta + finMigra + opPorta + opMigra) > 0;
 
   // ── Financiera ──
   const finBd = document.getElementById('pi-fact-fin-breakdown');
   if (finBd) finBd.style.display = show ? 'grid' : 'none';
   const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  _set('pi-fact-fin-porta',     show ? fmt(finPorta)     : '—');
-  _set('pi-fact-fin-porta-pct', show ? fmtPct(portaPct)  : '');
-  _set('pi-fact-fin-migra',     show ? fmt(finMigra)     : '—');
-  _set('pi-fact-fin-migra-pct', show ? fmtPct(migraPct)  : '');
+  _set('pi-fact-fin-porta',     show ? fmt(finPorta)              : '—');
+  _set('pi-fact-fin-porta-pct', show ? fmtPct(finPorta, finMigra) : '');
+  _set('pi-fact-fin-migra',     show ? fmt(finMigra)              : '—');
+  _set('pi-fact-fin-migra-pct', show ? fmtPct(finMigra, finPorta) : '');
 
   // ── Operativa ──
   const opBd = document.getElementById('pi-fact-op-breakdown');
   if (opBd) opBd.style.display = show ? 'grid' : 'none';
-  _set('pi-fact-op-porta',     show ? fmt(opPorta)      : '—');
-  _set('pi-fact-op-porta-pct', show ? fmtPct(portaPct)  : '');
-  _set('pi-fact-op-migra',     show ? fmt(opMigra)      : '—');
-  _set('pi-fact-op-migra-pct', show ? fmtPct(migraPct)  : '');
+  _set('pi-fact-op-porta',     show ? fmt(opPorta)              : '—');
+  _set('pi-fact-op-porta-pct', show ? fmtPct(opPorta, opMigra)  : '');
+  _set('pi-fact-op-migra',     show ? fmt(opMigra)              : '—');
+  _set('pi-fact-op-migra-pct', show ? fmtPct(opMigra, opPorta)  : '');
 }
 
 // ── Cargar días disponibles para el mes seleccionado ──
@@ -8660,28 +8831,22 @@ function piMostrarProyeccionHistorica() {
 
   // ── Desglose Porta / Migra ──
   {
-    let portaPct = 0, migraPct = 0;
     if (_resultadosCache.length) {
-      // Si hay datos en vivo, usar CFM real por producto (más preciso)
-      const cfmPorta = _resultadosCache.filter(r => norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
-      const cfmMigra = _resultadosCache.filter(r => norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
-      const cfmTot   = cfmPorta + cfmMigra;
-      portaPct = cfmTot > 0 ? cfmPorta / cfmTot : 0;
-      migraPct = cfmTot > 0 ? cfmMigra / cfmTot : 0;
+      // Datos en vivo disponibles: usar cálculo preciso por componente
+      const bd = _piCalcularBreakdownPorProducto();
+      if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra);
     } else {
       // Sin datos en vivo: estimar por conteo de líneas del snapshot
       const prodsMap = (row.snapshot || {}).prodsMap || row.prods_map || {};
       const nPorta = (prodsMap['portabilidad'] || 0);
       const nMigra = (prodsMap['migracion']    || 0);
       const nTotal = nPorta + nMigra;
-      portaPct = nTotal > 0 ? nPorta / nTotal : 0;
-      migraPct = nTotal > 0 ? nMigra / nTotal : 0;
+      const pPor = nTotal > 0 ? nPorta / nTotal : 0;
+      const pMig = nTotal > 0 ? nMigra / nTotal : 0;
+      const finT = row.total_financiero || 0;
+      const opT  = row.total_operativo  || 0;
+      _piActualizarBreakdownProdCards(finT * pPor, finT * pMig, opT * pPor, opT * pMig);
     }
-    _piActualizarBreakdownProdCards(
-      row.total_financiero || 0,
-      row.total_operativo  || 0,
-      portaPct, migraPct
-    );
   }
 
   // ── Análisis completo desde snapshot ──
@@ -9457,17 +9622,10 @@ function actualizarPanelInicio() {
     </tr>`;
   }
 
-  // ── Si las cards de factura están visibles (snapshot histórico cargado), actualizar breakdown con datos en vivo ──
-  const _factWrap = document.getElementById('pi-facturas-wrap');
-  if (_factWrap && _factWrap.style.display !== 'none') {
-    const cfmPorta = _resultadosCache.filter(r => norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
-    const cfmMigra = _resultadosCache.filter(r => norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
-    const cfmTot   = cfmPorta + cfmMigra;
-    if (cfmTot > 0) {
-      const finTot = parseFloat((document.getElementById('pi-fact-fin-total')?.textContent||'0').replace(/[^\d]/g,'')) || 0;
-      const opTot  = parseFloat((document.getElementById('pi-fact-op-total' )?.textContent||'0').replace(/[^\d]/g,'')) || 0;
-      _piActualizarBreakdownProdCards(finTot, opTot, cfmPorta/cfmTot, cfmMigra/cfmTot);
-    }
+  // ── Actualizar breakdown preciso Porta/Migra en cards de factura ──
+  {
+    const bd = _piCalcularBreakdownPorProducto();
+    if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra);
   }
 }
 
