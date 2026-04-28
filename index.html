@@ -642,10 +642,12 @@ body.modo-claro .sb-divider{background:#DADCE0;}
 body.modo-claro #sidebar-toggle{background:var(--g-blue);}
 
 /* ── PROYECCIÓN DE UNIDADES ── */
-.proy-section{padding:18px 20px;border-bottom:1px solid var(--pa-border);}
-.proy-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.proy-section{padding:0;}
+.proy-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;flex-wrap:wrap;gap:10px;}
 .proy-titulo{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--pa-text);}
 .proy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+/* resultado-content: flex column cuando está visible */
+#resultado-content{display:flex;flex-direction:column;gap:16px;}
 .proy-card{background:var(--g-surface);border:none;border-radius:var(--g-radius-md);padding:14px 16px;position:relative;overflow:hidden;box-shadow:var(--g-shadow);}
 .proy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .proy-card.porta::before{background:var(--g-blue);}
@@ -4540,27 +4542,39 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
 <!-- PANEL RESULTADO -->
 <div class="panel-resultado">
-  <div class="tabla-card">
+
+  <!-- Estado vacío -->
+  <div class="tabla-card" id="empty-state-card">
     <div class="empty-state" id="empty-state">
       <div class="empty-icon">📋</div>
       <div class="empty-title">Sin proyección aún</div>
       <div class="empty-sub">Configura el mes, carga el archivo y presiona Calcular</div>
     </div>
+  </div>
 
-    <div id="resultado-content" style="display:none;">
+  <!-- Contenido: tarjetas separadas -->
+  <div id="resultado-content" style="display:none;">
 
-      <!-- TABS POR SEDE -->
-      <div id="sede-tabs-bar" style="display:none;padding:10px 20px 0;background:var(--pa-surface-1);border-bottom:1px solid var(--pa-border);overflow-x:auto;white-space:nowrap;">
-        <button id="sede-tab-general" class="sede-tab active" onclick="seleccionarSedeFiltro(null)">🌐 General</button>
-        <span id="sede-tabs-list"></span>
+    <!-- ── TABS POR SEDE ── -->
+    <div id="sede-tabs-bar" style="display:none;background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:10px 18px;overflow-x:auto;white-space:nowrap;box-shadow:var(--pa-shadow);">
+      <button id="sede-tab-general" class="sede-tab active" onclick="seleccionarSedeFiltro(null)">🌐 General</button>
+      <span id="sede-tabs-list"></span>
+    </div>
+
+    <!-- ── COBRO NETO PROYECTADO ── -->
+    <div class="tabla-card">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#EF4444;font-variation-settings:'FILL' 1,'wght' 500;">payments</span>
+          <span class="tabla-title">Cobro Neto Proyectado</span>
+          <span id="kpi-mes-label" style="font-size:11px;font-weight:700;color:#F87171;letter-spacing:0.5px;"></span>
+        </div>
       </div>
-
-      <!-- KPIs -->
-      <div style="padding:18px 20px;background:var(--pa-surface-1);border-bottom:1px solid var(--pa-border);">
+      <div style="padding:18px 20px 20px;">
         <div class="kpi-grid">
           <!-- Total financiero -->
           <div class="kpi-card total">
-            <div class="kpi-label">Cobro Neto Proyectado — <span id="kpi-mes-label" style="color:#F87171;"></span></div>
+            <div class="kpi-label">Cobro Neto</div>
             <div class="kpi-value" id="kpi-total">$0</div>
             <div class="kpi-sub" id="kpi-sub-total">—</div>
             <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;">
@@ -4585,116 +4599,162 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
             <div class="kpi-sub">por línea</div>
           </div>
           <!-- CPM (oculto por defecto) -->
-          <div class="kpi-card" id="kpi-cpm-card" style="display:none;border-color:rgba(56,189,248,0.3);">
+          <div class="kpi-card" id="kpi-cpm-card" style="display:none;">
             <div class="kpi-label" style="color:#38BDF8;">Comisión Próximo Mes</div>
             <div class="kpi-value" id="kpi-cpm-val" style="color:#38BDF8;">$0</div>
             <div class="kpi-sub" id="kpi-cpm-sub">C1 · P1 mes siguiente</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- FACTURA OPERATIVA -->
-      <div id="kpi-operativo-wrap" style="display:none;padding:14px 20px;background:var(--pa-muted);border-bottom:1px solid var(--pa-border);">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span class="material-symbols-rounded" style="font-size:15px;color:#A78BFA;font-variation-settings:'FILL' 1,'wght' 500;">settings</span>
-          <span style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--pa-text-dim);">Factura Operativa — <span id="kpi-op-mes-label" style="color:#A78BFA;"></span></span>
+    <!-- ── FACTURA OPERATIVA ── -->
+    <div class="tabla-card" id="kpi-operativo-wrap" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#A78BFA;font-variation-settings:'FILL' 1,'wght' 500;">receipt_long</span>
+          <span class="tabla-title">Factura Operativa</span>
+          <span id="kpi-op-mes-label" style="font-size:11px;font-weight:700;color:#A78BFA;letter-spacing:0.5px;"></span>
         </div>
-        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
-          <div id="kpi-op-total" style="font-family:'Inter Tight',sans-serif;font-size:28px;font-weight:800;color:#A78BFA;line-height:1;letter-spacing:-0.03em;">$0</div>
-        </div>
-        <div id="kpi-op-sub" style="font-size:11px;color:var(--pa-text-dim);margin-top:6px;line-height:1.6;">—</div>
       </div>
+      <div style="padding:16px 20px 18px;">
+        <div id="kpi-op-total" style="font-family:'Inter Tight',sans-serif;font-size:clamp(22px,2.4vw,32px);font-weight:800;color:#A78BFA;line-height:1.05;letter-spacing:-0.03em;margin-bottom:8px;">$0</div>
+        <div id="kpi-op-sub" style="font-size:11px;color:var(--pa-text-dim);line-height:1.8;">—</div>
+      </div>
+    </div>
 
-      <!-- PROYECCIÓN DE UNIDADES -->
-      <div id="sec-proyeccion" class="proy-section" style="display:none;">
-        <div class="proy-header">
-          <div class="proy-titulo">📈 Proyección de Unidades al Cierre</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;">HOY:</span>
-            <input type="date" id="proy-fecha-hoy"
-              style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:12px;padding:4px 8px;outline:none;width:145px;"
-              onchange="calcularProyeccion()">
-            <button onclick="toggleFestivos()"
-              style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;padding:4px 10px;color:var(--pa-text-dim);font-size:11px;cursor:pointer;letter-spacing:0.5px;">
-              📅 Festivos
-            </button>
-          </div>
+    <!-- ── PROYECCIÓN DE UNIDADES ── -->
+    <div class="tabla-card" id="sec-proyeccion" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#EF4444;font-variation-settings:'FILL' 1,'wght' 500;">trending_up</span>
+          <span class="tabla-title">Proyección de Unidades al Cierre</span>
         </div>
-
-        <!-- Cards por campaña -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:10px;color:var(--pa-text-dim);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Hoy:</span>
+          <input type="date" id="proy-fecha-hoy"
+            style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:12px;padding:4px 8px;outline:none;width:145px;"
+            onchange="calcularProyeccion()">
+          <button onclick="toggleFestivos()"
+            style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;padding:5px 12px;color:var(--pa-text-dim);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">calendar_month</span> Festivos
+          </button>
+        </div>
+      </div>
+      <div style="padding:18px 20px;">
         <div class="proy-grid" id="proy-grid"></div>
-
-        <!-- Panel festivos editable -->
-        <div id="panel-festivos" class="festivos-panel" style="display:none;margin-top:12px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+        <div id="panel-festivos" class="festivos-panel" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--pa-border);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);">
-                Festivos Colombia <span id="festivos-anio-label" style="color:#F87171;"></span>
-              </div>
+              <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);">Festivos Colombia <span id="festivos-anio-label" style="color:#F87171;"></span></span>
               <button id="btn-actualizar-festivos" onclick="actualizarFestivosAnio()"
-                title="Recalcular festivos para el año del período seleccionado"
-                style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text-dim);font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;letter-spacing:0.5px;">
-                ↺ Actualizar año
-              </button>
+                style="background:var(--pa-muted);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text-dim);font-size:11px;font-weight:700;padding:4px 12px;cursor:pointer;">↺ Actualizar año</button>
             </div>
             <div style="display:flex;gap:6px;">
               <input type="date" id="festivo-nuevo-input"
-                style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:11px;padding:3px 7px;outline:none;">
+                style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-size:11px;padding:4px 8px;outline:none;">
               <button onclick="agregarFestivo()"
-                style="background:#EF4444;border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;padding:3px 10px;cursor:pointer;">
-                ＋ Añadir
-              </button>
+                style="background:#EF4444;border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;padding:4px 12px;cursor:pointer;">+ Añadir</button>
             </div>
           </div>
           <div id="festivos-chips"></div>
         </div>
       </div>
+    </div>
 
-      <!-- METAS POR CVC MADRE -->
-      <div id="sec-cvc-metas" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Cumplimiento de Metas por CVC Madre</div>
+    <!-- ── METAS POR CVC MADRE ── -->
+    <div class="tabla-card" id="sec-cvc-metas" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#A78BFA;font-variation-settings:'FILL' 1,'wght' 500;">flag</span>
+          <span class="tabla-title">Cumplimiento de Metas por CVC Madre</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div class="cvc-metas-grid" id="cvc-metas-grid"></div>
       </div>
+    </div>
 
-      <!-- INDICADORES - ACELERADOR CFM ALTO -->
-      <div id="sec-acelerador" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
-        <div class="indicador-header">
-          <div class="indicador-titulo">● Indicadores de Cumplimiento</div>
+    <!-- ── INDICADORES DE CUMPLIMIENTO ── -->
+    <div class="tabla-card" id="sec-acelerador" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#F97316;font-variation-settings:'FILL' 1,'wght' 500;">speed</span>
+          <span class="tabla-title">Indicadores de Cumplimiento</span>
         </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div id="acelerador-grid" class="acelerador-grid"></div>
       </div>
+    </div>
 
-      <!-- INCENTIVO EFECTIVIDAD RESULTADOS -->
-      <div id="sec-efectividad" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#60A5FA"/></svg> Incentivo Efectividad</div>
+    <!-- ── INCENTIVO EFECTIVIDAD ── -->
+    <div class="tabla-card" id="sec-efectividad" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#60A5FA;font-variation-settings:'FILL' 1,'wght' 500;">verified</span>
+          <span class="tabla-title">Incentivo Efectividad</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div id="efectividad-contenido"></div>
       </div>
+    </div>
 
-      <!-- ACELERADOR CUMPLIMIENTO RESULTADOS -->
-      <div id="sec-presupuesto" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#C084FC"/></svg> Acelerador Cumplimiento de Presupuesto</div>
+    <!-- ── ACELERADOR / PRESUPUESTO ── -->
+    <div class="tabla-card" id="sec-presupuesto" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#C084FC;font-variation-settings:'FILL' 1,'wght' 500;">bar_chart</span>
+          <span class="tabla-title">Acelerador Cumplimiento de Presupuesto</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div id="presupuesto-contenido"></div>
       </div>
+    </div>
 
-      <!-- BONO CUMPLIMIENTO RESULTADOS -->
-      <div id="sec-bono" style="padding:20px;border-bottom:1px solid var(--pa-border);display:none;">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:14px;"><svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0;margin-right:2px;"><rect x="4" y="1" width="3" height="12" rx="1.5" fill="#34D399"/></svg> Bono de Cumplimiento</div>
+    <!-- ── BONO DE CUMPLIMIENTO ── -->
+    <div class="tabla-card" id="sec-bono" style="display:none;">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#34D399;font-variation-settings:'FILL' 1,'wght' 500;">stars</span>
+          <span class="tabla-title">Bono de Cumplimiento</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div id="bono-contenido"></div>
       </div>
+    </div>
 
-      <!-- CRONOGRAMA -->
-      <div style="padding:20px;border-bottom:1px solid var(--pa-border);">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Cronograma de Cobros Netos por Mes</div>
+    <!-- ── CRONOGRAMA ── -->
+    <div class="tabla-card">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#38BDF8;font-variation-settings:'FILL' 1,'wght' 500;">calendar_month</span>
+          <span class="tabla-title">Cronograma de Cobros Netos por Mes</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div class="cronograma-grid" id="cronograma-cobros"></div>
       </div>
+    </div>
 
-      <!-- SEDES -->
-      <div style="padding:20px;border-bottom:1px solid var(--pa-border);">
-        <div style="font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pa-text-dim);margin-bottom:12px;">Desglose por Sede (CVC) — Cobro Neto Proyectado</div>
+    <!-- ── SEDES ── -->
+    <div class="tabla-card">
+      <div class="tabla-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#2DD4BF;font-variation-settings:'FILL' 1,'wght' 500;">apartment</span>
+          <span class="tabla-title">Desglose por Sede — Cobro Neto Proyectado</span>
+        </div>
+      </div>
+      <div style="padding:16px 20px;">
         <div class="resumen-grid" id="resumen-sede"></div>
       </div>
+    </div>
 
-      <!-- FILTROS -->
+    <!-- ── DETALLE POR LÍNEA ── -->
+    <div class="tabla-card">
       <div class="filtros-bar">
         <span class="filtro-label">Filtrar:</span>
         <select class="filtro-select" id="f-ciclo"    onchange="aplicarFiltros()"><option value="">Ciclo 1/2</option></select>
@@ -4704,11 +4764,14 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
         <select class="filtro-select" id="f-canal"    onchange="aplicarFiltros()"><option value="">Canal</option></select>
         <select class="filtro-select" id="f-cvc"      onchange="aplicarFiltros()"><option value="">CVC</option></select>
       </div>
-
-      <!-- TABLA -->
       <div class="tabla-header">
-        <div class="tabla-title">Detalle por Línea <span id="conteo-filtro" style="font-size:12px;color:var(--texto-dim);font-weight:400;"></span></div>
-        <div style="display:flex;gap:8px;"><button class="btn-sm" onclick="exportarExcel()">↓ Exportar Excel</button></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#EF4444;font-variation-settings:'FILL' 1,'wght' 500;">table_rows</span>
+          <span class="tabla-title">Detalle por Línea <span id="conteo-filtro" style="font-size:11px;color:var(--pa-text-dim);font-weight:500;"></span></span>
+        </div>
+        <button class="btn-sm" onclick="exportarExcel()">
+          <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;">download</span> Exportar Excel
+        </button>
       </div>
       <div class="tabla-wrap">
         <table>
@@ -4728,10 +4791,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
           <tbody id="tabla-body"></tbody>
         </table>
       </div>
-
     </div>
-  </div>
-</div>
+
+  </div><!-- /resultado-content -->
+</div><!-- /panel-resultado -->
 </div>
 
 <script>
@@ -12515,8 +12578,9 @@ function renderResultados(mesVenta,mesProyeccion,anio){
 
   renderTabla(resultados);
   document.getElementById('conteo-filtro').textContent=`(${resultados.length})`;
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('resultado-content').style.display='block';
+  const _esCard = document.getElementById('empty-state-card');
+  if (_esCard) _esCard.style.display = 'none';
+  document.getElementById('resultado-content').style.display='';
   const btnG = document.getElementById('btn-guardar-proy');
   if (btnG) btnG.style.display = 'flex';
 }
