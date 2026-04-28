@@ -4358,6 +4358,28 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
         <span style="font-size:11px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Total Cosechas</span>
         <span id="cosechas-total-val" style="font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:var(--rojo-light);">$0</span>
       </div>
+
+      <!-- Split porta/migra de cosechas -->
+      <div id="cosechas-split-row" style="display:none;flex-direction:column;gap:8px;padding:10px 12px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:700;">Distribución Porta / Migra</span>
+          <button id="cosechas-split-auto-btn" onclick="setCosechasSplitAuto()"
+            style="background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.35);color:#A78BFA;font-size:10px;font-weight:700;letter-spacing:0.8px;padding:3px 8px;border-radius:3px;cursor:pointer;font-family:'Inter Tight',sans-serif;text-transform:uppercase;">
+            Auto</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--texto-dim);flex-shrink:0;">📲 Porta</span>
+          <input id="cosechas-pct-porta" type="range" min="0" max="100" value="50" step="1"
+            oninput="setCosechasSplitPorta(+this.value)"
+            style="flex:1;min-width:80px;accent-color:#A78BFA;cursor:pointer;">
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+            <span id="cosechas-pct-porta-val" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:#A78BFA;min-width:32px;text-align:right;">50%</span>
+            <span style="font-size:11px;color:var(--texto-dim);">·</span>
+            <span id="cosechas-pct-migra-val" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:#60A5FA;min-width:32px;">50%</span>
+            <span style="font-size:11px;color:var(--texto-dim);">🔄 Migra</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -6639,6 +6661,7 @@ function getTotalIncentivosProducto(prod) {
 // COSECHAS
 // ══════════════════════════════════════
 let cosechas = []; // [{descripcion, valor}]
+let cosechasSplitPortaPct = null; // null = auto (proporción CFM), 0-100 = manual
 
 // Variable para guardar el desglose mientras el modal está abierto
 let _proySedes = [];
@@ -6828,6 +6851,7 @@ function actualizarTotalCosechas() {
   const valEl = document.getElementById('cosechas-total-val');
   if (rowEl) rowEl.style.display = cosechas.length ? 'flex' : 'none';
   if (valEl) valEl.textContent = '$' + Math.round(total).toLocaleString('es-CO');
+  _actualizarUiSplitCosechas();
   // Actualizar KPI si ya hay resultados
   if (_resultadosCache.length) actualizarKpiConCosechas(total);
 }
@@ -6890,6 +6914,55 @@ function actualizarKpiConCosechas(totalCosechas) {
   // Se llama para reflejar cosechas en el KPI de cobro neto
   // KPI total manejado por actualizarKpiTotal() — no sobrescribir aquí
   actualizarKpiTotal();
+}
+
+// ── Actualizar el widget de split de cosechas ──
+function _actualizarUiSplitCosechas() {
+  const total = cosechas.reduce((s, c) => s + (c.valor || 0), 0);
+  const splitRow = document.getElementById('cosechas-split-row');
+  if (!splitRow) return;
+  const hay = total > 0;
+  splitRow.style.display = hay ? 'flex' : 'none';
+  if (!hay) return;
+
+  // Si está en modo auto, calcular la proporción desde los datos actuales
+  let pPct;
+  if (cosechasSplitPortaPct === null) {
+    // Usar proporción CFM de _resultadosCache
+    const dk = _resultadosCache.length ? _resultadosCache : [];
+    const cfmP = dk.filter(r=>norm(r.producto||'').includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
+    const cfmM = dk.filter(r=>norm(r.producto||'').includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
+    const cfmT = cfmP + cfmM;
+    pPct = cfmT > 0 ? Math.round(cfmP / cfmT * 100) : 50;
+  } else {
+    pPct = Math.round(cosechasSplitPortaPct);
+  }
+
+  const slider = document.getElementById('cosechas-pct-porta');
+  const portaVal = document.getElementById('cosechas-pct-porta-val');
+  const migraVal = document.getElementById('cosechas-pct-migra-val');
+  const autoBtn  = document.getElementById('cosechas-split-auto-btn');
+  if (slider)   slider.value = pPct;
+  if (portaVal) portaVal.textContent = pPct + '%';
+  if (migraVal) migraVal.textContent = (100 - pPct) + '%';
+  if (autoBtn) {
+    const esAuto = cosechasSplitPortaPct === null;
+    autoBtn.style.background  = esAuto ? 'rgba(167,139,250,0.25)' : 'rgba(167,139,250,0.1)';
+    autoBtn.style.borderColor = esAuto ? '#A78BFA' : 'rgba(167,139,250,0.35)';
+    autoBtn.textContent = esAuto ? '✓ Auto' : 'Auto';
+  }
+}
+
+function setCosechasSplitPorta(pct) {
+  cosechasSplitPortaPct = Math.min(100, Math.max(0, pct));
+  _actualizarUiSplitCosechas();
+  if (_resultadosCache.length) actualizarKpiTotal();
+}
+
+function setCosechasSplitAuto() {
+  cosechasSplitPortaPct = null;
+  _actualizarUiSplitCosechas();
+  if (_resultadosCache.length) actualizarKpiTotal();
 }
 
 // ══════════════════════════════════════
@@ -8703,10 +8776,16 @@ function _piCalcularBreakdownPorProducto() {
   const opComPorta = _dk.filter(r => norm(r.producto).includes('port')).reduce((s, r) => s + (r.valorBase || 0), 0) * factorProy;
   const opComMigra = _dk.filter(r => norm(r.producto).includes('migr')).reduce((s, r) => s + (r.valorBase || 0), 0) * factorProy;
 
-  // ── 3. COSECHAS — proporcional (acordado) ──
-  const cosechasVal    = parseFloat(kpiEl.dataset.cosechasValCalc   || '0');
-  const finCosPorta    = cosechasVal * pPor;
-  const finCosMigra    = cosechasVal * pMig;
+  // ── 3. COSECHAS — manual si el usuario fijó un %, si no proporcional por CFM ──
+  const cosechasVal = parseFloat(kpiEl.dataset.cosechasValCalc || '0');
+  let finCosPorta, finCosMigra;
+  if (cosechasSplitPortaPct !== null) {
+    finCosPorta = cosechasVal * (cosechasSplitPortaPct / 100);
+    finCosMigra = cosechasVal * (1 - cosechasSplitPortaPct / 100);
+  } else {
+    finCosPorta = cosechasVal * pPor;
+    finCosMigra = cosechasVal * pMig;
+  }
 
   // ── 4. SEMILLEROS — exacto por campo campana ──
   let finSemPorta = 0, finSemMigra = 0;
@@ -12614,6 +12693,7 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   renderBonoCumplimiento(resultados);
   // KPI total DESPUÉS de renderBonoCumplimiento para usar _bonoCalculado correcto
   actualizarKpiTotal();
+  _actualizarUiSplitCosechas(); // refrescar proporción auto con datos reales
 
   // Si el panel de inicio está visible, actualizarlo con los nuevos datos de Móvil
   if (_panelInicioVisible) {
