@@ -8691,7 +8691,6 @@ function piMostrarProyeccionHistorica() {
 
   // Desglose grid
   const stats = [
-    {label:'Total Proyectado', val:fmt(row.total_financiero), sub:'Cobro neto — '+piMesLabel(mes), color:'var(--rojo)', big:true},
     {label:'Líneas Totales',   val:fmtn(row.total_lineas),   sub:'C%1: '+row.pct_c1+'%',           color:'var(--texto)'},
     {label:'CFM Promedio',     val:fmt(row.cfm_promedio),    sub:'por línea',                       color:'var(--texto)'},
   ];
@@ -9100,8 +9099,6 @@ function _hogRenderAnalisis(s) {
 
   // ── DESGLOSE GRID ──
   const stats = [
-    { label: 'Cobro Proyectado (Fin.)', val: fmt(s.totalCobroProy),   sub: s.ts ? 'Guardado: ' + s.ts : 'Proyección financiera', color: '#A78BFA', big: true },
-    { label: 'Cobro Operativo',         val: fmt(s.totalCobroProyOp), sub: 'Adicionales al 100%',    color: '#C084FC' },
     { label: 'Comisión Ppales',         val: fmt(s.totalProyPpales),  sub: 'Ventas principales',     color: 'var(--texto)' },
     { label: 'Adicionales (Fin.)',       val: fmt(s.adicP1),           sub: '50% mes vencido',        color: '#F59E0B' },
   ];
@@ -9281,7 +9278,6 @@ function actualizarPanelInicio() {
 
   // ── DESGLOSE GRID ──
   const stats = [
-    { label:'Total Proyectado', val: fmt(total), sub:'Cobro neto mes', color:'var(--rojo)', big:true },
     { label:'Vtas. Proyectadas', val: fmt(ventasVal),
       sub: totalVentasProyVal>0 ? `C1: ${fmt(c1Ajustado)} · C2: ${fmt(totalVentasProyC2)}` : 'Ventas reales', color:'var(--texto)' },
     { label:'Líneas totales', val: fmtn(_resultadosCache.length),
