@@ -5457,6 +5457,10 @@ let efectividadEditIdx = null;
 let _resultadosCache = [];   // cache de últimos resultados procesados
 let _resultadosCacheGlobal = []; // SIEMPRE contiene todos los datos sin filtrar (para cumplimiento CVC)
 let _bonoCalculado = {}; // { null: valorGeneral, 'MEDELLIN': valor, 'BOGOTA 2': valor }
+let _bonoCalculadoPorta = {}; // split exacto porta para breakdown
+let _bonoCalculadoMigra = {}; // split exacto migra para breakdown
+let _efectividadPorta   = {}; // split exacto porta para breakdown
+let _efectividadMigra   = {}; // split exacto migra para breakdown
 let _sedeFiltroActual = null; // null = General, string = cvcMadre filtrado
 
 // ── Obtener datos filtrados por sede ──
@@ -6288,11 +6292,13 @@ function renderBonoCumplimiento(resultadosData) {
 
     // ── Bono sobre líneas REALES (si ya cumple) ──
     let totalBonoReal = 0;
+    let bonoPortaReal = 0, bonoMigraReal = 0; // split exacto porta/migra
     const desgloseReal = { inbPorta:0, inbMigra:0, digPorta:0, outbound:0 };
     if (cumpleReq) {
       // Calcular bono con líneas globales, luego aplicar fracción del SITE
       const bonoOutbPortaReal = getBonoOutbound(ejecutado, 'portabilidad');
       const bonoOutbMigraReal = getBonoOutbound(ejecutado, 'migracion');
+      let _outbPortaRaw = 0, _outbMigraRaw = 0;
       lineasGlobal.forEach(r => {
         const cn = norm(r.canal); const pr = norm(r.producto);
         if (cn.includes('inbound')) {
@@ -6301,18 +6307,22 @@ function renderBonoCumplimiento(resultadosData) {
         } else if (cn.includes('digital')||cn.includes('web')||cn.includes('wcb')||cn.includes('autog')) {
           if (pr.includes('port')) desgloseReal.digPorta += bonoCumplimiento.digPorta;
         } else if (cn.includes('outbound')) {
-          desgloseReal.outbound += pr.includes('migr') ? bonoOutbMigraReal : bonoOutbPortaReal;
+          if (pr.includes('migr')) { desgloseReal.outbound += bonoOutbMigraReal; _outbMigraRaw += bonoOutbMigraReal; }
+          else { desgloseReal.outbound += bonoOutbPortaReal; _outbPortaRaw += bonoOutbPortaReal; }
         }
       });
       const bonoRealGlobal = desgloseReal.inbPorta + desgloseReal.inbMigra + desgloseReal.digPorta + desgloseReal.outbound;
       // Aplicar fracción del SITE
       totalBonoReal = bonoRealGlobal * fracSite;
+      bonoPortaReal = (desgloseReal.inbPorta + desgloseReal.digPorta + _outbPortaRaw) * fracSite;
+      bonoMigraReal = (desgloseReal.inbMigra + _outbMigraRaw) * fracSite;
       desgloseReal.inbPorta *= fracSite; desgloseReal.inbMigra *= fracSite;
       desgloseReal.digPorta *= fracSite; desgloseReal.outbound *= fracSite;
     }
 
     // ── Bono PROYECTADO ──
     let totalBonoProy = 0;
+    let bonoPortaProy = 0, bonoMigraProy = 0; // split exacto porta/migra proyectado
     const desgloseProy = { inbPorta:0, inbMigra:0, digPorta:0, outbound:0 };
     if (lineasGlobal.length > 0 && cumpleReqProy) {
       const totalLin = lineasGlobal.length;
@@ -6331,9 +6341,12 @@ function renderBonoCumplimiento(resultadosData) {
         desgloseProy.inbPorta = Math.round(nInbPorta  * factor) * bonoCumplimiento.inbPorta;
         desgloseProy.inbMigra = Math.round(nInbMigra  * factor) * bonoCumplimiento.inbMigra;
         desgloseProy.digPorta = Math.round(nDigPorta  * factor) * bonoCumplimiento.digPorta;
-        desgloseProy.outbound = Math.round(nOutbPorta * factor) * bonoOutbPortaProy
-                              + Math.round(nOutbMigra * factor) * bonoOutbMigraProy;
+        const _outbPP = Math.round(nOutbPorta * factor) * bonoOutbPortaProy;
+        const _outbMP = Math.round(nOutbMigra * factor) * bonoOutbMigraProy;
+        desgloseProy.outbound = _outbPP + _outbMP;
         totalBonoProy = (desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound) * fracSite;
+        bonoPortaProy = (desgloseProy.inbPorta + desgloseProy.digPorta + _outbPP) * fracSite;
+        bonoMigraProy = (desgloseProy.inbMigra + _outbMP) * fracSite;
       } else {
         const bonoOutbPortaReal = getBonoOutbound(ejecutado, 'portabilidad');
         const bonoOutbPortaProy = getBonoOutbound(proyectado, 'portabilidad');
@@ -6344,18 +6357,22 @@ function renderBonoCumplimiento(resultadosData) {
         desgloseProy.inbPorta = Math.round(pendientes * (nInbPorta/totalLin)) * bonoCumplimiento.inbPorta;
         desgloseProy.inbMigra = Math.round(pendientes * (nInbMigra/totalLin)) * bonoCumplimiento.inbMigra;
         desgloseProy.digPorta = Math.round(pendientes * (nDigPorta/totalLin)) * bonoCumplimiento.digPorta;
-        desgloseProy.outbound = Math.round(pendientes * (nOutbPorta/totalLin)) * bonoOutbPortaProy
-                              + Math.round(pendientes * (nOutbMigra/totalLin)) * bonoOutbMigraProy
-                              + ajusteOutbPorta + ajusteOutbMigra;
+        const _outbPP = Math.round(pendientes * (nOutbPorta/totalLin)) * bonoOutbPortaProy + ajusteOutbPorta;
+        const _outbMP = Math.round(pendientes * (nOutbMigra/totalLin)) * bonoOutbMigraProy + ajusteOutbMigra;
+        desgloseProy.outbound = _outbPP + _outbMP;
         totalBonoProy = (desgloseProy.inbPorta + desgloseProy.inbMigra + desgloseProy.digPorta + desgloseProy.outbound) * fracSite;
+        bonoPortaProy = (desgloseProy.inbPorta + desgloseProy.digPorta + _outbPP) * fracSite;
+        bonoMigraProy = (desgloseProy.inbMigra + _outbMP) * fracSite;
       }
     }
 
     const totalBono = totalBonoReal + totalBonoProy;
+    const bonoPorta = bonoPortaReal + bonoPortaProy;
+    const bonoMigra = bonoMigraReal + bonoMigraProy;
 
     return { madre: cvc.madre, sede, ejecutado, proyectado, proyectadoBase, meta,
              cumplPct, cumplPctProy, cumpleReq, cumpleReqProy, soloProy,
-             totalBono, totalBonoReal, totalBonoProy,
+             totalBono, totalBonoReal, totalBonoProy, bonoPorta, bonoMigra,
              desgloseReal, desgloseProy,
              lineas: lineasGlobal.length,
              transDias: proyData.transDias, totalDias: proyData.totalDias, campKey: proyData.campKey, g };
@@ -6368,7 +6385,9 @@ function renderBonoCumplimiento(resultadosData) {
   const cvcsCumplenProy = rows.filter(r => r.cumpleReqProy && !r.cumpleReq).length;
   const hayProyeccion   = totalGlobalProy > 0;
   // Guardar para que actualizarKpiTotal use este valor exacto
-  _bonoCalculado[_sedeFiltroActual || 'general'] = totalGlobal;
+  _bonoCalculado[_sedeFiltroActual || 'general']      = totalGlobal;
+  _bonoCalculadoPorta[_sedeFiltroActual || 'general'] = rows.reduce((s, r) => s + (r.bonoPorta || 0), 0);
+  _bonoCalculadoMigra[_sedeFiltroActual || 'general'] = rows.reduce((s, r) => s + (r.bonoMigra || 0), 0);
   // ── Render HTML ──
   let html_out = '<div style="background:var(--negro);border:1px solid rgba(52,211,153,0.4);border-radius:3px;padding:14px;margin-bottom:14px;">'
     + '<div style="font-size:10px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Total Bono de Cumplimiento</div>'
@@ -7494,6 +7513,7 @@ function actualizarKpiOperativo() {
     const periodoEl = document.getElementById('periodo');
     return periodoEl?.value || '';
   })();
+  let _efectPortaAcum = 0, _efectMigraAcum = 0;
   const efectividadVal = _efectivDk.length ? _efectivDk.reduce((s, c) => {
     const metaHist   = getMetaEfectividadCvc(c.madre, mesActivoKpi);
     const indEfect   = metaHist ? metaHist.indicador : 'EFECTIVIDAD PORTA (SOLO OUT)';
@@ -7517,8 +7537,12 @@ function actualizarKpiOperativo() {
     const unidadesElegProy = Math.round((lineasEleg.length / transDias) * totalDias);
     const cfmProm   = lineasEleg.length > 0 ? lineasEleg.reduce((a, r) => a + (r.cfm || 0), 0) / lineasEleg.length : 0;
     const unidadesPago = unidadesElegProy;
-    return s + unidadesPago * cfmProm * (efectividadPct / 100);
+    const val = unidadesPago * cfmProm * (efectividadPct / 100);
+    if (prodFiltro === 'migracion') _efectMigraAcum += val; else _efectPortaAcum += val;
+    return s + val;
   }, 0) : 0;
+  _efectividadPorta[_sedeFiltroActual || 'general'] = _efectPortaAcum;
+  _efectividadMigra[_sedeFiltroActual || 'general'] = _efectMigraAcum;
 
   // ── 5. PRESUPUESTO (INDICADORES DE CUMPLIMIENTO) COMPLETO — sin /3 ──
   const presupuestoVal = _cvcDk.length ? _cvcDk.reduce((s, cvc) => {
@@ -8644,17 +8668,34 @@ function _piCalcularBreakdownPorProducto() {
   const pMig = cfmTotVal > 0 ? cfmMigraVal / cfmTotVal : 0.5;
   if (cfmTotVal === 0) return null;
 
-  // ── 1. VENTAS FINANCIERAS — proporcional por CFM real ──
+  // ── 1. VENTAS FINANCIERAS — exacto por CFM/ciclo/producto ──
   const totalVentasProyVal = parseFloat(kpiEl.dataset.proyVentas   || '0');
   const totalNeto_base     = parseFloat(kpiEl.dataset.base         || '0');
   const pctC1Ajuste = parseFloat((document.getElementById('kpi-c1-pct') || { value: '100' }).value || 100) / 100;
   const totalVentasProyC1  = parseFloat(kpiEl.dataset.proyVentasC1 || '0');
   const totalVentasProyC2  = parseFloat(kpiEl.dataset.proyVentasC2 || '0');
-  const ventasKpi = totalVentasProyVal > 0
-    ? (totalVentasProyC1 * pctC1Ajuste + totalVentasProyC2)
-    : totalNeto_base;
-  const finVentasPorta = ventasKpi * pPor;
-  const finVentasMigra = ventasKpi * pMig;
+  // Fracción porta/migra por ciclo basada en CFM real de cada ciclo
+  const lC1 = _dk.filter(r => r.ciclo === 1);
+  const lC2 = _dk.filter(r => r.ciclo === 2);
+  const cfmC1P = lC1.filter(r=>norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
+  const cfmC1M = lC1.filter(r=>norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
+  const cfmC2P = lC2.filter(r=>norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
+  const cfmC2M = lC2.filter(r=>norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
+  const cfmC1T = cfmC1P + cfmC1M; const cfmC2T = cfmC2P + cfmC2M;
+  const pC1Por = cfmC1T > 0 ? cfmC1P / cfmC1T : pPor;
+  const pC1Mig = cfmC1T > 0 ? cfmC1M / cfmC1T : pMig;
+  const pC2Por = cfmC2T > 0 ? cfmC2P / cfmC2T : pPor;
+  const pC2Mig = cfmC2T > 0 ? cfmC2M / cfmC2T : pMig;
+  let finVentasPorta, finVentasMigra;
+  if (totalVentasProyVal > 0) {
+    const v1 = totalVentasProyC1 * pctC1Ajuste;
+    const v2 = totalVentasProyC2;
+    finVentasPorta = v1 * pC1Por + v2 * pC2Por;
+    finVentasMigra = v1 * pC1Mig + v2 * pC2Mig;
+  } else {
+    finVentasPorta = totalNeto_base * pPor;
+    finVentasMigra = totalNeto_base * pMig;
+  }
 
   // ── 2. COMISIÓN OPERATIVA — exacta por valorBase del producto ──
   const factorProy = (totalVentasProyVal > 0 && totalNeto_base > 0)
@@ -8704,47 +8745,77 @@ function _piCalcularBreakdownPorProducto() {
     });
   }
 
-  // ── 6-9. ACELERADOR, EFECTIVIDAD, PRESUPUESTO, BONO — proporcional ──
-  const aceleradorVal  = parseFloat(kpiEl.dataset.aceleradorValCalc || '0');
-  const efectividadVal = parseFloat(kpiEl.dataset.efectividadVal    || '0');
-  const presupuestoVal = parseFloat(kpiEl.dataset.presupuestoP1Val  || '0');
-  const bonoVal        = parseFloat(kpiEl.dataset.bonoValCalc       || '0');
+  // ── 6. ACELERADOR — exacto por líneas elegibles por producto ──
+  const aceleradorVal = parseFloat(kpiEl.dataset.aceleradorValCalc || '0');
+  const _elegAcel = _dk.filter(r => {
+    const cn = norm(r.canal); const tp = norm(r.tipo); const pr = norm(r.producto);
+    return cn.includes('outbound') && !tp.includes('power')
+        && (pr.includes('port') || pr.includes('migr'))
+        && r.cfm >= aceleradorCfmMin;
+  });
+  const nElegP = _elegAcel.filter(r=>norm(r.producto).includes('port')).length;
+  const nElegM = _elegAcel.filter(r=>norm(r.producto).includes('migr')).length;
+  const nElegT = nElegP + nElegM;
+  const pAcelPor = nElegT > 0 ? nElegP / nElegT : pPor;
+  const pAcelMig = nElegT > 0 ? nElegM / nElegT : pMig;
+  const finAcelPorta = aceleradorVal * pAcelPor;
+  const finAcelMigra = aceleradorVal * pAcelMig;
+  const opAcelPorta  = finAcelPorta;
+  const opAcelMigra  = finAcelMigra;
 
-  const finAcelPorta = aceleradorVal  * pPor;  const finAcelMigra = aceleradorVal  * pMig;
-  const finEfectPorta= efectividadVal * pPor;  const finEfectMigra= efectividadVal * pMig;
-  const finPresPorta = presupuestoVal * pPor;  const finPresMigra = presupuestoVal * pMig;
-  const finBonoPorta = bonoVal        * pPor;  const finBonoMigra = bonoVal        * pMig;
+  // ── 7. EFECTIVIDAD — exacto por producto del CVC (cached en _efectividadPorta/Migra) ──
+  const _efKey = _sedeFiltroActual || 'general';
+  const finEfectPorta = _efectividadPorta[_efKey] !== undefined ? _efectividadPorta[_efKey]
+    : parseFloat(kpiEl.dataset.efectividadVal || '0') * pPor;
+  const finEfectMigra = _efectividadMigra[_efKey] !== undefined ? _efectividadMigra[_efKey]
+    : parseFloat(kpiEl.dataset.efectividadVal || '0') * pMig;
+  const opEfectPorta  = finEfectPorta;
+  const opEfectMigra  = finEfectMigra;
 
-  // Operativa: presupuesto y efectividad sin /3 — usar mismas proporciones
-  // (Los totales operativos no están cacheados en dataset; usamos proporciones)
-  const opAcelPorta  = aceleradorVal  * pPor;  const opAcelMigra  = aceleradorVal  * pMig;
-  const opEfectPorta = efectividadVal * pPor;  const opEfectMigra = efectividadVal * pMig;
-  // Presupuesto operativo = presupuesto sin /3 → recalculamos la proporción con el mismo pPor
-  const presupuestoOpVal = (() => {
-    const _madresDk = _sedeFiltroActual
-      ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean)) : null;
-    const _cvcDk = _madresDk ? cvcConfigs.filter(c => _madresDk.has(c.madre)) : cvcConfigs;
-    return _cvcDk.reduce((s, cvc) => {
-      const lcGlobal = getLineasCvcParaMeta(cvc, _global);
-      const ej = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined) ? cvc.ejecutadoOverride : lcGlobal.length;
-      const mt = cvc.meta || 0;
-      const proyD    = calcularProyeccionCvc(cvc.madre, _global);
-      const cpProy   = mt > 0 ? ((proyD.proyectado || ej) / mt * 100) : 0;
-      const cpEfect  = Math.max(mt > 0 ? (ej / mt * 100) : 0, cpProy);
-      const lc       = getLineasCvcParaMeta(cvc, _dk);
-      const cfmProm  = lc.length > 0 ? lc.reduce((a, r) => a + (r.cfm || 0), 0) / lc.length : 0;
-      const contCanal= {}; lc.forEach(r => { const k = norm(r.canal); contCanal[k] = (contCanal[k] || 0) + 1; });
-      const canalPred= Object.entries(contCanal).sort((a, b) => b[1] - a[1])[0]?.[0] || 'tmk outbound';
-      const tablaC   = tablaPresupuestoPorCanal(canalPred) || tablaPresupuestoPorCanal('tmk outbound');
-      const pcEfect  = tablaC ? getPctPresupuesto(cpEfect, tablaC) : 0;
-      if (!pcEfect) return s;
-      const fraccion = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
-      const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado || ej);
-      return s + Math.round(unidadesPagoGlobal * fraccion) * cfmProm * (pcEfect / 100);
-    }, 0);
-  })();
-  const opPresPorta  = presupuestoOpVal * pPor; const opPresMigra  = presupuestoOpVal * pMig;
-  const opBonoPorta  = bonoVal          * pPor; const opBonoMigra  = bonoVal          * pMig;
+  // ── 8. PRESUPUESTO — exacto por fracción porta/migra en cada CVC ──
+  const presupuestoVal = parseFloat(kpiEl.dataset.presupuestoP1Val || '0');
+  let finPresPorta = 0, finPresMigra = 0;
+  const _madresDkPres = _sedeFiltroActual
+    ? new Set(_dk.map(r => r.cvcMadre || r.cvc).filter(Boolean)) : null;
+  const _cvcDkPres = _madresDkPres ? cvcConfigs.filter(c => _madresDkPres.has(c.madre)) : cvcConfigs;
+  _cvcDkPres.forEach(cvc => {
+    const lcGlobal = getLineasCvcParaMeta(cvc, _global);
+    const ej = (cvc.ejecutadoOverride !== null && cvc.ejecutadoOverride !== undefined) ? cvc.ejecutadoOverride : lcGlobal.length;
+    const mt = cvc.meta || 0;
+    const proyD    = calcularProyeccionCvc(cvc.madre, _global);
+    const cpProy   = mt > 0 ? ((proyD.proyectado || ej) / mt * 100) : 0;
+    const cpEfect  = Math.max(mt > 0 ? (ej / mt * 100) : 0, cpProy);
+    const lc       = getLineasCvcParaMeta(cvc, _dk);
+    const cfmProm  = lc.length > 0 ? lc.reduce((a, r) => a + (r.cfm || 0), 0) / lc.length : 0;
+    const contCanal= {}; lc.forEach(r => { const k = norm(r.canal); contCanal[k] = (contCanal[k] || 0) + 1; });
+    const canalPred= Object.entries(contCanal).sort((a, b) => b[1] - a[1])[0]?.[0] || 'tmk outbound';
+    const tablaC   = tablaPresupuestoPorCanal(canalPred) || tablaPresupuestoPorCanal('tmk outbound');
+    const pcEfect  = tablaC ? getPctPresupuesto(cpEfect, tablaC) : 0;
+    if (!pcEfect) return;
+    const fraccion = lcGlobal.length > 0 ? lc.length / lcGlobal.length : 1;
+    const unidadesPagoGlobal = proyD.proyectadoBase !== undefined ? proyD.proyectadoBase : (proyD.proyectado || ej);
+    const contrib = Math.round(unidadesPagoGlobal * fraccion) * cfmProm * (pcEfect / 100);
+    // Split por fracción porta/migra de las líneas de este CVC
+    const lcP = lc.filter(r=>norm(r.producto).includes('port')).length;
+    const lcM = lc.filter(r=>norm(r.producto).includes('migr')).length;
+    const lcT = lcP + lcM;
+    const pPresPor = lcT > 0 ? lcP / lcT : pPor;
+    const pPresMig = lcT > 0 ? lcM / lcT : pMig;
+    finPresPorta += contrib * pPresPor;
+    finPresMigra += contrib * pPresMig;
+  });
+  const opPresPorta = finPresPorta;
+  const opPresMigra = finPresMigra;
+
+  // ── 9. BONO — exacto por desglose inbPorta/inbMigra/digPorta/outbPorta/outbMigra ──
+  const bonoVal = parseFloat(kpiEl.dataset.bonoValCalc || '0');
+  const _bonoKey = _sedeFiltroActual || 'general';
+  const finBonoPorta = _bonoCalculadoPorta[_bonoKey] !== undefined ? _bonoCalculadoPorta[_bonoKey]
+    : bonoVal * pPor;
+  const finBonoMigra = _bonoCalculadoMigra[_bonoKey] !== undefined ? _bonoCalculadoMigra[_bonoKey]
+    : bonoVal * pMig;
+  const opBonoPorta  = finBonoPorta;
+  const opBonoMigra  = finBonoMigra;
 
   // ── 10. INCENTIVOS — exacto por producto, proporcional para "general" ──
   const incPortaEx = getTotalIncentivosProducto('porta');
