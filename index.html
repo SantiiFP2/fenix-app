@@ -17827,6 +17827,35 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
+    <!-- Ingreso Promedio por FTE por Campaña -->
+    <div class="pa-chart-card" id="pa-ingreso-fte-card" style="margin-bottom:24px;padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--pa-border);">
+        <span style="width:32px;height:32px;border-radius:8px;background:rgba(52,211,153,0.12);color:#34D399;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 500;">payments</span>
+        </span>
+        <div style="flex:1;min-width:0;">
+          <span style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--pa-text);">Ingreso Promedio por FTE</span>
+          <div id="pa-fte-sede-label" style="font-size:10px;color:var(--pa-text-dim);margin-top:1px;display:none;"></div>
+        </div>
+        <span id="pa-fte-sin-datos-badge" style="display:none;font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:rgba(107,114,128,0.15);color:var(--pa-text-dim);">Sin datos de factura</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pa-table" style="min-width:580px;">
+          <thead>
+            <tr>
+              <th style="padding-left:20px;">Campaña</th>
+              <th style="text-align:right;color:var(--pa-info);">FTE</th>
+              <th style="text-align:right;color:#EF4444;">Fin. Total</th>
+              <th style="text-align:right;color:#EF4444;">Fin. / FTE</th>
+              <th style="text-align:right;color:#A78BFA;">Op. Total</th>
+              <th style="text-align:right;padding-right:20px;color:#A78BFA;">Op. / FTE</th>
+            </tr>
+          </thead>
+          <tbody id="pa-tbody-ingreso-fte"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Movimientos del Mes -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
 
@@ -18736,6 +18765,9 @@ function _plantaAnalisisRenderInterno() {
     }).join('');
   }
 
+  // ══ Ingreso Promedio por FTE por Campaña ══
+  _paRenderIngresoPorFte();
+
   // ══ Lista: Ingresos del mes ══
   var listIng = document.getElementById('pa-list-ingresos');
   var emIng   = document.getElementById('pa-empty-ingresos');
@@ -18799,6 +18831,94 @@ function _plantaAnalisisRenderInterno() {
       }).join('');
     }
   }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Ingreso Promedio por FTE — renderiza la card en Análisis Personal
+// ══════════════════════════════════════════════════════════════
+function _paRenderIngresoPorFte() {
+  var tbody = document.getElementById('pa-tbody-ingreso-fte');
+  var badge  = document.getElementById('pa-fte-sin-datos-badge');
+  var sLabel = document.getElementById('pa-fte-sede-label');
+  if (!tbody) return;
+
+  // ── Definición de las 3 campañas vinculadas a factura ──
+  var CAMPANAS = [
+    { key: 'BLASTER_PORTABILIDAD', label: 'BLASTER_PORTABILIDAD', emoji: '📲', color: '#EF4444',
+      producto: 'porta' },
+    { key: 'OUTBOUND_MIGRACION',   label: 'OUTBOUND_MIGRACION',   emoji: '🔄', color: '#60A5FA',
+      producto: 'migra' },
+    { key: 'OUTBOUND_HOGAR',       label: 'OUTBOUND_HOGAR',       emoji: '🏠', color: '#A78BFA',
+      producto: 'hogar' },
+  ];
+
+  // ── Sede activa (Móvil usa _sedeFiltroActual como SITE, que suele coincidir con CIUDAD) ──
+  var ciudadFiltro = _sedeFiltroActual || null; // null = sin filtro
+  if (sLabel) {
+    if (ciudadFiltro) {
+      sLabel.textContent = 'Sede activa: ' + ciudadFiltro + ' · FTE filtrado por ciudad';
+      sLabel.style.display = 'block';
+    } else {
+      sLabel.style.display = 'none';
+    }
+  }
+
+  // ── FTE por campaña (filtrando por ciudad si hay sede activa) ──
+  var ftePorCampana = {};
+  CAMPANAS.forEach(function(c) { ftePorCampana[c.key] = 0; });
+  _plantaDatos.forEach(function(r) {
+    var camp = (r['CAMPANA'] || '').trim();
+    if (!ftePorCampana.hasOwnProperty(camp)) return;
+    if (ciudadFiltro) {
+      var ciudad = (r['CIUDAD'] || '').trim().toUpperCase();
+      if (ciudad !== ciudadFiltro.toUpperCase()) return;
+    }
+    ftePorCampana[camp] += plantaCalcularFTE(r);
+  });
+
+  // ── Factura por producto (usa _piCalcularBreakdownPorProducto para Móvil) ──
+  var bd = (typeof _piCalcularBreakdownPorProducto === 'function') ? _piCalcularBreakdownPorProducto() : null;
+  var hogS = (typeof _hogProyeccionGuardada !== 'undefined') ? _hogProyeccionGuardada : null;
+
+  var factura = {
+    porta: { fin: bd ? bd.finPorta : 0, op: bd ? bd.opPorta : 0 },
+    migra: { fin: bd ? bd.finMigra : 0, op: bd ? bd.opMigra : 0 },
+    hogar: { fin: hogS ? (hogS.totalCobroProy   || 0) : 0,
+             op:  hogS ? (hogS.totalCobroProyOp  || 0) : 0 },
+  };
+
+  var hayFactura = CAMPANAS.some(function(c) {
+    var f = factura[c.producto];
+    return f && (f.fin > 0 || f.op > 0);
+  });
+  if (badge) badge.style.display = hayFactura ? 'none' : 'inline-block';
+
+  var fmt  = function(v) { return v > 0 ? '$' + Math.round(v).toLocaleString('es-CO') : '—'; };
+  var fmtF = function(v) { return v > 0 ? '$' + (Math.round(v / 1000000 * 10) / 10).toLocaleString('es-CO') + 'M' : '—'; };
+
+  tbody.innerHTML = CAMPANAS.map(function(c, idx) {
+    var fte  = ftePorCampana[c.key];
+    var f    = factura[c.producto];
+    var finT = f ? f.fin : 0;
+    var opT  = f ? f.op  : 0;
+    var finFte = (fte > 0 && finT > 0) ? finT / fte : 0;
+    var opFte  = (fte > 0 && opT  > 0) ? opT  / fte : 0;
+    var zebra  = idx % 2 === 1 ? 'background:var(--pa-surface-2);' : '';
+    var td = 'padding:12px 14px;text-align:right;font-family:\'Inter Tight\',sans-serif;font-variant-numeric:tabular-nums;';
+    return '<tr style="' + zebra + '">' +
+      '<td style="padding:12px 14px;padding-left:20px;">' +
+        '<div style="display:flex;align-items:center;gap:7px;">' +
+          '<span style="font-size:14px;">' + c.emoji + '</span>' +
+          '<span style="font-size:12px;font-weight:700;color:var(--pa-text);letter-spacing:0.3px;">' + c.label + '</span>' +
+        '</div>' +
+      '</td>' +
+      '<td style="' + td + 'color:var(--pa-info);font-weight:700;">' + (fte > 0 ? fte.toFixed(2) : '—') + '</td>' +
+      '<td style="' + td + 'color:#EF4444;font-weight:600;">' + fmtF(finT) + '</td>' +
+      '<td style="' + td + 'color:#EF4444;font-weight:800;">' + fmt(finFte) + '</td>' +
+      '<td style="' + td + 'color:#A78BFA;font-weight:600;">' + fmtF(opT)  + '</td>' +
+      '<td style="' + td + 'padding-right:20px;color:#A78BFA;font-weight:800;">' + fmt(opFte)  + '</td>' +
+    '</tr>';
+  }).join('');
 }
 
 // Utilidad interna: setear texto en un elemento por id
