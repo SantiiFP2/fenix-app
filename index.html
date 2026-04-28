@@ -2689,9 +2689,23 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--l-danger-grad);"></div>
         <div style="padding:20px 22px 18px;">
           <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:10px;">
-            <span style="font-size:14px;">💰</span> Factura Financiera
+            <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;color:var(--l-danger);">payments</span> Factura Financiera
           </div>
-          <div id="pi-fact-fin-total" style="font-size:clamp(22px,2.4vw,34px);font-weight:900;color:var(--l-danger);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;margin-bottom:14px;">$0</div>
+          <!-- Total general -->
+          <div id="pi-fact-fin-total" style="font-size:clamp(22px,2.4vw,34px);font-weight:900;color:var(--l-danger);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;margin-bottom:10px;">$0</div>
+          <!-- Desglose Porta / Migra -->
+          <div id="pi-fact-fin-breakdown" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.06);border-bottom:1px solid rgba(0,0,0,0.06);">
+            <div>
+              <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#EF4444;margin-bottom:3px;">Portabilidad</div>
+              <div id="pi-fact-fin-porta" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#EF4444;letter-spacing:-0.02em;">—</div>
+              <div id="pi-fact-fin-porta-pct" style="font-size:10px;color:rgba(239,68,68,0.6);margin-top:2px;">—</div>
+            </div>
+            <div>
+              <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3B82F6;margin-bottom:3px;">Migración</div>
+              <div id="pi-fact-fin-migra" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#3B82F6;letter-spacing:-0.02em;">—</div>
+              <div id="pi-fact-fin-migra-pct" style="font-size:10px;color:rgba(59,130,246,0.6);margin-top:2px;">—</div>
+            </div>
+          </div>
           <div id="pi-fact-fin-sub" style="font-size:11px;color:var(--texto-dim);line-height:2;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;">—</div>
         </div>
       </div>
@@ -2700,9 +2714,23 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--l-purple-grad);"></div>
         <div style="padding:20px 22px 18px;">
           <div style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:10px;">
-            <span style="font-size:14px;">⚙️</span> Factura Operativa
+            <span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;color:var(--l-purple);">settings</span> Factura Operativa
           </div>
-          <div id="pi-fact-op-total" style="font-size:clamp(22px,2.4vw,34px);font-weight:900;color:var(--l-purple);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;margin-bottom:14px;">$0</div>
+          <!-- Total general -->
+          <div id="pi-fact-op-total" style="font-size:clamp(22px,2.4vw,34px);font-weight:900;color:var(--l-purple);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;margin-bottom:10px;">$0</div>
+          <!-- Desglose Porta / Migra -->
+          <div id="pi-fact-op-breakdown" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.06);border-bottom:1px solid rgba(0,0,0,0.06);">
+            <div>
+              <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#EF4444;margin-bottom:3px;">Portabilidad</div>
+              <div id="pi-fact-op-porta" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#EF4444;letter-spacing:-0.02em;">—</div>
+              <div id="pi-fact-op-porta-pct" style="font-size:10px;color:rgba(239,68,68,0.6);margin-top:2px;">—</div>
+            </div>
+            <div>
+              <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3B82F6;margin-bottom:3px;">Migración</div>
+              <div id="pi-fact-op-migra" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#3B82F6;letter-spacing:-0.02em;">—</div>
+              <div id="pi-fact-op-migra-pct" style="font-size:10px;color:rgba(59,130,246,0.6);margin-top:2px;">—</div>
+            </div>
+          </div>
           <div id="pi-fact-op-sub" style="font-size:11px;color:var(--texto-dim);line-height:2;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;">—</div>
         </div>
       </div>
@@ -8495,6 +8523,45 @@ async function piCargarMeses() {
   } catch(e) { console.warn('piCargarMeses:', e.message); }
 }
 
+// ════════════════════════════════════════════════════════════════
+// DESGLOSE PORTA / MIGRA EN CARDS FACTURA FINANCIERA Y OPERATIVA
+// ════════════════════════════════════════════════════════════════
+/**
+ * Actualiza los elementos de desglose Portabilidad/Migración en las dos cards.
+ * @param {number} finTotal   — total factura financiera
+ * @param {number} opTotal    — total factura operativa
+ * @param {number} portaPct   — fracción 0-1 atribuible a portabilidad  (basada en CFM)
+ * @param {number} migraPct   — fracción 0-1 atribuible a migración
+ */
+function _piActualizarBreakdownProdCards(finTotal, opTotal, portaPct, migraPct) {
+  const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const fmtPct = p => Math.round(p * 100) + '%';
+
+  const finPorta = finTotal * portaPct;
+  const finMigra = finTotal * migraPct;
+  const opPorta  = opTotal  * portaPct;
+  const opMigra  = opTotal  * migraPct;
+
+  const show = portaPct > 0 || migraPct > 0;
+
+  // ── Financiera ──
+  const finBd = document.getElementById('pi-fact-fin-breakdown');
+  if (finBd) finBd.style.display = show ? 'grid' : 'none';
+  const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  _set('pi-fact-fin-porta',     show ? fmt(finPorta)     : '—');
+  _set('pi-fact-fin-porta-pct', show ? fmtPct(portaPct)  : '');
+  _set('pi-fact-fin-migra',     show ? fmt(finMigra)     : '—');
+  _set('pi-fact-fin-migra-pct', show ? fmtPct(migraPct)  : '');
+
+  // ── Operativa ──
+  const opBd = document.getElementById('pi-fact-op-breakdown');
+  if (opBd) opBd.style.display = show ? 'grid' : 'none';
+  _set('pi-fact-op-porta',     show ? fmt(opPorta)      : '—');
+  _set('pi-fact-op-porta-pct', show ? fmtPct(portaPct)  : '');
+  _set('pi-fact-op-migra',     show ? fmt(opMigra)      : '—');
+  _set('pi-fact-op-migra-pct', show ? fmtPct(migraPct)  : '');
+}
+
 // ── Cargar días disponibles para el mes seleccionado ──
 async function piCargarDiasMes() {
   const mes = document.getElementById('pi-hist-mes')?.value;
@@ -8589,6 +8656,32 @@ function piMostrarProyeccionHistorica() {
     if (row.presupuesto_op_val>0) partes.push('Ind.Cumpl: '  + fmt(row.presupuesto_op_val));
     if (row.incentivos_op_val>0)  partes.push('Incentivos: ' + fmt(row.incentivos_op_val));
     opSub.textContent = partes.join(' · ') || '—';
+  }
+
+  // ── Desglose Porta / Migra ──
+  {
+    let portaPct = 0, migraPct = 0;
+    if (_resultadosCache.length) {
+      // Si hay datos en vivo, usar CFM real por producto (más preciso)
+      const cfmPorta = _resultadosCache.filter(r => norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
+      const cfmMigra = _resultadosCache.filter(r => norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
+      const cfmTot   = cfmPorta + cfmMigra;
+      portaPct = cfmTot > 0 ? cfmPorta / cfmTot : 0;
+      migraPct = cfmTot > 0 ? cfmMigra / cfmTot : 0;
+    } else {
+      // Sin datos en vivo: estimar por conteo de líneas del snapshot
+      const prodsMap = (row.snapshot || {}).prodsMap || row.prods_map || {};
+      const nPorta = (prodsMap['portabilidad'] || 0);
+      const nMigra = (prodsMap['migracion']    || 0);
+      const nTotal = nPorta + nMigra;
+      portaPct = nTotal > 0 ? nPorta / nTotal : 0;
+      migraPct = nTotal > 0 ? nMigra / nTotal : 0;
+    }
+    _piActualizarBreakdownProdCards(
+      row.total_financiero || 0,
+      row.total_operativo  || 0,
+      portaPct, migraPct
+    );
   }
 
   // ── Análisis completo desde snapshot ──
@@ -9366,6 +9459,19 @@ function actualizarPanelInicio() {
       <td style="text-align:right;color:var(--texto-dim);">100%</td>
       <td></td>
     </tr>`;
+  }
+
+  // ── Si las cards de factura están visibles (snapshot histórico cargado), actualizar breakdown con datos en vivo ──
+  const _factWrap = document.getElementById('pi-facturas-wrap');
+  if (_factWrap && _factWrap.style.display !== 'none') {
+    const cfmPorta = _resultadosCache.filter(r => norm(r.producto).includes('port')).reduce((s,r)=>s+(r.cfm||0),0);
+    const cfmMigra = _resultadosCache.filter(r => norm(r.producto).includes('migr')).reduce((s,r)=>s+(r.cfm||0),0);
+    const cfmTot   = cfmPorta + cfmMigra;
+    if (cfmTot > 0) {
+      const finTot = parseFloat((document.getElementById('pi-fact-fin-total')?.textContent||'0').replace(/[^\d]/g,'')) || 0;
+      const opTot  = parseFloat((document.getElementById('pi-fact-op-total' )?.textContent||'0').replace(/[^\d]/g,'')) || 0;
+      _piActualizarBreakdownProdCards(finTot, opTot, cfmPorta/cfmTot, cfmMigra/cfmTot);
+    }
   }
 }
 
