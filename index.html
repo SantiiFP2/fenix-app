@@ -1196,16 +1196,49 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 /* ══════════════════════════════════════════════════════════════
    PANEL COMISIONES
    ══════════════════════════════════════════════════════════════ */
-#panel-comisiones{display:none;padding:24px 32px;}
+#panel-comisiones{display:none;padding:0;}
 
-/* Tabs de Comisiones */
-.com-tabs{display:flex;gap:2px;border-bottom:1px solid var(--gris-linea);margin-bottom:24px;overflow-x:auto;scrollbar-width:none;}
-.com-tabs::-webkit-scrollbar{display:none;}
-.com-tab{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;
-  padding:9px 18px;border:none;background:none;cursor:pointer;color:var(--texto-dim);
-  border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s;}
-.com-tab:hover{color:var(--blanco);}
-.com-tab.active{color:#F59E0B;border-bottom-color:#F59E0B;}
+/* Layout de dos columnas */
+.com-layout{display:flex;height:calc(100vh - 64px);}
+
+/* Nav lateral izquierda */
+.com-sidenav{
+  width:220px;min-width:220px;
+  background:#161616;
+  border-right:1px solid var(--gris-linea);
+  padding:24px 0;
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.com-sidenav-title{
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:#555;padding:0 16px 12px;
+}
+.com-sidenav-item{
+  display:flex;align-items:center;gap:10px;
+  width:100%;padding:10px 16px;
+  border:none;background:none;cursor:pointer;
+  font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:500;
+  color:var(--texto-dim);text-align:left;
+  border-left:3px solid transparent;
+  transition:all .15s;
+}
+.com-sidenav-item:hover{color:var(--blanco);background:rgba(255,255,255,0.04);}
+.com-sidenav-item.active{
+  color:#F59E0B;background:rgba(245,158,11,0.08);
+  border-left-color:#F59E0B;font-weight:600;
+}
+body.modo-claro .com-sidenav{background:#F8F9FA;border-right-color:#E5E7EB;}
+body.modo-claro .com-sidenav-item{color:#5F6368;}
+body.modo-claro .com-sidenav-item:hover{color:#111;background:rgba(0,0,0,0.04);}
+body.modo-claro .com-sidenav-item.active{color:#D97706;background:rgba(217,119,6,0.08);border-left-color:#D97706;}
+
+/* Área de contenido */
+.com-content-area{
+  flex:1;min-width:0;
+  overflow-y:auto;
+  padding:28px 32px;
+}
 
 /* Contenido vacío placeholder */
 .com-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2988,91 +3021,89 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
      PANEL COMISIONES
      ═══════════════════════════════════════════════════════════ -->
 <div id="panel-comisiones" style="display:none;">
+  <div class="com-layout">
 
-  <!-- Header -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-    <div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:4px">CONFIGURACIÓN</div>
-      <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--blanco);line-height:1">Comisiones</div>
-    </div>
-  </div>
+    <!-- Nav lateral izquierda -->
+    <nav class="com-sidenav">
+      <div class="com-sidenav-title">Configuración</div>
+      <button class="com-sidenav-item active" id="com-nav-sedes" onclick="comTabSwitch('sedes')">
+        <span class="material-symbols-rounded" style="font-size:16px;">location_city</span> Sedes
+      </button>
+      <button class="com-sidenav-item" id="com-nav-campanias" onclick="comTabSwitch('campanias')">
+        <span class="material-symbols-rounded" style="font-size:16px;">campaign</span> Campañas
+      </button>
+      <button class="com-sidenav-item" id="com-nav-periodo" onclick="comTabSwitch('periodo')">
+        <span class="material-symbols-rounded" style="font-size:16px;">date_range</span> Periodo
+      </button>
+      <button class="com-sidenav-item" id="com-nav-pisos" onclick="comTabSwitch('pisos')">
+        <span class="material-symbols-rounded" style="font-size:16px;">stairs</span> Pisos
+      </button>
+      <button class="com-sidenav-item" id="com-nav-condiciones" onclick="comTabSwitch('condiciones')">
+        <span class="material-symbols-rounded" style="font-size:16px;">rule</span> Condiciones
+      </button>
+      <button class="com-sidenav-item" id="com-nav-agentes" onclick="comTabSwitch('agentes')">
+        <span class="material-symbols-rounded" style="font-size:16px;">person</span> Agentes
+      </button>
+      <button class="com-sidenav-item" id="com-nav-asignaciones" onclick="comTabSwitch('asignaciones')">
+        <span class="material-symbols-rounded" style="font-size:16px;">assignment_ind</span> Asignaciones
+      </button>
+    </nav>
 
-  <!-- Tab bar -->
-  <div class="com-tabs">
-    <button class="com-tab active" id="com-tab-sedes"       onclick="comTabSwitch('sedes')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">location_city</span>Sedes
-    </button>
-    <button class="com-tab" id="com-tab-campanias"  onclick="comTabSwitch('campanias')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">campaign</span>Campañas
-    </button>
-    <button class="com-tab" id="com-tab-periodo"    onclick="comTabSwitch('periodo')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">date_range</span>Periodo
-    </button>
-    <button class="com-tab" id="com-tab-pisos"      onclick="comTabSwitch('pisos')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">stairs</span>Pisos
-    </button>
-    <button class="com-tab" id="com-tab-condiciones" onclick="comTabSwitch('condiciones')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">rule</span>Condiciones
-    </button>
-    <button class="com-tab" id="com-tab-agentes"    onclick="comTabSwitch('agentes')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">person</span>Agentes
-    </button>
-    <button class="com-tab" id="com-tab-asignaciones" onclick="comTabSwitch('asignaciones')">
-      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">assignment_ind</span>Asignaciones
-    </button>
-  </div>
+    <!-- Área de contenido -->
+    <div class="com-content-area">
 
-  <!-- Contenido de cada tab -->
-  <div id="com-content-sedes">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">location_city</span>
-      <div class="com-empty-title">Sedes</div>
-      <div class="com-empty-sub">Aquí irá la configuración de las sedes. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-campanias" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">campaign</span>
-      <div class="com-empty-title">Campañas</div>
-      <div class="com-empty-sub">Aquí irá la configuración de campañas. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-periodo" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">date_range</span>
-      <div class="com-empty-title">Periodo</div>
-      <div class="com-empty-sub">Aquí irá la configuración del periodo de comisiones. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-pisos" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">stairs</span>
-      <div class="com-empty-title">Pisos</div>
-      <div class="com-empty-sub">Aquí irá la configuración de pisos de comisión. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-condiciones" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">rule</span>
-      <div class="com-empty-title">Condiciones</div>
-      <div class="com-empty-sub">Aquí irá la configuración de condiciones para comisionar. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-agentes" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">person</span>
-      <div class="com-empty-title">Agentes</div>
-      <div class="com-empty-sub">Aquí irá el listado y configuración de agentes. En construcción.</div>
-    </div>
-  </div>
-  <div id="com-content-asignaciones" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">assignment_ind</span>
-      <div class="com-empty-title">Asignaciones</div>
-      <div class="com-empty-sub">Aquí irá la asignación de agentes a campañas y sedes. En construcción.</div>
-    </div>
-  </div>
+      <div id="com-content-sedes">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">location_city</span>
+          <div class="com-empty-title">Sedes</div>
+          <div class="com-empty-sub">Aquí irá la configuración de las sedes. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-campanias" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">campaign</span>
+          <div class="com-empty-title">Campañas</div>
+          <div class="com-empty-sub">Aquí irá la configuración de campañas. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-periodo" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">date_range</span>
+          <div class="com-empty-title">Periodo</div>
+          <div class="com-empty-sub">Aquí irá la configuración del periodo de comisiones. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-pisos" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">stairs</span>
+          <div class="com-empty-title">Pisos</div>
+          <div class="com-empty-sub">Aquí irá la configuración de pisos de comisión. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-condiciones" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">rule</span>
+          <div class="com-empty-title">Condiciones</div>
+          <div class="com-empty-sub">Aquí irá la configuración de condiciones para comisionar. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-agentes" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">person</span>
+          <div class="com-empty-title">Agentes</div>
+          <div class="com-empty-sub">Aquí irá el listado y configuración de agentes. En construcción.</div>
+        </div>
+      </div>
+      <div id="com-content-asignaciones" style="display:none;">
+        <div class="com-empty">
+          <span class="material-symbols-rounded com-empty-icon">assignment_ind</span>
+          <div class="com-empty-title">Asignaciones</div>
+          <div class="com-empty-sub">Aquí irá la asignación de agentes a campañas y sedes. En construcción.</div>
+        </div>
+      </div>
 
+    </div><!-- /com-content-area -->
+  </div><!-- /com-layout -->
 </div><!-- /panel-comisiones -->
 
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
@@ -15370,9 +15401,9 @@ function mostrarPanelComisiones(tab) {
 function comTabSwitch(tab) {
   _comTabActual = tab;
   COM_TABS.forEach(function(t) {
-    var btn = document.getElementById('com-tab-' + t);
+    var nav = document.getElementById('com-nav-' + t);
     var cnt = document.getElementById('com-content-' + t);
-    if (btn) btn.classList.toggle('active', t === tab);
+    if (nav) nav.classList.toggle('active', t === tab);
     if (cnt) cnt.style.display = t === tab ? '' : 'none';
   });
 }
@@ -18606,37 +18637,12 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- MODULO: Comisiones -->
   <div class="sb-nav-module" id="sb-mod-comisiones">
     <div class="sb-nav-module-title">COMISIONES</div>
-
-    <div class="sb-nav-product open" id="sb-nav-prod-com-config">
-      <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('com-config')">
-        <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#F59E0B;">settings</span>
-        <span class="sb-nav-prod-label">Configuración</span>
-        <span class="sb-nav-prod-arrow" id="sb-nav-parr-com-config">▾</span>
-      </button>
-      <div class="sb-nav-submenu" id="sb-nav-sub-com-config">
-        <button id="sb-com-sedes" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('sedes');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">location_city</span> Sedes
-        </button>
-        <button id="sb-com-campanias" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('campanias');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">campaign</span> Campañas
-        </button>
-        <button id="sb-com-periodo" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('periodo');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">date_range</span> Periodo
-        </button>
-        <button id="sb-com-pisos" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('pisos');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">stairs</span> Pisos
-        </button>
-        <button id="sb-com-condiciones" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('condiciones');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">rule</span> Condiciones
-        </button>
-        <button id="sb-com-agentes" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('agentes');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">person</span> Agentes
-        </button>
-        <button id="sb-com-asignaciones" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('asignaciones');">
-          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">assignment_ind</span> Asignaciones
-        </button>
-      </div>
-    </div>
+    <button id="sb-com-config" class="sb-nav-item" onclick="closeLauncher();mostrarPanelComisiones();"
+      style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
+      onmouseover="this.style.background='rgba(245,158,11,0.08)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded sb-nav-icon" style="color:#F59E0B;font-size:20px;">settings</span>
+      <span class="sb-nav-label" style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--texto);">Configuración</span>
+    </button>
   </div>
 
   <!-- Divider -->
