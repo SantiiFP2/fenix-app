@@ -1281,6 +1281,40 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
   font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;}
 .com-btn-save:hover{background:#D97706;}
 
+/* Badge valor (cyan) y secundarios (amber) */
+.com-badge-valor{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
+  font-size:11px;font-weight:700;background:rgba(6,182,212,0.15);color:#22D3EE;
+  border:1px solid rgba(6,182,212,0.25);white-space:nowrap;}
+.com-badge-sec{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
+  font-size:11px;font-weight:700;background:rgba(245,158,11,0.15);color:#F59E0B;
+  border:1px solid rgba(245,158,11,0.25);margin-right:3px;}
+
+/* Modal grande (edición campaña) */
+.com-modal-lg{max-width:700px;}
+.com-modal-section{border-radius:8px;padding:16px;margin-bottom:14px;}
+.com-modal-section.hogar{background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.2);}
+.com-modal-section.movil{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);}
+.com-modal-section-title{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;
+  margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.com-modal-section.hogar .com-modal-section-title{color:#10B981;}
+.com-modal-section.movil .com-modal-section-title{color:#60A5FA;}
+.com-form-row{display:grid;gap:12px;margin-bottom:14px;}
+.com-form-row.col2{grid-template-columns:1fr 1fr;}
+.com-form-row.col3{grid-template-columns:1fr 1fr 1fr;}
+.com-form-hint{font-size:10px;color:var(--texto-dim);margin-top:4px;line-height:1.4;}
+.com-form-hint .com-metric{color:#F87171;font-weight:600;}
+.com-form-textarea{resize:vertical;min-height:70px;}
+.com-form-check{display:flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:13px;color:var(--texto);font-family:'Inter Tight',sans-serif;}
+.com-form-check input[type=checkbox]{width:16px;height:16px;accent-color:#F59E0B;cursor:pointer;}
+.com-form-prefix{display:flex;align-items:center;border:1px solid var(--gris-linea);border-radius:6px;overflow:hidden;background:var(--negro);}
+.com-form-prefix-label{padding:0 10px;font-size:13px;color:var(--texto-dim);border-right:1px solid var(--gris-linea);background:rgba(255,255,255,0.04);height:38px;display:flex;align-items:center;}
+.com-form-prefix .com-form-input{border:none;border-radius:0;background:transparent;flex:1;}
+.com-form-prefix .com-form-input:focus{border:none;outline:none;}
+
+/* Modal header con color */
+.com-modal-header-colored{background:linear-gradient(135deg,rgba(124,58,237,0.35),rgba(79,70,229,0.25));border-bottom-color:rgba(124,58,237,0.3);}
+
 /* Modo claro */
 body.modo-claro .com-table-wrap{background:#fff;border-color:#E5E7EB;}
 body.modo-claro .com-table thead th{background:#F9FAFB;color:#6B7280;}
@@ -1290,6 +1324,11 @@ body.modo-claro .com-btn-edit,.modo-claro .com-btn-del{border-color:#E5E7EB;}
 body.modo-claro .com-modal{background:#fff;border-color:#E5E7EB;}
 body.modo-claro .com-form-input{background:#F9FAFB;border-color:#E5E7EB;color:#111;}
 body.modo-claro .com-section-title{color:#111;}
+body.modo-claro .com-modal-section.hogar{background:rgba(5,150,105,0.04);border-color:rgba(5,150,105,0.15);}
+body.modo-claro .com-modal-section.movil{background:rgba(59,130,246,0.04);border-color:rgba(59,130,246,0.15);}
+body.modo-claro .com-form-prefix{background:#F9FAFB;border-color:#E5E7EB;}
+body.modo-claro .com-form-prefix .com-form-input{background:transparent;}
+body.modo-claro .com-form-prefix-label{background:#F3F4F6;border-color:#E5E7EB;color:#6B7280;}
 
 /* ══════════════════════════════════════════════════════════════
    PANEL HOGAR
@@ -3124,10 +3163,44 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     </div>
   </div>
   <div id="com-content-campanias" style="display:none;">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">campaign</span>
-      <div class="com-empty-title">Campañas</div>
-      <div class="com-empty-sub">Aquí irá la configuración de campañas. En construcción.</div>
+    <div class="com-section-header">
+      <div>
+        <div class="com-section-title" style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:20px;color:#F59E0B;">campaign</span>
+          Campañas registradas
+          <span id="com-campanias-count" style="background:#3B82F6;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;min-width:22px;text-align:center;">0</span>
+        </div>
+        <div class="com-section-sub">Configura los modelos de comisión por campaña</div>
+      </div>
+      <button class="com-btn-nuevo" onclick="comCampaniaNueva()">
+        <span class="material-symbols-rounded" style="font-size:16px;">add</span> Nueva Campaña
+      </button>
+    </div>
+
+    <div id="com-campanias-tabla-wrap" class="com-table-wrap" style="display:none;">
+      <table class="com-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo / Subtipo</th>
+            <th>Sede</th>
+            <th>Producto Principal</th>
+            <th>Valor Adicional</th>
+            <th>Secundarios</th>
+            <th>Estado</th>
+            <th style="text-align:right;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="com-campanias-tbody"></tbody>
+      </table>
+    </div>
+
+    <div id="com-campanias-empty" style="display:none;">
+      <div class="com-empty">
+        <span class="material-symbols-rounded com-empty-icon">campaign</span>
+        <div class="com-empty-title">Sin campañas registradas</div>
+        <div class="com-empty-sub">Crea tu primera campaña con el botón "Nueva Campaña".</div>
+      </div>
     </div>
   </div>
   <div id="com-content-periodo" style="display:none;">
@@ -20278,6 +20351,382 @@ function comSedeEliminar(idx) {
   _comSedes.splice(idx, 1);
   comSedesGuardar();
   comSedesRender();
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMISIONES — CAMPAÑAS
+// ══════════════════════════════════════════════════════════════
+
+const COM_CAMPANIAS_KEY = 'fenix_com_campanias';
+let _comCampanias = [];
+
+const COM_TIPOS = {
+  hogar:        { label:'HOGAR',        color:'#10B981', bg:'rgba(16,185,129,0.12)',  border:'rgba(16,185,129,0.25)',  icon:'cottage' },
+  portabilidad: { label:'PORTABILIDAD', color:'#3B82F6', bg:'rgba(59,130,246,0.12)', border:'rgba(59,130,246,0.25)',  icon:'smartphone' },
+  migracion:    { label:'MIGRACIÓN',    color:'#8B5CF6', bg:'rgba(139,92,246,0.12)', border:'rgba(139,92,246,0.25)',  icon:'swap_horiz' },
+  tt:           { label:'T&T',          color:'#F97316', bg:'rgba(249,115,22,0.12)', border:'rgba(249,115,22,0.25)',  icon:'tv' },
+  otro:         { label:'OTRO',         color:'#6B7280', bg:'rgba(107,114,128,0.12)',border:'rgba(107,114,128,0.25)', icon:'category' },
+};
+
+const COM_HOG_METRICAS = [
+  { value:'s_internet', label:'S_Internet — accesos instalados (default)' },
+  { value:'s_tv',       label:'S_TV — accesos de televisión' },
+  { value:'combo',      label:'Combo — accesos internet + TV' },
+];
+
+const COM_MOV_PRODUCTOS = [
+  { value:'porta_postpago',    label:'Portabilidad Postpago (cuenta ×1, resta OJT postpago)' },
+  { value:'migracion_postpago',label:'Migración Postpago (cuenta ×1)' },
+  { value:'prepago',           label:'Prepago / WB (cuenta por unidad)' },
+];
+
+function comIsMovil(tipo) { return ['portabilidad','migracion'].includes(tipo); }
+function comIsHogar(tipo) { return ['hogar','tt'].includes(tipo); }
+
+function comCampaniasCargar() {
+  try { const s=localStorage.getItem(COM_CAMPANIAS_KEY); _comCampanias=s?JSON.parse(s):[]; }
+  catch(e){ _comCampanias=[]; }
+}
+function comCampaniasGuardar() {
+  try{ localStorage.setItem(COM_CAMPANIAS_KEY, JSON.stringify(_comCampanias)); }catch(e){}
+}
+
+function comCampaniasRender() {
+  comCampaniasCargar();
+  comSedesCargar();
+  const countEl = document.getElementById('com-campanias-count');
+  if (countEl) countEl.textContent = _comCampanias.length;
+  const wrap  = document.getElementById('com-campanias-tabla-wrap');
+  const empty = document.getElementById('com-campanias-empty');
+  const tbody = document.getElementById('com-campanias-tbody');
+  if (!wrap) return;
+  if (_comCampanias.length === 0) {
+    wrap.style.display='none'; if(empty)empty.style.display=''; return;
+  }
+  if(empty)empty.style.display='none'; wrap.style.display='';
+  if(!tbody) return;
+
+  tbody.innerHTML = _comCampanias.map((c,i) => {
+    const tipo = COM_TIPOS[c.tipo] || COM_TIPOS.otro;
+    const sedeNombre = c.sede ? c.sede : '—';
+    let prodLabel='—', valorBadge='', secHtml='—';
+
+    if (comIsHogar(c.tipo)) {
+      const m = COM_HOG_METRICAS.find(x=>x.value===c.hog_metrica)||COM_HOG_METRICAS[0];
+      prodLabel = m.value;
+      if (c.hog_valor_extra>0) valorBadge=`<span class="com-badge-valor">$${Number(c.hog_valor_extra).toLocaleString('es-CO')}/acc extra</span>`;
+    } else {
+      const p = COM_MOV_PRODUCTOS.find(x=>x.value===c.mov_producto)||COM_MOV_PRODUCTOS[0];
+      const pShort = p.value==='porta_postpago'?'Porta postpago':p.value==='migracion_postpago'?'Migración':'Prepago';
+      prodLabel = `${pShort} × 1`;
+      if (c.mov_valor_extra>0) valorBadge=`<span class="com-badge-valor">$${Number(c.mov_valor_extra).toLocaleString('es-CO')}/ud extra</span>`;
+      let sec='';
+      if(c.mov_factor_migracion>0) sec+=`<span class="com-badge-sec">Mig ×${c.mov_factor_migracion}</span>`;
+      if(c.mov_factor_power>0)     sec+=`<span class="com-badge-sec">Pow ×${c.mov_factor_power}</span>`;
+      if(c.mov_factor_hogar>0)     sec+=`<span class="com-badge-sec">Hog ×${c.mov_factor_hogar}</span>`;
+      if(sec) secHtml=sec;
+    }
+
+    return `<tr>
+      <td style="font-weight:700">${escHtml(c.nombre)}</td>
+      <td><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.8px;color:${tipo.color};background:${tipo.bg};border:1px solid ${tipo.border};">
+        <span class="material-symbols-rounded" style="font-size:11px;">${tipo.icon}</span>${tipo.label}</span></td>
+      <td style="color:var(--texto-dim);font-size:12px;">${escHtml(sedeNombre)}</td>
+      <td style="font-size:12px;">${escHtml(prodLabel)}</td>
+      <td>${valorBadge||'<span style="color:var(--texto-dim)">—</span>'}</td>
+      <td>${secHtml}</td>
+      <td><span class="${c.activa?'com-badge-activa':'com-badge-inactiva'}">
+        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>
+        ${c.activa?'Activa':'Inactiva'}</span></td>
+      <td><div class="com-td-actions">
+        <button class="com-btn-edit" title="Ver detalle" style="color:var(--texto-dim)">
+          <span class="material-symbols-rounded" style="font-size:15px;">description</span></button>
+        <button class="com-btn-edit" title="Duplicar" onclick="comCampaniaDuplicarModal(${i})" style="color:var(--texto-dim)">
+          <span class="material-symbols-rounded" style="font-size:15px;">content_copy</span></button>
+        <button class="com-btn-edit" title="Editar" onclick="comCampaniaEditar(${i})">
+          <span class="material-symbols-rounded" style="font-size:15px;">edit</span></button>
+        <button class="com-btn-del" title="Eliminar" onclick="comCampaniaEliminar(${i})">
+          <span class="material-symbols-rounded" style="font-size:15px;">delete</span></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Nuevo / Editar ──
+function comCampaniaNueva() { comCampaniaAbrirModal(null); }
+function comCampaniaEditar(idx) { comCampaniaAbrirModal(idx); }
+
+function comCampaniaAbrirModal(idx) {
+  const esNueva = idx===null;
+  const c = esNueva
+    ? {nombre:'',tipo:'hogar',sede:'',activa:true,descripcion:'',
+       hog_metrica:'s_internet',hog_valor_extra:0,hog_kw_oferta_alta:'',hog_kw_ott:'',
+       mov_producto:'porta_postpago',mov_factor_migracion:0,mov_factor_power:0,mov_factor_hogar:0,mov_valor_extra:0}
+    : _comCampanias[idx];
+
+  comSedesCargar();
+  const sedesOpts = [
+    `<option value="">— Sin sede —</option>`,
+    ..._comSedes.map(s=>`<option value="${escHtml(s.nombre)}" ${c.sede===s.nombre?'selected':''}>${escHtml(s.nombre)}</option>`)
+  ].join('');
+
+  const tipoOpts = [
+    ['hogar','🏠 Hogar'],['portabilidad','📱 Portabilidad'],
+    ['migracion','🔄 Migración'],['tt','📺 T&T'],['otro','📦 Otro']
+  ].map(([v,l])=>`<option value="${v}" ${c.tipo===v?'selected':''}>${l}</option>`).join('');
+
+  const hogMetOpts = COM_HOG_METRICAS.map(m=>`<option value="${m.value}" ${c.hog_metrica===m.value?'selected':''}>${m.label}</option>`).join('');
+  const movProdOpts = COM_MOV_PRODUCTOS.map(p=>`<option value="${p.value}" ${c.mov_producto===p.value?'selected':''}>${p.label}</option>`).join('');
+
+  const showHog = comIsHogar(c.tipo) ? '' : 'none';
+  const showMov = comIsMovil(c.tipo) ? '' : 'none';
+
+  let overlay = document.getElementById('com-camp-modal-overlay');
+  if (!overlay) {
+    overlay=document.createElement('div'); overlay.id='com-camp-modal-overlay';
+    overlay.className='com-modal-overlay';
+    overlay.onclick=e=>{if(e.target===overlay)comCampaniaModalCerrar();};
+    document.body.appendChild(overlay);
+  }
+
+  overlay.innerHTML = `
+  <div class="com-modal com-modal-lg" onclick="event.stopPropagation()" style="max-height:90vh;display:flex;flex-direction:column;">
+    <div class="com-modal-header com-modal-header-colored">
+      <span class="com-modal-title">
+        <span class="material-symbols-rounded" style="font-size:16px;vertical-align:-2px;margin-right:4px;">${esNueva?'add_circle':'edit'}</span>
+        ${esNueva?'Nueva Campaña':'Editar campaña'}
+      </span>
+      <button class="com-modal-close" onclick="comCampaniaModalCerrar()">✕</button>
+    </div>
+    <div class="com-modal-body" style="overflow-y:auto;flex:1;">
+      <div class="com-form-row col2">
+        <div class="com-form-group" style="margin:0">
+          <label class="com-form-label">Nombre <span style="color:#F87171">*</span></label>
+          <input id="cc-nombre" class="com-form-input" type="text" value="${escHtml(c.nombre)}" placeholder="Ej: PORTABILIDAD ELITE">
+        </div>
+        <div class="com-form-group" style="margin:0">
+          <label class="com-form-label">Tipo <span style="color:#F87171">*</span></label>
+          <select id="cc-tipo" class="com-form-input com-form-select" onchange="comCampaniaOnTipoChange(this.value)">${tipoOpts}</select>
+        </div>
+      </div>
+      <div class="com-form-group">
+        <label class="com-form-label">Sede</label>
+        <select id="cc-sede" class="com-form-input com-form-select" style="max-width:300px;">${sedesOpts}</select>
+      </div>
+
+      <!-- ── Configuración HOGAR ── -->
+      <div id="cc-sec-hogar" class="com-modal-section hogar" style="display:${showHog}">
+        <div class="com-modal-section-title">
+          <span class="material-symbols-rounded" style="font-size:16px;">cottage</span> Configuración Hogar
+        </div>
+        <div class="com-form-row col2">
+          <div>
+            <label class="com-form-label">Métrica principal del piso</label>
+            <select id="cc-hog-metrica" class="com-form-input com-form-select">${hogMetOpts}</select>
+          </div>
+          <div>
+            <label class="com-form-label">Valor extra por acceso sobre piso ($)</label>
+            <div class="com-form-prefix">
+              <span class="com-form-prefix-label">$</span>
+              <input id="cc-hog-valor-extra" class="com-form-input" type="number" min="0" step="100" value="${c.hog_valor_extra||0}">
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid rgba(16,185,129,0.15);padding-top:12px;margin-top:4px;">
+          <div class="com-form-label" style="margin-bottom:10px;">Keywords para métricas condicionales</div>
+          <div class="com-form-row col2">
+            <div>
+              <label class="com-form-label">Keyword: Oferta alta</label>
+              <input id="cc-hog-kw-oferta" class="com-form-input" type="text" placeholder="EJ: 74900" value="${escHtml(c.hog_kw_oferta_alta||'')}">
+              <div class="com-form-hint">Métrica: <span class="com-metric">planes_oferta_alta</span></div>
+            </div>
+            <div>
+              <label class="com-form-label">Keyword: OTT</label>
+              <input id="cc-hog-kw-ott" class="com-form-input" type="text" placeholder="Ej: HBO" value="${escHtml(c.hog_kw_ott||'')}">
+              <div class="com-form-hint">Métricas: <span class="com-metric">planes_ott</span>, <span class="com-metric">pct_ott</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Configuración MÓVIL ── -->
+      <div id="cc-sec-movil" class="com-modal-section movil" style="display:${showMov}">
+        <div class="com-modal-section-title">
+          <span class="material-symbols-rounded" style="font-size:16px;">smartphone</span> Configuración Móvil
+        </div>
+        <div class="com-form-group">
+          <label class="com-form-label">Producto principal <span style="color:#F87171">*</span></label>
+          <select id="cc-mov-producto" class="com-form-input com-form-select">${movProdOpts}</select>
+          <div class="com-form-hint">El producto principal siempre cuenta como 1 unidad completa.</div>
+        </div>
+        <div style="border-top:1px solid rgba(59,130,246,0.15);padding-top:12px;margin-top:4px;">
+          <div class="com-form-label" style="margin-bottom:10px;">Productos secundarios — factor de conversión (0 = no aplica):</div>
+          <div class="com-form-row col2">
+            <div>
+              <label class="com-form-label">Migración → porta</label>
+              <input id="cc-mov-f-mig" class="com-form-input" type="number" min="0" step="0.1" value="${c.mov_factor_migracion||0}">
+              <div class="com-form-hint">Ej: 0.5 → cada migración vale 0.5 portas</div>
+            </div>
+            <div>
+              <label class="com-form-label">Power → porta</label>
+              <input id="cc-mov-f-pow" class="com-form-input" type="number" min="0" step="0.1" value="${c.mov_factor_power||0}">
+              <div class="com-form-hint">Ej: 0.5 → cada Power vale 0.5 portas</div>
+            </div>
+          </div>
+          <div class="com-form-row col2">
+            <div>
+              <label class="com-form-label">Accesos de hogar (complemento)</label>
+              <input id="cc-mov-f-hog" class="com-form-input" type="number" min="0" step="0.1" value="${c.mov_factor_hogar||0}">
+              <div class="com-form-hint">Si el asesor también vende hogar, suma accesos con este factor.</div>
+            </div>
+            <div>
+              <label class="com-form-label">Valor extra por unidad sobre piso ($)</label>
+              <div class="com-form-prefix">
+                <span class="com-form-prefix-label">$</span>
+                <input id="cc-mov-valor-extra" class="com-form-input" type="number" min="0" step="100" value="${c.mov_valor_extra||0}">
+              </div>
+              <div class="com-form-hint">Pago adicional por cada unidad del producto principal que supere el mínimo del piso.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="com-form-group">
+        <label class="com-form-label">Descripción</label>
+        <textarea id="cc-descripcion" class="com-form-input com-form-textarea" placeholder="Descripción opcional...">${escHtml(c.descripcion||'')}</textarea>
+      </div>
+      <label class="com-form-check">
+        <input type="checkbox" id="cc-activa" ${c.activa?'checked':''}>
+        Campaña activa
+      </label>
+    </div>
+    <div class="com-modal-footer">
+      <button class="com-btn-cancel" onclick="comCampaniaModalCerrar()">Cancelar</button>
+      <button class="com-btn-save" onclick="comCampaniaGuardar(${esNueva?'null':idx})">
+        <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-2px;">check</span>
+        ${esNueva?'Crear Campaña':'Guardar cambios'}
+      </button>
+    </div>
+  </div>`;
+
+  overlay.style.display='flex';
+  setTimeout(()=>document.getElementById('cc-nombre')?.focus(),80);
+}
+
+function comCampaniaOnTipoChange(tipo) {
+  const hog=document.getElementById('cc-sec-hogar');
+  const mov=document.getElementById('cc-sec-movil');
+  if(hog) hog.style.display = comIsHogar(tipo)?'':'none';
+  if(mov) mov.style.display = comIsMovil(tipo)?'':'none';
+}
+
+function comCampaniaModalCerrar() {
+  const el=document.getElementById('com-camp-modal-overlay'); if(el)el.style.display='none';
+}
+
+function comCampaniaGuardar(idx) {
+  const nombre=(document.getElementById('cc-nombre')?.value||'').trim();
+  if(!nombre){document.getElementById('cc-nombre')?.focus();return;}
+  const tipo=document.getElementById('cc-tipo')?.value||'hogar';
+  const obj={
+    nombre, tipo,
+    sede: document.getElementById('cc-sede')?.value||'',
+    activa: document.getElementById('cc-activa')?.checked??true,
+    descripcion: document.getElementById('cc-descripcion')?.value||'',
+    hog_metrica: document.getElementById('cc-hog-metrica')?.value||'s_internet',
+    hog_valor_extra: parseFloat(document.getElementById('cc-hog-valor-extra')?.value)||0,
+    hog_kw_oferta_alta: document.getElementById('cc-hog-kw-oferta')?.value||'',
+    hog_kw_ott: document.getElementById('cc-hog-kw-ott')?.value||'',
+    mov_producto: document.getElementById('cc-mov-producto')?.value||'porta_postpago',
+    mov_factor_migracion: parseFloat(document.getElementById('cc-mov-f-mig')?.value)||0,
+    mov_factor_power: parseFloat(document.getElementById('cc-mov-f-pow')?.value)||0,
+    mov_factor_hogar: parseFloat(document.getElementById('cc-mov-f-hog')?.value)||0,
+    mov_valor_extra: parseFloat(document.getElementById('cc-mov-valor-extra')?.value)||0,
+  };
+  if(idx===null) _comCampanias.push(obj);
+  else _comCampanias[idx]=obj;
+  comCampaniasGuardar();
+  comCampaniaModalCerrar();
+  comCampaniasRender();
+}
+
+function comCampaniaEliminar(idx) {
+  const c=_comCampanias[idx]; if(!c)return;
+  if(!confirm(`¿Eliminar la campaña "${c.nombre}"? Esta acción no se puede deshacer.`))return;
+  _comCampanias.splice(idx,1);
+  comCampaniasGuardar();
+  comCampaniasRender();
+}
+
+// ── Modal Duplicar ──
+function comCampaniaDuplicarModal(idx) {
+  const c=_comCampanias[idx]; if(!c)return;
+  comSedesCargar();
+  const sedesOpts=[
+    `<option value="">— Sin sede —</option>`,
+    ..._comSedes.map(s=>`<option value="${escHtml(s.nombre)}">${escHtml(s.nombre)}</option>`)
+  ].join('');
+
+  let overlay=document.getElementById('com-dup-modal-overlay');
+  if(!overlay){
+    overlay=document.createElement('div'); overlay.id='com-dup-modal-overlay';
+    overlay.className='com-modal-overlay';
+    overlay.onclick=e=>{if(e.target===overlay)overlay.style.display='none';};
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML=`
+  <div class="com-modal" onclick="event.stopPropagation()">
+    <div class="com-modal-header com-modal-header-colored">
+      <span class="com-modal-title">
+        <span class="material-symbols-rounded" style="font-size:16px;vertical-align:-2px;margin-right:4px;">content_copy</span>
+        Duplicar Campaña
+      </span>
+      <button class="com-modal-close" onclick="document.getElementById('com-dup-modal-overlay').style.display='none'">✕</button>
+    </div>
+    <div class="com-modal-body">
+      <p style="font-size:13px;color:var(--texto);margin:0 0 4px;">
+        Duplicando: <strong>${escHtml(c.nombre)}</strong>
+      </p>
+      <p style="font-size:12px;color:var(--texto-dim);margin:0 0 16px;">
+        Se copiarán pisos y condiciones del período seleccionado.
+      </p>
+      <div class="com-form-group">
+        <label class="com-form-label">Nombre de la nueva campaña <span style="color:#F87171">*</span></label>
+        <input id="cd-nombre" class="com-form-input" type="text" value="${escHtml(c.nombre)} - COPIA">
+      </div>
+      <div class="com-form-group">
+        <label class="com-form-label">Sede destino</label>
+        <select id="cd-sede" class="com-form-input com-form-select">${sedesOpts}</select>
+      </div>
+      <div class="com-form-group">
+        <label class="com-form-label">Copiar pisos y condiciones del período</label>
+        <select id="cd-periodo" class="com-form-input com-form-select">
+          <option value="">— Solo copiar campaña, sin pisos/condiciones —</option>
+        </select>
+        <div class="com-form-hint">Opcional: si seleccionas un período, se duplican también los pisos y condiciones.</div>
+      </div>
+    </div>
+    <div class="com-modal-footer">
+      <button class="com-btn-cancel" onclick="document.getElementById('com-dup-modal-overlay').style.display='none'">Cancelar</button>
+      <button class="com-btn-save" onclick="comCampaniaDuplicarEjecutar(${idx})" style="background:#4F46E5;">
+        <span class="material-symbols-rounded" style="font-size:14px;vertical-align:-2px;">content_copy</span>
+        Duplicar
+      </button>
+    </div>
+  </div>`;
+  overlay.style.display='flex';
+  setTimeout(()=>{const n=document.getElementById('cd-nombre');if(n){n.focus();n.select();}},80);
+}
+
+function comCampaniaDuplicarEjecutar(idx) {
+  const nombre=(document.getElementById('cd-nombre')?.value||'').trim();
+  if(!nombre){document.getElementById('cd-nombre')?.focus();return;}
+  const original=_comCampanias[idx];
+  const copia={...original, nombre, sede: document.getElementById('cd-sede')?.value||original.sede};
+  _comCampanias.push(copia);
+  comCampaniasGuardar();
+  document.getElementById('com-dup-modal-overlay').style.display='none';
+  comCampaniasRender();
 }
 
 </script>
