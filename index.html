@@ -1215,6 +1215,82 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 .com-empty-title{font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:700;color:var(--texto);}
 .com-empty-sub{font-size:12px;line-height:1.6;max-width:340px;}
 
+/* ── Tabla genérica de Comisiones ── */
+.com-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.com-section-title{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:800;color:var(--blanco);}
+.com-section-sub{font-size:11px;color:var(--texto-dim);margin-top:2px;}
+.com-btn-nuevo{display:flex;align-items:center;gap:6px;padding:8px 16px;
+  background:#F59E0B;border:none;border-radius:6px;cursor:pointer;
+  font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;
+  color:#000;letter-spacing:.4px;transition:background .15s;}
+.com-btn-nuevo:hover{background:#D97706;}
+.com-table-wrap{background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:8px;overflow:hidden;}
+.com-table{width:100%;border-collapse:collapse;}
+.com-table thead th{padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--texto-dim);text-align:left;
+  border-bottom:1px solid var(--gris-linea);background:rgba(255,255,255,0.02);}
+.com-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background .12s;}
+.com-table tbody tr:last-child{border-bottom:none;}
+.com-table tbody tr:hover{background:rgba(255,255,255,0.03);}
+.com-table td{padding:12px 16px;font-size:13px;color:var(--texto);vertical-align:middle;}
+.com-badge-activa{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+  border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px;
+  background:rgba(52,211,153,0.15);color:#34D399;border:1px solid rgba(52,211,153,0.25);}
+.com-badge-inactiva{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+  border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px;
+  background:rgba(239,68,68,0.12);color:#F87171;border:1px solid rgba(239,68,68,0.2);}
+.com-td-actions{display:flex;gap:6px;justify-content:flex-end;}
+.com-btn-edit,.com-btn-del{display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:6px;border:1px solid var(--gris-linea);
+  background:none;cursor:pointer;transition:all .15s;}
+.com-btn-edit{color:var(--texto-dim);}
+.com-btn-edit:hover{color:#60A5FA;border-color:#60A5FA;background:rgba(96,165,250,0.08);}
+.com-btn-del{color:var(--texto-dim);}
+.com-btn-del:hover{color:#F87171;border-color:#F87171;background:rgba(248,113,113,0.08);}
+
+/* ── Modal Comisiones ── */
+.com-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.com-modal{background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:10px;
+  width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.com-modal-header{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px;border-bottom:1px solid var(--gris-linea);}
+.com-modal-title{font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:800;color:var(--blanco);}
+.com-modal-close{background:none;border:none;cursor:pointer;color:var(--texto-dim);
+  font-size:20px;line-height:1;padding:2px 6px;border-radius:4px;transition:color .15s;}
+.com-modal-close:hover{color:var(--blanco);}
+.com-modal-body{padding:20px;}
+.com-form-group{margin-bottom:16px;}
+.com-form-label{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--texto-dim);margin-bottom:6px;}
+.com-form-input{width:100%;background:var(--negro);border:1px solid var(--gris-linea);
+  border-radius:6px;padding:9px 12px;color:var(--blanco);
+  font-family:'Inter Tight',sans-serif;font-size:13px;outline:none;
+  transition:border-color .15s;box-sizing:border-box;}
+.com-form-input:focus{border-color:#F59E0B;}
+.com-form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.com-modal-footer{display:flex;justify-content:flex-end;gap:8px;
+  padding:14px 20px;border-top:1px solid var(--gris-linea);}
+.com-btn-cancel{padding:8px 18px;background:none;border:1px solid var(--gris-linea);
+  border-radius:6px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.com-btn-cancel:hover{color:var(--blanco);border-color:#888;}
+.com-btn-save{padding:8px 18px;background:#F59E0B;border:none;
+  border-radius:6px;color:#000;font-family:'Inter Tight',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;}
+.com-btn-save:hover{background:#D97706;}
+
+/* Modo claro */
+body.modo-claro .com-table-wrap{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .com-table thead th{background:#F9FAFB;color:#6B7280;}
+body.modo-claro .com-table tbody tr:hover{background:#F9FAFB;}
+body.modo-claro .com-table td{color:#111;}
+body.modo-claro .com-btn-edit,.modo-claro .com-btn-del{border-color:#E5E7EB;}
+body.modo-claro .com-modal{background:#fff;border-color:#E5E7EB;}
+body.modo-claro .com-form-input{background:#F9FAFB;border-color:#E5E7EB;color:#111;}
+body.modo-claro .com-section-title{color:#111;}
+
 /* ══════════════════════════════════════════════════════════════
    PANEL HOGAR
    ══════════════════════════════════════════════════════════════ */
@@ -3017,10 +3093,34 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- Contenido de cada tab -->
   <div id="com-content-sedes">
-    <div class="com-empty">
-      <span class="material-symbols-rounded com-empty-icon">location_city</span>
-      <div class="com-empty-title">Sedes</div>
-      <div class="com-empty-sub">Aquí irá la configuración de las sedes. En construcción.</div>
+    <div class="com-section-header">
+      <div>
+        <div class="com-section-title">Sedes</div>
+        <div class="com-section-sub">Gestiona las sedes de la empresa</div>
+      </div>
+      <button class="com-btn-nuevo" onclick="comSedeNueva()">
+        <span class="material-symbols-rounded" style="font-size:16px;">add</span> Nueva Sede
+      </button>
+    </div>
+    <div class="com-table-wrap">
+      <table class="com-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="com-sedes-tbody"></tbody>
+      </table>
+    </div>
+    <!-- Estado vacío -->
+    <div id="com-sedes-empty" style="display:none;">
+      <div class="com-empty">
+        <span class="material-symbols-rounded com-empty-icon">location_off</span>
+        <div class="com-empty-title">Sin sedes registradas</div>
+        <div class="com-empty-sub">Crea tu primera sede con el botón "Nueva Sede".</div>
+      </div>
     </div>
   </div>
   <div id="com-content-campanias" style="display:none;">
@@ -15356,7 +15456,7 @@ function mostrarPanelComisiones(tab) {
     if (e) { e.style.display = 'none'; e.classList && e.classList.remove('visible'); }
   });
   document.getElementById('panel-comisiones').style.display = 'block';
-  comTabSwitch(tab);
+  comTabSwitch(tab || 'sedes');
   aplicarPermisosUI();
 }
 
@@ -15368,6 +15468,8 @@ function comTabSwitch(tab) {
     if (nav) nav.classList.toggle('active', t === tab);
     if (cnt) cnt.style.display = t === tab ? '' : 'none';
   });
+  // Inicializar contenido del tab activo
+  if (tab === 'sedes') comSedesRender();
 }
 
 // ── Parsear Excel con SheetJS ──
@@ -20023,6 +20125,161 @@ function plantaEliminar(pid) {
   var btn  = document.getElementById('btn-confirmar-eliminar'); if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
   document.getElementById('planta-eliminar-modal').style.display = 'flex';
 }
+
+// ══════════════════════════════════════════════════════════════
+// COMISIONES — SEDES
+// ══════════════════════════════════════════════════════════════
+
+const COM_SEDES_KEY = 'fenix_com_sedes';
+let _comSedes = [];
+
+function comSedesCargar() {
+  try {
+    const saved = localStorage.getItem(COM_SEDES_KEY);
+    _comSedes = saved ? JSON.parse(saved) : [];
+  } catch(e) { _comSedes = []; }
+}
+
+function comSedesGuardar() {
+  try { localStorage.setItem(COM_SEDES_KEY, JSON.stringify(_comSedes)); } catch(e) {}
+}
+
+function comSedesRender() {
+  comSedesCargar();
+  const tbody = document.getElementById('com-sedes-tbody');
+  const empty = document.getElementById('com-sedes-empty');
+  if (!tbody) return;
+
+  if (_comSedes.length === 0) {
+    tbody.innerHTML = '';
+    if (empty) empty.style.display = '';
+    document.querySelector('.com-table-wrap') && (document.querySelector('#com-content-sedes .com-table-wrap').style.display = 'none');
+    return;
+  }
+
+  if (empty) empty.style.display = 'none';
+  const wrap = document.getElementById('com-content-sedes')?.querySelector('.com-table-wrap');
+  if (wrap) wrap.style.display = '';
+
+  tbody.innerHTML = _comSedes.map((s, i) => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-symbols-rounded" style="font-size:18px;color:#3B82F6;flex-shrink:0;">location_on</span>
+          <span style="font-weight:600;">${escHtml(s.nombre)}</span>
+        </div>
+      </td>
+      <td>
+        <span class="${s.activa ? 'com-badge-activa' : 'com-badge-inactiva'}">
+          <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>
+          ${s.activa ? 'Activa' : 'Inactiva'}
+        </span>
+      </td>
+      <td>
+        <div class="com-td-actions">
+          <button class="com-btn-edit" title="Editar" onclick="comSedeEditar(${i})">
+            <span class="material-symbols-rounded" style="font-size:16px;">edit</span>
+          </button>
+          <button class="com-btn-del" title="Eliminar" onclick="comSedeEliminar(${i})">
+            <span class="material-symbols-rounded" style="font-size:16px;">delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function comSedeNueva() {
+  comSedeAbrirModal(null);
+}
+
+function comSedeEditar(idx) {
+  comSedeAbrirModal(idx);
+}
+
+function comSedeAbrirModal(idx) {
+  const esNueva = idx === null;
+  const sede = esNueva ? { nombre: '', activa: true } : _comSedes[idx];
+
+  // Crear/mostrar modal
+  let overlay = document.getElementById('com-sede-modal-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'com-sede-modal-overlay';
+    overlay.className = 'com-modal-overlay';
+    overlay.onclick = function(e) { if (e.target === overlay) comSedeModalCerrar(); };
+    document.body.appendChild(overlay);
+  }
+
+  overlay.innerHTML = `
+    <div class="com-modal" onclick="event.stopPropagation()">
+      <div class="com-modal-header">
+        <span class="com-modal-title">${esNueva ? 'Nueva Sede' : 'Editar Sede'}</span>
+        <button class="com-modal-close" onclick="comSedeModalCerrar()">✕</button>
+      </div>
+      <div class="com-modal-body">
+        <div class="com-form-group">
+          <label class="com-form-label">Nombre de la Sede</label>
+          <input id="com-sede-nombre" class="com-form-input" type="text"
+            placeholder="Ej: Medellín, Bogotá..." value="${escHtml(sede.nombre)}"
+            onkeydown="if(event.key==='Enter')comSedeGuardar(${esNueva ? 'null' : idx})">
+        </div>
+        <div class="com-form-group">
+          <label class="com-form-label">Estado</label>
+          <select id="com-sede-estado" class="com-form-input com-form-select">
+            <option value="activa" ${sede.activa ? 'selected' : ''}>Activa</option>
+            <option value="inactiva" ${!sede.activa ? 'selected' : ''}>Inactiva</option>
+          </select>
+        </div>
+      </div>
+      <div class="com-modal-footer">
+        <button class="com-btn-cancel" onclick="comSedeModalCerrar()">Cancelar</button>
+        <button class="com-btn-save" onclick="comSedeGuardar(${esNueva ? 'null' : idx})">
+          ${esNueva ? 'Crear Sede' : 'Guardar cambios'}
+        </button>
+      </div>
+    </div>
+  `;
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('com-sede-nombre')?.focus(), 80);
+}
+
+function comSedeModalCerrar() {
+  const overlay = document.getElementById('com-sede-modal-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function comSedeGuardar(idx) {
+  const nombre = (document.getElementById('com-sede-nombre')?.value || '').trim();
+  if (!nombre) {
+    document.getElementById('com-sede-nombre')?.focus();
+    return;
+  }
+  const activa = document.getElementById('com-sede-estado')?.value === 'activa';
+
+  if (idx === null) {
+    _comSedes.push({ nombre, activa });
+  } else {
+    _comSedes[idx] = { nombre, activa };
+  }
+  comSedesGuardar();
+  comSedeModalCerrar();
+  comSedesRender();
+}
+
+function comSedeEliminar(idx) {
+  const sede = _comSedes[idx];
+  if (!sede) return;
+  if (!confirm(`¿Eliminar la sede "${sede.nombre}"? Esta acción no se puede deshacer.`)) return;
+  _comSedes.splice(idx, 1);
+  comSedesGuardar();
+  comSedesRender();
+}
+
 </script>
 </body>
 </html>
