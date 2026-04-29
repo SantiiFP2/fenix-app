@@ -411,8 +411,8 @@ body.modo-claro .pago-item{background:#F1F3F4;border-radius:var(--g-radius-sm);}
 
 #main-content{flex:1;min-width:0;overflow-x:hidden;transition:margin-left 0.25s cubic-bezier(.4,0,.2,1);margin-left:0;}
 #main-content.full{margin-left:0;}
-#panel-inicio,#panel-codigos-cvc,#panel-metas,#panel-cosechas,#panel-hogar{position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;transition:left 0.25s cubic-bezier(.4,0,.2,1);z-index:10;background:var(--negro);}
-#panel-inicio.full,#panel-codigos-cvc.full,#panel-metas.full,#panel-cosechas.full,#panel-hogar.full{left:0;}
+#panel-inicio,#panel-codigos-cvc,#panel-metas,#panel-cosechas,#panel-hogar,#panel-comisiones{position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;transition:left 0.25s cubic-bezier(.4,0,.2,1);z-index:10;background:var(--negro);}
+#panel-inicio.full,#panel-codigos-cvc.full,#panel-metas.full,#panel-cosechas.full,#panel-hogar.full,#panel-comisiones.full{left:0;}
 
 /* Toggle button */
 #sidebar-toggle{display:none!important;;padding:0;
@@ -1192,6 +1192,27 @@ body.modo-claro .cos-table thead tr:nth-child(1) th{background:#EAECF0;}
 /* Tabla más ancha */
 .cos-table-wrap{min-width:0;}
 #panel-cosechas .cos-table-wrap{border-radius:6px;}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL COMISIONES
+   ══════════════════════════════════════════════════════════════ */
+#panel-comisiones{display:none;padding:24px 32px;}
+
+/* Tabs de Comisiones */
+.com-tabs{display:flex;gap:2px;border-bottom:1px solid var(--gris-linea);margin-bottom:24px;overflow-x:auto;scrollbar-width:none;}
+.com-tabs::-webkit-scrollbar{display:none;}
+.com-tab{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;
+  padding:9px 18px;border:none;background:none;cursor:pointer;color:var(--texto-dim);
+  border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s;}
+.com-tab:hover{color:var(--blanco);}
+.com-tab.active{color:#F59E0B;border-bottom-color:#F59E0B;}
+
+/* Contenido vacío placeholder */
+.com-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:80px 40px;color:var(--texto-dim);text-align:center;}
+.com-empty-icon{font-size:40px;opacity:.35;}
+.com-empty-title{font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:700;color:var(--texto);}
+.com-empty-sub{font-size:12px;line-height:1.6;max-width:340px;}
 
 /* ══════════════════════════════════════════════════════════════
    PANEL HOGAR
@@ -2963,6 +2984,97 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 <!-- ══════════════════════════════════════════════════════════════
      PANEL HOGAR
      ══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════
+     PANEL COMISIONES
+     ═══════════════════════════════════════════════════════════ -->
+<div id="panel-comisiones" style="display:none;">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:4px">CONFIGURACIÓN</div>
+      <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--blanco);line-height:1">Comisiones</div>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="com-tabs">
+    <button class="com-tab active" id="com-tab-sedes"       onclick="comTabSwitch('sedes')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">location_city</span>Sedes
+    </button>
+    <button class="com-tab" id="com-tab-campanias"  onclick="comTabSwitch('campanias')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">campaign</span>Campañas
+    </button>
+    <button class="com-tab" id="com-tab-periodo"    onclick="comTabSwitch('periodo')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">date_range</span>Periodo
+    </button>
+    <button class="com-tab" id="com-tab-pisos"      onclick="comTabSwitch('pisos')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">stairs</span>Pisos
+    </button>
+    <button class="com-tab" id="com-tab-condiciones" onclick="comTabSwitch('condiciones')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">rule</span>Condiciones
+    </button>
+    <button class="com-tab" id="com-tab-agentes"    onclick="comTabSwitch('agentes')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">person</span>Agentes
+    </button>
+    <button class="com-tab" id="com-tab-asignaciones" onclick="comTabSwitch('asignaciones')">
+      <span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;margin-right:4px;">assignment_ind</span>Asignaciones
+    </button>
+  </div>
+
+  <!-- Contenido de cada tab -->
+  <div id="com-content-sedes">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">location_city</span>
+      <div class="com-empty-title">Sedes</div>
+      <div class="com-empty-sub">Aquí irá la configuración de las sedes. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-campanias" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">campaign</span>
+      <div class="com-empty-title">Campañas</div>
+      <div class="com-empty-sub">Aquí irá la configuración de campañas. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-periodo" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">date_range</span>
+      <div class="com-empty-title">Periodo</div>
+      <div class="com-empty-sub">Aquí irá la configuración del periodo de comisiones. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-pisos" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">stairs</span>
+      <div class="com-empty-title">Pisos</div>
+      <div class="com-empty-sub">Aquí irá la configuración de pisos de comisión. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-condiciones" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">rule</span>
+      <div class="com-empty-title">Condiciones</div>
+      <div class="com-empty-sub">Aquí irá la configuración de condiciones para comisionar. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-agentes" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">person</span>
+      <div class="com-empty-title">Agentes</div>
+      <div class="com-empty-sub">Aquí irá el listado y configuración de agentes. En construcción.</div>
+    </div>
+  </div>
+  <div id="com-content-asignaciones" style="display:none;">
+    <div class="com-empty">
+      <span class="material-symbols-rounded com-empty-icon">assignment_ind</span>
+      <div class="com-empty-title">Asignaciones</div>
+      <div class="com-empty-sub">Aquí irá la asignación de agentes a campañas y sedes. En construcción.</div>
+    </div>
+  </div>
+
+</div><!-- /panel-comisiones -->
+
 <div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
 <div id="hog-grid" style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;">
 
@@ -8100,7 +8212,7 @@ function mostrarPanelInicio() {
   _panelInicioVisible = true;
   // Ocultar todos los paneles antes de mostrar inicio
   ['main-content','panel-codigos-cvc','panel-nuevo-cvc','panel-metas',
-   'panel-cosechas','panel-hogar','panel-planta','panel-usuarios'].forEach(function(id){
+   'panel-cosechas','panel-hogar','panel-planta','panel-usuarios','panel-comisiones'].forEach(function(id){
     var e=document.getElementById(id); if(e) e.style.display='none';
   });
   document.getElementById('panel-inicio').classList.add('visible');
@@ -8130,10 +8242,12 @@ function mostrarPanelInicio() {
 
 function ocultarPanelInicio() {
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
+  (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   _panelInicioVisible = false;
   document.getElementById('panel-inicio').classList.remove('visible');
   document.getElementById('main-content').style.display = '';
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
+  (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   // sb-inicio-btn eliminado con el nav lateral
   const sbMetas = document.getElementById('sb-metas-btn');
   if (sbMetas) sbMetas.classList.remove('active');
@@ -9941,6 +10055,7 @@ function selectSubmenu(tipo) {
 
 function ocultarPanelCvcFull() {
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
+  (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   document.getElementById('panel-codigos-cvc').style.display = 'none';
 }
 function ocultarPanelMetasFn() {
@@ -11395,6 +11510,7 @@ function selectProductMetas(el) {
 
 function mostrarPanelMetas() {
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
+  (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   setHeaderModulo('Metas', 'CLARO COLOMBIA');
   ocultarPanelInicio();
   _ocultarPanelPlanta();
@@ -13751,6 +13867,7 @@ function mostrarPanelHogar() {
   _ocultarPanelPlanta();
   var _pm=document.getElementById('panel-metas'); if(_pm) _pm.style.display='none';
   var _pcos=document.getElementById('panel-cosechas'); if(_pcos) _pcos.style.display='none';
+  var _pcom=document.getElementById('panel-comisiones'); if(_pcom) _pcom.style.display='none';
   document.getElementById('main-content').style.display = 'none';
   const pi = document.getElementById('panel-inicio');
   if (pi) { pi.classList.remove('visible'); }
@@ -15219,11 +15336,45 @@ function mostrarPanelCosechas() {
   document.getElementById('panel-codigos-cvc') && (document.getElementById('panel-codigos-cvc').style.display = 'none');
   document.getElementById('panel-metas') && (document.getElementById('panel-metas').style.display = 'none');
   const _phCos = document.getElementById('panel-hogar'); if(_phCos) _phCos.style.display = 'none';
+  document.getElementById('panel-comisiones') && (document.getElementById('panel-comisiones').style.display = 'none');
   document.getElementById('panel-cosechas').style.display = 'block';
   aplicarPermisosUI();
   const btnVaciar = document.getElementById('btn-vaciar-cosechas');
   if (btnVaciar) btnVaciar.style.display = tienePerm('vaciar_cosechas') ? '' : 'none';
   cosInit();
+}
+
+// ══════════════════════════════════════════════════════════════
+// MÓDULO COMISIONES
+// ══════════════════════════════════════════════════════════════
+
+let _comTabActual = 'sedes';
+
+const COM_TABS = ['sedes','campanias','periodo','pisos','condiciones','agentes','asignaciones'];
+
+function mostrarPanelComisiones(tab) {
+  tab = tab || _comTabActual || 'sedes';
+  setHeaderModulo('Comisiones', 'CONFIGURACIÓN');
+  _ocultarPanelPlanta();
+  // Ocultar todos los demás paneles
+  ['main-content','panel-codigos-cvc','panel-nuevo-cvc','panel-metas',
+   'panel-cosechas','panel-hogar','panel-inicio','panel-usuarios'].forEach(function(id){
+    var e = document.getElementById(id);
+    if (e) { e.style.display = 'none'; e.classList && e.classList.remove('visible'); }
+  });
+  document.getElementById('panel-comisiones').style.display = 'block';
+  comTabSwitch(tab);
+  aplicarPermisosUI();
+}
+
+function comTabSwitch(tab) {
+  _comTabActual = tab;
+  COM_TABS.forEach(function(t) {
+    var btn = document.getElementById('com-tab-' + t);
+    var cnt = document.getElementById('com-content-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (cnt) cnt.style.display = t === tab ? '' : 'none';
+  });
 }
 
 // ── Parsear Excel con SheetJS ──
@@ -18445,6 +18596,45 @@ document.addEventListener('DOMContentLoaded', function() {
           </button>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="sb-nav-divider"></div>
+
+  <!-- MODULO: Comisiones -->
+  <div class="sb-nav-module" id="sb-mod-comisiones">
+    <div class="sb-nav-module-title">COMISIONES</div>
+
+    <div class="sb-nav-product open" id="sb-nav-prod-com-config">
+      <button class="sb-nav-product-btn" onclick="toggleSbNavProduct('com-config')">
+        <span class="material-symbols-rounded sb-nav-prod-icon" style="color:#F59E0B;">settings</span>
+        <span class="sb-nav-prod-label">Configuración</span>
+        <span class="sb-nav-prod-arrow" id="sb-nav-parr-com-config">▾</span>
+      </button>
+      <div class="sb-nav-submenu" id="sb-nav-sub-com-config">
+        <button id="sb-com-sedes" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('sedes');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">location_city</span> Sedes
+        </button>
+        <button id="sb-com-campanias" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('campanias');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">campaign</span> Campañas
+        </button>
+        <button id="sb-com-periodo" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('periodo');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">date_range</span> Periodo
+        </button>
+        <button id="sb-com-pisos" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('pisos');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">stairs</span> Pisos
+        </button>
+        <button id="sb-com-condiciones" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('condiciones');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">rule</span> Condiciones
+        </button>
+        <button id="sb-com-agentes" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('agentes');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">person</span> Agentes
+        </button>
+        <button id="sb-com-asignaciones" class="sb-nav-sub-item" onclick="closeLauncher();mostrarPanelComisiones('asignaciones');">
+          <span class="material-symbols-rounded" style="font-size:13px;color:#F59E0B;">assignment_ind</span> Asignaciones
+        </button>
       </div>
     </div>
   </div>
