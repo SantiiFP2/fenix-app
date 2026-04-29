@@ -15540,9 +15540,27 @@ function proyParamsDefault() {
   };
 }
 
+const PROY_PARAMS_KEY = 'fenix_proy_params';
+
 function proyGetParams() {
-  if (!_proyParams) _proyParams = proyParamsDefault();
+  if (!_proyParams) {
+    // Cargar desde localStorage si hay valores guardados, si no usar defaults de fábrica
+    try {
+      const saved = localStorage.getItem(PROY_PARAMS_KEY);
+      _proyParams = saved ? { ...proyParamsDefault(), ...JSON.parse(saved) } : proyParamsDefault();
+    } catch(e) {
+      _proyParams = proyParamsDefault();
+    }
+  }
   return _proyParams;
+}
+
+function proyTienePersonalizados() {
+  try { return !!localStorage.getItem(PROY_PARAMS_KEY); } catch(e) { return false; }
+}
+
+function proyGuardarParams() {
+  try { localStorage.setItem(PROY_PARAMS_KEY, JSON.stringify(_proyParams)); } catch(e) {}
 }
 
 // Calcular ARPU real desde los datos de factura cargados
@@ -16110,7 +16128,8 @@ function cosRenderProyeccion(result) {
           ${inp('pi-caida-global', p.caida_global, `proySetParam('caida_global',+this.value)`, '#FCA5A5', '52px')}
           <span style="font-size:14px;color:var(--texto-dim)">%</span>
         </div>
-        ${puedeReset ? `<button onclick="proyReset()" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>` : ''}
+        ${proyTienePersonalizados() ? `<div style="font-size:9px;color:#34D399;text-align:center;letter-spacing:.5px">✓ Valores guardados</div>` : ''}
+        ${puedeReset ? `<button onclick="proyReset()" title="Restablecer todos los % a valores de fábrica y borrar guardados" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>` : ''}
       </div>
     </div>
     <!-- 3 columnas -->
@@ -16156,6 +16175,7 @@ function setCosProyMesOverride(val) {
 function proySetParam(key, val) {
   const p = proyGetParams();
   p[key] = Number(val);
+  proyGuardarParams(); // Auto-guardar en localStorage
 
   // Recalcular y actualizar totales quirúrgicamente sin re-renderizar el DOM
   const result = cosCalcular();
@@ -16226,6 +16246,7 @@ function proySetParam(key, val) {
 }
 
 function proyReset() {
+  try { localStorage.removeItem(PROY_PARAMS_KEY); } catch(e) {}
   _proyParams = null;
   const result = cosCalcular();
   if (result) cosRenderProyeccion(result);
