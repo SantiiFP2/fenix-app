@@ -3534,6 +3534,30 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
       </div>
     </div>
 
+    <!-- Card 11: Incentivos Adicionales -->
+    <div class="card">
+      <div class="card-header" onclick="movToggle('hog-inc')" style="cursor:pointer;user-select:none;">
+        <div class="card-num">11</div>
+        <div class="card-title">Incentivos Adicionales</div>
+        <span id="mov-arrow-hog-inc" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      </div>
+      <div class="card-body" id="mov-body-hog-inc" style="display:none;gap:10px;">
+        <div style="font-size:11px;color:var(--texto-dim);letter-spacing:0.5px;line-height:1.5;">
+          Agrega bonos, incentivos o pagos adicionales que quieras sumar al cobro neto proyectado.
+        </div>
+        <div id="hog-incentivos-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:4px;"></div>
+        <button onclick="hogAgregarIncentivo()"
+          style="width:100%;background:rgba(251,191,36,0.06);border:1px dashed rgba(251,191,36,0.4);color:var(--amarillo);padding:9px;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px;transition:all 0.15s;"
+          onmouseover="this.style.background='rgba(251,191,36,0.13)'" onmouseout="this.style.background='rgba(251,191,36,0.06)'">
+          ＋ Agregar Incentivo
+        </button>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;">
+          <span style="font-size:11px;color:var(--texto-dim);text-transform:uppercase;letter-spacing:0.5px;">Total</span>
+          <span id="hog-incentivos-total" style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:var(--amarillo);">$0</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Calcular button (mismo estilo que Móvil) -->
     <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
     <button id="hog-btn-guardar-proy" onclick="guardarProyeccionHogar()"
@@ -8665,6 +8689,7 @@ async function piGuardarProyeccionHogarBD(snap) {
         boni_cumpl:  Math.round(snap.boniCumpl       || 0),
         tecnologia:  Math.round(snap.tec             || 0),
         semilleros:  Math.round(snap.semilleros      || 0),
+        incentivos:  Math.round(snap.incentivosHog   || 0),
       },
       operativo: {
         total:       Math.round(snap.totalCobroProyOp || 0),
@@ -8677,6 +8702,7 @@ async function piGuardarProyeccionHogarBD(snap) {
         boni_cumpl:  Math.round(snap.boniCumpl        || 0),
         tecnologia:  Math.round(snap.tec              || 0),
         semilleros:  Math.round(snap.semilleros       || 0),
+        incentivos:  Math.round(snap.incentivosHog    || 0),
       },
       snapshot: {
         canalesMap: snap.canalesMap,
@@ -13108,6 +13134,7 @@ let _hogBoniCumplVisible = false; // Bonificación por Cumplimiento
 let _hogTecnologiaVisible = false; // Tecnología (ULTRAWIFI / DONGLE)
 let _hogSemillerosHabilitado = false;
 let _hogSemilleros = [];           // [{mes, valorBase, cumplPct, pctAplicado, valorEfectivo, cantidad, total}]
+let hogIncentivos  = [];           // [{descripcion, valor}] — incentivos adicionales Hogar
 let _hogSemilleroEditIdx = null;
 const HOG_VALORES_MES = { '1': 1000000, '2': 800000, '3': 600000 };
 let _hogProyeccionGuardada = null; // snapshot guardado en Panel de Inicio
@@ -13412,10 +13439,13 @@ function hogRecalcularProyeccion() {
   // Semilleros Hogar (solo si habilitado)
   const totalHogSemilleros = _hogSemillerosHabilitado ? _hogSemilleros.reduce((s, x) => s + x.total, 0) : 0;
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros
-  const totalCobroProy   = totalProyPpales + adicP1   + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros;
+  // Incentivos Adicionales Hogar
+  const totalHogIncentivos = hogGetTotalIncentivos();
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros + incentivos
+  const totalCobroProy   = totalProyPpales + adicP1   + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos;
   // Cobro Operativo = igual pero con adicProy completo (sin dividir entre meses)
-  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros;
+  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -13449,6 +13479,7 @@ function hogRecalcularProyeccion() {
     if (totalBoniCumpl > 0)        parts.push(`Boni. Cumpl. ${fmt(totalBoniCumpl)}`);
     if (totalTecnologia > 0)       parts.push(`Tecnología ${fmt(totalTecnologia)}`);
     if (totalHogSemilleros > 0)    parts.push(`Semilleros ${fmt(totalHogSemilleros)}`);
+    if (totalHogIncentivos > 0)    parts.push(`Incentivos ${fmt(totalHogIncentivos)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -13687,6 +13718,7 @@ function hogRecalcularProyeccion() {
     altoValor: Math.round(totalAltoValor),
     boniInt:   totalBoniInt, acel: totalAcel, boniCumpl: totalBoniCumpl,
     tec:       totalTecnologia, semilleros: totalHogSemilleros,
+    incentivosHog: totalHogIncentivos,
     totalOTs, periodoVal,
     canalesMap: datos.reduce((m,r)=>{ const c=_canalBoni(r.campaña); m[c]=(m[c]||0)+1; return m; }, {}),
     redMap:    datos.reduce((m,r)=>{ const k=r.isDTH?'DTH':r.tipoRed==='FTT'?'FTT':'BIDIR'; m[k]=(m[k]||0)+1; return m; }, {}),
@@ -14274,6 +14306,57 @@ function hogRenderTecnologiaSection(d) {
 }
 
 // ── Semilleros Hogares ──────────────────────────────────────────────────
+// ══════════════════════════════════════
+// INCENTIVOS ADICIONALES — HOGAR
+// ══════════════════════════════════════
+function hogGetTotalIncentivos() {
+  return hogIncentivos.reduce((s, inc) => s + (inc.valor || 0), 0);
+}
+
+function hogActualizarTotalIncentivos() {
+  const total = hogGetTotalIncentivos();
+  const el = document.getElementById('hog-incentivos-total');
+  if (el) el.textContent = '$' + Math.round(total).toLocaleString('es-CO');
+  if (_hogResultados && _hogResultados.length) hogRecalcularProyeccion();
+}
+
+function hogAgregarIncentivo() {
+  hogIncentivos.push({ descripcion: '', valor: 0 });
+  hogRenderIncentivosLista();
+}
+
+function hogEliminarIncentivo(i) {
+  hogIncentivos.splice(i, 1);
+  hogRenderIncentivosLista();
+}
+
+function hogActualizarIncentivo(i, campo, val) {
+  hogIncentivos[i][campo] = campo === 'valor' ? (parseFloat(val) || 0) : val;
+  hogActualizarTotalIncentivos();
+}
+
+function hogRenderIncentivosLista() {
+  const lista = document.getElementById('hog-incentivos-lista');
+  if (!lista) return;
+  if (!hogIncentivos.length) {
+    lista.innerHTML = '<div style="font-size:11px;color:var(--texto-dim);text-align:center;padding:6px 0;">Sin incentivos configurados</div>';
+    hogActualizarTotalIncentivos();
+    return;
+  }
+  lista.innerHTML = hogIncentivos.map((inc, i) => `
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+      <input type="text" placeholder="Descripción" value="${inc.descripcion}"
+        style="flex:1;min-width:120px;background:var(--negro);border:1px solid var(--gris-linea);border-radius:3px;color:var(--texto);font-size:12px;padding:5px 8px;outline:none;"
+        oninput="hogActualizarIncentivo(${i},'descripcion',this.value)">
+      <input type="number" placeholder="Valor" value="${inc.valor || ''}" min="0" step="1000"
+        style="width:110px;background:var(--negro);border:1px solid rgba(251,191,36,0.4);border-radius:3px;color:var(--amarillo);font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-align:right;padding:5px 8px;outline:none;"
+        oninput="hogActualizarIncentivo(${i},'valor',this.value)">
+      <button onclick="hogEliminarIncentivo(${i})"
+        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:3px;color:#FCA5A5;width:26px;height:26px;cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;">&times;</button>
+    </div>`).join('');
+  hogActualizarTotalIncentivos();
+}
+
 function hogToggleSemilleros() {
   _hogSemillerosHabilitado = !_hogSemillerosHabilitado;
   const body   = document.getElementById('hog-sem-body');
