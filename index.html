@@ -1969,7 +1969,8 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
           </div>
           <div style="position:relative;">
             <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Nueva contraseña <span style="font-weight:400;text-transform:none;font-size:9px;">(vacío = sin cambio)</span></label>
-            <input id="eu-password" type="password" placeholder="••••••••" oninput="guEuMarkDirty()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+            <input id="eu-password" type="password" placeholder="Dejar vacío = sin cambio" oninput="guEuMarkDirty()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 36px 9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''"
+            autocomplete="new-password">
             <button type="button" onclick="guTogglePwd('eu-password',this)" style="position:absolute;right:10px;bottom:9px;background:none;border:none;cursor:pointer;color:var(--pa-text-dim);padding:0;line-height:1;">
               <span class="material-symbols-rounded" style="font-size:16px;">visibility</span>
             </button>
@@ -11294,13 +11295,14 @@ function guTogglePwd(inputId, btn) {
   var inp = document.getElementById(inputId);
   if (!inp) return;
   var icon = btn.querySelector('.material-symbols-rounded');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    if (icon) icon.textContent = 'visibility_off';
-  } else {
-    inp.type = 'password';
-    if (icon) icon.textContent = 'visibility';
-  }
+  var isHidden = inp.type === 'password';
+  // Algunos navegadores necesitan remover y recrear el atributo type
+  inp.setAttribute('type', isHidden ? 'text' : 'password');
+  if (icon) icon.textContent = isHidden ? 'visibility_off' : 'visibility';
+  // Mantener el foco y la posición del cursor
+  var val = inp.value;
+  inp.focus();
+  inp.setSelectionRange(val.length, val.length);
 }
 
 // ── Select/deselect all module toggles ──
@@ -11639,6 +11641,10 @@ async function abrirEditarUsuario(id) {
     document.getElementById('eu-nombre').value   = u.nombre;
     document.getElementById('eu-email').value    = u.email;
     document.getElementById('eu-password').value = '';
+    document.getElementById('eu-password').type  = 'password'; // reset toggle
+    // Reset el ícono del ojo por si se había abierto antes
+    var eyeBtn = document.querySelector('[onclick*="eu-password"]');
+    if (eyeBtn) { var eyeIco = eyeBtn.querySelector('.material-symbols-rounded'); if (eyeIco) eyeIco.textContent = 'visibility'; }
     document.getElementById('eu-rol').value      = u.rol;
     document.getElementById('eu-activo').checked = u.activo;
 
