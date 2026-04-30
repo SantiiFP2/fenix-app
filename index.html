@@ -409,8 +409,27 @@ body.modo-claro .pago-item{background:#F1F3F4;border-radius:var(--g-radius-sm);}
 }
 #sidebar.hidden{transform:translateX(-260px);opacity:0;pointer-events:none;}
 
-#main-content{flex:1;min-width:0;overflow-x:hidden;transition:margin-left 0.25s cubic-bezier(.4,0,.2,1);margin-left:0;}
-#main-content.full{margin-left:0;}
+#main-content{display:none;position:fixed;top:64px;left:0;right:0;bottom:0;z-index:10;background:var(--g-surface-variant);flex-direction:column;transition:left 0.25s cubic-bezier(.4,0,.2,1);}
+#main-content.full{left:0;}
+#mov-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;}
+#main-content .container{max-width:100%;margin:0;padding:20px 24px;padding-bottom:0;display:grid;grid-template-columns:460px 1fr;gap:20px;align-items:start;}
+
+/* ── Móvil card headers ── */
+#main-content .panel-config .card{border:1px solid var(--g-outline);box-shadow:0 1px 3px rgba(60,64,67,0.08);border-radius:12px;overflow:visible;}
+#main-content .panel-config .card-header{background:var(--g-surface-variant);border-radius:12px 12px 0 0;padding:11px 14px;min-height:50px;border-bottom:1px solid var(--g-outline);}
+#main-content .panel-config .card-body{background:var(--g-surface);}
+#main-content .panel-config .card-num{width:30px;height:30px;border-radius:8px;font-size:12px;font-weight:700;flex-shrink:0;}
+
+/* ── Móvil right panel ── */
+#mov-right-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--g-outline);background:var(--g-surface-variant);border-radius:14px 14px 0 0;}
+#mov-right-header .mov-right-title{font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);}
+#mov-right-header .mov-right-title span{color:var(--texto);}
+#mov-file-status{font-family:'Inter Tight',sans-serif;font-size:11px;display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-weight:600;}
+#mov-file-status.loaded{background:rgba(52,168,83,0.12);color:#34A853;}
+#mov-file-status.no-file{background:var(--g-outline);color:var(--texto-dim);}
+
+/* ── Móvil bottom bar ── */
+#mov-bottom-bar{flex-shrink:0;background:var(--g-surface);border-top:1px solid var(--g-outline);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -1px 4px rgba(60,64,67,0.08);z-index:20;}
 #panel-inicio,#panel-codigos-cvc,#panel-metas,#panel-cosechas,#panel-hogar,#panel-comisiones{position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;transition:left 0.25s cubic-bezier(.4,0,.2,1);z-index:10;background:var(--negro);}
 #panel-inicio.full,#panel-codigos-cvc.full,#panel-metas.full,#panel-cosechas.full,#panel-hogar.full,#panel-comisiones.full{left:0;}
 
@@ -4299,12 +4318,17 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
 
 <div id="main-content">
+<div id="mov-scroll-area">
 <div class="container">
 <div class="panel-config">
 
   <!-- 1. PERÍODO -->
   <div class="card">
-    <div class="card-header"><div class="card-num">1</div><div class="card-title">Período de Ventas</div></div>
+    <div class="card-header">
+      <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">01</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">calendar_month</span>
+      <div class="hog-card-htext"><div class="card-title">Período de Ventas</div><div class="hog-card-subtitle">Mes de ventas · ciclos de cobro C1 y C2</div></div>
+    </div>
     <div class="card-body">
       <div>
         <label>Mes en que se realizaron las ventas</label>
@@ -4338,7 +4362,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- 2. ESQUEMAS DE PAGO -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(2)" style="cursor:pointer;user-select:none;"><div class="card-num">2</div><div class="card-title">Esquemas de Pago</div><span id="mov-arrow-2" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(2)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">02</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">receipt_long</span>
+      <div class="hog-card-htext"><div class="card-title">Esquemas de Pago</div><div class="hog-card-subtitle">Post: 55/30/15% · Power: 46/22/16/16%</div></div>
+      <span id="mov-arrow-2" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-2" style="display:none;">
       <div class="esquema-box">
         <div class="esquema-title"><div class="dot dot-post"></div><span style="color:var(--azul);">Postpago</span><span style="font-size:11px;color:var(--texto-dim);font-weight:400;margin-left:4px;">3 pagos</span></div>
@@ -4365,7 +4394,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- 3. CAÍDAS -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(3)" style="cursor:pointer;user-select:none;"><div class="card-num">3</div><div class="card-title">Porcentajes de Caída</div><span id="mov-arrow-3" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(3)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#FCE8E6;color:#EA4335;">03</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#EA4335;">trending_down</span>
+      <div class="hog-card-htext"><div class="card-title">Porcentajes de Caída</div><div class="hog-card-subtitle">Post: 0/10/17% · Power: 14/28/38/47%</div></div>
+      <span id="mov-arrow-3" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-3" style="display:none;">
       <div style="font-size:12px;color:var(--texto-dim);line-height:1.6;">Reducción aplicada a cada pago antes de calcular la factura proyectada.</div>
       <div>
@@ -4396,7 +4430,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- 4. CVCs Y METAS -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(4)" style="cursor:pointer;user-select:none;"><div class="card-num">4</div><div class="card-title">CVCs y Metas por Sede</div><span id="mov-arrow-4" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(4)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#E6F4EA;color:#34A853;">04</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">location_on</span>
+      <div class="hog-card-htext"><div class="card-title">CVCs y Metas por Sede</div><div class="hog-card-subtitle">Configura las sedes y sus metas de unidades</div></div>
+      <span id="mov-arrow-4" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-4" style="display:none;gap:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="font-size:11px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Sedes configuradas</div>
@@ -4410,7 +4449,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- 5. INDICADORES DE CUMPLIMIENTO -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(5)" style="cursor:pointer;user-select:none;"><div class="card-num">5</div><div class="card-title">Indicadores de Cumplimiento</div><span id="mov-arrow-5" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(5)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#FEF9C3;color:#D97706;">05</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#D97706;">leaderboard</span>
+      <div class="hog-card-htext"><div class="card-title">Indicadores de Cumplimiento</div><div class="hog-card-subtitle">Acelerador CFM · Efectividad · Bono</div></div>
+      <span id="mov-arrow-5" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-5" style="display:none;gap:0;">
 
       <!-- ACELERADOR CFM ALTO -->
@@ -4746,7 +4790,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   </div>
   <!-- 6. COSECHAS -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(6)" style="cursor:pointer;user-select:none;"><div class="card-num">6</div><div class="card-title">Cosechas</div><span id="mov-arrow-6" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(6)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#E6F4EA;color:#34A853;">06</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">grain</span>
+      <div class="hog-card-htext"><div class="card-title">Cosechas</div><div class="hog-card-subtitle">Pagos pendientes de meses anteriores</div></div>
+      <span id="mov-arrow-6" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-6" style="display:none;gap:10px;">
       <div style="font-size:11px;color:var(--texto-dim);letter-spacing:0.5px;line-height:1.5;">
         Registra aquí los pagos pendientes o cosechas de meses anteriores que se cobrarán en este período.
@@ -4803,10 +4852,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- 7. SEMILLEROS -->
   <div class="card">
     <div class="card-header">
-      <div class="card-num">7</div>
-      <div class="card-title">Semilleros</div>
-      <!-- Toggle habilitar -->
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <div class="card-num" style="background:#E6F4EA;color:#34A853;">07</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">eco</span>
+      <div class="hog-card-htext"><div class="card-title">Semilleros</div><div class="hog-card-subtitle">Operaciones nuevas · valor fijo por mes</div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;" id="semillero-toggle-label">Deshabilitado</span>
         <div id="semillero-toggle" onclick="toggleSemilleros()"
           style="width:38px;height:20px;border-radius:10px;background:var(--gris-linea);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
@@ -4841,9 +4890,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- 8. COMISION PROXIMO MES -->
   <div class="card">
     <div class="card-header">
-      <div class="card-num">8</div>
-      <div class="card-title">Comisión Próximo Mes</div>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">08</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">calendar_today</span>
+      <div class="hog-card-htext"><div class="card-title">Comisión Próximo Mes</div><div class="hog-card-subtitle">Proyección Ciclo 1 · mes siguiente</div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;" id="cpm-toggle-label">Deshabilitado</span>
         <div id="cpm-toggle" onclick="toggleCpm()"
           style="width:38px;height:20px;border-radius:10px;background:var(--gris-linea);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
@@ -4901,7 +4951,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- 9. CARGA -->
   <div class="card">
-    <div class="card-header" onclick="movToggle(9)" style="cursor:pointer;user-select:none;"><div class="card-num">9</div><div class="card-title">Cargar Ventas del Mes</div><span id="mov-arrow-9" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span></div>
+    <div class="card-header" onclick="movToggle(9)" style="cursor:pointer;user-select:none;">
+      <div class="card-num" style="background:#F3E8FF;color:#A142F4;">09</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#A142F4;">upload_file</span>
+      <div class="hog-card-htext"><div class="card-title">Cargar Ventas del Mes</div><div class="hog-card-subtitle" id="mov-subtitle-9">Arrastra tu Excel con las ventas</div></div>
+      <span id="mov-arrow-9" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+    </div>
     <div class="card-body" id="mov-body-9" style="display:none;">
       <div id="upload-zone" class="upload-zone">
         <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
@@ -4932,9 +4987,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- 10. INCENTIVOS ADICIONALES -->
   <div class="card">
     <div class="card-header" onclick="movToggle(10)" style="cursor:pointer;user-select:none;">
-      <div class="card-num">10</div>
-      <div class="card-title">Incentivos Adicionales</div>
-      <span id="mov-arrow-10" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      <div class="card-num" style="background:#FEF9C3;color:#D97706;">10</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#D97706;">stars</span>
+      <div class="hog-card-htext"><div class="card-title">Incentivos Adicionales</div><div class="hog-card-subtitle">Bonos y pagos adicionales al cobro neto</div></div>
+      <span id="mov-arrow-10" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
     </div>
     <div class="card-body" id="mov-body-10" style="display:none;">
       <div style="font-size:11px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
@@ -4952,9 +5008,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- 11. VENTAS MIGRA POWER -->
   <div class="card">
     <div class="card-header" onclick="movToggle(11)" style="cursor:pointer;user-select:none;">
-      <div class="card-num">11</div>
-      <div class="card-title">Ventas Migra Power</div>
-      <span id="mov-arrow-11" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+      <div class="card-num" style="background:#F3E8FF;color:#A142F4;">11</div>
+      <span class="material-symbols-rounded hog-card-icon" style="color:#A142F4;">swap_horiz</span>
+      <div class="hog-card-htext"><div class="card-title">Ventas Migra Power</div><div class="hog-card-subtitle">Solo aceleran cumplimiento · sin pago</div></div>
+      <span id="mov-arrow-11" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
     </div>
     <div class="card-body" id="mov-body-11" style="display:none;">
       <div style="font-size:11px;color:var(--texto-dim);margin-bottom:10px;line-height:1.6;">
@@ -4970,17 +5027,19 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     </div>
   </div>
 
-  <button class="btn-calcular" onclick="calcular()">⚡ Calcular Proyección</button>
-  <button id="btn-guardar-proy" onclick="guardarProyeccion()"
-    style="display:none;width:100%;margin-top:8px;background:#22C55E;color:#fff;border:none;padding:14px;font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:28px;transition:all 0.35s ease;box-shadow:0 4px 18px rgba(34,197,94,0.35);align-items:center;justify-content:center;gap:10px;"
-    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 26px rgba(34,197,94,0.5)';"
-    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 18px rgba(34,197,94,0.35)';">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Proyección en Panel
-  </button>
-</div>
+</div><!-- /panel-config -->
 
 <!-- PANEL RESULTADO -->
-<div class="panel-resultado">
+<div class="panel-resultado" style="border:1px solid var(--g-outline);box-shadow:0 1px 3px rgba(60,64,67,0.08);border-radius:14px;overflow:hidden;">
+
+  <!-- Header panel resultado -->
+  <div id="mov-right-header">
+    <div class="mov-right-title">PROYECCIÓN · <span>MÓVIL</span></div>
+    <div id="mov-file-status" class="no-file">
+      <span class="material-symbols-rounded" style="font-size:14px;line-height:1;">upload_file</span>
+      Sin archivo cargado
+    </div>
+  </div>
 
   <!-- Estado vacío -->
   <div class="tabla-card" id="empty-state-card">
@@ -5234,7 +5293,33 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   </div><!-- /resultado-content -->
 </div><!-- /panel-resultado -->
+</div><!-- /container -->
+</div><!-- /mov-scroll-area -->
+
+<!-- ── BOTTOM ACTION BAR MÓVIL ── -->
+<div id="mov-bottom-bar">
+  <div class="hog-bar-info">
+    <span class="material-symbols-rounded" style="font-size:15px;line-height:1;">schedule</span>
+    <span id="mov-last-update-label">Sin calcular aún</span>
+  </div>
+  <div class="hog-bar-actions">
+    <button class="hog-bar-btn outline" onclick="movGuardarBorrador()" title="Guardar configuración actual">
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">save</span>
+      Guardar borrador
+    </button>
+    <button id="mov-btn-guardar-panel-bar" class="hog-bar-btn green" onclick="guardarProyeccion()" disabled>
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">push_pin</span>
+      Guardar proyección en panel
+    </button>
+    <button class="hog-bar-btn dark" onclick="calcular()">
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">bolt</span>
+      Calcular proyección
+      <span class="material-symbols-rounded" style="font-size:15px;line-height:1;">arrow_forward</span>
+    </button>
+  </div>
 </div>
+
+</div><!-- /main-content -->
 
 <script>
 // ══════════════════════════════════════
@@ -8526,7 +8611,7 @@ function ocultarPanelInicio() {
   (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   _panelInicioVisible = false;
   document.getElementById('panel-inicio').classList.remove('visible');
-  document.getElementById('main-content').style.display = '';
+  document.getElementById('main-content').style.display = 'flex';
   (function(){var _pc=document.getElementById('panel-cosechas');if(_pc)_pc.style.display='none';})();
   (function(){var _pc=document.getElementById('panel-comisiones');if(_pc)_pc.style.display='none';})();
   // sb-inicio-btn eliminado con el nav lateral
@@ -10292,7 +10377,7 @@ function selectProductMovil(el) {
   ocultarPanelCvcFull();
   ocultarPanelMetasFn();
   // Mostrar main-content con proyeccion
-  document.getElementById('main-content').style.display = '';
+  document.getElementById('main-content').style.display = 'flex';
   document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
   if (el) el.classList.add('active');
   // Abrir submenu
@@ -10318,7 +10403,7 @@ function selectSubmenu(tipo) {
   const _phSub = document.getElementById('panel-hogar'); if(_phSub) _phSub.style.display = 'none';
 
   if (tipo === 'proyeccion') {
-    document.getElementById('main-content').style.display = '';
+    document.getElementById('main-content').style.display = 'flex';
     document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
     const movil = document.querySelector('.sb-product[onclick*="selectProductMovil"]');
     if (movil) movil.classList.add('active');
@@ -12560,7 +12645,7 @@ function toggleClient(id) {
 function selectProduct(el, productId) {
   ocultarPanelInicio();
   ocultarPanelCvcFull();
-  document.getElementById('main-content').style.display = '';
+  document.getElementById('main-content').style.display = 'flex';
   document.querySelectorAll('.sb-product').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
 }
@@ -12810,11 +12895,83 @@ function procesarArchivo(file){
       document.getElementById('file-loaded').style.display='flex';
       document.getElementById('fn-name').textContent=file.name;
       document.getElementById('fn-rows').textContent=`${ventasData.length} líneas · ${keys.length} columnas`;
+      // Actualizar subtitle card 9 y status chip
+      const s9 = document.getElementById('mov-subtitle-9');
+      if (s9) s9.textContent = (file.name.length > 30 ? file.name.substring(0,28)+'…' : file.name) + ' · ' + ventasData.length + ' líneas';
+      movActualizarBarraEstado();
     }catch(err){alert('Error al leer el archivo.');console.error(err);}
   };
   reader.readAsBinaryString(file);
 }
 function resetFile(){ventasData=[];fileInput.value='';document.getElementById('upload-zone').style.display='flex';document.getElementById('file-loaded').style.display='none';}
+
+// ══════════════════════════════════════
+// BARRA ESTADO Y BORRADOR MÓVIL
+// ══════════════════════════════════════
+let _movLastCalcTime = null;
+function movActualizarBarraEstado(calculado) {
+  const statusEl = document.getElementById('mov-file-status');
+  if (statusEl) {
+    if (ventasData && ventasData.length) {
+      statusEl.className = 'loaded';
+      statusEl.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;line-height:1;">check_circle</span> Archivo cargado · ' + ventasData.length.toLocaleString('es-CO') + ' líneas';
+    } else {
+      statusEl.className = 'no-file';
+      statusEl.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;line-height:1;">upload_file</span> Sin archivo cargado';
+    }
+  }
+  if (calculado) _movLastCalcTime = new Date();
+  const lblEl = document.getElementById('mov-last-update-label');
+  if (lblEl) {
+    if (_movLastCalcTime) {
+      const diff = Math.round((new Date() - _movLastCalcTime) / 60000);
+      lblEl.textContent = diff < 1 ? 'Última actualización hace un momento' : 'Última actualización hace ' + diff + ' min';
+    } else {
+      lblEl.textContent = ventasData && ventasData.length ? 'Listo para calcular' : 'Sin calcular aún';
+    }
+  }
+}
+
+const MOV_BORRADOR_KEY = 'fenix_mov_borrador';
+function movGuardarBorrador() {
+  try {
+    const borrador = {
+      periodo: document.getElementById('periodo')?.value || '',
+      post: {
+        p1: document.getElementById('post_p1')?.value,
+        p2: document.getElementById('post_p2')?.value,
+        p3: document.getElementById('post_p3')?.value
+      },
+      pow: {
+        p1: document.getElementById('pow_p1')?.value,
+        p2: document.getElementById('pow_p2')?.value,
+        p3: document.getElementById('pow_p3')?.value,
+        p4: document.getElementById('pow_p4')?.value
+      },
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(MOV_BORRADOR_KEY, JSON.stringify(borrador));
+    const btn = event?.currentTarget;
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;line-height:1;">check</span> Guardado';
+      btn.style.color = '#34A853';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+    }
+  } catch(e) { console.error('movGuardarBorrador:', e); }
+}
+
+function movCargarBorrador() {
+  try {
+    const raw = localStorage.getItem(MOV_BORRADOR_KEY);
+    if (!raw) return;
+    const b = JSON.parse(raw);
+    const setV = (id, v) => { const e = document.getElementById(id); if (e && v !== undefined) e.value = v; };
+    if (b.periodo) setV('periodo', b.periodo);
+    if (b.post) { setV('post_p1',b.post.p1); setV('post_p2',b.post.p2); setV('post_p3',b.post.p3); }
+    if (b.pow)  { setV('pow_p1',b.pow.p1); setV('pow_p2',b.pow.p2); setV('pow_p3',b.pow.p3); setV('pow_p4',b.pow.p4); }
+  } catch(e) { console.error('movCargarBorrador:', e); }
+}
 
 // ══════════════════════════════════════
 // CÁLCULO
@@ -13165,6 +13322,11 @@ function renderResultados(mesVenta,mesProyeccion,anio){
   document.getElementById('resultado-content').style.display='';
   const btnG = document.getElementById('btn-guardar-proy');
   if (btnG) btnG.style.display = 'flex';
+  // Habilitar botón guardar en bottom bar
+  const btnGBar = document.getElementById('mov-btn-guardar-panel-bar');
+  if (btnGBar) btnGBar.disabled = false;
+  // Actualizar timestamp y status
+  movActualizarBarraEstado(true);
 }
 
 function renderCronograma(datos, mesProyeccion, anio, mesVenta) {
@@ -18190,7 +18352,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
-</div><!-- /main-content -->
 
 <!-- ================================================================
      PANEL PLANTA ACTIVA
