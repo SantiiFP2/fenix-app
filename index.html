@@ -1331,59 +1331,101 @@ body.modo-claro .com-form-prefix .com-form-input{background:transparent;}
 body.modo-claro .com-form-prefix-label{background:#F3F4F6;border-color:#E5E7EB;color:#6B7280;}
 
 /* ══════════════════════════════════════════════════════════════
-   PANEL HOGAR
+   PANEL HOGAR — REDESIGN
    ══════════════════════════════════════════════════════════════ */
-#panel-hogar{display:none;padding:28px 32px;max-width:1400px;margin:0 auto;}
+#panel-hogar{display:none;padding:0!important;flex-direction:column;}
 #panel-hogar.full{left:0;}
+#hog-scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;}
+#panel-hogar #hog-grid{padding:20px 24px;padding-bottom:8px;}
 
-/* Tabs */
-.hog-tabs{display:flex;gap:4px;background:var(--gris-medio);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;}
-.hog-tab{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.5px;padding:8px 20px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--texto-dim);transition:all 0.2s;}
-.hog-tab.active{background:var(--negro);color:var(--blanco);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+/* Left panel cards */
+#panel-hogar .panel-config .card{border:1px solid var(--g-outline);box-shadow:0 1px 3px rgba(60,64,67,0.08);border-radius:12px;overflow:visible;}
+#panel-hogar .panel-config .card-header{background:var(--g-surface-variant);border-radius:12px 12px 0 0;padding:11px 14px;min-height:50px;border-bottom:1px solid var(--g-outline);}
+#panel-hogar .panel-config .card-header.collapsed-header{border-radius:12px;border-bottom:none;}
+
+/* Card number badges */
+#panel-hogar .card-num{width:30px;height:30px;border-radius:8px;font-size:12px;font-weight:700;flex-shrink:0;}
+
+/* Card icon */
+.hog-card-icon{font-size:17px;color:var(--texto-dim);flex-shrink:0;}
+
+/* Card header text group */
+.hog-card-htext{flex:1;min-width:0;}
+.hog-card-htext .card-title{font-size:12px;letter-spacing:0.3px;text-transform:none;font-weight:700;}
+.hog-card-subtitle{font-size:10px;color:var(--texto-dim);font-weight:500;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter Tight',sans-serif;letter-spacing:0;}
 
 /* Upload zone */
-.hog-upload-zone{border:2px dashed var(--gris-linea);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:20px;}
-.hog-upload-zone:hover{border-color:#6D28D9;background:rgba(109,40,217,0.04);}
-.hog-upload-zone.dragover{border-color:#6D28D9;background:rgba(109,40,217,0.08);}
+.hog-upload-zone{border:1.5px dashed var(--g-outline);border-radius:8px;cursor:pointer;transition:all 0.2s;background:var(--g-surface-variant);}
+.hog-upload-zone:hover{border-color:var(--g-blue);background:rgba(26,115,232,0.04);}
+.hog-upload-zone.dragover{border-color:var(--g-blue);background:rgba(26,115,232,0.08);}
+.hog-upload-zone.loaded{border-color:#34A853;background:rgba(52,168,83,0.05);border-style:solid;}
 .hog-upload-icon{font-size:32px;margin-bottom:8px;}
-.hog-upload-label{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:600;color:var(--texto);margin-bottom:4px;}
-.hog-upload-sub{font-size:12px;color:var(--texto-dim);}
+.hog-upload-label{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;color:var(--texto);margin-bottom:2px;}
+.hog-upload-sub{font-size:10px;color:var(--texto-dim);}
 
-/* Tasas configurables */
+/* Tasa inputs */
 .hog-tasas-panel{background:var(--gris-medio);border-radius:12px;padding:20px;margin-bottom:20px;}
 .hog-tasas-title{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:8px;}
 .hog-tasas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
 .hog-tasa-item{display:flex;flex-direction:column;gap:4px;}
 .hog-tasa-label{font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:500;}
-.hog-tasa-input{font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;color:var(--blanco);background:var(--negro);border:1px solid var(--gris-linea);border-radius:6px;padding:6px 10px;width:100%;text-align:right;}
-.hog-tasa-input:focus{outline:none;border-color:#6D28D9;}
+.hog-tasa-input{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--texto);background:var(--g-surface);border:1px solid var(--g-outline);border-radius:6px;padding:5px 8px;width:100%;text-align:center;}
+.hog-tasa-input:focus{outline:none;border-color:var(--g-blue);box-shadow:0 0 0 2px rgba(26,115,232,0.15);}
 
 /* Site filter */
-.hog-site-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.hog-site-btn{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;padding:6px 16px;border-radius:20px;border:1px solid var(--gris-linea);background:transparent;color:var(--texto-dim);cursor:pointer;transition:all 0.2s;}
-.hog-site-btn.active{background:#6D28D9;border-color:#6D28D9;color:#fff;}
+.hog-site-filter{display:flex;gap:8px;flex-wrap:wrap;}
+.hog-site-btn{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;padding:5px 14px;border-radius:20px;border:1px solid var(--g-outline);background:var(--g-surface);color:var(--texto-dim);cursor:pointer;transition:all 0.2s;}
+.hog-site-btn.active{background:var(--g-blue);border-color:var(--g-blue);color:#fff;}
 
 /* KPI cards */
 .hog-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
-.hog-kpi-card{background:var(--gris-medio);border-radius:12px;padding:16px 20px;border:1px solid var(--gris-linea);}
-.hog-kpi-label{font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.hog-kpi-value{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--blanco);}
+.hog-kpi-card{background:var(--g-surface-variant);border-radius:12px;padding:16px 20px;border:1px solid var(--g-outline);}
+.hog-kpi-label{font-size:10px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;}
+.hog-kpi-value{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:var(--texto);}
 .hog-kpi-sub{font-size:11px;color:var(--texto-dim);margin-top:3px;font-family:'Inter Tight',sans-serif;}
 
 /* Tabla resultados */
-.hog-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--gris-linea);}
+.hog-table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--g-outline);}
 .hog-table{width:100%;border-collapse:collapse;font-family:'Inter Tight',sans-serif;font-size:13px;}
-.hog-table thead th{background:var(--gris-medio);color:var(--texto-dim);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:10px 14px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:1px solid var(--gris-linea);}
-.hog-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
-.hog-table tbody tr:hover{background:rgba(109,40,217,0.06);}
+.hog-table thead th{background:var(--g-surface-variant);color:var(--texto-dim);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:10px 14px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:1px solid var(--g-outline);}
+.hog-table tbody tr{border-bottom:1px solid var(--g-outline);transition:background 0.15s;}
+.hog-table tbody tr:hover{background:var(--g-surface-variant);}
 .hog-table tbody td{padding:10px 14px;color:var(--texto);vertical-align:middle;}
 .hog-table .num{text-align:right;font-variant-numeric:tabular-nums;}
 .hog-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:2px 8px;border-radius:4px;}
-.hog-pill-bidir{background:rgba(96,165,250,0.15);color:#60A5FA;}
-.hog-pill-ftt{background:rgba(52,211,153,0.15);color:#34D399;}
-.hog-pill-dth{background:rgba(251,191,36,0.15);color:#FCD34D;}
-.hog-pill-out{background:rgba(109,40,217,0.15);color:#A78BFA;}
-.hog-ott-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#F97316;background:rgba(249,115,22,0.12);border-radius:4px;padding:2px 6px;}
+.hog-pill-bidir{background:rgba(26,115,232,0.12);color:#1a73e8;}
+.hog-pill-ftt{background:rgba(52,168,83,0.12);color:#34A853;}
+.hog-pill-dth{background:rgba(249,171,0,0.15);color:#F9AB00;}
+.hog-pill-out{background:rgba(161,66,244,0.12);color:#A142F4;}
+.hog-ott-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#F97316;background:rgba(249,115,22,0.10);border-radius:4px;padding:2px 6px;}
+
+/* Right panel sections */
+#panel-hogar #hog-right-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--g-outline);background:var(--g-surface-variant);border-radius:12px 12px 0 0;}
+#hog-right-header .hog-right-title{font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);}
+#hog-right-header .hog-right-title span{color:var(--texto);}
+#hog-file-status{font-family:'Inter Tight',sans-serif;font-size:11px;display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-weight:600;}
+#hog-file-status.loaded{background:rgba(52,168,83,0.12);color:#34A853;}
+#hog-file-status.no-file{background:var(--g-outline);color:var(--texto-dim);}
+#panel-hogar #hog-kpi-grid{background:var(--g-surface);border-bottom:1px solid var(--g-outline);}
+#panel-hogar #hog-kpi-op-wrap{background:var(--g-surface);border-bottom:1px solid var(--g-outline);}
+#panel-hogar .proy-section{background:var(--g-surface);}
+#panel-hogar .proy-header{padding:12px 20px;background:var(--g-surface-variant);border-top:1px solid var(--g-outline);}
+#panel-hogar .proy-titulo{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);}
+#panel-hogar .hog-tabs-bar-wrap{background:var(--g-surface);border-bottom:1px solid var(--g-outline);}
+#panel-hogar #hog-tabs-bar{padding:0 14px;gap:0;border-bottom:none;}
+
+/* ── BOTTOM ACTION BAR ── */
+#hog-bottom-bar{flex-shrink:0;background:var(--g-surface);border-top:1px solid var(--g-outline);padding:10px 24px;display:none;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -1px 4px rgba(60,64,67,0.08);z-index:20;transition:left 0.25s cubic-bezier(.4,0,.2,1);}
+#hog-bottom-bar .hog-bar-info{font-size:11px;color:var(--texto-dim);display:flex;align-items:center;gap:5px;font-family:'Inter Tight',sans-serif;}
+#hog-bottom-bar .hog-bar-actions{display:flex;align-items:center;gap:8px;}
+.hog-bar-btn{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;border-radius:8px;padding:8px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;border:none;white-space:nowrap;}
+.hog-bar-btn.outline{background:none;border:1px solid var(--g-outline);color:var(--texto);}
+.hog-bar-btn.outline:hover{background:var(--g-surface-variant);border-color:#9AA0A6;}
+.hog-bar-btn.green{background:#34A853;color:#fff;}
+.hog-bar-btn.green:hover{background:#2d9248;}
+.hog-bar-btn.green:disabled{opacity:0.5;cursor:default;}
+.hog-bar-btn.dark{background:var(--texto);color:var(--g-surface);}
+.hog-bar-btn.dark:hover{opacity:0.88;}
 
 @keyframes loginBtnGradient{
   0%{background-position:0% 50%;}
@@ -3241,8 +3283,9 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
 </div><!-- /panel-comisiones -->
 
-<div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;overflow-y:auto;z-index:10;background:var(--negro);">
-<div id="hog-grid" style="max-width:100%;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;">
+<div id="panel-hogar" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;z-index:10;background:var(--g-surface-variant);">
+<div id="hog-scroll-area" style="flex:1;overflow-y:auto;overflow-x:hidden;">
+<div id="hog-grid" style="max-width:100%;margin:0 auto;padding:20px 24px;padding-bottom:0;display:grid;grid-template-columns:460px 1fr;gap:20px;align-items:start;">
 
   <!-- ══ LEFT: CONFIGURACIÓN ══ -->
   <div id="hog-left-panel" class="panel-config">
@@ -3250,8 +3293,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 1: Período + Archivo -->
     <div class="card">
       <div class="card-header">
-        <div class="card-num">1</div>
-        <div class="card-title">Período de Ventas</div>
+        <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">01</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">calendar_month</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Período de Ventas</div>
+          <div class="hog-card-subtitle" id="hog-subtitle-1">Selecciona el mes y carga el archivo</div>
+        </div>
       </div>
       <div class="card-body">
         <div>
@@ -3281,9 +3328,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 2: Tasas de Comisión (tabla compacta) -->
     <div class="card">
       <div class="card-header" onclick="hogToggleTasas()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">2</div>
-        <div class="card-title">Tasas de Comisión</div>
-        <span id="hog-tasas-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">02</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">percent</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Tasas de Comisión</div>
+          <div class="hog-card-subtitle">OB 520/420/195/100 · IB 120/30 · AG 360/190</div>
+        </div>
+        <span id="hog-tasas-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-tasas-body" style="display:none;padding:0 14px 14px;">
         <!-- Tabla principal: @ OTT / @ S/OTT / TV / Voz -->
@@ -3345,9 +3396,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 3: Tasas Adicionales -->
     <div class="card">
       <div class="card-header" onclick="hogToggleTasasAdic()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">3</div>
-        <div class="card-title">Tasas Adicionales</div>
-        <span id="hog-tasasadic-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#E6F4EA;color:#34A853;">03</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">add_circle</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Tasas Adicionales</div>
+          <div class="hog-card-subtitle">IB/Digital 60% · OB 160% · Autogen. 130%</div>
+        </div>
+        <span id="hog-tasasadic-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-tasasadic-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:8px;line-height:1.5;">% sobre la renta del servicio adicional comisionable</div>
@@ -3371,9 +3426,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 4: Incentivo Efectividad -->
     <div class="card">
       <div class="card-header" onclick="hogToggleEfect()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">4</div>
-        <div class="card-title">Incentivo Efectividad</div>
-        <span id="hog-efect-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#FEF9C3;color:#D97706;">04</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#D97706;">bolt</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Incentivo Efectividad</div>
+          <div class="hog-card-subtitle">5% · ARPU × servicios · pago mes vencido</div>
+        </div>
+        <span id="hog-efect-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-efect-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
@@ -3440,9 +3499,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 5: Alto Valor -->
     <div class="card">
       <div class="card-header" onclick="hogToggleAltoValor()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">5</div>
-        <div class="card-title">Alto Valor</div>
-        <span id="hog-av-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#FEF3C7;color:#D97706;">05</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#D97706;">diamond</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Alto Valor</div>
+          <div class="hog-card-subtitle">30% sobre ARPU · Triple Play + OTT</div>
+        </div>
+        <span id="hog-av-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-av-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:10px;line-height:1.5;">
@@ -3466,9 +3529,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 6: Bonificación Ventas Internet -->
     <div class="card">
       <div class="card-header" onclick="hogToggleBoniInt()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">6</div>
-        <div class="card-title">Bonif. Ventas Internet</div>
-        <span id="hog-bi-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">06</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">wifi</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Bonif. Ventas Internet</div>
+          <div class="hog-card-subtitle">3 canales · rangos de cumplimiento 0–80%</div>
+        </div>
+        <span id="hog-bi-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-bi-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
@@ -3584,9 +3651,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 7: Acelerador de Cumplimiento de Presupuesto -->
     <div class="card">
       <div class="card-header" onclick="hogToggleAcel()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">7</div>
-        <div class="card-title">Acelerador Cumpl. Presupuesto</div>
-        <span id="hog-acel-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#F3E8FF;color:#A142F4;">07</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#A142F4;">rocket_launch</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Acelerador Cumpl. Presupuesto</div>
+          <div class="hog-card-subtitle">IB+Digital y Autogeneración · por rangos</div>
+        </div>
+        <span id="hog-acel-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-acel-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
@@ -3700,9 +3771,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 8: Bonificación por Cumplimiento -->
     <div class="card">
       <div class="card-header" onclick="hogToggleBoniCumpl()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">8</div>
-        <div class="card-title">Bonif. por Cumplimiento</div>
-        <span id="hog-bc-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#E8F5E9;color:#34A853;">08</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">workspace_premium</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Bonif. por Cumplimiento</div>
+          <div class="hog-card-subtitle">Solo IB+Digital · bono fijo por servicio</div>
+        </div>
+        <span id="hog-bc-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-bc-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
@@ -3747,9 +3822,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 9: Tecnología -->
     <div class="card">
       <div class="card-header" onclick="hogToggleTecnologia()" style="cursor:pointer;user-select:none;">
-        <div class="card-num">9</div>
-        <div class="card-title">Tecnología</div>
-        <span id="hog-tec-arrow" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#E8F0FE;color:#1a73e8;">09</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#1a73e8;">memory</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Tecnología</div>
+          <div class="hog-card-subtitle">Detecta ULTRAWIFI y DONGLE automáticamente</div>
+        </div>
+        <span id="hog-tec-arrow" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div id="hog-tec-body" style="display:none;padding:0 14px 14px;">
         <div style="font-size:10px;color:var(--texto-dim);margin-bottom:12px;line-height:1.5;">
@@ -3785,9 +3864,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 10: Semilleros -->
     <div class="card">
       <div class="card-header">
-        <div class="card-num">10</div>
-        <div class="card-title">Semilleros</div>
-        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <div class="card-num" style="background:#E6F4EA;color:#34A853;">10</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#34A853;">eco</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Semilleros</div>
+          <div class="hog-card-subtitle">Operaciones nuevas · valor fijo por mes</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
           <span style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;" id="hog-sem-toggle-label">Deshabilitado</span>
           <div id="hog-sem-toggle" onclick="hogToggleSemilleros()"
             style="width:38px;height:20px;border-radius:10px;background:var(--gris-linea);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;">
@@ -3815,9 +3898,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
     <!-- Card 11: Incentivos Adicionales -->
     <div class="card">
       <div class="card-header" onclick="movToggle('hog-inc')" style="cursor:pointer;user-select:none;">
-        <div class="card-num">11</div>
-        <div class="card-title">Incentivos Adicionales</div>
-        <span id="mov-arrow-hog-inc" style="margin-left:auto;color:var(--texto-dim);transition:transform 0.2s;font-size:12px;">▾</span>
+        <div class="card-num" style="background:#FEF9C3;color:#D97706;">11</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#D97706;">stars</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Incentivos Adicionales</div>
+          <div class="hog-card-subtitle">Bonos y pagos adicionales al cobro neto</div>
+        </div>
+        <span id="mov-arrow-hog-inc" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
       </div>
       <div class="card-body" id="mov-body-hog-inc" style="display:none;gap:10px;">
         <div style="font-size:11px;color:var(--texto-dim);letter-spacing:0.5px;line-height:1.5;">
@@ -3836,24 +3923,26 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
       </div>
     </div>
 
-    <!-- Calcular button (mismo estilo que Móvil) -->
-    <button class="btn-calcular" onclick="hogCalcular()">⚡ Calcular Proyección</button>
-    <button id="hog-btn-guardar-proy" onclick="guardarProyeccionHogar()"
-      style="display:none;width:100%;margin-top:8px;background:#22C55E;color:#fff;border:none;padding:14px;font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:28px;transition:all 0.35s ease;box-shadow:0 4px 18px rgba(34,197,94,0.35);align-items:center;justify-content:center;gap:10px;"
-      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 26px rgba(34,197,94,0.5)';"
-      onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 18px rgba(34,197,94,0.35)';">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Proyección en Panel
-    </button>
-
   </div><!-- /left panel-config -->
 
-  <!-- ══ RIGHT: RESULTADOS (card blanco igual que Móvil) ══ -->
-  <div class="card" style="overflow:hidden;min-height:460px;">
+  <!-- ══ RIGHT: RESULTADOS ══ -->
+  <div class="card" style="overflow:hidden;min-height:460px;border:1px solid var(--g-outline);box-shadow:0 1px 3px rgba(60,64,67,0.08);border-radius:12px;">
 
-    <!-- Tabs (dentro del card, arriba) -->
-    <div id="hog-tabs-bar" style="display:flex;align-items:center;gap:0;border-bottom:1px solid var(--g-outline);padding:0 20px;">
-      <button id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')"
-        style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:14px 18px;border:none;border-bottom:2px solid #6D28D9;background:none;color:#6D28D9;cursor:pointer;letter-spacing:0.3px;">Proyección</button>
+    <!-- Header del panel derecho -->
+    <div id="hog-right-header">
+      <div class="hog-right-title">PROYECCIÓN · <span>GENERAL</span></div>
+      <div id="hog-file-status" class="no-file">
+        <span class="material-symbols-rounded" style="font-size:14px;line-height:1;">upload_file</span>
+        Sin archivo cargado
+      </div>
+    </div>
+
+    <!-- Tabs (dentro del card) -->
+    <div class="hog-tabs-bar-wrap">
+      <div id="hog-tabs-bar" style="display:flex;align-items:center;gap:0;padding:0 14px;">
+        <button id="hog-tab-btn-proyeccion" onclick="hogTabSwitch('proyeccion')"
+          style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;padding:12px 16px;border:none;border-bottom:2px solid var(--g-blue);background:none;color:var(--g-blue);cursor:pointer;letter-spacing:0.3px;">Proyección</button>
+      </div>
     </div>
 
     <!-- ── TAB: PROYECCIÓN ── -->
@@ -4101,7 +4190,33 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   </div><!-- /right card -->
 
-</div><!-- /container -->
+</div><!-- /hog-grid -->
+</div><!-- /hog-scroll-area -->
+
+<!-- ── BOTTOM ACTION BAR ── -->
+<div id="hog-bottom-bar">
+  <div class="hog-bar-info">
+    <span class="material-symbols-rounded" style="font-size:15px;line-height:1;">schedule</span>
+    <span id="hog-last-update-label">Última actualización hace 2 min</span>
+  </div>
+  <div class="hog-bar-actions">
+    <button class="hog-bar-btn outline" onclick="hogGuardarBorrador()" title="Guardar configuración actual">
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">save</span>
+      Guardar borrador
+    </button>
+    <button id="hog-btn-guardar-panel-bar" class="hog-bar-btn green" onclick="guardarProyeccionHogar()" disabled>
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">push_pin</span>
+      Guardar proyección en panel
+    </button>
+    <button class="hog-bar-btn dark" onclick="hogCalcular()">
+      <span class="material-symbols-rounded" style="font-size:16px;line-height:1;">bolt</span>
+      Calcular proyección
+      <span class="material-symbols-rounded" style="font-size:15px;line-height:1;">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+</div><!-- /panel-hogar -->
 
 <!-- Modal: nuevos servicios adicionales detectados -->
 <div id="modal-hog-adic" class="modal-bg" style="z-index:5000;">
@@ -14009,6 +14124,125 @@ function hogRecalcularProyeccion() {
   };
   const btnHG = document.getElementById('hog-btn-guardar-proy');
   if (btnHG) btnHG.style.display = 'flex';
+  // Habilitar botón guardar en bottom bar
+  const btnHGBar = document.getElementById('hog-btn-guardar-panel-bar');
+  if (btnHGBar) btnHGBar.disabled = false;
+  // Actualizar timestamp
+  hogActualizarBarraEstado(true);
+}
+
+// ── Barra de estado inferior ──
+let _hogLastCalcTime = null;
+function hogActualizarBarraEstado(calculado) {
+  // Status del archivo
+  const statusEl = document.getElementById('hog-file-status');
+  if (statusEl) {
+    if (_hogDatos.length) {
+      statusEl.className = 'loaded';
+      statusEl.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;line-height:1;">check_circle</span> Plantilla cargada · ' + _hogDatos.length.toLocaleString('es-CO') + ' filas';
+    } else {
+      statusEl.className = 'no-file';
+      statusEl.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;line-height:1;">upload_file</span> Sin archivo cargado';
+    }
+  }
+  // Timestamp
+  if (calculado) {
+    _hogLastCalcTime = new Date();
+  }
+  const lblEl = document.getElementById('hog-last-update-label');
+  if (lblEl) {
+    if (_hogLastCalcTime) {
+      const diff = Math.round((new Date() - _hogLastCalcTime) / 60000);
+      lblEl.textContent = diff < 1 ? 'Última actualización hace un momento' : 'Última actualización hace ' + diff + ' min';
+    } else {
+      lblEl.textContent = 'Sin calcular aún';
+    }
+  }
+}
+
+// ── Guardar borrador ──
+const HOG_BORRADOR_KEY = 'fenix_hog_borrador';
+function hogGuardarBorrador() {
+  try {
+    const borrador = {
+      periodo: document.getElementById('hog-periodo')?.value || '',
+      tasas: {
+        outOTT: document.getElementById('hog-t-out-int-ott')?.value,
+        outNOTT: document.getElementById('hog-t-out-int-nott')?.value,
+        outTV: document.getElementById('hog-t-out-tv')?.value,
+        outVoz: document.getElementById('hog-t-out-voz')?.value,
+        inOTT: document.getElementById('hog-t-in-int-ott')?.value,
+        inNOTT: document.getElementById('hog-t-in-int-nott')?.value,
+        inTV: document.getElementById('hog-t-in-tv')?.value,
+        inVoz: document.getElementById('hog-t-in-voz')?.value,
+        autoOTT: document.getElementById('hog-t-auto-int-ott')?.value,
+        autoNOTT: document.getElementById('hog-t-auto-int-nott')?.value,
+        autoTV: document.getElementById('hog-t-auto-tv')?.value,
+        autoVoz: document.getElementById('hog-t-auto-voz')?.value,
+        outDTH: document.getElementById('hog-t-out-dth')?.value,
+        inDTH: document.getElementById('hog-t-in-dth')?.value,
+        autoDTH: document.getElementById('hog-t-auto-dth')?.value,
+        adicIn: document.getElementById('hog-t-adic-in')?.value,
+        adicOut: document.getElementById('hog-t-adic-out')?.value,
+        adicAuto: document.getElementById('hog-t-adic-auto')?.value
+      },
+      biMetas: {
+        metaIn: document.getElementById('hog-bi-meta-in')?.value,
+        pctIn: document.getElementById('hog-bi-pct-in')?.value,
+        metaAuto: document.getElementById('hog-bi-meta-auto')?.value,
+        pctAuto: document.getElementById('hog-bi-pct-auto')?.value,
+        metaOut: document.getElementById('hog-bi-meta-out')?.value
+      },
+      acMetas: {
+        metaIn: document.getElementById('hog-ac-meta-in')?.value,
+        metaAuto: document.getElementById('hog-ac-meta-auto')?.value
+      },
+      bcMeta: document.getElementById('hog-bc-meta')?.value,
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(HOG_BORRADOR_KEY, JSON.stringify(borrador));
+    // Feedback visual
+    const btn = event?.currentTarget;
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;line-height:1;">check</span> Guardado';
+      btn.style.color = '#34A853';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+    }
+  } catch(e) { console.error('hogGuardarBorrador:', e); }
+}
+
+function hogCargarBorrador() {
+  try {
+    const raw = localStorage.getItem(HOG_BORRADOR_KEY);
+    if (!raw) return;
+    const b = JSON.parse(raw);
+    if (b.periodo) { const el = document.getElementById('hog-periodo'); if(el) el.value = b.periodo; }
+    if (b.tasas) {
+      const t = b.tasas;
+      const setV = (id, v) => { const e = document.getElementById(id); if(e && v !== undefined) e.value = v; };
+      setV('hog-t-out-int-ott',t.outOTT); setV('hog-t-out-int-nott',t.outNOTT);
+      setV('hog-t-out-tv',t.outTV); setV('hog-t-out-voz',t.outVoz);
+      setV('hog-t-in-int-ott',t.inOTT); setV('hog-t-in-int-nott',t.inNOTT);
+      setV('hog-t-in-tv',t.inTV); setV('hog-t-in-voz',t.inVoz);
+      setV('hog-t-auto-int-ott',t.autoOTT); setV('hog-t-auto-int-nott',t.autoNOTT);
+      setV('hog-t-auto-tv',t.autoTV); setV('hog-t-auto-voz',t.autoVoz);
+      setV('hog-t-out-dth',t.outDTH); setV('hog-t-in-dth',t.inDTH); setV('hog-t-auto-dth',t.autoDTH);
+      setV('hog-t-adic-in',t.adicIn); setV('hog-t-adic-out',t.adicOut); setV('hog-t-adic-auto',t.adicAuto);
+    }
+    if (b.biMetas) {
+      const m = b.biMetas;
+      const setV = (id,v)=>{ const e=document.getElementById(id); if(e&&v!==undefined)e.value=v; };
+      setV('hog-bi-meta-in',m.metaIn); setV('hog-bi-pct-in',m.pctIn);
+      setV('hog-bi-meta-auto',m.metaAuto); setV('hog-bi-pct-auto',m.pctAuto);
+      setV('hog-bi-meta-out',m.metaOut);
+    }
+    if (b.acMetas) {
+      const setV = (id,v)=>{ const e=document.getElementById(id); if(e&&v!==undefined)e.value=v; };
+      setV('hog-ac-meta-in',b.acMetas.metaIn); setV('hog-ac-meta-auto',b.acMetas.metaAuto);
+    }
+    if (b.bcMeta) { const e=document.getElementById('hog-bc-meta'); if(e) e.value=b.bcMeta; }
+  } catch(e) { console.error('hogCargarBorrador:', e); }
 }
 
 // ── Toggle submenu Hogar en launcher ──
@@ -14041,8 +14275,13 @@ function mostrarPanelHogar() {
   document.getElementById('panel-metas')       && (document.getElementById('panel-metas').style.display = 'none');
   const pc = document.getElementById('panel-cosechas');
   if (pc) pc.style.display = 'none';
-  document.getElementById('panel-hogar').style.display = 'block';
+  var ph = document.getElementById('panel-hogar');
+  ph.style.display = 'flex';
+  var hbb = document.getElementById('hog-bottom-bar');
+  if (hbb) hbb.style.display = 'flex';
   hogCargarAdicConfig();
+  hogCargarBorrador();
+  hogActualizarBarraEstado();
 }
 
 // ── Tabs ──
@@ -14051,8 +14290,8 @@ function hogTabSwitch(tab) {
     document.getElementById('hog-tab-' + t).style.display = t === tab ? '' : 'none';
     const btn = document.getElementById('hog-tab-btn-' + t);
     if (btn) {
-      btn.style.borderBottomColor = t === tab ? '#6D28D9' : 'transparent';
-      btn.style.color = t === tab ? '#6D28D9' : 'var(--texto-dim)';
+      btn.style.borderBottomColor = t === tab ? 'var(--g-blue)' : 'transparent';
+      btn.style.color = t === tab ? 'var(--g-blue)' : 'var(--texto-dim)';
     }
   });
   const bar      = document.getElementById('hog-tabs-bar');
@@ -14061,7 +14300,7 @@ function hogTabSwitch(tab) {
   const isAdic    = tab === 'adicionales' || tab === 'servicios';
   if (bar)       bar.style.display        = isAdic ? 'none' : '';
   if (leftPanel) leftPanel.style.display  = isAdic ? 'none' : '';
-  if (grid)      grid.style.gridTemplateColumns = isAdic ? '1fr' : '340px 1fr';
+  if (grid)      grid.style.gridTemplateColumns = isAdic ? '1fr' : '460px 1fr';
   if (isAdic) hogRenderAdicionales();
 }
 
@@ -14117,7 +14356,14 @@ function hogCargarArchivo(file) {
 
       const shortName = file.name.length > 28 ? file.name.substring(0,26)+'…' : file.name;
       label.textContent = '✓ ' + shortName + ' · ' + _hogDatos.length + ' filas';
-      document.getElementById('hog-upload-zone').style.borderColor = '#34D399';
+      const uz = document.getElementById('hog-upload-zone');
+      uz.classList.add('loaded');
+      uz.style.borderColor = '';
+      // Actualizar subtitle de la card 1
+      const s1 = document.getElementById('hog-subtitle-1');
+      if (s1) s1.textContent = shortName + ' · ' + _hogDatos.length + ' filas';
+      // Actualizar status chip
+      hogActualizarBarraEstado();
     } catch(err) {
       label.textContent = 'Error: ' + err.message;
       console.error(err);
