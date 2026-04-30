@@ -592,7 +592,7 @@ body.modo-claro .sb-submenu-item{color:#9CA3AF;}
 body.modo-claro .sb-submenu-item:hover{color:#111;background:rgba(0,0,0,0.03);}
 body.modo-claro .sb-submenu-item.active{color:#111;border-left-color:var(--rojo);}
 /* PANEL CVCs */
-#panel-codigos-cvc{display:none;padding:28px 32px;max-width:1400px;}
+#panel-codigos-cvc{display:none;padding:28px 32px;max-width:1400px;background:var(--g-surface-variant);}
 #panel-codigos-cvc.visible{display:block;}
 .cvc-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
 .cvc-panel-header h1{font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
@@ -626,10 +626,43 @@ body.modo-claro .sb-submenu-item.active{color:#111;border-left-color:var(--rojo)
 .cvc-action-btn.edit:hover{background:#AECBFA;}
 .cvc-action-btn.del{background:#FAD2CF;color:#C5221F;border:none;}
 .cvc-action-btn.del:hover{background:#F6AEA9;}
-.cvc-stats-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
-.cvc-stat-pill{background:var(--g-surface);border:none;border-radius:var(--g-radius-md);padding:12px 16px;min-width:120px;box-shadow:var(--g-shadow);}
-.cvc-stat-pill .csp-val{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:500;color:var(--g-on-surface);}
-.cvc-stat-pill .csp-lbl{font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;}
+.cvc-stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.cvc-stat-pill{background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(60,64,67,0.08);}
+.cvc-stat-pill .csp-left{flex:1;}
+.cvc-stat-pill .csp-val{font-family:'Inter Tight',sans-serif;font-size:28px;font-weight:500;color:var(--g-on-surface);line-height:1;}
+.cvc-stat-pill .csp-lbl{font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;margin-top:4px;}
+.cvc-stat-pill .csp-icon{font-size:22px;color:var(--texto-dim);opacity:0.5;}
+/* CVC card layout */
+.cvc-lista{display:flex;flex-direction:column;gap:10px;}
+.cvc-card{background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;overflow:hidden;display:flex;align-items:stretch;box-shadow:0 1px 3px rgba(60,64,67,0.08);transition:box-shadow 0.15s;}
+.cvc-card:hover{box-shadow:0 2px 8px rgba(60,64,67,0.15);}
+.cvc-card-bar{width:4px;flex-shrink:0;}
+.cvc-card-bar.porta{background:#C5221F;}
+.cvc-card-bar.migra{background:#1967D2;}
+.cvc-card-bar.autog{background:#1E8E3E;}
+.cvc-card-bar.outb{background:#B06000;}
+.cvc-card-bar.otro{background:#5F6368;}
+.cvc-card-body{flex:1;display:grid;grid-template-columns:220px 1fr 1fr 160px auto;align-items:center;padding:14px 16px;gap:16px;}
+.cvc-card-col{display:flex;flex-direction:column;gap:3px;}
+.cvc-card-label{font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;font-weight:500;}
+.cvc-card-code{font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;color:var(--g-on-surface);letter-spacing:0.3px;}
+.cvc-card-sede{font-size:12px;font-weight:500;color:var(--g-on-surface);}
+.cvc-card-region{font-size:11px;color:var(--texto-dim);}
+.cvc-card-hijos-count{font-size:12px;font-weight:500;color:var(--g-on-surface);}
+.cvc-card-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.cvc-hijo-chip{font-size:10px;font-weight:500;background:var(--g-surface-variant);border:1px solid var(--g-outline);border-radius:4px;padding:2px 6px;color:var(--g-on-surface);}
+.cvc-card-meta-val{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:700;color:var(--g-on-surface);}
+.cvc-card-meta-sub{font-size:11px;color:var(--g-green);display:flex;align-items:center;gap:3px;}
+.cvc-card-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+/* Filter chips actualización */
+.cvc-filter-chips{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--g-outline);padding-bottom:12px;}
+.cvc-chip{padding:6px 14px;border-radius:var(--g-radius-sm);font-size:12px;font-weight:600;letter-spacing:0.3px;cursor:pointer;border:none;background:none;color:var(--texto-dim);border-bottom:2px solid transparent;transition:all 0.15s;}
+.cvc-chip:hover{color:var(--g-on-surface);}
+.cvc-chip.active{color:var(--g-blue);border-bottom-color:var(--g-blue);}
+.cvc-chip .cvc-chip-count{display:inline-block;font-size:10px;background:var(--g-surface-variant);border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700;color:var(--texto-dim);}
+.cvc-chip.active .cvc-chip-count{background:rgba(26,115,232,0.12);color:var(--g-blue);}
+/* Header botón nuevo CVC */
+.btn-cvc-nuevo{display:flex;align-items:center;gap:6px;padding:9px 20px;background:var(--g-blue);border:none;border-radius:var(--g-radius-sm);cursor:pointer;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:#fff;transition:all 0.15s;white-space:nowrap;}
 /* Modal edición CVC rápida */
 #modal-cvc-full{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.32);z-index:3000;align-items:center;justify-content:center;}
 #modal-cvc-full.open{display:flex;}
@@ -1043,7 +1076,7 @@ body.modo-claro .sb-nav-badge { background: #F3F4F6; border-color: #E5E7EB; colo
 /* ══════════════════════════════════════
    PANEL COSECHAS
 ══════════════════════════════════════ */
-#panel-cosechas{display:none;padding:24px 32px;}
+#panel-cosechas{display:none;padding:24px 32px;background:var(--g-surface-variant);}
 .cos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
 .cos-header h1{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
 .cos-header p{font-size:11px;color:var(--texto-dim);letter-spacing:0.3px;margin:3px 0 0;}
@@ -1079,19 +1112,16 @@ body.modo-claro .cos-upload-card{background:#FFFFFF;}
 body.modo-claro .cos-filtro-sel{background:#F1F3F4;}
 
 /* Pestañas de tabla */
-.cos-tabs{display:flex;gap:4px;margin-bottom:0;border-bottom:1px solid var(--g-outline);}
+.cos-tabs{display:flex;gap:2px;margin-bottom:0;border-bottom:2px solid var(--g-outline);overflow-x:auto;scrollbar-width:none;}
+.cos-tabs::-webkit-scrollbar{display:none;}
 .cos-tab{
-  font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:500;
-  letter-spacing:0.3px;text-transform:uppercase;padding:10px 16px;
-  border-radius:var(--g-radius-sm) var(--g-radius-sm) 0 0;border:1px solid transparent;
-  cursor:pointer;color:var(--texto-dim);transition:all 0.15s;background:transparent;
+  font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:.4px;
+  padding:10px 18px;border:none;background:none;cursor:pointer;color:var(--texto-dim);
+  border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;transition:all .15s;text-transform:none;
 }
-.cos-tab.active{
-  background:var(--g-surface);border-color:var(--g-outline);
-  border-bottom-color:var(--g-surface);color:var(--g-blue);
-  margin-bottom:-1px;font-weight:500;
-}
-body.modo-claro .cos-tab.active{background:#FFFFFF;border-bottom-color:#FFFFFF;color:var(--g-blue);}
+.cos-tab:hover{color:var(--g-on-surface);}
+.cos-tab.active{color:var(--g-blue);border-bottom-color:var(--g-blue);}
 
 /* Tabla cosechas */
 .cos-table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 380px);border-radius:0 var(--g-radius-sm) var(--g-radius-sm) var(--g-radius-sm);border:1px solid var(--g-outline);}
@@ -1171,7 +1201,7 @@ body.modo-claro .cos-kpi-val{color:#202124;}
 /* Charts grid */
 .cos-charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px;}
 .cos-chart-card{
-  background:var(--g-surface);border:none;border-radius:var(--g-radius-md);padding:16px;box-shadow:var(--g-shadow);
+  background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 20px;box-shadow:0 1px 3px rgba(60,64,67,0.08);
 }
 body.modo-claro .cos-chart-card{background:#FFFFFF;}
 .cos-chart-title{font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:500;
@@ -2285,12 +2315,15 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 <div id="panel-codigos-cvc">
   <div class="cvc-panel-header">
     <div>
-      <h1>🏷️ Códigos CVC</h1>
+      <h1 style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" style="font-size:24px;font-variation-settings:'FILL' 1,'wght' 500;color:var(--g-blue);">tag</span> Códigos CVC</h1>
       <p>CATÁLOGO COMPLETO · CLARO COLOMBIA MÓVIL</p>
     </div>
     <div class="cvc-panel-actions">
-      <input type="text" class="cvc-search" id="cvc-buscar" placeholder="🔍  Buscar código, sede, categoría…" oninput="renderTablaCatalogoCvc()">
-      <button id="btn-nuevo-cvc" class="btn-primary" style="background:rgba(218,0,0,0.15);border-color:var(--rojo);color:var(--rojo);white-space:nowrap;" onclick="abrirModalCvcFull(null)">➕ Nuevo CVC</button>
+      <input type="text" class="cvc-search" id="cvc-buscar" placeholder="Buscar código, sede, categoría…" oninput="renderTablaCatalogoCvc()">
+      <button id="btn-nuevo-cvc" class="btn-cvc-nuevo" onclick="abrirModalCvcFull(null)">
+        <span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 600;">add</span>
+        Nuevo CVC Madre
+      </button>
     </div>
   </div>
 
@@ -2299,30 +2332,15 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- Chips filtro categoría -->
   <div class="cvc-filter-chips" id="cvc-filter-chips">
-    <button class="cvc-chip active" data-cat="" onclick="setCvcFiltro(this,'')">Todos</button>
-    <button class="cvc-chip" data-cat="PORTA" onclick="setCvcFiltro(this,'PORTA')">Portabilidad</button>
-    <button class="cvc-chip" data-cat="MIGRACIONES" onclick="setCvcFiltro(this,'MIGRACIONES')">Migración</button>
-    <button class="cvc-chip" data-cat="AUTOGENERACION" onclick="setCvcFiltro(this,'AUTOGENERACION')">Autogeneración</button>
-    <button class="cvc-chip" data-cat="TMK OUTB" onclick="setCvcFiltro(this,'TMK OUTB')">TMK Outbound</button>
+    <button class="cvc-chip active" data-cat="" onclick="setCvcFiltro(this,'')">Todos <span class="cvc-chip-count" id="cvc-cnt-all">0</span></button>
+    <button class="cvc-chip" data-cat="MIGR" onclick="setCvcFiltro(this,'MIGR')">Migraciones <span class="cvc-chip-count" id="cvc-cnt-migr">0</span></button>
+    <button class="cvc-chip" data-cat="PORTA" onclick="setCvcFiltro(this,'PORTA')">Porta POS <span class="cvc-chip-count" id="cvc-cnt-porta">0</span></button>
+    <button class="cvc-chip" data-cat="AUTOGENERACION" onclick="setCvcFiltro(this,'AUTOGENERACION')">Autogeneración <span class="cvc-chip-count" id="cvc-cnt-autog">0</span></button>
+    <button class="cvc-chip" data-cat="OUTB" onclick="setCvcFiltro(this,'OUTB')">TMK Outbound <span class="cvc-chip-count" id="cvc-cnt-outb">0</span></button>
   </div>
 
-  <!-- Tabla catálogo -->
-  <div class="cvc-table-wrap">
-    <table class="cvc-full-table">
-      <thead>
-        <tr>
-          <th onclick="sortCvcTabla('madre')">CVC Madre</th>
-          <th onclick="sortCvcTabla('sede')">Sede</th>
-          <th onclick="sortCvcTabla('categoria')">Categoría</th>
-          <th>Códigos Hijos</th>
-          <th onclick="sortCvcTabla('meta')">Meta</th>
-          <th>Ejecutado</th>
-          <th style="text-align:center;">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="cvc-tabla-body"></tbody>
-    </table>
-  </div>
+  <!-- Lista de cards -->
+  <div class="cvc-lista" id="cvc-lista-wrap"></div>
   <div id="cvc-tabla-footer" style="font-size:11px;color:var(--texto-dim);margin-top:10px;text-align:right;"></div>
 </div>
 
@@ -2570,14 +2588,14 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- Tabs -->
   <div class="cos-tabs" id="cos-tabs" style="display:none;align-items:center;">
-    <button class="cos-tab active" onclick="cosTab('postpago',this)">📱 Postpago</button>
-    <button class="cos-tab" onclick="cosTab('power',this)">⚡ Power</button>
-    <button class="cos-tab" onclick="cosTab('acelerador',this)">🚀 Acelerador</button>
-    <button class="cos-tab" onclick="cosTab('analisis',this)">📊 Análisis</button>
-    <button class="cos-tab" onclick="cosTab('proyeccion',this)">🔮 Proyección</button>
-    <button class="cos-tab" onclick="cosTab('sedes',this)">📍 Por Sede</button>
+    <button class="cos-tab active" onclick="cosTab('postpago',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">smartphone</span> Postpago</button>
+    <button class="cos-tab" onclick="cosTab('power',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">bolt</span> Power</button>
+    <button class="cos-tab" onclick="cosTab('acelerador',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">rocket_launch</span> Acelerador</button>
+    <button class="cos-tab" onclick="cosTab('analisis',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">bar_chart</span> Análisis</button>
+    <button class="cos-tab" onclick="cosTab('proyeccion',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">trending_up</span> Proyección</button>
+    <button class="cos-tab" onclick="cosTab('sedes',this)"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">location_on</span> Por Sede</button>
     <button id="btn-reset-proy" onclick="proyResetParams()" title="Restaurar parámetros a valores históricos"
-      style="display:none;margin-left:auto;background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 10px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">
+      style="display:none;margin-left:auto;background:none;border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);padding:5px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;cursor:pointer;">
       ↺ Reset
     </button>
   </div>
@@ -10466,12 +10484,13 @@ function renderTablaCatalogoCvc() {
   const fmt    = v => Math.round(v).toLocaleString('es-CO');
 
   // Construir filas desde GRUPOS_MADRE + cvcConfigs
-  let filas = Object.values(GRUPOS_MADRE).map(g => {
+  let todasLasFilas = Object.values(GRUPOS_MADRE).map(g => {
     const conf = cvcConfigs.find(c => c.madre === g.madre);
     return {
       madre:    g.madre,
       sede:     g.sede || '—',
       categoria:g.categoria || '—',
+      region:   g.hijos?.[0]?.region || '',
       hijos:    g.hijos || [],
       meta:     conf?.meta || 0,
       ejecutado:conf?.ejecutadoOverride ?? null,
@@ -10480,6 +10499,18 @@ function renderTablaCatalogoCvc() {
     };
   });
 
+  // Actualizar contadores en chips
+  const cntAll  = todasLasFilas.length;
+  const cntMigr = todasLasFilas.filter(f=>f.categoria.toUpperCase().includes('MIGR')).length;
+  const cntPort = todasLasFilas.filter(f=>f.categoria.toUpperCase().includes('PORTA')).length;
+  const cntAutog= todasLasFilas.filter(f=>f.categoria.toUpperCase().includes('AUTOG')).length;
+  const cntOutb = todasLasFilas.filter(f=>f.categoria.toUpperCase().includes('OUTB')).length;
+  ['all','migr','porta','autog','outb'].forEach((k,i)=>{
+    const el = document.getElementById('cvc-cnt-'+k);
+    if (el) el.textContent = [cntAll,cntMigr,cntPort,cntAutog,cntOutb][i];
+  });
+
+  let filas = todasLasFilas;
   // Filtro categoría
   if (_cvcFiltrocat) {
     filas = filas.filter(f => f.categoria.toUpperCase().includes(_cvcFiltrocat));
@@ -10504,50 +10535,70 @@ function renderTablaCatalogoCvc() {
     return _cvcSortDir === 'asc' ? r : -r;
   });
 
-  // Stats
+  // Stats icons
+  const statIcons = ['#','track_changes','filter_alt','layers'];
   const totalCat = Object.keys(GRUPOS_MADRE).length;
   const conMeta  = cvcConfigs.filter(c=>c.meta>0).length;
   const statsEl  = document.getElementById('cvc-stats-bar');
   if (statsEl) statsEl.innerHTML = [
-    {lbl:'CVCs en Catálogo', val:totalCat},
-    {lbl:'Con Meta Asignada', val:conMeta},
-    {lbl:'Resultados Visibles', val:filas.length},
-    {lbl:'Códigos Hijos Total', val:Object.values(GRUPOS_MADRE).reduce((s,g)=>s+g.hijos.length,0)},
-  ].map(s=>`<div class="cvc-stat-pill"><div class="csp-val">${s.val}</div><div class="csp-lbl">${s.lbl}</div></div>`).join('');
+    {lbl:'CVCs en Catálogo',    val:totalCat,          icon:'tag'},
+    {lbl:'Con Meta Asignada',   val:conMeta,           icon:'track_changes'},
+    {lbl:'Resultados Visibles', val:filas.length,      icon:'filter_alt'},
+    {lbl:'Códigos Hijos Total', val:Object.values(GRUPOS_MADRE).reduce((s,g)=>s+g.hijos.length,0), icon:'layers'},
+  ].map(s=>`<div class="cvc-stat-pill">
+    <div class="csp-left"><div class="csp-val">${s.val}</div><div class="csp-lbl">${s.lbl}</div></div>
+    <span class="material-symbols-rounded csp-icon" style="font-variation-settings:'FILL' 0,'wght' 300;">${s.icon}</span>
+  </div>`).join('');
 
-  // Tabla
-  const tbody = document.getElementById('cvc-tabla-body');
+  // Lista de cards
+  const wrap = document.getElementById('cvc-lista-wrap');
   if (!filas.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--texto-dim);">Sin resultados para la búsqueda</td></tr>`;
+    wrap.innerHTML = `<div style="text-align:center;padding:48px;color:var(--texto-dim);">Sin resultados para la búsqueda</div>`;
     document.getElementById('cvc-tabla-footer').textContent = '0 registros';
     return;
   }
 
-  tbody.innerHTML = filas.map(f => {
-    const hijosStr = f.hijos.map(h=>h.codigo).join(' · ');
-    const metaStr  = f.meta ? fmt(f.meta)+' uds.' : '<span style="color:#475569;">—</span>';
-    const execStr  = f.ejecutado !== null
-      ? `<span style="color:var(--naranja);font-weight:600;">${fmt(f.ejecutado)} <span style="font-size:9px;color:#64748B;">manual</span></span>`
-      : `<span style="color:var(--texto-dim);font-size:11px;">auto</span>`;
-    const configBadge = f.enConfig
-      ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ADE80;margin-right:4px;vertical-align:middle;" title="Configurado en sección 4"></span>`
-      : `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#334155;margin-right:4px;vertical-align:middle;" title="Sin configuración"></span>`;
-    return `<tr>
-      <td>
-        ${configBadge}<span class="cvc-code-tag">${f.madre}</span>
-      </td>
-      <td style="font-size:11px;">${f.sede.replace('ONE CONTACT ','')}</td>
-      <td><span class="cvc-badge ${getCvcBadgeClass(f.categoria)}">${f.categoria}</span></td>
-      <td><div class="cvc-hijos-list">${hijosStr||'—'}</div></td>
-      <td style="text-align:right;font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;">${metaStr}</td>
-      <td>${execStr}</td>
-      <td>
-        <div class="cvc-action-btns" style="justify-content:center;">
-          ${tienePerm('editar_cvc') ? `<button class="cvc-action-btn edit" title="Editar" onclick='abrirModalCvcFull(${JSON.stringify(f)})'>✏️</button>` : ''}
-          ${tienePerm('eliminar_cvc') ? `<button class="cvc-action-btn del" title="Eliminar del catálogo" onclick="eliminarCvcCatalogo('${f.madre}')">🗑</button>` : ''}
+  const bclass = c => getCvcBadgeClass(c);
+  wrap.innerHTML = filas.map(f => {
+    const metaStr = f.meta ? fmt(f.meta)+' <span style="font-size:11px;color:var(--texto-dim);">uds.</span>' : '—';
+    const execStr = f.ejecutado !== null
+      ? `<span style="color:var(--naranja);font-weight:600;">${fmt(f.ejecutado)}</span> <span style="font-size:10px;color:var(--texto-dim);">manual</span>`
+      : `<span class="material-symbols-rounded" style="font-size:13px;color:var(--g-green);vertical-align:-2px;font-variation-settings:'FILL' 1,'wght' 500;">check_circle</span> <span style="font-size:11px;color:var(--texto-dim);">Ejecutado: auto</span>`;
+    const hijoChips = f.hijos.slice(0,3).map(h=>`<span class="cvc-hijo-chip">${h.codigo}</span>`).join('');
+    const masHijos  = f.hijos.length > 3 ? `<span class="cvc-hijo-chip" style="background:var(--g-outline);color:var(--texto-dim);">+${f.hijos.length-3}</span>` : '';
+    const sedeLabel = f.sede.replace('ONE CONTACT ','').replace('SOLVENCIA ','');
+    return `<div class="cvc-card">
+      <div class="cvc-card-bar ${bclass(f.categoria)}"></div>
+      <div class="cvc-card-body">
+        <!-- Col 1: CVC Madre + badge -->
+        <div class="cvc-card-col">
+          <span class="cvc-card-label"><span class="material-symbols-rounded" style="font-size:11px;vertical-align:-1px;">tag</span> CVC Madre</span>
+          <span class="cvc-card-code">${f.madre}</span>
+          <div style="margin-top:4px;"><span class="cvc-badge ${bclass(f.categoria)}">${f.categoria}</span></div>
         </div>
-      </td>
-    </tr>`;
+        <!-- Col 2: Sede + Región -->
+        <div class="cvc-card-col">
+          <span class="cvc-card-sede"><span class="material-symbols-rounded" style="font-size:13px;vertical-align:-2px;color:var(--texto-dim);font-variation-settings:'FILL' 1,'wght' 400;">business</span> ${sedeLabel}</span>
+          ${f.region ? `<span class="cvc-card-region"><span class="material-symbols-rounded" style="font-size:12px;vertical-align:-2px;">location_on</span> ${f.region}</span>` : ''}
+        </div>
+        <!-- Col 3: Hijos -->
+        <div class="cvc-card-col">
+          <span class="cvc-card-label"><span class="material-symbols-rounded" style="font-size:11px;vertical-align:-1px;">layers</span> ${f.hijos.length} código(s) hijo(s)</span>
+          <div class="cvc-card-chips">${hijoChips}${masHijos}</div>
+        </div>
+        <!-- Col 4: Meta -->
+        <div class="cvc-card-col">
+          <span class="cvc-card-label"><span class="material-symbols-rounded" style="font-size:11px;vertical-align:-1px;">track_changes</span> Meta</span>
+          <span class="cvc-card-meta-val">${metaStr}</span>
+          <div class="cvc-card-meta-sub">${execStr}</div>
+        </div>
+        <!-- Col 5: Acciones -->
+        <div class="cvc-card-actions">
+          ${tienePerm('editar_cvc') ? `<button class="cvc-action-btn edit" title="Editar" onclick='abrirModalCvcFull(${JSON.stringify(f)})' style="border-radius:8px;"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 0,'wght' 400;">edit</span></button>` : ''}
+          ${tienePerm('eliminar_cvc') ? `<button class="cvc-action-btn del" title="Eliminar del catálogo" onclick="eliminarCvcCatalogo('${f.madre}')" style="border-radius:8px;"><span class="material-symbols-rounded" style="font-size:16px;font-variation-settings:'FILL' 0,'wght' 400;">delete</span></button>` : ''}
+        </div>
+      </div>
+    </div>`;
   }).join('');
 
   document.getElementById('cvc-tabla-footer').textContent =
@@ -16561,20 +16612,23 @@ function cosProyDesgloseSede(granTotal) {
 
   const rows = filas.map(r => {
     const proyVal = Math.round(granTotal * r.pct);
-    const bar = `<div style="flex:1;height:4px;background:var(--gris-linea);border-radius:2px;margin:0 8px;overflow:hidden;">
-      <div style="width:${(r.pct*100).toFixed(1)}%;height:100%;background:var(--azul);border-radius:2px;"></div></div>`;
-    return `<div style="display:flex;align-items:center;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.04);">
-      <div style="font-size:11px;font-weight:600;color:var(--blanco);min-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.sede}">${r.sede}</div>
+    const bar = `<div style="flex:1;height:5px;background:var(--g-outline);border-radius:3px;margin:0 10px;overflow:hidden;">
+      <div style="width:${(r.pct*100).toFixed(1)}%;height:100%;background:var(--g-blue);border-radius:3px;"></div></div>`;
+    return `<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--g-outline);">
+      <div style="font-size:12px;font-weight:600;color:var(--g-on-surface);min-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter Tight',sans-serif;" title="${r.sede}">${r.sede}</div>
       ${bar}
-      <div style="font-size:10px;color:var(--texto-dim);min-width:38px;text-align:right;">${(r.pct*100).toFixed(1)}%</div>
-      <div style="font-size:13px;font-weight:700;color:var(--azul);min-width:90px;text-align:right;">${fmtM(proyVal)}</div>
+      <div style="font-size:11px;color:var(--texto-dim);min-width:40px;text-align:right;">${(r.pct*100).toFixed(1)}%</div>
+      <div style="font-size:13px;font-weight:700;color:var(--g-blue);min-width:96px;text-align:right;font-family:'Inter Tight',sans-serif;">${fmtM(proyVal)}</div>
     </div>`;
   }).join('');
 
-  return `<div id="proy-desglose-sede" style="margin-top:10px;background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;overflow:hidden;">
-    <div style="padding:10px 12px;background:var(--gris-medio);border-bottom:1px solid var(--gris-linea);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">🏢 Proyección por Sede</span>
-      <span style="font-size:9px;color:var(--texto-dim);">Proporcional al cobrado histórico</span>
+  return `<div id="proy-desglose-sede" style="margin-top:14px;background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+    <div style="padding:12px 16px;background:var(--g-surface-variant);border-bottom:1px solid var(--g-outline);display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="material-symbols-rounded" style="font-size:15px;color:var(--texto-dim);font-variation-settings:'FILL' 1,'wght' 400;">business</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Proyección por Sede</span>
+      </div>
+      <span style="font-size:10px;color:var(--texto-dim);">Proporcional al cobrado histórico</span>
     </div>
     ${rows}
   </div>`;
@@ -16653,73 +16707,74 @@ function cosRenderSedes(result) {
 
   // ── Header KPI ──
   const headerHtml = `
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
-      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Proyección Total</div>
-      <div style="font-size:28px;font-weight:800;color:var(--verde)">${fmtM(granTotal)}</div>
-      <div style="font-size:10px;color:var(--texto-dim);margin-top:2px;">Distribuido entre ${filas.length} sedes</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 20px;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;font-weight:500;margin-bottom:6px;">Proyección Total</div>
+      <div style="font-size:26px;font-weight:700;color:var(--g-green);font-family:'Inter Tight',sans-serif;">${fmtM(granTotal)}</div>
+      <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Distribuido entre ${filas.length} sedes</div>
     </div>
-    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
-      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Cobrado Histórico Base</div>
-      <div style="font-size:28px;font-weight:800;color:var(--azul)">${fmtM(totalCobrado)}</div>
-      <div style="font-size:10px;color:var(--texto-dim);margin-top:2px;">Fuente del % por sede</div>
+    <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 20px;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;font-weight:500;margin-bottom:6px;">Cobrado Histórico Base</div>
+      <div style="font-size:26px;font-weight:700;color:var(--g-blue);font-family:'Inter Tight',sans-serif;">${fmtM(totalCobrado)}</div>
+      <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Fuente del % por sede</div>
     </div>
-    <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;padding:14px 18px;">
-      <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Mayor Sede</div>
-      <div style="font-size:16px;font-weight:800;color:var(--blanco);margin-top:4px;">${filas[0]?.sede || '—'}</div>
-      <div style="font-size:13px;font-weight:700;color:var(--verde);margin-top:2px;">${fmtM(filas[0]?.proyVal || 0)}</div>
+    <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 20px;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+      <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.8px;text-transform:uppercase;font-weight:500;margin-bottom:6px;">Mayor Sede</div>
+      <div style="font-size:14px;font-weight:700;color:var(--g-on-surface);margin-top:4px;font-family:'Inter Tight',sans-serif;">${filas[0]?.sede || '—'}</div>
+      <div style="font-size:14px;font-weight:700;color:var(--g-green);margin-top:4px;font-family:'Inter Tight',sans-serif;">${fmtM(filas[0]?.proyVal || 0)}</div>
     </div>
   </div>`;
 
   // ── Tabla ──
   const rowsHtml = filas.map(r => `
-    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-      <td style="padding:10px 14px;font-weight:600;color:var(--blanco);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.sede}">${r.sede}</td>
-      <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${r.altas.toLocaleString('es-CO')}</td>
-      <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${fmtM(r.cobrado)}</td>
-      <td style="padding:10px 14px;">
+    <tr style="border-bottom:1px solid var(--g-outline);">
+      <td style="padding:10px 16px;font-weight:600;color:var(--g-on-surface);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter Tight',sans-serif;" title="${r.sede}">${r.sede}</td>
+      <td style="padding:10px 16px;text-align:right;color:var(--texto-dim);font-size:12px;">${r.altas.toLocaleString('es-CO')}</td>
+      <td style="padding:10px 16px;text-align:right;color:var(--texto-dim);font-size:12px;">${fmtM(r.cobrado)}</td>
+      <td style="padding:10px 16px;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <div style="flex:1;height:5px;background:var(--gris-linea);border-radius:3px;overflow:hidden;">
-            <div style="width:${Math.min(r.pct*100,100).toFixed(1)}%;height:100%;background:var(--azul);border-radius:3px;"></div>
+          <div style="flex:1;height:6px;background:var(--g-outline);border-radius:3px;overflow:hidden;">
+            <div style="width:${Math.min(r.pct*100,100).toFixed(1)}%;height:100%;background:var(--g-blue);border-radius:3px;"></div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${semColor(r.pct*100)};min-width:42px;text-align:right;">${(r.pct*100).toFixed(1)}%</span>
+          <span style="font-size:12px;font-weight:700;color:${semColor(r.pct*100)};min-width:42px;text-align:right;">${(r.pct*100).toFixed(1)}%</span>
         </div>
       </td>
-      <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:var(--verde);">${fmtM(r.proyVal)}</td>
+      <td style="padding:10px 16px;text-align:right;font-size:15px;font-weight:700;color:var(--g-green);font-family:'Inter Tight',sans-serif;">${fmtM(r.proyVal)}</td>
     </tr>`).join('');
 
   const tablaHtml = `
-  <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:6px;overflow:hidden;">
-    <div style="padding:10px 14px;background:var(--gris-medio);border-bottom:1px solid var(--gris-linea);">
-      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">🏢 Desglose por Sede</span>
-      <span style="font-size:9px;color:var(--texto-dim);margin-left:8px;">Proyección = Total × % cobrado histórico por sede</span>
+  <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+    <div style="padding:12px 16px;background:var(--g-surface-variant);border-bottom:1px solid var(--g-outline);display:flex;align-items:center;gap:8px;">
+      <span class="material-symbols-rounded" style="font-size:16px;color:var(--texto-dim);font-variation-settings:'FILL' 1,'wght' 400;">business</span>
+      <span style="font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Desglose por Sede</span>
+      <span style="font-size:10px;color:var(--texto-dim);margin-left:4px;">Proyección = Total × % cobrado histórico por sede</span>
     </div>
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:12px;">
         <thead>
-          <tr style="border-bottom:1px solid var(--gris-linea);">
-            <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Sede</th>
-            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Altas R5</th>
-            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Cobrado Hist.</th>
-            <th style="padding:8px 14px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">% Participación</th>
-            <th style="padding:8px 14px;text-align:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">Proyección</th>
+          <tr style="border-bottom:1px solid var(--g-outline);background:var(--g-surface-variant);">
+            <th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Sede</th>
+            <th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Altas R5</th>
+            <th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Cobrado Hist.</th>
+            <th style="padding:10px 16px;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">% Participación</th>
+            <th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);">Proyección</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
         <tfoot>
-          <tr style="background:rgba(0,0,0,0.2);border-top:1px solid var(--gris-linea);">
-            <td style="padding:10px 14px;font-weight:700;color:var(--blanco);">TOTAL</td>
-            <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${filas.reduce((s,r)=>s+r.altas,0).toLocaleString('es-CO')}</td>
-            <td style="padding:10px 14px;text-align:right;color:var(--texto-dim);">${fmtM(totalCobrado)}</td>
-            <td style="padding:10px 14px;font-size:11px;font-weight:700;color:var(--blanco);">100%</td>
-            <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:var(--verde);">${fmtM(granTotal)}</td>
+          <tr style="background:var(--g-surface-variant);border-top:2px solid var(--g-outline);">
+            <td style="padding:10px 16px;font-weight:700;color:var(--g-on-surface);font-family:'Inter Tight',sans-serif;">TOTAL</td>
+            <td style="padding:10px 16px;text-align:right;color:var(--texto-dim);">${filas.reduce((s,r)=>s+r.altas,0).toLocaleString('es-CO')}</td>
+            <td style="padding:10px 16px;text-align:right;color:var(--texto-dim);">${fmtM(totalCobrado)}</td>
+            <td style="padding:10px 16px;font-size:12px;font-weight:700;color:var(--g-on-surface);">100%</td>
+            <td style="padding:10px 16px;text-align:right;font-size:15px;font-weight:800;color:var(--g-green);font-family:'Inter Tight',sans-serif;">${fmtM(granTotal)}</td>
           </tr>
         </tfoot>
       </table>
     </div>
   </div>`;
 
-  wrap.innerHTML = `<div style="padding:2px 0 12px;">${headerHtml}${tablaHtml}</div>`;
+  wrap.innerHTML = `<div style="padding:4px 0 16px;">${headerHtml}${tablaHtml}</div>`;
 }
 
 function cosRenderProyeccion(result) {
@@ -16751,8 +16806,8 @@ function cosRenderProyeccion(result) {
       return `<span style="width:${w};display:inline-block;text-align:center;color:${color};font-size:12px;font-weight:700;">${val}</span>`;
     }
     return `<input type="number" id="${id}" value="${val}" min="0" max="200" step="1"
-      style="width:${w};background:var(--negro);border:1px solid var(--gris-linea);border-radius:2px;
-             padding:3px 4px;color:${color};font-family:'Inter Tight',sans-serif;
+      style="width:${w};background:var(--g-surface-variant);border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);
+             padding:3px 6px;color:${color};font-family:'Inter Tight',sans-serif;
              font-size:12px;font-weight:700;text-align:center;outline:none;-moz-appearance:textfield;">`;
   };
 
@@ -16760,23 +16815,23 @@ function cosRenderProyeccion(result) {
     const f = proy[seg].filas[0];
     if (!f || !f.mes) return '';
     const ka = `${seg}_m1a`, kb = `${seg}_m1b`;
-    return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-      <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap">
-        Mes 1<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim)">${proyMesLabel(f.mes)}</span>
+    return `<tr style="border-bottom:1px solid var(--g-outline);">
+      <td style="padding:8px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap;font-family:'Inter Tight',sans-serif;">
+        Mes 1<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim);">${proyMesLabel(f.mes)}</span>
       </td>
-      <td style="padding:7px 10px;font-size:11px;color:var(--texto-dim);line-height:1.9">
-        <div>(<span style="color:var(--texto)">${fmtN(f.parteA.base)}</span> P1 ×
+      <td style="padding:8px 10px;font-size:11px;color:var(--texto-dim);line-height:1.9;">
+        <div>(<span style="color:var(--g-on-surface);">${fmtN(f.parteA.base)}</span> P1 ×
           ${inp(`pi-${ka}`, p[ka], `proySetParam('${ka}',+this.value)`)}%
-          − <span style="color:var(--texto)">${fmtN(f.parteA.menos)}</span> P2) × ARPU P2
-          = <span style="color:${color};font-weight:700">${fmtCOPM(f.parteA.v)}</span>
+          − <span style="color:var(--g-on-surface);">${fmtN(f.parteA.menos)}</span> P2) × ARPU P2
+          = <span style="color:${color};font-weight:700;">${fmtCOPM(f.parteA.v)}</span>
         </div>
-        <div>(<span style="color:var(--texto)">${fmtN(f.parteB.base)}</span> P2 ×
+        <div>(<span style="color:var(--g-on-surface);">${fmtN(f.parteB.base)}</span> P2 ×
           ${inp(`pi-${kb}`, p[kb], `proySetParam('${kb}',+this.value)`)}%
-          − <span style="color:var(--texto)">${fmtN(f.parteB.menos)}</span> P3) × ARPU P3
-          = <span style="color:${color};font-weight:700">${fmtCOPM(f.parteB.v)}</span>
+          − <span style="color:var(--g-on-surface);">${fmtN(f.parteB.menos)}</span> P3) × ARPU P3
+          = <span style="color:${color};font-weight:700;">${fmtCOPM(f.parteB.v)}</span>
         </div>
       </td>
-      <td style="padding:7px 10px;text-align:right;font-size:14px;font-weight:700;color:${color}">${fmtCOPM(f.parteA.v + f.parteB.v)}</td>
+      <td style="padding:8px 10px;text-align:right;font-size:14px;font-weight:700;color:${color};font-family:'Inter Tight',sans-serif;">${fmtCOPM(f.parteA.v + f.parteB.v)}</td>
     </tr>`;
   };
 
@@ -16784,34 +16839,34 @@ function cosRenderProyeccion(result) {
     const f = proy[seg].filas[idx];
     if (!f || !f.mes) return '';
     const k = `${seg}_m${idx+1}`;
-    return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-      <td style="padding:7px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap">
-        Mes ${idx+1}<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim)">${proyMesLabel(f.mes)}</span>
+    return `<tr style="border-bottom:1px solid var(--g-outline);">
+      <td style="padding:8px 10px;font-size:11px;font-weight:700;color:${color};white-space:nowrap;font-family:'Inter Tight',sans-serif;">
+        Mes ${idx+1}<br><span style="font-size:10px;font-weight:400;color:var(--texto-dim);">${proyMesLabel(f.mes)}</span>
       </td>
-      <td style="padding:7px 10px;font-size:11px;color:var(--texto-dim)">
-        (<span style="color:var(--texto)">${fmtN(f.base)}</span> P1 ×
+      <td style="padding:8px 10px;font-size:11px;color:var(--texto-dim);">
+        (<span style="color:var(--g-on-surface);">${fmtN(f.base)}</span> P1 ×
         ${inp(`pi-${k}`,p[k],`proySetParam('${k}',+this.value)`)}%
-        − <span style="color:var(--texto)">${fmtN(f.menos)}</span> P3) × ARPU P3
+        − <span style="color:var(--g-on-surface);">${fmtN(f.menos)}</span> P3) × ARPU P3
       </td>
-      <td style="padding:7px 10px;text-align:right;font-size:14px;font-weight:700;color:${color}">${fmtCOPM(f.v)}</td>
+      <td style="padding:8px 10px;text-align:right;font-size:14px;font-weight:700;color:${color};font-family:'Inter Tight',sans-serif;">${fmtCOPM(f.v)}</td>
     </tr>`;
   };
 
   const bloque = (titulo, seg, color) => {
     const d = proy[seg];
-    return `<div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;overflow:hidden;display:flex;flex-direction:column">
-      <div style="background:var(--gris-medio);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gris-linea)">
-        <span style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blanco)">${titulo}</span>
+    return `<div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+      <div style="background:var(--g-surface-variant);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--g-outline);">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--g-on-surface);font-family:'Inter Tight',sans-serif;">${titulo}</span>
         <div style="text-align:right">
-          <div id="proy-blk-total-${seg}" style="font-size:17px;font-weight:800;color:${color};line-height:1">${fmtCOPM(d.total)}</div>
-          <div id="proy-blk-sub-${seg}" style="font-size:9px;color:var(--texto-dim)">sub ${fmtCOPM(d.subtotal)}</div>
+          <div id="proy-blk-total-${seg}" style="font-size:16px;font-weight:700;color:${color};line-height:1;font-family:'Inter Tight',sans-serif;">${fmtCOPM(d.total)}</div>
+          <div id="proy-blk-sub-${seg}" style="font-size:10px;color:var(--texto-dim)">sub ${fmtCOPM(d.subtotal)}</div>
         </div>
       </div>
-      <table style="width:100%;border-collapse:collapse;flex:1">
-        <thead><tr style="border-bottom:1px solid var(--gris-linea)">
-          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:left;width:80px">Mes</th>
-          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:left">Cálculo</th>
-          <th style="padding:5px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);text-align:right;width:90px">Valor</th>
+      <table style="width:100%;border-collapse:collapse;flex:1;">
+        <thead><tr style="border-bottom:1px solid var(--g-outline);background:var(--g-surface-variant);">
+          <th style="padding:6px 10px;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);text-align:left;width:80px;font-weight:600;">Mes</th>
+          <th style="padding:6px 10px;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);text-align:left;font-weight:600;">Cálculo</th>
+          <th style="padding:6px 10px;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--texto-dim);text-align:right;width:90px;font-weight:600;">Valor</th>
         </tr></thead>
         <tbody>
           ${renderM1(seg, color)}
@@ -16819,53 +16874,53 @@ function cosRenderProyeccion(result) {
           ${renderMn(seg, 2, color)}
           ${renderMn(seg, 3, color)}
         </tbody>
-        <tfoot><tr style="background:rgba(0,0,0,0.2)">
-          <td colspan="2" style="padding:7px 10px;font-size:10px;font-weight:700;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase">Subtotal antes de caída</td>
-          <td style="padding:7px 10px;text-align:right;font-size:13px;font-weight:700;color:${color}">${fmtCOPM(d.subtotal)}</td>
+        <tfoot><tr style="background:var(--g-surface-variant);border-top:1px solid var(--g-outline);">
+          <td colspan="2" style="padding:8px 10px;font-size:10px;font-weight:600;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;">Subtotal antes de caída</td>
+          <td style="padding:8px 10px;text-align:right;font-size:13px;font-weight:700;color:${color};font-family:'Inter Tight',sans-serif;">${fmtCOPM(d.subtotal)}</td>
         </tr></tfoot>
       </table>
     </div>`;
   };
 
   wrap.innerHTML = `
-  <div style="padding:2px 0 12px">
+  <div style="padding:4px 0 16px;">
     <!-- Header KPI -->
-    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px">
-      <div style="background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(249,115,22,0.1));border:1px solid var(--gris-linea);border-radius:4px;padding:14px 18px;display:flex;align-items:center;gap:24px">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:14px;">
+      <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:28px;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
         <div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--texto-dim)">PROYECCIÓN</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--texto-dim);">PROYECCIÓN</span>
             <input type="month" id="cos-proy-mes-override" value="${proy.mesProy}"
               oninput="setCosProyMesOverride(this.value)"
-              style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:3px;color:var(--verde);font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:2px 6px;outline:none;cursor:pointer;letter-spacing:.5px;">
-            ${_cosProyMesOverride ? `<button onclick="setCosProyMesOverride(null)" title="Volver al mes automático" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:3px;padding:2px 7px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;cursor:pointer;letter-spacing:.5px;" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Auto</button>` : ''}
+              style="background:var(--g-surface-variant);border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);color:var(--g-green);font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;padding:3px 8px;outline:none;cursor:pointer;">
+            ${_cosProyMesOverride ? `<button onclick="setCosProyMesOverride(null)" title="Volver al mes automático" style="background:none;border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);padding:3px 10px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">↺ Auto</button>` : ''}
           </div>
-          <div id="proy-gran-total" style="font-size:34px;font-weight:800;color:var(--verde);line-height:1">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
-          <div id="proy-subtotal-label" style="font-size:11px;color:var(--texto-dim);margin-top:3px">Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%</div>
+          <div id="proy-gran-total" style="font-size:32px;font-weight:700;color:var(--g-green);line-height:1;font-family:'Inter Tight',sans-serif;">$ ${Math.round(proy.gran_total).toLocaleString('es-CO')}</div>
+          <div id="proy-subtotal-label" style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Subtotal ${fmtCOPM(proy.gran_subtotal)} − caída global <span id="proy-caida-label">${p.caida_global}</span>%</div>
         </div>
-        <div style="display:flex;gap:20px">
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Postpago</div><div id="proy-tot-post" style="font-size:17px;font-weight:700;color:var(--azul)">${fmtCOPM(proy.post.total)}</div></div>
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Power</div><div id="proy-tot-pow" style="font-size:17px;font-weight:700;color:var(--amarillo)">${fmtCOPM(proy.pow.total)}</div></div>
-          <div><div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Acelerador</div><div id="proy-tot-acel" style="font-size:17px;font-weight:700;color:var(--morado)">${fmtCOPM(proy.acel.total)}</div></div>
+        <div style="display:flex;gap:24px;">
+          <div><div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;font-weight:500;">Postpago</div><div id="proy-tot-post" style="font-size:16px;font-weight:700;color:var(--g-blue);font-family:'Inter Tight',sans-serif;">${fmtCOPM(proy.post.total)}</div></div>
+          <div><div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;font-weight:500;">Power</div><div id="proy-tot-pow" style="font-size:16px;font-weight:700;color:var(--g-yellow);font-family:'Inter Tight',sans-serif;">${fmtCOPM(proy.pow.total)}</div></div>
+          <div><div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;font-weight:500;">Acelerador</div><div id="proy-tot-acel" style="font-size:16px;font-weight:700;color:var(--morado);font-family:'Inter Tight',sans-serif;">${fmtCOPM(proy.acel.total)}</div></div>
         </div>
       </div>
-      <div style="background:var(--gris-oscuro);border:1px solid var(--gris-linea);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:130px">
-        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;text-align:center">Caída Global<br><span style="font-size:9px">(sin cierre de mes)</span></div>
-        <div style="display:flex;align-items:center;gap:4px">
-          ${inp('pi-caida-global', p.caida_global, `proySetParam('caida_global',+this.value)`, '#FCA5A5', '52px')}
-          <span style="font-size:14px;color:var(--texto-dim)">%</span>
+      <div style="background:var(--g-surface);border:1px solid var(--g-outline);border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:140px;box-shadow:0 1px 3px rgba(60,64,67,0.08);">
+        <div style="font-size:10px;color:var(--texto-dim);letter-spacing:0.5px;text-transform:uppercase;text-align:center;font-weight:500;">Caída Global<br><span style="font-size:9px;">(sin cierre de mes)</span></div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          ${inp('pi-caida-global', p.caida_global, `proySetParam('caida_global',+this.value)`, 'var(--g-red)', '52px')}
+          <span style="font-size:14px;color:var(--texto-dim);">%</span>
         </div>
-        ${proyTienePersonalizados() ? `<div style="font-size:9px;color:#34D399;text-align:center;letter-spacing:.5px">✓ Valores guardados</div>` : ''}
-        ${puedeReset ? `<button onclick="proyReset()" title="Restablecer todos los % a valores de fábrica y borrar guardados" style="background:none;border:1px solid var(--gris-linea);border-radius:2px;padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--amarillo)'" onmouseout="this.style.color='var(--texto-dim)'">↺ Reset</button>` : ''}
+        ${proyTienePersonalizados() ? `<div style="font-size:9px;color:var(--g-green);text-align:center;letter-spacing:.5px;">✓ Valores guardados</div>` : ''}
+        ${puedeReset ? `<button onclick="proyReset()" title="Restablecer todos los % a valores de fábrica y borrar guardados" style="background:none;border:1px solid var(--g-outline);border-radius:var(--g-radius-sm);padding:4px 12px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:color .15s;">↺ Reset</button>` : ''}
       </div>
     </div>
     <!-- 3 columnas -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-      ${bloque('Portabilidad Postpago', 'post', 'var(--azul)')}
-      ${bloque('Power', 'pow', 'var(--amarillo)')}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      ${bloque('Portabilidad Postpago', 'post', 'var(--g-blue)')}
+      ${bloque('Power', 'pow', 'var(--g-yellow)')}
       ${bloque('Acelerador', 'acel', 'var(--morado)')}
     </div>
-    <div style="margin-top:8px;padding:8px 12px;background:rgba(110,231,183,0.06);border:1px solid rgba(110,231,183,0.15);border-radius:3px;font-size:10px;color:var(--verde);line-height:1.6">
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(52,168,83,0.06);border:1px solid rgba(52,168,83,0.2);border-radius:8px;font-size:11px;color:var(--g-green);line-height:1.6;">
       <strong>Lógica Mes 1:</strong> (P1×tasa%−P2)×ARPU_P2 + (P2×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp;
       <strong>Meses 2/3/4:</strong> (P1×tasa%−P3)×ARPU_P3 &nbsp;|&nbsp; Edita los % · Los totales se actualizan al instante
     </div>
