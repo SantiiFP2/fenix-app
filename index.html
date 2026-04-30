@@ -595,8 +595,8 @@ body.modo-claro .sb-submenu-item.active{color:#111;border-left-color:var(--rojo)
 #panel-codigos-cvc{display:none;padding:28px 32px;max-width:1400px;background:var(--g-surface-variant);}
 #panel-codigos-cvc.visible{display:block;}
 .cvc-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
-.cvc-panel-header h1{font-family:'Inter Tight',sans-serif;font-size:24px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
-.cvc-panel-header p{font-size:11px;color:var(--texto-dim);letter-spacing:1px;margin:4px 0 0;}
+.cvc-panel-header h1{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
+.cvc-panel-header p{font-size:11px;color:var(--texto-dim);letter-spacing:0.5px;margin:3px 0 0;}
 .cvc-panel-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
 .cvc-search{background:var(--g-surface-variant);border:1px solid var(--g-outline);border-radius:var(--g-radius-lg);color:var(--g-on-surface);font-size:13px;padding:10px 16px;outline:none;width:240px;transition:all 0.2s;}
 .cvc-search:focus{background:var(--g-surface);border-color:var(--g-blue);box-shadow:0 0 0 2px rgba(26,115,232,0.2);}
@@ -654,12 +654,13 @@ body.modo-claro .sb-submenu-item.active{color:#111;border-left-color:var(--rojo)
 .cvc-card-meta-val{font-family:'Inter Tight',sans-serif;font-size:18px;font-weight:700;color:var(--g-on-surface);}
 .cvc-card-meta-sub{font-size:11px;color:var(--g-green);display:flex;align-items:center;gap:3px;}
 .cvc-card-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
-/* Filter chips actualización */
-.cvc-filter-chips{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--g-outline);padding-bottom:12px;}
-.cvc-chip{padding:6px 14px;border-radius:var(--g-radius-sm);font-size:12px;font-weight:600;letter-spacing:0.3px;cursor:pointer;border:none;background:none;color:var(--texto-dim);border-bottom:2px solid transparent;transition:all 0.15s;}
+/* Filter chips — estilo tab horizontal igual a Cosechas/Comisiones */
+.cvc-filter-chips{display:flex;gap:2px;margin-bottom:16px;border-bottom:2px solid var(--g-outline);overflow-x:auto;scrollbar-width:none;}
+.cvc-filter-chips::-webkit-scrollbar{display:none;}
+.cvc-chip{font-family:'Inter Tight',sans-serif;font-size:12px;font-weight:600;letter-spacing:.4px;padding:10px 18px;border:none;background:none;cursor:pointer;color:var(--texto-dim);border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:all .15s;text-transform:none;}
 .cvc-chip:hover{color:var(--g-on-surface);}
 .cvc-chip.active{color:var(--g-blue);border-bottom-color:var(--g-blue);}
-.cvc-chip .cvc-chip-count{display:inline-block;font-size:10px;background:var(--g-surface-variant);border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700;color:var(--texto-dim);}
+.cvc-chip .cvc-chip-count{display:inline-block;font-size:10px;background:var(--g-surface-variant);border-radius:10px;padding:1px 7px;margin-left:2px;font-weight:700;color:var(--texto-dim);}
 .cvc-chip.active .cvc-chip-count{background:rgba(26,115,232,0.12);color:var(--g-blue);}
 /* Header botón nuevo CVC */
 .btn-cvc-nuevo{display:flex;align-items:center;gap:6px;padding:9px 20px;background:var(--g-blue);border:none;border-radius:var(--g-radius-sm);cursor:pointer;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:#fff;transition:all 0.15s;white-space:nowrap;}
@@ -1080,7 +1081,7 @@ body.modo-claro .sb-nav-badge { background: #F3F4F6; border-color: #E5E7EB; colo
 .cos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
 .cos-header h1{font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--g-on-surface);margin:0;}
 .cos-header p{font-size:11px;color:var(--texto-dim);letter-spacing:0.3px;margin:3px 0 0;}
-.cos-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;}
+.cos-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 
 /* Upload zone */
 .cos-upload-zone{
@@ -2330,13 +2331,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- Stats -->
   <div class="cvc-stats-bar" id="cvc-stats-bar"></div>
 
-  <!-- Chips filtro categoría -->
+  <!-- Chips filtro categoría — estilo tab horizontal -->
   <div class="cvc-filter-chips" id="cvc-filter-chips">
-    <button class="cvc-chip active" data-cat="" onclick="setCvcFiltro(this,'')">Todos <span class="cvc-chip-count" id="cvc-cnt-all">0</span></button>
-    <button class="cvc-chip" data-cat="MIGR" onclick="setCvcFiltro(this,'MIGR')">Migraciones <span class="cvc-chip-count" id="cvc-cnt-migr">0</span></button>
-    <button class="cvc-chip" data-cat="PORTA" onclick="setCvcFiltro(this,'PORTA')">Porta POS <span class="cvc-chip-count" id="cvc-cnt-porta">0</span></button>
-    <button class="cvc-chip" data-cat="AUTOGENERACION" onclick="setCvcFiltro(this,'AUTOGENERACION')">Autogeneración <span class="cvc-chip-count" id="cvc-cnt-autog">0</span></button>
-    <button class="cvc-chip" data-cat="OUTB" onclick="setCvcFiltro(this,'OUTB')">TMK Outbound <span class="cvc-chip-count" id="cvc-cnt-outb">0</span></button>
+    <button class="cvc-chip active" data-cat="" onclick="setCvcFiltro(this,'')"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">apps</span> Todos <span class="cvc-chip-count" id="cvc-cnt-all">0</span></button>
+    <button class="cvc-chip" data-cat="MIGR" onclick="setCvcFiltro(this,'MIGR')"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">swap_horiz</span> Migraciones <span class="cvc-chip-count" id="cvc-cnt-migr">0</span></button>
+    <button class="cvc-chip" data-cat="PORTA" onclick="setCvcFiltro(this,'PORTA')"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">point_of_sale</span> Porta POS <span class="cvc-chip-count" id="cvc-cnt-porta">0</span></button>
+    <button class="cvc-chip" data-cat="AUTOGENERACION" onclick="setCvcFiltro(this,'AUTOGENERACION')"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">auto_mode</span> Autogeneración <span class="cvc-chip-count" id="cvc-cnt-autog">0</span></button>
+    <button class="cvc-chip" data-cat="OUTB" onclick="setCvcFiltro(this,'OUTB')"><span class="material-symbols-rounded" style="font-size:15px;font-variation-settings:'FILL' 1,'wght' 500;">call_made</span> TMK Outbound <span class="cvc-chip-count" id="cvc-cnt-outb">0</span></button>
   </div>
 
   <!-- Lista de cards -->
@@ -2486,14 +2487,19 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- Header -->
   <div class="cos-header">
-    <div>
-      <h1>🌾 Cosechas</h1>
-      <p>ANÁLISIS DE PAGOS POR COSECHA · CLARO COLOMBIA · MÓVIL</p>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:44px;height:44px;background:linear-gradient(135deg,#34A853,#1E8E3E);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(52,168,83,0.3);">
+        <span class="material-symbols-rounded" style="font-size:22px;color:#fff;font-variation-settings:'FILL' 1,'wght' 500;">grain</span>
+      </div>
+      <div>
+        <h1>Cosechas</h1>
+        <p>ANÁLISIS DE PAGOS POR COSECHA · CLARO COLOMBIA · MÓVIL</p>
+      </div>
     </div>
     <div class="cos-toolbar">
-      <button id="btn-exportar-excel-cosechas" class="btn-sm" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.4);color:#A78BFA;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosExportarExcel()">⬇ Exportar Excel</button>
-      <button id="btn-actualizar-cosechas" class="btn-sm" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.4);color:#93C5FD;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="cosActualizar()">🔄 Actualizar</button>
-      <button id="btn-vaciar-cosechas" class="btn-sm" style="display:none;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.35);color:#F87171;padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" onclick="vaciarCosechasTodas()">🗑 Vaciar cosechas</button>
+      <button id="btn-exportar-excel-cosechas" class="btn-sm" style="display:flex;align-items:center;gap:6px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.3);color:#7C3AED;padding:8px 14px;font-size:11px;font-weight:600;border-radius:20px;white-space:nowrap;" onclick="cosExportarExcel()"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">download</span> Exportar Excel</button>
+      <button id="btn-actualizar-cosechas" class="btn-sm" style="display:flex;align-items:center;gap:6px;background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.3);color:var(--g-blue);padding:8px 14px;font-size:11px;font-weight:600;border-radius:20px;white-space:nowrap;" onclick="cosActualizar()"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">refresh</span> Actualizar</button>
+      <button id="btn-vaciar-cosechas" class="btn-sm" style="display:none;align-items:center;gap:6px;background:rgba(234,67,53,0.08);border:1px solid rgba(234,67,53,0.3);color:var(--g-red);padding:8px 14px;font-size:11px;font-weight:600;border-radius:20px;white-space:nowrap;" onclick="vaciarCosechasTodas()"><span class="material-symbols-rounded" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 500;">delete_sweep</span> Vaciar cosechas</button>
     </div>
   </div>
 
