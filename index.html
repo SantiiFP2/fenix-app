@@ -3962,6 +3962,43 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
       </div>
     </div>
 
+    <!-- Card 12: Nunca Pago -->
+    <div class="card">
+      <div class="card-header" onclick="movToggle('hog-np')" style="cursor:pointer;user-select:none;">
+        <div class="card-num" style="background:#FEE2E2;color:#DC2626;">12</div>
+        <span class="material-symbols-rounded hog-card-icon" style="color:#DC2626;">money_off</span>
+        <div class="hog-card-htext">
+          <div class="card-title">Nunca Pago</div>
+          <div class="hog-card-subtitle">Penalización por ventas sin registro de pago en 6 meses</div>
+        </div>
+        <span id="mov-arrow-hog-np" style="color:var(--texto-dim);transition:transform 0.2s;font-size:12px;flex-shrink:0;">▾</span>
+      </div>
+      <div class="card-body" id="mov-body-hog-np" style="display:none;gap:10px;">
+        <div style="font-size:11px;color:var(--texto-dim);line-height:1.5;padding:8px 10px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.2);border-radius:6px;">
+          <span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle;color:#DC2626;margin-right:3px;">info</span>
+          Una venta clasificada como <b style="color:#DC2626;">Nunca Pago</b> es aquella que durante 6 meses después de la instalación no registre al menos 1 pago de la renta contratada. Este valor <b>se descuenta</b> del cobro neto proyectado.
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:600;display:block;margin-bottom:4px;">Cantidad de casos</label>
+            <input type="number" id="hog-np-cantidad" placeholder="Ej: 3" min="0" step="1"
+              oninput="hogUpdateNuncaPago()"
+              style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--texto);background:var(--g-surface);border:1px solid var(--g-outline);border-radius:6px;padding:7px 10px;width:100%;box-sizing:border-box;text-align:center;">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--texto-dim);font-family:'Inter Tight',sans-serif;font-weight:600;display:block;margin-bottom:4px;">Valor penalización ($)</label>
+            <input type="number" id="hog-np-valor" placeholder="Ej: 500000" min="0" step="1000"
+              oninput="hogUpdateNuncaPago()"
+              style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;color:var(--texto);background:var(--g-surface);border:1px solid var(--g-outline);border-radius:6px;padding:7px 10px;width:100%;box-sizing:border-box;text-align:center;">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.25);border-radius:6px;">
+          <span style="font-size:11px;color:#DC2626;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">Penalización Total</span>
+          <span id="hog-np-total-label" style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:800;color:#DC2626;">- $0</span>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /left panel-config -->
 
   <!-- ══ RIGHT: RESULTADOS ══ -->
@@ -4169,6 +4206,14 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
           <div class="proy-titulo">📡 Tecnología</div>
         </div>
         <div id="hog-tec-content"></div>
+      </div>
+
+      <!-- Sección: Nunca Pago -->
+      <div id="hog-np-section" class="proy-section" style="display:none;">
+        <div class="proy-header" style="background:rgba(220,38,38,0.05);border-top-color:rgba(220,38,38,0.2);">
+          <div class="proy-titulo" style="color:#DC2626;">🚫 Nunca Pago — Penalización</div>
+        </div>
+        <div id="hog-np-content"></div>
       </div>
 
     </div><!-- /tab proyección -->
@@ -9190,6 +9235,7 @@ async function piGuardarProyeccionHogarBD(snap) {
         tecnologia:  Math.round(snap.tec             || 0),
         semilleros:  Math.round(snap.semilleros      || 0),
         incentivos:  Math.round(snap.incentivosHog   || 0),
+        nunca_pago:  Math.round(snap.nuncaPago       || 0),
       },
       operativo: {
         total:       Math.round(snap.totalCobroProyOp || 0),
@@ -9203,6 +9249,7 @@ async function piGuardarProyeccionHogarBD(snap) {
         tecnologia:  Math.round(snap.tec              || 0),
         semilleros:  Math.round(snap.semilleros       || 0),
         incentivos:  Math.round(snap.incentivosHog    || 0),
+        nunca_pago:  Math.round(snap.nuncaPago       || 0),
       },
       snapshot: {
         canalesMap: snap.canalesMap,
@@ -10021,6 +10068,7 @@ function _hogRenderAnalisis(s) {
   if (s.boniCumpl > 0) stats.push({ label: 'Boni. Cumpl.',    val: fmt(s.boniCumpl), sub: 'Inbound + Digital',           color: '#FB923C' });
   if (s.tec       > 0) stats.push({ label: 'Tecnología',      val: fmt(s.tec),       sub: 'Ultrawifi + Dongle',          color: '#94A3B8' });
   if (s.semilleros> 0) stats.push({ label: 'Semilleros',      val: fmt(s.semilleros),sub: 'Hogar',                       color: '#FCD34D' });
+  if (s.nuncaPago > 0) stats.push({ label: 'Nunca Pago',      val: '− ' + fmt(s.nuncaPago), sub: `Penalización · ${s.nuncaPagoCantidad||0} caso(s)`, color: '#DC2626' });
 
   const desglEl = document.getElementById('pi-hog-desglose-grid');
   if (desglEl) desglEl.innerHTML = stats.map(st =>
@@ -10042,6 +10090,7 @@ function _hogRenderAnalisis(s) {
     { label: 'Boni. Cumpl.',    val: s.boniCumpl,       color: '#FB923C' },
     { label: 'Tecnología',      val: s.tec,             color: '#94A3B8' },
     { label: 'Semilleros',      val: s.semilleros,      color: '#FCD34D' },
+    { label: 'Nunca Pago (−)',  val: s.nuncaPago || 0,  color: '#DC2626' },
   ].filter(c => c.val > 0);
   const maxC = Math.max(...comps.map(c => c.val), 1);
   const barsComEl = document.getElementById('pi-hog-barras-composicion');
@@ -13753,6 +13802,8 @@ let _hogTecnologiaVisible = false; // Tecnología (ULTRAWIFI / DONGLE)
 let _hogSemillerosHabilitado = false;
 let _hogSemilleros = [];           // [{mes, valorBase, cumplPct, pctAplicado, valorEfectivo, cantidad, total}]
 let hogIncentivos  = [];           // [{descripcion, valor}] — incentivos adicionales Hogar
+let _hogNuncaPagoCantidad = 0;     // Cantidad de casos Nunca Pago
+let _hogNuncaPagoValor   = 0;      // Valor total de penalización Nunca Pago
 let _hogSemilleroEditIdx = null;
 const HOG_VALORES_MES = { '1': 1000000, '2': 800000, '3': 600000 };
 let _hogProyeccionGuardada = null; // snapshot guardado en Panel de Inicio
@@ -14060,10 +14111,13 @@ function hogRecalcularProyeccion() {
   // Incentivos Adicionales Hogar
   const totalHogIncentivos = hogGetTotalIncentivos();
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros + incentivos
-  const totalCobroProy   = totalProyPpales + adicP1   + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos;
+  // Nunca Pago (penalización negativa)
+  const totalHogNuncaPago = _hogNuncaPagoValor || 0;
+
+  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros + incentivos - nunca pago
+  const totalCobroProy   = totalProyPpales + adicP1   + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos - totalHogNuncaPago;
   // Cobro Operativo = igual pero con adicProy completo (sin dividir entre meses)
-  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos;
+  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos - totalHogNuncaPago;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -14098,6 +14152,7 @@ function hogRecalcularProyeccion() {
     if (totalTecnologia > 0)       parts.push(`Tecnología ${fmt(totalTecnologia)}`);
     if (totalHogSemilleros > 0)    parts.push(`Semilleros ${fmt(totalHogSemilleros)}`);
     if (totalHogIncentivos > 0)    parts.push(`Incentivos ${fmt(totalHogIncentivos)}`);
+    if (totalHogNuncaPago > 0)     parts.push(`Nunca Pago −${fmt(totalHogNuncaPago)}`);
     if (parts.length) {
       desgloseEl.style.display = '';
       desgloseEl.textContent = `Comisión ${fmt(totalProyPpales)} · ` + parts.join(' · ');
@@ -14235,6 +14290,9 @@ function hogRecalcularProyeccion() {
     totalTecnologia
   });
 
+  // Sección Nunca Pago
+  hogRenderNuncaPagoSection();
+
   // Sección Bonificación por Cumplimiento
   hogRenderBoniCumplSection({
     bcMeta, bcCumpl,
@@ -14336,7 +14394,8 @@ function hogRecalcularProyeccion() {
     altoValor: Math.round(totalAltoValor),
     boniInt:   totalBoniInt, acel: totalAcel, boniCumpl: totalBoniCumpl,
     tec:       totalTecnologia, semilleros: totalHogSemilleros,
-    incentivosHog: totalHogIncentivos,
+    incentivosHog: totalHogIncentivos, nuncaPago: totalHogNuncaPago,
+    nuncaPagoCantidad: _hogNuncaPagoCantidad,
     totalOTs, periodoVal,
     canalesMap: datos.reduce((m,r)=>{ const c=_canalBoni(r.campaña); m[c]=(m[c]||0)+1; return m; }, {}),
     redMap:    datos.reduce((m,r)=>{ const k=r.isDTH?'DTH':r.tipoRed==='FTT'?'FTT':'BIDIR'; m[k]=(m[k]||0)+1; return m; }, {}),
@@ -15051,6 +15110,53 @@ function hogRenderTecnologiaSection(d) {
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         ${productoCard('ULTRAWIFI','#60A5FA','📡',d.techUwReal,d.techUwProy,d.tecValUw,d.techPagoUw)}
         ${productoCard('DONGLE','#34D399','🔌',d.techDngReal,d.techDngProy,d.tecValDng,d.techPagoDng)}
+      </div>
+    </div>`;
+}
+
+// ── Nunca Pago — Hogar ──────────────────────────────────────────────────
+function hogUpdateNuncaPago() {
+  const cant = parseInt(document.getElementById('hog-np-cantidad')?.value) || 0;
+  const val  = parseFloat(document.getElementById('hog-np-valor')?.value) || 0;
+  _hogNuncaPagoCantidad = cant;
+  _hogNuncaPagoValor   = val;
+  const lbl = document.getElementById('hog-np-total-label');
+  if (lbl) lbl.textContent = '- $' + Math.round(val).toLocaleString('es-CO');
+  if (_hogResultados && _hogResultados.length) hogRecalcularProyeccion();
+  else hogRenderNuncaPagoSection();
+}
+
+function hogRenderNuncaPagoSection() {
+  const sec  = document.getElementById('hog-np-section');
+  const cont = document.getElementById('hog-np-content');
+  if (!sec || !cont) return;
+  const val  = _hogNuncaPagoValor;
+  const cant = _hogNuncaPagoCantidad;
+  const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
+  if (val <= 0) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  cont.innerHTML = `
+    <div style="background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.3);border-radius:3px;padding:14px;margin-bottom:4px;">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+        <div>
+          <div style="font-size:10px;color:#DC2626;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;">Penalización Nunca Pago</div>
+          <div style="font-family:'Inter Tight',sans-serif;font-size:30px;font-weight:800;color:#DC2626;line-height:1;">− ${fmt(val)}</div>
+          <div style="font-size:11px;color:var(--texto-dim);margin-top:4px;">Se descuenta del cobro neto proyectado</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          ${cant > 0 ? `
+          <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:4px;padding:8px 14px;text-align:center;">
+            <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Casos</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:#DC2626;">${cant}</div>
+          </div>
+          <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.2);border-radius:4px;padding:8px 14px;text-align:center;">
+            <div style="font-size:9px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;">Valor por caso</div>
+            <div style="font-family:'Inter Tight',sans-serif;font-size:22px;font-weight:800;color:#DC2626;">${fmt(Math.round(val/cant))}</div>
+          </div>` : ''}
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:rgba(220,38,38,0.08);border-radius:4px;font-size:11px;color:#DC2626;line-height:1.5;">
+        <b>Definición:</b> Venta que durante 6 meses después de la instalación no registra al menos 1 pago de la renta contratada.
       </div>
     </div>`;
 }
