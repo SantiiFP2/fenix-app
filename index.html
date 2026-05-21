@@ -10016,6 +10016,7 @@ function _hogRenderCardsFactura(s) {
     if (s.boniCumpl       > 0) parts.push(`Boni. Cumpl.: ${fmt(s.boniCumpl)}`);
     if (s.tec             > 0) parts.push(`Tecnología: ${fmt(s.tec)}`);
     if (s.semilleros      > 0) parts.push(`Semilleros: ${fmt(s.semilleros)}`);
+    if (s.nuncaPago       > 0) parts.push(`Nunca Pago: −${fmt(s.nuncaPago)}`);
     finSubEl.textContent = parts.join(' · ') || '—';
   }
   // ── Card Operativa ──
@@ -10028,8 +10029,11 @@ function _hogRenderCardsFactura(s) {
     if (s.adicProy        > 0) parts.push(`Adic. 100%: ${fmt(s.adicProy)}`);
     if (s.efect           > 0) parts.push(`Efectividad: ${fmt(s.efect)}`);
     if (s.altoValor       > 0) parts.push(`Alto Valor: ${fmt(s.altoValor)}`);
+    if (s.boniInt         > 0) parts.push(`Boni. Int.: ${fmt(s.boniInt)}`);
     if (s.acel            > 0) parts.push(`Acelerador: ${fmt(s.acel)}`);
     if (s.boniCumpl       > 0) parts.push(`Boni. Cumpl.: ${fmt(s.boniCumpl)}`);
+    if (s.tec             > 0) parts.push(`Tecnología: ${fmt(s.tec)}`);
+    if (s.semilleros      > 0) parts.push(`Semilleros: ${fmt(s.semilleros)}`);
     opSubEl.textContent = parts.join(' · ') || '—';
   }
 }
@@ -14114,10 +14118,10 @@ function hogRecalcularProyeccion() {
   // Nunca Pago (penalización negativa)
   const totalHogNuncaPago = _hogNuncaPagoValor || 0;
 
-  // Cobro Proyectado total = ppales + P1 adicionales + incentivo efectividad + alto valor + bonif. internet + acelerador + bonif. cumplimiento + tecnología + semilleros + incentivos - nunca pago
+  // Cobro Proyectado (Financiero) = todos los componentes - Nunca Pago
   const totalCobroProy   = totalProyPpales + adicP1   + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos - totalHogNuncaPago;
-  // Cobro Operativo = igual pero con adicProy completo (sin dividir entre meses)
-  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos - totalHogNuncaPago;
+  // Cobro Operativo = igual pero con adicProy completo (sin dividir entre meses). Nunca Pago NO aplica al operativo.
+  const totalCobroProyOp = totalProyPpales + adicProy + Math.round(totalEfectIncentivo) + Math.round(totalAltoValor) + totalBoniInt + totalAcel + totalBoniCumpl + totalTecnologia + totalHogSemilleros + totalHogIncentivos;
   const totalRealTotal = totalRealPpales + totalAdicReal;
 
   const fmt  = n => n.toLocaleString('es-CO', {style:'currency',currency:'COP',maximumFractionDigits:0});
@@ -14134,9 +14138,19 @@ function hogRecalcularProyeccion() {
   const opDesglEl = document.getElementById('hog-kpi-op-desglose');
   if (opWrap) opWrap.style.display = '';
   if (opEl)   opEl.textContent = fmt(totalCobroProyOp);
-  if (opDesglEl && adicProy > 0) {
-    const diff = totalCobroProyOp - totalCobroProy;
-    opDesglEl.textContent = `Comisión ${fmt(totalProyPpales)} · Adic. ${fmt(adicProy)} · (+${fmt(diff)} vs financiero)`;
+  if (opDesglEl) {
+    const opParts = [];
+    opParts.push(`Comisión ${fmt(totalProyPpales)}`);
+    if (adicProy > 0)                   opParts.push(`Adic. ${fmt(adicProy)}`);
+    if (totalEfectIncentivo > 0)        opParts.push(`Efect. ${fmt(Math.round(totalEfectIncentivo))}`);
+    if (totalAltoValor > 0)             opParts.push(`Alto Valor ${fmt(Math.round(totalAltoValor))}`);
+    if (totalBoniInt > 0)               opParts.push(`Boni. Int. ${fmt(totalBoniInt)}`);
+    if (totalAcel > 0)                  opParts.push(`Acel. ${fmt(totalAcel)}`);
+    if (totalBoniCumpl > 0)             opParts.push(`Boni. Cumpl. ${fmt(totalBoniCumpl)}`);
+    if (totalTecnologia > 0)            opParts.push(`Tecnología ${fmt(totalTecnologia)}`);
+    if (totalHogSemilleros > 0)         opParts.push(`Semilleros ${fmt(totalHogSemilleros)}`);
+    if (totalHogIncentivos > 0)         opParts.push(`Incentivos ${fmt(totalHogIncentivos)}`);
+    opDesglEl.textContent = opParts.join(' · ');
   }
 
   // Desglose Comisión + Adicionales + Efectividad bajo el KPI
