@@ -9014,6 +9014,8 @@ async function piCargarProyeccionHogarBD() {
       boniCumpl:       d.financiero?.boni_cumpl  || 0,
       tec:             d.financiero?.tecnologia  || 0,
       semilleros:      d.financiero?.semilleros  || 0,
+      nuncaPago:       d.financiero?.nunca_pago  || 0,
+      nuncaPagoCantidad: d.snapshot?.nuncaPagoCantidad || 0,
       totalOTs:        d.total_ots               || 0,
       periodoVal:      d.mes_venta               || '',
       canalesMap:      d.snapshot?.canalesMap    || {},
@@ -9151,6 +9153,8 @@ function piHogMostrarProyeccionHistorica() {
     boniCumpl:       row.financiero?.boni_cumpl  || 0,
     tec:             row.financiero?.tecnologia  || 0,
     semilleros:      row.financiero?.semilleros  || 0,
+    nuncaPago:       row.financiero?.nunca_pago  || 0,
+    nuncaPagoCantidad: row.snapshot?.nuncaPagoCantidad || 0,
     totalOTs:        row.total_ots               || 0,
     periodoVal:      row.mes_venta               || '',
     canalesMap:      row.snapshot?.canalesMap    || {},
@@ -9257,6 +9261,7 @@ async function piGuardarProyeccionHogarBD(snap) {
         intProy:    snap.intProy  || 0,
         tvProy:     snap.tvProy   || 0,
         vozProy:    snap.vozProy  || 0,
+        nuncaPagoCantidad: snap.nuncaPagoCantidad || 0,
       }
     };
 
