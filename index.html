@@ -2924,11 +2924,13 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
               <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#EF4444;margin-bottom:3px;">Portabilidad</div>
               <div id="pi-fact-fin-porta" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#EF4444;letter-spacing:-0.02em;">—</div>
               <div id="pi-fact-fin-porta-pct" style="font-size:10px;color:rgba(239,68,68,0.6);margin-top:2px;">—</div>
+              <div id="pi-fact-fin-porta-ticket" style="font-size:10px;font-weight:700;color:#1E8E3E;margin-top:3px;"></div>
             </div>
             <div>
               <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3B82F6;margin-bottom:3px;">Migración</div>
               <div id="pi-fact-fin-migra" style="font-family:'Inter Tight',sans-serif;font-size:16px;font-weight:800;color:#3B82F6;letter-spacing:-0.02em;">—</div>
               <div id="pi-fact-fin-migra-pct" style="font-size:10px;color:rgba(59,130,246,0.6);margin-top:2px;">—</div>
+              <div id="pi-fact-fin-migra-ticket" style="font-size:10px;font-weight:700;color:#1E8E3E;margin-top:3px;"></div>
             </div>
           </div>
           <div id="pi-fact-fin-sub" style="font-size:11px;color:var(--texto-dim);line-height:2;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;">—</div>
@@ -3121,6 +3123,11 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
               <span style="font-size:14px;">💰</span> Factura Financiera
             </div>
             <div id="pi-hog-fact-fin-total" style="font-size:clamp(22px,2.4vw,34px);font-weight:900;color:var(--l-danger);line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;margin-bottom:14px;">$0</div>
+            <div id="pi-hog-ticket-row" style="display:none;align-items:center;gap:8px;margin-bottom:14px;padding:7px 12px;background:rgba(30,142,62,0.08);border-radius:8px;width:fit-content;">
+              <span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1E8E3E;">Ticket prom.</span>
+              <span id="pi-hog-ticket" style="font-size:16px;font-weight:900;color:#1E8E3E;font-family:'Inter Tight',sans-serif;">—</span>
+              <span id="pi-hog-ticket-sub" style="font-size:10px;color:var(--texto-dim);"></span>
+            </div>
             <div id="pi-hog-fact-fin-sub" style="font-size:11px;color:var(--texto-dim);line-height:2;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;">—</div>
           </div>
         </div>
@@ -4055,6 +4062,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
               <div style="display:flex;align-items:center;gap:6px;background:rgba(167,139,250,0.06);border-radius:5px;padding:4px 8px;">
                 <span style="font-size:10px;color:var(--texto-dim);">Proy. cierre:</span>
                 <span id="hog-kpi-ots-proy" style="font-size:14px;font-weight:800;color:#A78BFA;font-family:'Inter Tight',sans-serif;">—</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;background:rgba(52,168,83,0.08);border-radius:5px;padding:4px 8px;">
+                <span style="font-size:10px;color:var(--texto-dim);">Ticket prom.:</span>
+                <span id="hog-kpi-ticket" style="font-size:14px;font-weight:800;color:#1E8E3E;font-family:'Inter Tight',sans-serif;">—</span>
               </div>
             </div>
             <span id="hog-kpi-ots-sub" style="display:none;"></span>
@@ -5154,6 +5165,8 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
             <div class="kpi-label">Líneas Procesadas</div>
             <div class="kpi-value" id="kpi-lineas">0</div>
             <div class="kpi-sub" id="kpi-sub-lineas">—</div>
+            <div id="kpi-ticket-porta" style="font-size:10px;font-weight:700;color:#EF4444;margin-top:8px;"></div>
+            <div id="kpi-ticket-migra" style="font-size:10px;font-weight:700;color:#3B82F6;margin-top:2px;"></div>
           </div>
           <!-- CFM -->
           <div class="kpi-card">
@@ -5824,6 +5837,34 @@ function calcularProyeccionCvc(cvcMadre, resultadosData) {
   const extraMigraPower = getMigraPowerCvc(cvcMadre);
   const proyectado = proyectadoBase + extraMigraPower;
   return { ejecutado, proyectado, proyectadoBase, extraMigraPower, totalDias, transDias, campKey };
+}
+
+// ── Accesos (líneas) proyectados al cierre por campaña — base del ticket promedio Móvil ──
+// Cuenta las líneas de portabilidad / migración del archivo y las proyecta al cierre del mes
+// con el mismo método de días hábiles que calcularProyeccionCvc().
+function _movAccesosProyPorCampana(datos) {
+  const nPorta = datos.filter(r => norm(r.producto || '').includes('port')).length;
+  const nMigra = datos.filter(r => norm(r.producto || '').includes('migr')).length;
+  const periodoVal = document.getElementById('periodo')?.value || '';
+  if (!periodoVal) return { porta: nPorta, migra: nMigra };
+  const [ay, am] = periodoVal.split('-').map(Number);
+  if (mesCerrado(am - 1, ay)) return { porta: nPorta, migra: nMigra };
+  const festivos = [...new Set([...getFestivosAnio(ay-1), ...getFestivosAnio(ay), ...getFestivosAnio(ay+1)])];
+  const hoy = new Date(); hoy.setHours(12,0,0,0);
+  const ayer = new Date(hoy); ayer.setDate(ayer.getDate()-1);
+  const proyectar = (n, campKey) => {
+    if (n <= 0) return 0;
+    const periodo = getPeriodo(campKey, am - 1, ay);
+    const tot = diasHabiles(periodo.desde, periodo.hasta, festivos);
+    const transc = tot.filter(d => d <= toISO(ayer));
+    const totalDias = tot.length;
+    const transDias = Math.max(transc.length, 1);
+    return Math.round((n / transDias) * totalDias);
+  };
+  return {
+    porta: proyectar(nPorta, 'portabilidad'),
+    migra: proyectar(nMigra, 'migracion'),
+  };
 }
 
 function calcularAcelerador(resultadosData, cvcConfigsDk, datosGlobal) {
@@ -8227,7 +8268,15 @@ function actualizarKpiOperativo() {
 
   // ── Actualizar desglose Porta / Migra en las cards de factura ──
   const _bd = _piCalcularBreakdownPorProducto();
-  if (_bd) _piActualizarBreakdownProdCards(_bd.finPorta, _bd.finMigra, _bd.opPorta, _bd.opMigra);
+  if (_bd) {
+    _piActualizarBreakdownProdCards(_bd.finPorta, _bd.finMigra, _bd.opPorta, _bd.opMigra, _bd.accPorta, _bd.accMigra);
+    // Ticket promedio por campaña en el panel en vivo de Móvil
+    const _fmtTk = v => '$' + Math.round(v).toLocaleString('es-CO');
+    const elTP = document.getElementById('kpi-ticket-porta');
+    const elTM = document.getElementById('kpi-ticket-migra');
+    if (elTP) elTP.textContent = _bd.accPorta > 0 ? `Ticket Porta: ${_fmtTk(_bd.finPorta/_bd.accPorta)} · ${_bd.accPorta.toLocaleString('es-CO')} acc.` : '';
+    if (elTM) elTM.textContent = _bd.accMigra > 0 ? `Ticket Migra: ${_fmtTk(_bd.finMigra/_bd.accMigra)} · ${_bd.accMigra.toLocaleString('es-CO')} acc.` : '';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -8815,6 +8864,9 @@ function guardarProyeccion() {
   const prodsMap={};
   _resultadosCache.forEach(r=>{const p=norm(r.producto)||'—';prodsMap[p]=(prodsMap[p]||0)+1;});
 
+  // Accesos proyectados al cierre por campaña (denominador del ticket promedio)
+  const _accProy = _movAccesosProyPorCampana(_resultadosCacheGlobal.length ? _resultadosCacheGlobal : _resultadosCache);
+
   const cvcsMadres=[...new Set(_resultadosCache.map(r=>r.cvcMadre||'—'))].sort();
   const filasEvc = cvcsMadres.map(madre=>{
     const lineas=_resultadosCache.filter(r=>(r.cvcMadre||'—')===madre);
@@ -8842,6 +8894,7 @@ function guardarProyeccion() {
     cfmPromedio: _resultadosCache.reduce((s,r)=>s+(r.cfm||0),0)/(_resultadosCache.length||1),
     lC1count: lC1.length, lC2count: lC2.length, cfmC1avg, cfmC2avg,
     canalesMap, prodsMap, filasEvc,
+    accProyPorta: _accProy.porta, accProyMigra: _accProy.migra,
     incentivosItems: [...incentivos],
     cosechasItems: [...cosechas],
   };
@@ -8947,7 +9000,8 @@ async function piGuardarProyeccionBD(snap) {
         incentivos:  incentOp,
         bono:        bonoOp,
       },
-      snapshot: { canalesMap: snap.canalesMap, prodsMap: snap.prodsMap, filasEvc: snap.filasEvc }
+      snapshot: { canalesMap: snap.canalesMap, prodsMap: snap.prodsMap, filasEvc: snap.filasEvc,
+        accProyPorta: snap.accProyPorta || 0, accProyMigra: snap.accProyMigra || 0 }
     };
 
     const res = await authFetch(`${FENIX_API}/proyecciones`, {
@@ -9016,6 +9070,8 @@ async function piCargarProyeccionHogarBD() {
       semilleros:      d.financiero?.semilleros  || 0,
       nuncaPago:       d.financiero?.nunca_pago  || 0,
       nuncaPagoCantidad: d.snapshot?.nuncaPagoCantidad || 0,
+      otsProyCierre:   d.snapshot?.otsProyCierre || 0,
+      ticketProm:      d.snapshot?.ticketProm    || 0,
       totalOTs:        d.total_ots               || 0,
       periodoVal:      d.mes_venta               || '',
       canalesMap:      d.snapshot?.canalesMap    || {},
@@ -9155,6 +9211,8 @@ function piHogMostrarProyeccionHistorica() {
     semilleros:      row.financiero?.semilleros  || 0,
     nuncaPago:       row.financiero?.nunca_pago  || 0,
     nuncaPagoCantidad: row.snapshot?.nuncaPagoCantidad || 0,
+    otsProyCierre:   row.snapshot?.otsProyCierre || 0,
+    ticketProm:      row.snapshot?.ticketProm    || 0,
     totalOTs:        row.total_ots               || 0,
     periodoVal:      row.mes_venta               || '',
     canalesMap:      row.snapshot?.canalesMap    || {},
@@ -9262,6 +9320,8 @@ async function piGuardarProyeccionHogarBD(snap) {
         tvProy:     snap.tvProy   || 0,
         vozProy:    snap.vozProy  || 0,
         nuncaPagoCantidad: snap.nuncaPagoCantidad || 0,
+        otsProyCierre: snap.otsProyCierre || 0,
+        ticketProm:    snap.ticketProm    || 0,
       }
     };
 
@@ -9494,25 +9554,39 @@ function _piCalcularBreakdownPorProducto() {
   const opPorta = opComPorta + opBonoPorta + opAcelPorta + opEfectPorta + opPresPorta + finIncPorta;
   const opMigra = opComMigra + opBonoMigra + opAcelMigra + opEfectMigra + opPresMigra + finIncMigra;
 
-  return { finPorta, finMigra, opPorta, opMigra };
+  // Accesos proyectados al cierre por campaña (denominador del ticket promedio)
+  const acc = _movAccesosProyPorCampana(_global);
+  return { finPorta, finMigra, opPorta, opMigra, accPorta: acc.porta, accMigra: acc.migra };
 }
 
 /**
  * Actualiza los elementos de desglose Portabilidad/Migración en las dos cards.
  * Acepta valores absolutos directamente.
  */
-function _piActualizarBreakdownProdCards(finPorta, finMigra, opPorta, opMigra) {
+function _piActualizarBreakdownProdCards(finPorta, finMigra, opPorta, opMigra, accPorta = 0, accMigra = 0) {
   // Cachear para Análisis Personal (accesible sin datos vivos cargados)
   if ((finPorta + finMigra + opPorta + opMigra) > 0)
-    _lastBreakdownMovil = { finPorta, finMigra, opPorta, opMigra };
+    _lastBreakdownMovil = { finPorta, finMigra, opPorta, opMigra, accPorta, accMigra };
 
   const fmt    = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const fmtN   = v => Math.round(v).toLocaleString('es-CO');
   const fmtPct = (a, b) => {
     const tot = a + b;
     return tot > 0 ? Math.round(a / tot * 100) + '%' : '—';
   };
 
   const show = (finPorta + finMigra + opPorta + opMigra) > 0;
+
+  // ── Ticket promedio por campaña = cobro financiero / accesos proyectados ──
+  const _setTk = (id, cobro, acc) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (show && acc > 0) {
+      el.textContent = 'Ticket: ' + fmt(cobro / acc) + ' · ' + fmtN(acc) + ' acc.';
+    } else { el.textContent = ''; }
+  };
+  _setTk('pi-fact-fin-porta-ticket', finPorta, accPorta);
+  _setTk('pi-fact-fin-migra-ticket', finMigra, accMigra);
 
   // ── Financiera ──
   const finBd = document.getElementById('pi-fact-fin-breakdown');
@@ -9633,7 +9707,7 @@ function piMostrarProyeccionHistorica() {
     if (_resultadosCache.length) {
       // Datos en vivo disponibles: usar cálculo preciso por componente
       const bd = _piCalcularBreakdownPorProducto();
-      if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra);
+      if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra, bd.accPorta, bd.accMigra);
     } else {
       // Sin datos en vivo: estimar por conteo de líneas del snapshot
       const prodsMap = (row.snapshot || {}).prodsMap || row.prods_map || {};
@@ -9644,7 +9718,10 @@ function piMostrarProyeccionHistorica() {
       const pMig = nTotal > 0 ? nMigra / nTotal : 0;
       const finT = row.total_financiero || 0;
       const opT  = row.total_operativo  || 0;
-      _piActualizarBreakdownProdCards(finT * pPor, finT * pMig, opT * pPor, opT * pMig);
+      // Accesos proyectados por campaña guardados en el snapshot (para ticket promedio)
+      const accP = (row.snapshot || {}).accProyPorta || 0;
+      const accM = (row.snapshot || {}).accProyMigra || 0;
+      _piActualizarBreakdownProdCards(finT * pPor, finT * pMig, opT * pPor, opT * pMig, accP, accM);
     }
   }
 
@@ -10006,10 +10083,20 @@ function renderPanelDesdeSnapshot() {
 
 function _hogRenderCardsFactura(s) {
   const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
+  const fmtN = v => Math.round(v).toLocaleString('es-CO');
   // ── Card Financiera ──
   const finEl    = document.getElementById('pi-hog-fact-fin-total');
   const finSubEl = document.getElementById('pi-hog-fact-fin-sub');
   if (finEl) finEl.textContent = fmt(s.totalCobroProy || 0);
+  // ── Ticket promedio (cobro proyectado / accesos proyectados al cierre) ──
+  const tkRow = document.getElementById('pi-hog-ticket-row');
+  const tkEl  = document.getElementById('pi-hog-ticket');
+  const tkSub = document.getElementById('pi-hog-ticket-sub');
+  const otsProy = s.otsProyCierre || 0;
+  const ticket  = s.ticketProm || (otsProy > 0 ? Math.round((s.totalCobroProy || 0) / otsProy) : 0);
+  if (tkRow) tkRow.style.display = ticket > 0 ? 'flex' : 'none';
+  if (tkEl)  tkEl.textContent  = ticket > 0 ? fmt(ticket) : '—';
+  if (tkSub) tkSub.textContent = otsProy > 0 ? `/ ${fmtN(otsProy)} accesos proy.` : '';
   if (finSubEl) {
     const parts = [];
     if (s.totalProyPpales > 0) parts.push(`Comisión: ${fmt(s.totalProyPpales)}`);
@@ -10430,7 +10517,7 @@ function actualizarPanelInicio() {
   // ── Actualizar breakdown preciso Porta/Migra en cards de factura ──
   {
     const bd = _piCalcularBreakdownPorProducto();
-    if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra);
+    if (bd) _piActualizarBreakdownProdCards(bd.finPorta, bd.finMigra, bd.opPorta, bd.opMigra, bd.accPorta, bd.accMigra);
   }
 }
 
@@ -14135,7 +14222,11 @@ function hogRecalcularProyeccion() {
   // Actualizar KPI cobro proyectado (financiero)
   const se2 = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
   se2('hog-kpi-total',    fmt(totalCobroProy));
-  se2('hog-kpi-ots-proy', fmtN(Math.round((totalOTs / transDias) * totalDias)));
+  const otsProyCierre = Math.round((totalOTs / transDias) * totalDias);
+  se2('hog-kpi-ots-proy', fmtN(otsProyCierre));
+  // Ticket promedio = cobro proyectado / accesos proyectados al cierre
+  const ticketHogar = otsProyCierre > 0 ? Math.round(totalCobroProy / otsProyCierre) : 0;
+  se2('hog-kpi-ticket', ticketHogar > 0 ? fmt(ticketHogar) : '—');
 
   // Actualizar KPI cobro operativo
   const opWrap   = document.getElementById('hog-kpi-op-wrap');
@@ -14415,6 +14506,7 @@ function hogRecalcularProyeccion() {
     tec:       totalTecnologia, semilleros: totalHogSemilleros,
     incentivosHog: totalHogIncentivos, nuncaPago: totalHogNuncaPago,
     nuncaPagoCantidad: _hogNuncaPagoCantidad,
+    otsProyCierre, ticketProm: ticketHogar,
     totalOTs, periodoVal,
     canalesMap: datos.reduce((m,r)=>{ const c=_canalBoni(r.campaña); m[c]=(m[c]||0)+1; return m; }, {}),
     redMap:    datos.reduce((m,r)=>{ const k=r.isDTH?'DTH':r.tipoRed==='FTT'?'FTT':'BIDIR'; m[k]=(m[k]||0)+1; return m; }, {}),
@@ -19362,8 +19454,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
-  <!-- MODULO: Comisiones -->
-  <div class="sb-nav-module" id="sb-mod-comisiones">
+  <!-- MODULO: Comisiones (oculto a solicitud) -->
+  <div class="sb-nav-module" id="sb-mod-comisiones" style="display:none;">
     <div class="sb-nav-module-title">COMISIONES</div>
     <button id="sb-com-config" class="sb-nav-item" onclick="closeLauncher();mostrarPanelComisiones();"
       style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background 0.15s;text-align:left;"
