@@ -9554,8 +9554,9 @@ function _piCalcularBreakdownPorProducto() {
   const opPorta = opComPorta + opBonoPorta + opAcelPorta + opEfectPorta + opPresPorta + finIncPorta;
   const opMigra = opComMigra + opBonoMigra + opAcelMigra + opEfectMigra + opPresMigra + finIncMigra;
 
-  // Accesos proyectados al cierre por campaña (denominador del ticket promedio)
-  const acc = _movAccesosProyPorCampana(_global);
+  // Accesos proyectados al cierre por campaña (denominador del ticket promedio).
+  // Usa _dk (datos de la sede filtrada) para que el ticket sea consistente con el cobro de esa sede.
+  const acc = _movAccesosProyPorCampana(_dk);
   return { finPorta, finMigra, opPorta, opMigra, accPorta: acc.porta, accMigra: acc.migra };
 }
 
