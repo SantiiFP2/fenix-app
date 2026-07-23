@@ -554,7 +554,7 @@ body.modo-claro .pago-item{background:#F1F3F4;border-radius:var(--g-radius-sm);}
 .pi-stat.big{border-color:rgba(220,38,38,0.18);background:var(--l-danger-soft);}
 .pi-stat.big::before{background:var(--l-danger-grad);}
 .pi-stat-label{font-size:10px;color:var(--texto-dim);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:7px;}
-.pi-stat-val{font-family:'Inter Tight',sans-serif;font-size:clamp(14px,1.5vw,20px);font-weight:800;color:var(--g-on-surface);line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pi-stat-val{font-family:'Inter Tight',sans-serif;font-size:clamp(14px,1.4vw,19px);font-weight:800;color:var(--g-on-surface);line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;white-space:normal;overflow-wrap:anywhere;}
 .pi-stat-sub{font-size:10px;color:var(--texto-dim);margin-top:5px;line-height:1.4;}
 
 /* ── Composition bars ── */
@@ -3095,6 +3095,12 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
 
   <!-- Análisis detallado Hogares -->
   <div id="pi-hogar-analisis" style="display:none;">
+
+    <!-- TABS POR SEDE (Hogares) -->
+    <div id="pi-hog-sede-tabs-bar" style="display:none;margin-bottom:16px;overflow-x:auto;white-space:nowrap;">
+      <button id="pi-hog-sede-tab-general" class="sede-tab active" onclick="piHogSeleccionarSede('GENERAL')">🌐 General</button>
+      <span id="pi-hog-sede-tabs-list"></span>
+    </div>
 
     <!-- Selector de historial Hogares — mismo diseño que Móvil -->
     <div style="margin-bottom:24px;">
@@ -8826,6 +8832,8 @@ function toggleAnalisisHogar() {
     }
     analisis.style.display = '';
     if (card) card.style.borderColor = 'rgba(167,139,250,0.5)';
+    // Tabs por sede (solo si hay datos en vivo con más de una sede)
+    piHogRenderSedeTabs();
     // Cargar meses disponibles (intenta BD, fallback a snapshot guardado)
     piHogCargarMeses();
   }
@@ -9759,7 +9767,7 @@ function piMostrarProyeccionHistorica() {
   if (desgloseEl) desgloseEl.innerHTML = stats.map(st =>
     `<div class="pi-stat${st.big?' big':''}" style="--l-stat-bar:${_piStatBar(st.color)};">
       <div class="pi-stat-label">${st.label}</div>
-      <div class="pi-stat-val" style="color:${st.color};${st.big?'font-size:clamp(18px,2.2vw,28px);':''}">${st.val}</div>
+      <div class="pi-stat-val" style="color:${st.color};${st.big?'font-size:clamp(15px,1.7vw,22px);':''}">${st.val}</div>
       <div class="pi-stat-sub">${st.sub}</div>
     </div>`
   ).join('');
@@ -9962,7 +9970,7 @@ function renderPanelDesdeSnapshot() {
   document.getElementById('pi-desglose-grid').innerHTML = stats.map(st =>
     `<div class="pi-stat" style="${st.big?'border-color:rgba(218,0,0,0.3);background:rgba(218,0,0,0.05);':''}">
       <div class="pi-stat-label">${st.label}</div>
-      <div class="pi-stat-val" style="color:${st.color};${st.big?'font-size:clamp(18px,2.2vw,28px);':''}">${st.val}</div>
+      <div class="pi-stat-val" style="color:${st.color};${st.big?'font-size:clamp(15px,1.7vw,22px);':''}">${st.val}</div>
       <div class="pi-stat-sub">${st.sub}</div>
     </div>`
   ).join('');
@@ -10092,6 +10100,40 @@ function renderPanelDesdeSnapshot() {
   </tr>`;
 }
 
+// ══════════════════════════════════════════════════════════
+// TABS POR SEDE — Panel de Inicio (Hogares)
+// Solo se muestran si hay datos en vivo cargados con más de una sede,
+// porque la proyección guardada en BD es el consolidado general.
+// ══════════════════════════════════════════════════════════
+function piHogRenderSedeTabs() {
+  const bar  = document.getElementById('pi-hog-sede-tabs-bar');
+  const list = document.getElementById('pi-hog-sede-tabs-list');
+  if (!bar || !list) return;
+  const sites = [...new Set((_hogResultados || []).map(r => r.site).filter(Boolean))].sort();
+  bar.style.display = sites.length > 1 ? 'block' : 'none';
+  list.innerHTML = sites.map(s =>
+    `<button class="sede-tab${_hogSiteFiltro === s ? ' active' : ''}" onclick="piHogSeleccionarSede('${s}')">${s}</button>`
+  ).join('');
+  const gen = document.getElementById('pi-hog-sede-tab-general');
+  if (gen) gen.classList.toggle('active', _hogSiteFiltro === 'GENERAL');
+}
+
+function piHogSeleccionarSede(site) {
+  if (!_hogResultados || !_hogResultados.length) return;
+  _hogSiteFiltro = site;
+  hogRecalcularProyeccion();          // recalcula con la sede activa → refresca _hogLastProy
+  if (_hogLastProy) {
+    _hogRenderCardsFactura(_hogLastProy);
+    _hogRenderAnalisis(_hogLastProy);
+  }
+  piHogRenderSedeTabs();
+  // Mantener sincronizados los botones de sede dentro del módulo Hogar
+  try {
+    const sites = [...new Set(_hogResultados.map(r => r.site).filter(Boolean))].sort();
+    hogRenderSiteFilter(sites);
+  } catch(_) {}
+}
+
 function _hogRenderCardsFactura(s) {
   const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
   const fmtN = v => Math.round(v).toLocaleString('es-CO');
@@ -10181,7 +10223,7 @@ function _hogRenderAnalisis(s) {
   if (desglEl) desglEl.innerHTML = stats.map(st =>
     `<div class="pi-stat" style="${st.big ? 'border-color:rgba(109,40,217,0.3);background:rgba(109,40,217,0.05);' : ''}">
       <div class="pi-stat-label">${st.label}</div>
-      <div class="pi-stat-val" style="color:${st.color};${st.big ? 'font-size:clamp(18px,2.2vw,28px);' : ''}">${st.val}</div>
+      <div class="pi-stat-val" style="color:${st.color};${st.big ? 'font-size:clamp(15px,1.7vw,22px);' : ''}">${st.val}</div>
       <div class="pi-stat-sub">${st.sub}</div>
     </div>`
   ).join('');
@@ -10364,7 +10406,7 @@ function actualizarPanelInicio() {
   document.getElementById('pi-desglose-grid').innerHTML = stats.map(s =>
     `<div class="pi-stat" style="${s.big?'border-color:rgba(218,0,0,0.3);background:rgba(218,0,0,0.05);':''}">
       <div class="pi-stat-label">${s.label}</div>
-      <div class="pi-stat-val" style="color:${s.color};${s.big?'font-size:clamp(18px,2.2vw,28px);':''}">${s.val}</div>${s.val}</div>
+      <div class="pi-stat-val" style="color:${s.color};${s.big?'font-size:clamp(15px,1.7vw,22px);':''}">${s.val}</div>
       <div class="pi-stat-sub">${s.sub}</div>
     </div>`
   ).join('');
@@ -10539,7 +10581,9 @@ function actualizarPanelInicioConDatos(datos) {
   const orig = _resultadosCache;
   _resultadosCache = datos;
   actualizarPanelInicio();
-  if (!_proyeccionGuardada) renderPanelDesdeCache();
+  // Con una sede filtrada hay que recalcular desde los datos en vivo: el snapshot
+  // guardado es el consolidado general y no refleja la sede seleccionada.
+  if (!_proyeccionGuardada || _sedeFiltroActual) renderPanelDesdeCache();
   else renderPanelDesdeSnapshot();
   _resultadosCache = orig;
 }
