@@ -1877,8 +1877,14 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
             <option value="admin">Admin</option>
           </select>
         </div>
+        <div style="grid-column:1 / -1;">
+          <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Sede asignada <span style="font-weight:400;text-transform:none;font-size:9px;">(vacío = ve todas las sedes)</span></label>
+          <input id="nu-sede" list="gu-sedes-list" placeholder="Ej: MEDELLIN 1" oninput="this.value=this.value.toUpperCase()" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2);border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
+          <div style="font-size:10px;color:var(--pa-text-dim);margin-top:4px;">Si asignas una sede, el usuario solo verá la información de esa sede.</div>
+        </div>
       </div>
     </div>
+    <datalist id="gu-sedes-list"></datalist>
 
     <!-- Step 2: Módulos -->
     <div style="background:var(--pa-surface-1);border:1px solid var(--pa-border);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--pa-shadow);">
@@ -1984,6 +1990,10 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
               <option value="jefe">Jefe</option>
               <option value="admin">Admin</option>
             </select>
+          </div>
+          <div style="grid-column:1 / -1;">
+            <label style="font-size:10px;color:var(--pa-text-dim);letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700;">Sede asignada <span style="font-weight:400;text-transform:none;font-size:9px;">(vacío = ve todas)</span></label>
+            <input id="eu-sede" list="gu-sedes-list" placeholder="Ej: MEDELLIN 1" oninput="this.value=this.value.toUpperCase();guEuMarkDirty();" style="width:100%;box-sizing:border-box;background:var(--pa-surface-2,var(--negro));border:1px solid var(--pa-border);border-radius:8px;color:var(--pa-text);font-family:'Inter Tight',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor=''">
           </div>
         </div>
         <!-- Estado toggle -->
@@ -11060,6 +11070,22 @@ function tieneModulo(mod) {
   const modulos = _authUsuario.modulos || [];
   return modulos.includes(mod);
 }
+// ── Sede asignada al usuario logueado ──
+// Devuelve la sede (SITE) a la que está restringido, o null si ve todas.
+// Los admin nunca se restringen.
+function sedeUsuario() {
+  if (!_authUsuario) return null;
+  if (_authUsuario.rol === 'admin') return null;
+  const s = (_authUsuario.sede || '').trim().toUpperCase();
+  return s || null;
+}
+// Filtra un arreglo de filas (con campo .site) dejando solo las de la sede del usuario.
+// Si el usuario no tiene sede asignada, devuelve el arreglo intacto.
+function _filtrarPorSedeUsuario(arr) {
+  const s = sedeUsuario();
+  if (!s || !Array.isArray(arr)) return arr;
+  return arr.filter(r => String(r.site || '').trim().toUpperCase() === s);
+}
 function rolColor(rol) {
   return (ROLES_DEF.find(r => r.value === rol) || {color:'#6EE7B7'}).color;
 }
@@ -11259,7 +11285,7 @@ function actualizarHeaderUsuario() {
     <div style="display:flex;align-items:center;gap:8px;">
       <div style="text-align:right;">
         <div style="font-size:12px;font-weight:700;color:var(--texto);">${_authUsuario.nombre}</div>
-        <div style="font-size:10px;color:${rolColor(_authUsuario.rol)};letter-spacing:0.8px;text-transform:uppercase;">${rolLabel(_authUsuario.rol)}</div>
+        <div style="font-size:10px;color:${rolColor(_authUsuario.rol)};letter-spacing:0.8px;text-transform:uppercase;">${rolLabel(_authUsuario.rol)}${sedeUsuario() ? ` · <span style="color:#0B8043;">${sedeUsuario()}</span>` : ''}</div>
       </div>
       <button onclick="logout()" title="Cerrar sesión" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:#F87171;cursor:pointer;font-size:14px;flex-shrink:0;">⎋</button>
     </div>`;
@@ -11714,6 +11740,9 @@ function _guRenderUsuarioCards(lista) {
             <span class="gu-role-badge" style="border-color:${c}44;color:${c};background:${c}15;">
               <span class="material-symbols-rounded" style="font-size:10px;font-variation-settings:'FILL' 1,'wght' 500;">shield_person</span>${rolLabel(u.rol)}
             </span>
+            ${u.sede ? `<span class="gu-role-badge" style="border-color:#0B804344;color:#0B8043;background:#0B804315;">
+              <span class="material-symbols-rounded" style="font-size:10px;font-variation-settings:'FILL' 1,'wght' 500;">location_on</span>${u.sede}
+            </span>` : ''}
           </div>
           <div style="font-size:11px;color:var(--pa-text-dim);margin:2px 0 6px;">${u.email}</div>
           <div style="display:flex;flex-wrap:wrap;gap:4px;">${mods}</div>
@@ -11737,7 +11766,19 @@ async function cargarListaUsuarios() {
     if (!res.ok) return;
     _guAllUsuarios = res.usuarios || [];
     _guRenderUsuarioCards(_guAllUsuarios);
+    guPoblarSedesDatalist();
   } catch(e) { console.error('Error cargando usuarios:', e); }
+}
+
+// ── Sugerencias de sede: combina las sedes de los archivos cargados con las ya asignadas ──
+function guPoblarSedesDatalist() {
+  const dl = document.getElementById('gu-sedes-list');
+  if (!dl) return;
+  const set = new Set();
+  try { (_resultadosCache || []).forEach(r => { if (r.site) set.add(String(r.site).toUpperCase()); }); } catch(_) {}
+  try { (_hogResultados  || []).forEach(r => { if (r.site) set.add(String(r.site).toUpperCase()); }); } catch(_) {}
+  try { (_guAllUsuarios  || []).forEach(u => { if (u.sede) set.add(String(u.sede).toUpperCase()); }); } catch(_) {}
+  dl.innerHTML = [...set].sort().map(s => `<option value="${s}">`).join('');
 }
 
 async function eliminarUsuario(id, nombre) {
@@ -11759,15 +11800,17 @@ async function crearUsuario() {
   if (!nombre || !email || !password) { alert('Completa todos los campos obligatorios'); return; }
   const permisos = guGetChecked('nu', 'perm');
   const modulos  = guGetModulos('nu');
+  const sede     = (document.getElementById('nu-sede')?.value || '').trim().toUpperCase();
   try {
     const res = await authFetch(`${FENIX_API}/usuarios`, {
       method: 'POST',
-      body: JSON.stringify({ nombre, email, password, rol, permisos, modulos })
+      body: JSON.stringify({ nombre, email, password, rol, permisos, modulos, sede })
     }).then(r => r.json());
     if (!res.ok) { alert('Error: ' + res.error); return; }
     document.getElementById('nu-nombre').value   = '';
     document.getElementById('nu-email').value    = '';
     document.getElementById('nu-password').value = '';
+    const _nuSede = document.getElementById('nu-sede'); if (_nuSede) _nuSede.value = '';
     guTab('lista');
     await cargarListaUsuarios();
   } catch(e) { alert('Error de conexión'); }
@@ -11792,6 +11835,9 @@ async function abrirEditarUsuario(id) {
     var eyeBtn = document.querySelector('[onclick*="eu-password"]');
     if (eyeBtn) { var eyeIco = eyeBtn.querySelector('.material-symbols-rounded'); if (eyeIco) eyeIco.textContent = 'visibility'; }
     document.getElementById('eu-rol').value      = u.rol;
+    const _euSede = document.getElementById('eu-sede');
+    if (_euSede) _euSede.value = u.sede || '';
+    guPoblarSedesDatalist();
     document.getElementById('eu-activo').checked = u.activo;
 
     // Header
@@ -11874,7 +11920,8 @@ async function guardarEdicionUsuario() {
   const activo   = document.getElementById('eu-activo').checked;
   const permisos = guGetChecked('eu', 'perm');
   const modulos  = guGetModulos('eu');
-  const body = { nombre, email, rol, activo, permisos, modulos };
+  const sede     = (document.getElementById('eu-sede')?.value || '').trim().toUpperCase();
+  const body = { nombre, email, rol, activo, permisos, modulos, sede };
   if (password) body.password = password;
   try {
     const res = await authFetch(`${FENIX_API}/usuarios/${id}`, {
@@ -13216,6 +13263,9 @@ function calcular(){
       totalBruto:pagosBrutos.reduce((a,b)=>a+b,0),totalNeto:pagosNetos.reduce((a,b)=>a+b,0),
       isPower,pagoNetoEnProyeccion,pagoBrutoEnProyeccion,mesProyeccion,mesVenta,anio};
   });
+
+  // Restricción por sede: si el usuario tiene una sede asignada, solo procesa esas líneas
+  resultados = _filtrarPorSedeUsuario(resultados);
 
   poblarFiltros();
   _sedeFiltroActual = null; // reset to General on new calculation
@@ -14866,6 +14916,9 @@ function hogCalcular() {
       cntUw, cntDng
     };
   });
+
+  // Restricción por sede: si el usuario tiene una sede asignada, solo procesa esas OTs
+  _hogResultados = _filtrarPorSedeUsuario(_hogResultados);
 
   // Sedes dinámicas: solo las que aparecen en el archivo
   const sitesEnArchivo = [...new Set(_hogResultados.map(r => r.site).filter(Boolean))].sort();
