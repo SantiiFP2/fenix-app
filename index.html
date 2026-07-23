@@ -8839,8 +8839,13 @@ function toggleAnalisisHogar() {
   }
 }
 
-function guardarProyeccion() {
+// Guarda la proyección tal como está en pantalla, etiquetada con `sedeEtiqueta`.
+// `silencioso` evita el feedback visual cuando se llama en lote (una vez por sede).
+function _guardarProyeccionSede(sedeEtiqueta, silencioso) {
   if (!_resultadosCache.length) return;
+  // Datos de la sede activa: los mapas y conteos deben corresponder a esa sede,
+  // no al consolidado global.
+  const _datosSede = getDatosFiltrados();
   const kpiEl  = document.getElementById('kpi-total');
   const mesEl  = document.getElementById('kpi-mes-label');
   const fmt    = v => '$' + Math.round(v).toLocaleString('es-CO');
@@ -8870,24 +8875,24 @@ function guardarProyeccion() {
     (ventasVal + cosechasVal + semillerosVal + cpmVal + aceleradorVal
      + efectividadVal + presupuestoVal + bonoVal + incentivosVal);
 
-  // Calcular distribuciones
-  const lC1 = _resultadosCache.filter(r=>r.ciclo===1);
-  const lC2 = _resultadosCache.filter(r=>r.ciclo===2);
+  // Calcular distribuciones (sobre los datos de la sede activa)
+  const lC1 = _datosSede.filter(r=>r.ciclo===1);
+  const lC2 = _datosSede.filter(r=>r.ciclo===2);
   const cfmC1avg = lC1.length?lC1.reduce((s,r)=>s+(r.cfm||0),0)/lC1.length:0;
   const cfmC2avg = lC2.length?lC2.reduce((s,r)=>s+(r.cfm||0),0)/lC2.length:0;
 
   const canalesMap={};
-  _resultadosCache.forEach(r=>{const c=norm(r.canal)||'sin canal';canalesMap[c]=(canalesMap[c]||0)+1;});
+  _datosSede.forEach(r=>{const c=norm(r.canal)||'sin canal';canalesMap[c]=(canalesMap[c]||0)+1;});
 
   const prodsMap={};
-  _resultadosCache.forEach(r=>{const p=norm(r.producto)||'—';prodsMap[p]=(prodsMap[p]||0)+1;});
+  _datosSede.forEach(r=>{const p=norm(r.producto)||'—';prodsMap[p]=(prodsMap[p]||0)+1;});
 
   // Accesos proyectados al cierre por campaña (denominador del ticket promedio)
-  const _accProy = _movAccesosProyPorCampana(_resultadosCacheGlobal.length ? _resultadosCacheGlobal : _resultadosCache);
+  const _accProy = _movAccesosProyPorCampana(_datosSede);
 
-  const cvcsMadres=[...new Set(_resultadosCache.map(r=>r.cvcMadre||'—'))].sort();
+  const cvcsMadres=[...new Set(_datosSede.map(r=>r.cvcMadre||'—'))].sort();
   const filasEvc = cvcsMadres.map(madre=>{
-    const lineas=_resultadosCache.filter(r=>(r.cvcMadre||'—')===madre);
+    const lineas=_datosSede.filter(r=>(r.cvcMadre||'—')===madre);
     const lC1c=lineas.filter(r=>r.ciclo===1).length;
     const lC2c=lineas.filter(r=>r.ciclo===2).length;
     const cfmP=lineas.length?lineas.reduce((s,r)=>s+(r.cfm||0),0)/lineas.length:0;
@@ -8895,36 +8900,41 @@ function guardarProyeccion() {
     const meta=conf?.meta||0;
     const ej=(conf?.ejecutadoOverride!=null)?conf.ejecutadoOverride:lineas.length;
     const cumpl=meta>0?Math.round(ej/meta*100):null;
-    const proyD=calcularProyeccionCvc(madre,_resultadosCache);
+    const proyD=calcularProyeccionCvc(madre,_datosSede);
     const cumplProy=meta>0?Math.round(proyD.proyectado/meta*100):null;
     const netoC=lineas.reduce((s,r)=>s+(r.pagoNeto||0),0);
     return {madre,count:lineas.length,lC1c,lC2c,cfmP,meta,ej,cumpl,cumplProy,proyectado:proyD.proyectado,netoC};
   });
 
   // Guardar snapshot
-  _proyeccionGuardada = {
+  const _snap = {
     ts: new Date().toLocaleString('es-CO'),
     mes: mesEl?mesEl.textContent:'',
     total, ventasVal, c1Ajustado, totalVentasProyC2,
     cosechasVal, cpmVal, aceleradorVal, efectividadVal, incentivosVal, presupuestoVal, bonoVal, semillerosVal,
     pctC1: Math.round(pctC1Ajuste*100),
-    totalLineas: _resultadosCache.length,
-    cfmPromedio: _resultadosCache.reduce((s,r)=>s+(r.cfm||0),0)/(_resultadosCache.length||1),
+    totalLineas: _datosSede.length,
+    cfmPromedio: _datosSede.reduce((s,r)=>s+(r.cfm||0),0)/(_datosSede.length||1),
     lC1count: lC1.length, lC2count: lC2.length, cfmC1avg, cfmC2avg,
     canalesMap, prodsMap, filasEvc,
     accProyPorta: _accProy.porta, accProyMigra: _accProy.migra,
     incentivosItems: [...incentivos],
     cosechasItems: [...cosechas],
+    sede: sedeEtiqueta || 'GENERAL',
   };
+  // El snapshot en memoria es el consolidado: solo se reemplaza al guardar GENERAL
+  if (!sedeEtiqueta || sedeEtiqueta === 'GENERAL') _proyeccionGuardada = _snap;
 
   // ── Persistir en BD ──
-  piGuardarProyeccionBD(_proyeccionGuardada);
+  piGuardarProyeccionBD(_snap, sedeEtiqueta || 'GENERAL');
+
+  if (silencioso) return;
 
   // Actualizar tarjeta Móvil en panel
   const kpiCard = document.getElementById('pi-movil-kpi');
   const kpiSub  = document.getElementById('pi-movil-kpi-sub');
   if (kpiCard) { kpiCard.className='pi-product-kpi'; kpiCard.textContent=fmt(total); }
-  if (kpiSub)  kpiSub.textContent = 'Guardado '+_proyeccionGuardada.ts;
+  if (kpiSub)  kpiSub.textContent = 'Guardado '+_snap.ts;
   // Marcar la tarjeta con borde verde para indicar que hay snapshot
   const cardM = document.getElementById('pi-card-movil');
   if (cardM) {
@@ -8942,6 +8952,28 @@ function guardarProyeccion() {
     btn.style.borderColor = '#4ADE80';
     setTimeout(()=>{ btn.innerHTML=orig; btn.style.background=''; }, 2500);
   }
+}
+
+// Botón "Guardar proyección": guarda el consolidado GENERAL y, si el archivo
+// trae varias sedes, un registro adicional por cada una para el histórico.
+function guardarProyeccion() {
+  if (!_resultadosCache.length) return;
+  const sites = [...new Set(_resultadosCache.map(r => String(r.site||'').trim().toUpperCase()).filter(Boolean))].sort();
+  const origSede = _sedeFiltroActual;
+
+  if (sites.length < 2) { _guardarProyeccionSede('GENERAL', false); return; }
+
+  // Consolidado
+  seleccionarSedeFiltro(null);
+  _guardarProyeccionSede('GENERAL', true);
+  // Una por sede: seleccionarSedeFiltro recalcula todo igual que un click del usuario
+  sites.forEach(s => {
+    seleccionarSedeFiltro(s);
+    _guardarProyeccionSede(s, true);
+  });
+  // Volver a la vista donde estaba el usuario y dar el feedback una sola vez
+  seleccionarSedeFiltro(origSede);
+  _guardarProyeccionSede(origSede || 'GENERAL', false);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -8969,12 +9001,13 @@ function piGetFechaCorte(mesVentaISO) {
 }
 
 // ── Persistir proyección en BD ──
-async function piGuardarProyeccionBD(snap) {
+async function piGuardarProyeccionBD(snap, sede) {
   try {
     const periodoVal = document.getElementById('periodo')?.value || '';
     if (!periodoVal) return;
     const mesVenta   = periodoVal;
     const fechaCorte = piGetFechaCorte(mesVenta);
+    const sedeGuardar = (sede || _sedeFiltroActual || 'GENERAL').toString().toUpperCase();
 
     // Leer los valores del card operativo ya renderizado
     const opEl     = document.getElementById('kpi-op-total');
@@ -8994,6 +9027,7 @@ async function piGuardarProyeccionBD(snap) {
     const body = {
       mes_venta:    mesVenta,
       fecha_corte:  fechaCorte,
+      sede:         sedeGuardar,
       total_lineas: snap.totalLineas || 0,
       cfm_promedio: Math.round(snap.cfmPromedio || 0),
       pct_c1:       snap.pctC1 || 100,
@@ -9065,7 +9099,7 @@ function _hogRestaurarProyeccionLocal() {
 // ── Principal: cargar desde BD (igual que Móvil) → fallback a localStorage ──
 async function piCargarProyeccionHogarBD() {
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/ultimo`).then(x => x.json());
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/ultimo?sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
     if (!r.ok || !r.proyeccion) {
       // Endpoint aún no implementado en el backend → usar caché local
       _hogRestaurarProyeccionLocal();
@@ -9123,7 +9157,7 @@ function piHogMesLabel(m) {
 // ── Cargar meses disponibles para Hogares ──
 async function piHogCargarMeses() {
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/meses`).then(x => x.json());
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/meses?sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
     if (!r.ok || !r.meses || !r.meses.length) {
       // Endpoint no disponible aún → mostrar la proyección guardada localmente
       _piHogMostrarDesdeCache();
@@ -9174,7 +9208,7 @@ async function piHogCargarDiasMes() {
 
   if (!_piHogHistCache[mes]) {
     try {
-      const r = await authFetch(`${FENIX_API}/proyecciones/hogar?mes=${mes}`).then(x => x.json());
+      const r = await authFetch(`${FENIX_API}/proyecciones/hogar?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
       if (r.ok) _piHogHistCache[mes] = r.rows;
     } catch(e) { console.warn('piHogCargarDiasMes:', e.message); }
   }
@@ -9246,24 +9280,53 @@ function piHogMostrarProyeccionHistorica() {
   _hogRenderAnalisis(snap);
 }
 
-function guardarProyeccionHogar() {
+// Guarda la proyección de Hogar tal como está calculada, etiquetada con `sedeEtiqueta`.
+function _guardarProyeccionHogarSede(sedeEtiqueta, silencioso) {
   if (!_hogLastProy) return;
   const snap = _hogLastProy;
   const fmt = v => '$' + Math.round(v).toLocaleString('es-CO');
 
-  _hogProyeccionGuardada = { ts: new Date().toLocaleString('es-CO'), ...snap };
+  const _snapTs = { ts: new Date().toLocaleString('es-CO'), ...snap, sede: sedeEtiqueta || 'GENERAL' };
+  // El snapshot en memoria/localStorage es el consolidado
+  if (!sedeEtiqueta || sedeEtiqueta === 'GENERAL') {
+    _hogProyeccionGuardada = _snapTs;
+    try { localStorage.setItem('fenix_hog_proyeccion', JSON.stringify(_hogProyeccionGuardada)); } catch(_) {}
+  }
 
-  // Persistir localmente (sobrevive recargas de página)
-  try { localStorage.setItem('fenix_hog_proyeccion', JSON.stringify(_hogProyeccionGuardada)); } catch(_) {}
+  // Persistir en BD
+  piGuardarProyeccionHogarBD(_snapTs, sedeEtiqueta || 'GENERAL');
 
-  // Persistir en BD (cuando el endpoint exista en el servidor)
-  piGuardarProyeccionHogarBD(_hogProyeccionGuardada);
+  if (silencioso) return;
+  _guardarProyeccionHogarUI(_snapTs, fmt);
+}
+
+// Botón "Guardar proyección en panel" de Hogar: consolidado + una por sede.
+function guardarProyeccionHogar() {
+  if (!_hogLastProy) return;
+  const sites = [...new Set((_hogResultados || []).map(r => String(r.site||'').trim().toUpperCase()).filter(Boolean))].sort();
+  const orig = _hogSiteFiltro;
+
+  if (sites.length < 2) { _guardarProyeccionHogarSede('GENERAL', false); return; }
+
+  _hogSiteFiltro = 'GENERAL'; hogRecalcularProyeccion();
+  _guardarProyeccionHogarSede('GENERAL', true);
+  sites.forEach(s => {
+    _hogSiteFiltro = s; hogRecalcularProyeccion();
+    _guardarProyeccionHogarSede(s, true);
+  });
+  // Restaurar la vista del usuario y dar feedback una sola vez
+  _hogSiteFiltro = orig; hogRecalcularProyeccion();
+  _guardarProyeccionHogarSede(orig === 'GENERAL' ? 'GENERAL' : orig, false);
+}
+
+function _guardarProyeccionHogarUI(snapTs, fmt) {
+  const snap = snapTs;
 
   // Actualizar tarjeta Hogares en Panel de Inicio
   const kpiCard = document.getElementById('pi-hogar-kpi');
   const kpiSub  = document.getElementById('pi-hogar-kpi-sub');
   if (kpiCard) { kpiCard.className = 'pi-product-kpi'; kpiCard.textContent = fmt(snap.totalCobroProy); }
-  if (kpiSub)  kpiSub.textContent = 'Guardado ' + _hogProyeccionGuardada.ts;
+  if (kpiSub)  kpiSub.textContent = 'Guardado ' + snap.ts;
 
   // Marcar tarjeta con borde verde/violeta
   const cardH = document.getElementById('pi-card-hogar');
@@ -9293,7 +9356,7 @@ function guardarProyeccionHogar() {
   }
 }
 
-async function piGuardarProyeccionHogarBD(snap) {
+async function piGuardarProyeccionHogarBD(snap, sede) {
   try {
     const periodoVal = snap.periodoVal || document.getElementById('hog-periodo')?.value || '';
     if (!periodoVal) return;
@@ -9302,6 +9365,7 @@ async function piGuardarProyeccionHogarBD(snap) {
     const body = {
       mes_venta:   periodoVal,
       fecha_corte: fechaCorte,
+      sede:        (sede || snap.sede || 'GENERAL').toString().toUpperCase(),
       total_ots:   snap.totalOTs || 0,
       financiero: {
         total:       Math.round(snap.totalCobroProy  || 0),
@@ -9355,7 +9419,7 @@ async function piGuardarProyeccionHogarBD(snap) {
 // ── Cargar lista de meses disponibles en el selector ──
 async function piCargarMeses() {
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/meses`).then(x => x.json());
+    const r = await authFetch(`${FENIX_API}/proyecciones/meses?sede=${encodeURIComponent(_sedeConsulta(_sedeFiltroActual))}`).then(x => x.json());
     if (!r.ok || !r.meses || !r.meses.length) return;
     const sel = document.getElementById('pi-hist-mes');
     if (!sel) return;
@@ -9634,7 +9698,7 @@ async function piCargarDiasMes() {
 
   if (!_piHistCache[mes]) {
     try {
-      const r = await authFetch(`${FENIX_API}/proyecciones?mes=${mes}`).then(x => x.json());
+      const r = await authFetch(`${FENIX_API}/proyecciones?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta(_sedeFiltroActual))}`).then(x => x.json());
       if (r.ok) _piHistCache[mes] = r.rows;
     } catch(e) { console.warn('piCargarDiasMes:', e.message); }
   }
@@ -11129,6 +11193,14 @@ function _filtrarPorSedeUsuario(arr) {
   const s = sedeUsuario();
   if (!s || !Array.isArray(arr)) return arr;
   return arr.filter(r => String(r.site || '').trim().toUpperCase() === s);
+}
+// Sede a consultar en el histórico guardado: la asignada al usuario manda;
+// si no tiene, se usa la pestaña de sede activa ('GENERAL' = consolidado).
+function _sedeConsulta(sedeTab) {
+  const u = sedeUsuario();
+  if (u) return u;
+  const s = (sedeTab || '').toString().trim().toUpperCase();
+  return s || 'GENERAL';
 }
 function rolColor(rol) {
   return (ROLES_DEF.find(r => r.value === rol) || {color:'#6EE7B7'}).color;
