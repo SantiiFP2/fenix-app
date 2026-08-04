@@ -18112,7 +18112,8 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${nReg.toLocaleString('es-CO')} reg · ${fStr}</div>
           </div>
-          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosConfirmarEliminar('${arch.id}','r5')" title="Eliminar archivo" style="flex-shrink:0;background:none;border:none;cursor:pointer;color:#F87171;font-size:14px;line-height:1;padding:2px 4px;border-radius:4px;" onmouseover="this.style.background='rgba(248,113,113,0.12)'" onmouseout="this.style.background='none'">✕</button>`;
         histR5.appendChild(div);
       });
       if (statusR5) statusR5.textContent = `${cosArchivosR5.length} archivo${cosArchivosR5.length>1?'s':''} · ${totalReg.toLocaleString('es-CO')} registros`;
@@ -18145,7 +18146,8 @@ function cosRenderHistorial() {
             <div style="font-size:11px;font-weight:600;color:var(--blanco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${arch.nombre}">${arch.nombre}</div>
             <div style="font-size:10px;color:var(--texto-dim);">${(arch.filas ? arch.filas.length : (arch.n_registros||0)).toLocaleString('es-CO')} filas · ${fStr}</div>
           </div>
-          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>`;
+          <span id="cos-bd-badge-${arch.id}" style="font-size:9px;color:#34D399;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);">✓ BD</span>
+          <button onclick="cosConfirmarEliminar('${arch.id}','factura')" title="Eliminar archivo" style="flex-shrink:0;background:none;border:none;cursor:pointer;color:#F87171;font-size:14px;line-height:1;padding:2px 4px;border-radius:4px;" onmouseover="this.style.background='rgba(248,113,113,0.12)'" onmouseout="this.style.background='none'">✕</button>`;
         histFact.appendChild(div);
       });
       if (statusFact) statusFact.textContent = `${cosArchivosFact.length} archivo${cosArchivosFact.length>1?'s':''} · ${totalFilas.toLocaleString('es-CO')} filas`;
@@ -18160,7 +18162,17 @@ function cosRenderHistorial() {
   cosAplicarEstadoCarga();
 }
 
-// ── Eliminar archivo individual ──
+// ── Eliminar archivo individual (con confirmación desde el historial) ──
+function cosConfirmarEliminar(id, tipo) {
+  const arr = tipo === 'r5' ? cosArchivosR5 : cosArchivosFact;
+  const arch = arr.find(a => String(a.id) === String(id));
+  const nombre = arch ? arch.nombre : '';
+  const t = tipo === 'r5' ? 'R5' : 'Factura';
+  if (!confirm(`¿Eliminar el archivo ${t} "${nombre}"?\n\nSe borra de la base de datos. Podrás volver a cargarlo cuando quieras.`)) return;
+  if (tipo === 'r5') cosEliminarR5(id); else cosEliminarFactura(id);
+  // Recalcular con lo que quede cargado
+  if (cosR5Data && cosFactData) cosRender();
+}
 function cosEliminarR5(id) {
   cosArchivosR5 = cosArchivosR5.filter(a => a.id !== id);
   cosIDBEliminar(id).catch(()=>{});
