@@ -2891,6 +2891,9 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- Bloque Facturas Móvil (financiera + operativa) + histórico -->
   <div id="pi-facturas-wrap" style="display:none;margin-bottom:24px;">
 
+    <!-- TABS POR SEDE (histórico guardado) -->
+    <div id="pi-mov-hist-sede-bar" style="display:none;margin-bottom:16px;overflow-x:auto;white-space:nowrap;"></div>
+
     <!-- Selector de historial — diseño pill/chip -->
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
       <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--texto-dim);white-space:nowrap;">Ver proyección de:</span>
@@ -3096,11 +3099,14 @@ body.modo-claro .pt-field input,body.modo-claro .pt-field select,body.modo-claro
   <!-- Análisis detallado Hogares -->
   <div id="pi-hogar-analisis" style="display:none;">
 
-    <!-- TABS POR SEDE (Hogares) -->
+    <!-- TABS POR SEDE (Hogares — datos en vivo) -->
     <div id="pi-hog-sede-tabs-bar" style="display:none;margin-bottom:16px;overflow-x:auto;white-space:nowrap;">
       <button id="pi-hog-sede-tab-general" class="sede-tab active" onclick="piHogSeleccionarSede('GENERAL')">🌐 General</button>
       <span id="pi-hog-sede-tabs-list"></span>
     </div>
+
+    <!-- TABS POR SEDE (Hogares — histórico guardado) -->
+    <div id="pi-hog-hist-sede-bar" style="display:none;margin-bottom:16px;overflow-x:auto;white-space:nowrap;"></div>
 
     <!-- Selector de historial Hogares — mismo diseño que Móvil -->
     <div style="margin-bottom:24px;">
@@ -8982,6 +8988,53 @@ function guardarProyeccion() {
 
 // Cache local de proyecciones históricas { 'YYYY-MM': [ rowBD, ... ] }
 let _piHistCache = {};
+// Sede seleccionada para el histórico guardado del Panel de Inicio (sin datos en vivo)
+let _piHistSedeMovil = 'GENERAL';
+let _piHistSedeHogar = 'GENERAL';
+
+// ── Pestañas de sede del histórico guardado (cuando NO hay datos en vivo) ──
+// Permiten al admin alternar el consolidado GENERAL y cada sede guardada.
+async function piCargarSedesHistMovil() {
+  const bar = document.getElementById('pi-mov-hist-sede-bar');
+  if (!bar) return;
+  if (_resultadosCache.length) { bar.style.display = 'none'; return; } // datos en vivo → otras pestañas
+  try {
+    const r = await authFetch(`${FENIX_API}/proyecciones/sedes`).then(x => x.json());
+    const otras = ((r.ok && r.sedes) ? r.sedes : []).filter(s => s !== 'GENERAL');
+    if (sedeUsuario() || !otras.length) { bar.style.display = 'none'; return; }
+    if (!otras.includes(_piHistSedeMovil) && _piHistSedeMovil !== 'GENERAL') _piHistSedeMovil = 'GENERAL';
+    bar.style.display = 'block';
+    bar.innerHTML = ['GENERAL', ...otras].map(s =>
+      `<button class="sede-tab${_piHistSedeMovil===s?' active':''}" onclick="piSelSedeHistMovil('${s}')">${s==='GENERAL'?'🌐 General':s}</button>`
+    ).join('');
+  } catch(e) { bar.style.display = 'none'; }
+}
+function piSelSedeHistMovil(sede) {
+  _piHistSedeMovil = sede;
+  piCargarSedesHistMovil();
+  piCargarMeses();
+}
+
+async function piCargarSedesHistHogar() {
+  const bar = document.getElementById('pi-hog-hist-sede-bar');
+  if (!bar) return;
+  if (_hogResultados && _hogResultados.length) { bar.style.display = 'none'; return; }
+  try {
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/sedes`).then(x => x.json());
+    const otras = ((r.ok && r.sedes) ? r.sedes : []).filter(s => s !== 'GENERAL');
+    if (sedeUsuario() || !otras.length) { bar.style.display = 'none'; return; }
+    if (!otras.includes(_piHistSedeHogar) && _piHistSedeHogar !== 'GENERAL') _piHistSedeHogar = 'GENERAL';
+    bar.style.display = 'block';
+    bar.innerHTML = ['GENERAL', ...otras].map(s =>
+      `<button class="sede-tab${_piHistSedeHogar===s?' active':''}" onclick="piSelSedeHistHogar('${s}')">${s==='GENERAL'?'🌐 General':s}</button>`
+    ).join('');
+  } catch(e) { bar.style.display = 'none'; }
+}
+function piSelSedeHistHogar(sede) {
+  _piHistSedeHogar = sede;
+  piCargarSedesHistHogar();
+  piHogCargarMeses();
+}
 
 // ── Calcular fecha_corte según regla de negocio ──
 // Si el mes de venta ya cerró (estamos en un mes posterior), usa el último día del mes de venta.
@@ -9099,7 +9152,7 @@ function _hogRestaurarProyeccionLocal() {
 // ── Principal: cargar desde BD (igual que Móvil) → fallback a localStorage ──
 async function piCargarProyeccionHogarBD() {
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/ultimo?sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/ultimo?sede=${encodeURIComponent(_sedeConsulta((_hogResultados && _hogResultados.length) ? _hogSiteFiltro : _piHistSedeHogar))}`).then(x => x.json());
     if (!r.ok || !r.proyeccion) {
       // Endpoint aún no implementado en el backend → usar caché local
       _hogRestaurarProyeccionLocal();
@@ -9156,11 +9209,13 @@ function piHogMesLabel(m) {
 
 // ── Cargar meses disponibles para Hogares ──
 async function piHogCargarMeses() {
+  piCargarSedesHistHogar(); // pestañas de sede del histórico (si aplica)
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/meses?sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
+    const r = await authFetch(`${FENIX_API}/proyecciones/hogar/meses?sede=${encodeURIComponent(_sedeConsulta((_hogResultados && _hogResultados.length) ? _hogSiteFiltro : _piHistSedeHogar))}`).then(x => x.json());
     if (!r.ok || !r.meses || !r.meses.length) {
-      // Endpoint no disponible aún → mostrar la proyección guardada localmente
-      _piHogMostrarDesdeCache();
+      // Sede seleccionada sin proyecciones: mostrar caché local solo para el consolidado
+      if (_piHistSedeHogar === 'GENERAL' && !sedeUsuario()) _piHogMostrarDesdeCache();
+      else { const sel = document.getElementById('pi-hog-hist-mes'); if (sel) sel.innerHTML = '<option value="">— Mes —</option>'; }
       return;
     }
     const sel = document.getElementById('pi-hog-hist-mes');
@@ -9208,7 +9263,7 @@ async function piHogCargarDiasMes() {
 
   if (!_piHogHistCache[mes]) {
     try {
-      const r = await authFetch(`${FENIX_API}/proyecciones/hogar?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta(_hogSiteFiltro))}`).then(x => x.json());
+      const r = await authFetch(`${FENIX_API}/proyecciones/hogar?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta((_hogResultados && _hogResultados.length) ? _hogSiteFiltro : _piHistSedeHogar))}`).then(x => x.json());
       if (r.ok) _piHogHistCache[mes] = r.rows;
     } catch(e) { console.warn('piHogCargarDiasMes:', e.message); }
   }
@@ -9418,10 +9473,18 @@ async function piGuardarProyeccionHogarBD(snap, sede) {
 
 // ── Cargar lista de meses disponibles en el selector ──
 async function piCargarMeses() {
+  piCargarSedesHistMovil(); // pestañas de sede del histórico (si aplica)
   try {
-    const r = await authFetch(`${FENIX_API}/proyecciones/meses?sede=${encodeURIComponent(_sedeConsulta(_sedeFiltroActual))}`).then(x => x.json());
-    if (!r.ok || !r.meses || !r.meses.length) return;
+    const r = await authFetch(`${FENIX_API}/proyecciones/meses?sede=${encodeURIComponent(_sedeConsulta(_resultadosCache.length ? _sedeFiltroActual : _piHistSedeMovil))}`).then(x => x.json());
     const sel = document.getElementById('pi-hist-mes');
+    if (!r.ok || !r.meses || !r.meses.length) {
+      // La sede seleccionada no tiene proyecciones guardadas: limpiar
+      if (sel) sel.innerHTML = '<option value="">— Mes —</option>';
+      const fw = document.getElementById('pi-facturas-wrap');
+      const hogarActivo = document.getElementById('pi-hogar-analisis')?.style.display !== 'none';
+      if (fw && !hogarActivo) fw.style.display = '';
+      return;
+    }
     if (!sel) return;
     const actual = sel.value;
     sel.innerHTML = '<option value="">— Mes —</option>' +
@@ -9698,7 +9761,7 @@ async function piCargarDiasMes() {
 
   if (!_piHistCache[mes]) {
     try {
-      const r = await authFetch(`${FENIX_API}/proyecciones?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta(_sedeFiltroActual))}`).then(x => x.json());
+      const r = await authFetch(`${FENIX_API}/proyecciones?mes=${mes}&sede=${encodeURIComponent(_sedeConsulta(_resultadosCache.length ? _sedeFiltroActual : _piHistSedeMovil))}`).then(x => x.json());
       if (r.ok) _piHistCache[mes] = r.rows;
     } catch(e) { console.warn('piCargarDiasMes:', e.message); }
   }
