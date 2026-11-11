@@ -7673,7 +7673,8 @@ function abrirModalSemillero(idx) {
   if (selSede && grpSede) {
     selSede.innerHTML = '<option value="">🏢 Todas las sedes</option>' +
       sites.map(s => `<option value="${s}">${s}</option>`).join('');
-    grpSede.style.display = sites.length > 1 ? 'block' : 'none';
+    // Mostrar si hay al menos una sede en el archivo (con 1 sola también permite dejarlo en "Todas")
+    grpSede.style.display = sites.length >= 1 ? 'block' : 'none';
     selSede.value = '';
   }
   if (semilleroEditIdx !== null) {
